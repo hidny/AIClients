@@ -2,6 +2,23 @@ package mellow.ai;
 
 import java.util.ArrayList;
 
+//_______________________
+//This is a basic AI that handles non-mellow rounds for someone who is leading, 2nd, and 3rd.
+//_____________________________
+//After some calculations, I realized there are hundreds of unique mellow situations that I'd have to make rules for
+//to force it to play like me.
+
+
+//Because I'm lazy, I'm going to not create hundreds of rules and try to program it where it
+//can make up it's own mind.
+
+//Because there are so many rules to go through
+
+//“The fact that we live at the bottom of a deep gravity well, on the surface of a gas covered planet going
+//around a nuclear fireball 90 million miles away and think this to be normal is obviously some indication
+//of how skewed our perspective tends to be.”
+//-Douglas Adams
+
 public class MellowBasicDecider implements MellowAIDeciderInterface {
 	int tempAScore;
 	int tempBScore;
@@ -279,80 +296,19 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		String cardToPlay = null;;
 		System.out.println("**Inside get card to play");
 		if(cardsPlayedThisRound % 4 == 0) {
-			if(numberOfMaster >= 1) {
-				//play a master card:
-				int card = getNextMaster();
-				cardToPlay = getCardStringFromMellowCardNumber(card);
-				System.out.println("***********");
-				System.out.println("Playing master card: " + cardToPlay);
-				System.out.println("***********");
-			} else {
-				System.out.println("***********");
-				System.out.println("Leading low:");
-				System.out.println("***********");
-				cardToPlay = getLowCardToPlay();
-			}
+			cardToPlay = AILeaderThrow();
 			
 		//second play low
 		} else if(cardsPlayedThisRound % 4 == 1) {
-			//get suit to follow.
-			int leaderSuitIndex = getSuitOfLeaderThrow();
-			int leaderCardNumber = getNonSuitedNumberOfLeaderThrow();
-			
-			System.out.println("Suit Index Leader: " + getSuitOfLeaderThrow() + "  " + getCardStringFromMellowCardNumber(13*getSuitOfLeaderThrow()).substring(1));
-			
-			if(currentAgentHasSuit(leaderSuitIndex)) {
-				//FOLLOW SUIT.
-				if(currentPlayerHasMasterInSuit(leaderSuitIndex)) {
-					System.out.println("2nd FOLLOW SUIT HIGH");
-					cardToPlay = currentPlayergetHighestInSuit(leaderSuitIndex);
-					//don't play high if leader played higher.
-					if(getMellowCardNumber(cardToPlay) % NUM_NUMBERS < leaderCardNumber % NUM_NUMBERS) {
-						cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
-					}
-				} else {
-					System.out.println("2nd FOLLOW SUIT LOW");
-					cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
-				}
-				
-			} else {
-				//check to see if we could trump:
-				//If we could trump, just trump :)
-				if(leaderSuitIndex != SPADE && currentAgentHasSuit(SPADE)) {
-					System.out.println("*****");
-					System.out.println("TESTING: TRUMP! 2nd");
-					cardToPlay = currentPlayergetLowestInSuit(SPADE);
-				} else {
-					System.out.println("*****");
-					System.out.println("TESTING: play donkey card! 2nd");
-					cardToPlay = getLowOffSuitCardToPlay();
-					
-				}
-			}
-			
-		
+			cardToPlay = AISecondThrow();
 		//TODO
 		//third plays high.
 		} else if(cardsPlayedThisRound % 4 == 2) {
-			int leaderSuitIndex = getSuitOfLeaderThrow();
-			if(currentAgentHasSuit(leaderSuitIndex)) {	
-				//2nd trump and there's not much we can do:
-				if(getSuitOfSecondThrow() == SPADE && leaderSuitIndex != SPADE) {
-					cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
-				} else if(false /*opponentsCantTakeLeaderCard()*/) {
-					cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
-				} else if(currentPlayerHasMasterInSuit(leaderSuitIndex)) {
-					//TODO: don't play if leader or 2nd played higher...
-					cardToPlay = currentPlayergetHighestInSuit(leaderSuitIndex);
-				} else {
-					cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
-				}
-			}
-		
+			cardToPlay = AIThirdThrow();
 		//TODO:
 		//last barely makes the trick or plays low.
 		} else {
-			
+			cardToPlay = AIFourthThrow();
 		}
 		
 		if(cardToPlay != null) {
@@ -362,19 +318,162 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return cardToPlay;
 	}
 
+	//AIs for non-mellow bid games:
+	
+	public String AILeaderThrow() {
+		String cardToPlay = null;
+		if(numberOfMaster >= 1) {
+			//play a master card:
+			int card = getNextMaster();
+			cardToPlay = getCardStringFromMellowCardNumber(card);
+			System.out.println("***********");
+			System.out.println("Playing master card: " + cardToPlay);
+			System.out.println("***********");
+		} else {
+			System.out.println("***********");
+			System.out.println("Leading low:");
+			System.out.println("***********");
+			cardToPlay = getLowCardToPlay();
+		}
+		return cardToPlay;
+	}
+	
+	public String AISecondThrow() {
+		String cardToPlay = null;
+		//get suit to follow.
+		int leaderSuitIndex = getSuitOfLeaderThrow();
+		int leaderCardNumber = getNonSuitedNumberOfLeaderThrow();
+		
+		System.out.println("Suit Index Leader: " + getSuitOfLeaderThrow() + "  " + getCardStringFromMellowCardNumber(13*getSuitOfLeaderThrow()).substring(1));
+		
+		if(currentAgentHasSuit(leaderSuitIndex)) {
+			//FOLLOW SUIT.
+			if(currentPlayerHasMasterInSuit(leaderSuitIndex)) {
+				System.out.println("***********");
+				System.out.println("2nd FOLLOW SUIT HIGH");
+				cardToPlay = currentPlayergetHighestInSuit(leaderSuitIndex);
+				//don't play high if leader played higher.
+				if(getMellowCardNumber(cardToPlay) % NUM_NUMBERS < leaderCardNumber % NUM_NUMBERS) {
+					System.out.println("2nd NEVER MIND FOLLOW SUIT LOW");
+					cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
+				}
+				System.out.println("***********");
+			} else {
+				System.out.println("2nd FOLLOW SUIT LOW");
+				cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
+			}
+			
+		} else {
+			//check to see if we could trump:
+			//If we could trump, just trump :)
+		
+			if(currentAgentHasSuit(SPADE)) {
+					System.out.println("***********");
+					System.out.println("2nd trump low.");
+					cardToPlay = currentPlayergetLowestInSuit(SPADE);
+			} else {
+				System.out.println("***********");
+				System.out.println("2nd play low off.");
+					cardToPlay = getLowOffSuitCardToPlay();
+			}
+				
+		}
+		
+	
+		return cardToPlay;
+	}
+	
+	public String AIThirdThrow() {
+		String cardToPlay = null;
+		int leaderSuitIndex = getSuitOfLeaderThrow();
+		int leaderCardNumber = getNonSuitedNumberOfLeaderThrow();
+		
+			//check to see if we could trump:
+			//If we could trump, just trump :)
+			
+		//CAN'T FOLLOW SUIT:
+		if(currentAgentHasSuit(leaderSuitIndex) == false) {
+			if(currentAgentHasSuit(SPADE)) {
+				if( getSuitOfSecondThrow() == SPADE) {
+					cardToPlay = getCardInHandClosestOver(getCardNumSecondThrow());
+					if(cardToPlay == null) {
+						cardToPlay = getLowOffSuitCardToPlay();
+					}
+				} else {
+					if(didLeaderPlayMaster()) {
+						cardToPlay = getLowOffSuitCardToPlay();
+					} else {
+						cardToPlay = currentPlayergetLowestInSuit(SPADE);
+					}
+				}
+			} else {
+				cardToPlay = getLowOffSuitCardToPlay();
+			}
+		//FOLLOW SUIT:
+		} else {
+			if(getSuitOfLeaderThrow() != SPADE && getSuitOfSecondThrow() == SPADE) {
+				cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
+			} else {
+				if(getSuitOfSecondThrow() != getSuitOfLeaderThrow()) {
+					if(cardPower(currentPlayergetHighestInSuit(leaderSuitIndex)) >  cardPower(leaderCardNumber) + 1) {
+						cardToPlay = currentPlayergetHighestInSuit(leaderSuitIndex);
+						
+					} else {
+						cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
+					}
+					
+				} else {
+					String testCard = currentPlayergetHighestInSuit(leaderSuitIndex);
+					if(cardPower(testCard) >  cardPower(leaderCardNumber) + 1 && cardPower(testCard) >  cardPower(getCardNumSecondThrow())) {
+						cardToPlay = currentPlayergetHighestInSuit(leaderSuitIndex);
+						
+					} else {
+						cardToPlay = currentPlayergetLowestInSuit(leaderSuitIndex);
+					}
+				}
+			}
+		}
+				
+	
+		return cardToPlay;
+	}
+	
+	//TODO: complete this if you feel like it.
+	//TODO: KISS
+	public String AIFourthThrow() {
+		String cardToPlay = null;
+		int leaderSuitIndex = getSuitOfLeaderThrow();
+		//TODO: aHH!
+		int leaderCardNumber = getNonSuitedNumberOfLeaderThrow();
+		int secondCardNumber = getNonSuitedNumberOfLeaderThrow();
+		int thirdCardNumber = getNonSuitedNumberOfLeaderThrow();
+		if(leaderSuitIndex == SPADE) {
+			
+		} else {
+			//Follow off-suit:
+			if(currentAgentHasSuit(leaderSuitIndex) == true) {
+				String highestCard = currentPlayergetHighestInSuit(leaderSuitIndex);
+				//if(cardPower(highestCard) > cardPower(highestCard) )
+				
+			//Don't folow suit.
+			} else {
+				
+			}
+		}
+		
+		
+		//NEVER MIND!
+		return cardToPlay;
+	}
+	//END AIS for non-nellow bid games
+	
+	
 	@Override
 	public String getBidToMake() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
-
-	@Override
-	public void resetName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	@Override
 	public void setNameOfPlayers(String players[]) {
@@ -400,7 +499,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	private boolean isCardMaster(int cardNum) {
 		int suitNumber = cardNum/NUM_NUMBERS;
 		
-		for(int i=cardNum + 1; i%13 != 0; i++) {
+		for(int i=(cardNum + 1) %13; i%13 != 0; i++) {
 			for(int j=0; j<NUM_PLAYERS; j++) {
 				if(cardsCurrentlyHeldByPlayer[j][suitNumber][i] != IMPOSSIBLE) {
 					return false;
@@ -414,21 +513,38 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	private int getNonSuitedNumberOfLeaderThrow() {
 		return getCardNumLeader() % NUM_NUMBERS;
 	}
-	
+
+	//pre leader card thrown
 	private int getCardNumLeader() {
 		String leaderCardString = cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4)];
 		return getMellowCardNumber(leaderCardString);
 	}
+
+	//pre 2nd card thrown
+	private int getCardNumSecondThrow() {
+		String leaderCardString = cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 1];
+		return getMellowCardNumber(leaderCardString);
+	}
+	
+	//pre 3rd card thrown
+	private int getCardNumThirdThrow() {
+		String leaderCardString = cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 2];
+		return getMellowCardNumber(leaderCardString);
+	}
+	
+	//pre leader card thrown
 	private int getSuitOfLeaderThrow() {
 		String suitString = cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4)].charAt(1) + "";
 		return getIndexOfSuitString(suitString);
 	}
 	
+	//pre 2nd card thrown
 	private int getSuitOfSecondThrow() {
 		String suitString = cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 1].charAt(1) + "";
 		return getIndexOfSuitString(suitString);
 	}
 
+	//pre 3rd card thrown
 	private int getSuitOfThirdThrow() {
 		String suitString = cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 2].charAt(1) + "";
 		return getIndexOfSuitString(suitString);
@@ -452,7 +568,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	}
 	
 	private String getLowOffSuitCardToPlay() {
-		String  cardToPlay = "";
+		String  cardToPlay = null;
 		
 		FOUNDCARD:
 		for(int i=0; i<NUM_NUMBERS; i++) {
@@ -481,6 +597,22 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 		}
 		return cardToPlay;
+	}
+	
+	//post: returns card in current players hand that's barely over given card.
+	// returns nll if there's no such card.
+	private String getCardInHandClosestOver(int cardNum) {
+		
+		int temp = cardNum + 1;
+		
+		while(temp % 13 != 0) {
+			if(cardsCurrentlyHeldByPlayer[CURRENT_AGENT_INDEX][temp/4][temp%13] == CERTAINTY) {
+				return getCardStringFromMellowCardNumber(temp);
+			}
+			temp++;
+		}
+		
+		return null;
 	}
 	
 	private boolean currentAgentHasSuit(int suitIndex) {
@@ -535,5 +667,18 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return false;
 	}
 	
+	private int cardPower(String cardString) {
+		return getMellowCardNumber(cardString);
+	}
+	private int cardPower(int cardNum) {
+		int ret = cardNum % 13;
+		//if it's a spade, add 13:
+		if(cardNum < 13) {
+			ret+= 13;
+		}
+		
+		return ret;
+		
+	}
 
 }

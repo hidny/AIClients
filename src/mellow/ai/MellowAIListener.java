@@ -57,7 +57,6 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 	
 	public void resetName(String name) {
 		this.currentPlayerName = name;
-		this.gameAIAgent.resetName(name);
 	}
 	
 	public boolean isGameStarted() {
@@ -192,9 +191,16 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					System.out.println("REMINDER: " + finalMsg);
 					
 				} else {
-					for(int i=0; i<NUM_PLAYERS; i++) {
-						if(players[i] != null && serverMessage.contains(players[i]) && isInteger(serverMessage.split(" ")[3])) {
-							System.out.println(players[i]  + " bids " + serverMessage.split(" ")[3]);
+					if(players != null) {
+						for(int i=0; i<NUM_PLAYERS; i++) {
+							/*System.out.println("TESTING");
+							System.out.println("serverMessage: " + serverMessage);
+							System.out.println("split: " + serverMessage.split(" "));
+							System.out.println("TESTING");*/
+							
+							if(players[i] != null && serverMessage.split(" ") != null && serverMessage.split(" ").length >= 3 && serverMessage.contains(players[i]) && isInteger(serverMessage.split(" ")[3])) {
+								System.out.println(players[i]  + " bids " + serverMessage.split(" ")[3]);
+							}
 						}
 					}
 				}
@@ -262,7 +268,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 	 public static boolean isInteger(String s) {
         try { 
             Integer.parseInt(s); 
-        } catch(NumberFormatException e) { 
+        } catch(Exception e) { 
             return false; 
         }
         // only got here if we didn't return false

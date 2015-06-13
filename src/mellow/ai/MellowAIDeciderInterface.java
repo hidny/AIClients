@@ -18,8 +18,6 @@ public interface MellowAIDeciderInterface {
 
 	public String getBidToMake();
 	
-	public void resetName(String name);
-	
 	public void setNameOfPlayers(String players[]);
 	
 }
