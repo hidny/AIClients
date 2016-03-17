@@ -3,6 +3,7 @@ package clientPlayers;
 import mellow.ai.MellowAIListener;
 import connect4ai.Connect4Listener;
 import frustration.aiSTUB.FrustrationListener;
+import reversiai.ReversiListener;
 
 public class AIFactory {
 	
@@ -17,6 +18,9 @@ public class AIFactory {
 			
 		} else if(gameName.toLowerCase().startsWith("frustration")) {
 			return new FrustrationListener(aiLevel, isFast);
+			
+		} else if(gameName.toLowerCase().startsWith("reversi")) {
+			return new ReversiListener(aiLevel, isFast);
 			
 		}
 		

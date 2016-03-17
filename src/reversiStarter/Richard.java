@@ -1,11 +1,11 @@
-package connect4starter;
+package reversiStarter;
 
 import clientPlayers.ClientJoinerStarter;
 
 public class Richard {
 
 	public static void main(String[] args) {
-		String autoArgs[] = {"connect_four", "Richard", "connect4py", "0", "fast"};
+		String autoArgs[] = {"reversi", "Richard", "reversipy", "0", "fast"};
 		try {
 			ClientJoinerStarter.main(autoArgs);
 		} catch (Exception e) {

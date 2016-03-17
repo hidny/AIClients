@@ -77,7 +77,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 
 	
 	//pre: server message is only 1 transmission
-	public String getClientResponse(String gameName, String serverMessage) {
+	public String getClientResponse(String serverMessage) {
 		
 		System.out.println("Mellow ack received: " + serverMessage);
 		

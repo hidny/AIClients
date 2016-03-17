@@ -23,7 +23,7 @@ public class FrustrationListener implements GamePlayerInterface {//change to fin
 	}
 	
 	//pre: server message is only 1 transmission
-	public String getClientResponse(String gameName, String serverMessage) {
+	public String getClientResponse(String serverMessage) {
 		System.out.println("Frustration ack received: " + serverMessage);
 		if(serverMessage.contains("Your choices") || serverMessage.contains("MOVE PROPERLY!")) {
 			return "/move " + gameAIAgent.getMove();

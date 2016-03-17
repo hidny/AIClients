@@ -178,7 +178,7 @@ public class ServerRequestHandler extends Thread {
     
     //pre: server message is only 1 transmission
     public void makeAIPlayGame(String serverMessage)  throws IOException {
-    	String resp = gamePlayer.getClientResponse(gameName, serverMessage);
+    	String resp = gamePlayer.getClientResponse(serverMessage);
     	
     	//TODO: implement rules for slowdown in mellow aI!! (Not here!): (so human users can see what's going on)
     		//1500 millies to lead

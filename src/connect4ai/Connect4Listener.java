@@ -13,17 +13,16 @@ public class Connect4Listener implements clientPlayers.GamePlayerInterface {
 		}
 	}
 	
-	public String getClientResponse(String gameName, String serverMessage) {
-		//TODO: AHHH
-		int playerNumber = -1;
+	public String getClientResponse(String serverMessage) {
+		
 		System.out.println("Testing connect 4: " + serverMessage);
 		
 		boolean playTurn = false;
 		if(serverMessage.contains(this.currentPlayerName + ": which column?")) {
 			playTurn = true;
 		}
-		if(getConnect4PosIfApplicable(serverMessage, gameName) != null) {
-			currentPos = getConnect4PosIfApplicable(serverMessage, gameName);
+		if(getConnect4PosIfApplicable(serverMessage) != null) {
+			currentPos = getConnect4PosIfApplicable(serverMessage);
 		}
 		
 		String msgToSend = null;
@@ -45,17 +44,15 @@ public class Connect4Listener implements clientPlayers.GamePlayerInterface {
 		//Do nothing... the AI could figure out if it's true some other way.
 	}
 	
-	public static BoardPosition getConnect4PosIfApplicable(String resp, String gameName) {
+	public static BoardPosition getConnect4PosIfApplicable(String resp) {
 		BoardPosition pos = null;
 		//System.out.println("**Get connect 4 state!");
 		//System.out.println("**" + resp);
 		
 		
 		if(resp.startsWith("From connect 4: \n|")) {
-			System.out.println("In position!");
 			pos = getPosition(resp);
-			System.out.println("Printing position:");
-			pos.printPos();
+		
 		}
 		
 		

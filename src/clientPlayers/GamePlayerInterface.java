@@ -1,6 +1,6 @@
 package clientPlayers;
 
 public interface GamePlayerInterface {
-	public String getClientResponse(String gameName, String serverMessage);
+	public String getClientResponse(String serverMessage);
 	public void resetName(String name);
 }
