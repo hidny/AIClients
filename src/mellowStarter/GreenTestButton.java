@@ -1,4 +1,4 @@
-package sampleMellowPlayersStarter;
+package mellowStarter;
 
 public class GreenTestButton {
 

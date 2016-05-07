@@ -1,11 +1,11 @@
-package sampleFrustrationPlayers;
+package mellowStarter;
 
 import clientPlayers.ClientJoinerStarter;
 
 public class Doris {
 
 	public static void main(String[] args) {
-		String autoArgs[] = {"frustration", "Doris", "frustrationing", "0", "fast"};
+		String autoArgs[] = {"mellow", "Doris", "mellowpy", "0", "fast"};
 		try {
 			ClientJoinerStarter.main(autoArgs);
 		} catch (Exception e) {

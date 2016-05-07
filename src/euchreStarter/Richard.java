@@ -1,12 +1,10 @@
-package sampleMellowPlayersStarter;
+package euchreStarter;
 
 import clientPlayers.ClientJoinerStarter;
-import clientPlayers.ClientStarter;
 
-public class Phil {
-
+public class Richard {
 	public static void main(String[] args) {
-		String autoArgs[] = {"mellow", "Phil", "mellowpy", "0", "fast"};
+		String autoArgs[] = {"euchre", "Richard", "euchrepy", "0", "fast"};
 		try {
 			ClientJoinerStarter.main(autoArgs);
 		} catch (Exception e) {
@@ -15,5 +13,4 @@ public class Phil {
 		}
 
 	}
-
 }

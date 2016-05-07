@@ -1,4 +1,4 @@
-package sampleFrustrationPlayers;
+package FrustrationStarter;
 
 import clientPlayers.ClientJoinerStarter;
 import clientPlayers.ClientStarter;

@@ -1,4 +1,4 @@
-package sampleFrustrationPlayers;
+package FrustrationStarter;
 
 public class GreenTestButton {
 

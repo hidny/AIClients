@@ -2,6 +2,7 @@ package clientPlayers;
 
 import mellow.ai.MellowAIListener;
 import connect4ai.Connect4Listener;
+import euchre.ai.EuchreAIListener;
 import frustration.aiSTUB.FrustrationListener;
 import reversiai.ReversiListener;
 
@@ -21,6 +22,9 @@ public class AIFactory {
 			
 		} else if(gameName.toLowerCase().startsWith("reversi")) {
 			return new ReversiListener(aiLevel, isFast);
+			
+		} else if(gameName.toLowerCase().startsWith("euchre")) {
+			return new EuchreAIListener(aiLevel, isFast);
 			
 		}
 		

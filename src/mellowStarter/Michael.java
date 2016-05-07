@@ -1,4 +1,4 @@
-package sampleMellowPlayersStarter;
+package mellowStarter;
 
 import clientPlayers.ClientStarter;
 
