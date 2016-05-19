@@ -16,6 +16,7 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 	
 	public static final String YOUR_CALL = "What\'s your call?";
 	public static final String YOUR_TURN = "Play a card!";
+	public static final String YOUR_EXCHANGE = "Pick a card to exchange with the trump card";
 	
 	public static final String CONFIRMED_DECLARATION = "You declared";
 	
@@ -35,7 +36,7 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 
 	public static final String PLAYING_CARD = "playing:";
 	public static final String WIN = "win!";
-	public static final String END_OF_ROUND = "END ROUND!";
+	public static final String END_OF_ROUND = "END OF ROUND!";
 	
 	public static final int NUMBER_OF_EOR_MESSAGES = 3;
 	
@@ -45,6 +46,8 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 	
 	private boolean itsYourBid;
 	private boolean itsYourTurn;
+	private boolean itsYourExchange;
+	
 	private int endOfRoundIndex = NUMBER_OF_EOR_MESSAGES;
 	private int playerInTeamA = -1;
 	
@@ -76,11 +79,14 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 		return itsYourTurn;
 	}
 
+	public boolean isItsYourExchange() {
+		return itsYourExchange;
+	}
 	
 	//pre: server message is only 1 transmission
 	public String getClientResponse(String serverMessage) {
 		
-		System.out.println("Mellow ack received: " + serverMessage);
+		System.out.println("Euchre ack received: " + serverMessage);
 		
 		if( serverMessage.length() > 0) {
 			if(serverMessage.startsWith(PUBLIC_MSG)) {
@@ -92,7 +98,7 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 					players[2] = serverMessage.split(" ")[6];
 					players[3] = serverMessage.split(" ")[10];
 					
-					//TODO: playerInTeamA logic
+					
 					while (players[0].equals(currentPlayerName) == false ) {
 						players = shiftArrayByOne(players);
 						if(playerInTeamA == 0) {
@@ -117,8 +123,7 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 					
 					this.gameStarted = true;
 				
-				//TODO: should I use a lock?
-				} else if(serverMessage.contains(PLAYING_CARD)) {
+				} else if(serverMessage.contains(VARIATION)) {
 					//TODO: for now just assume the variation is ontarian.
 					//do nothing
 					
@@ -219,6 +224,9 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 					itsYourBid = true;
 				} else if(serverMessage.contains(YOUR_TURN)) {
 					itsYourTurn = true;
+				} else if(serverMessage.contains(YOUR_EXCHANGE)) {
+					itsYourExchange = true;
+					
 				} else if(serverMessage.contains(CONFIRMED_DECLARATION)) {
 					//Do Nothing.
 					//This is just handling when the server sends:
@@ -241,11 +249,26 @@ public class EuchreAIListener implements GamePlayerInterface {//change to final
 		if(itsYourBid) {
 			itsYourBid = false;
 			itsYourTurn = false;
+			itsYourExchange = false;
+			
 			return "/move 1";
 			
 		} else if(itsYourTurn) {
 			itsYourBid = false;
 			itsYourTurn = false;
+			itsYourExchange = false;
+			
+			String cardToPlay = gameAIAgent.getCardToPlay();
+			if(cardToPlay == null) {
+				return "/move 1";
+			} else {
+				return "/move " + cardToPlay;
+			}
+		} else if(itsYourExchange) {
+			itsYourBid = false;
+			itsYourTurn = false;
+			itsYourExchange = false;
+			
 			String cardToPlay = gameAIAgent.getCardToPlay();
 			if(cardToPlay == null) {
 				return "/move 1";
