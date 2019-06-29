@@ -40,8 +40,17 @@ public class ServerRequestHandler extends Thread {
     
     public GamePlayerInterface gamePlayer;
     
+    private int team1Score = 0;
+    private int team2Score = 0;
+    private int dealerIndex = -1;
+    
     
     public ServerRequestHandler(Socket socket, String desiredName, String gameName, String roomName, boolean create, int aiLevel, boolean isFast) {
+    	this(socket, desiredName, gameName, roomName, create, aiLevel, isFast, 0, 0, -1);
+    }
+    
+    public ServerRequestHandler(Socket socket, String desiredName, String gameName, String roomName, boolean create, int aiLevel, boolean isFast, int team1Score, int team2Score, int dealerIndex) {
+    		   
         super("ClientListener");
         this.socket = socket;
         this.clientState = 0;
@@ -53,6 +62,10 @@ public class ServerRequestHandler extends Thread {
         
         this.aiLevel = aiLevel;
         this.isFast = isFast;
+        
+        this.team1Score = team1Score;
+        this.team2Score = team2Score;
+        this.dealerIndex = dealerIndex;
         
         this.gamePlayer =AIFactory.getAIPlayer(this.gameName, this.aiLevel, this.isFast);
     }
@@ -143,7 +156,13 @@ public class ServerRequestHandler extends Thread {
 			}
 			
     		if(create) {
-    			GameServerCommands.createGame(outToServer, this.gameName, roomName, "");
+    			if(dealerIndex !=0 ) {
+    				GameServerCommands.createGameWithScoreAndDealer(outToServer, this.gameName, roomName, "", team1Score, team2Score, dealerIndex);
+    			} else if(team1Score != 0 || team2Score !=0 ) {
+    				GameServerCommands.createGameWithScore(outToServer, this.gameName, roomName, "", team1Score, team2Score);
+    			} else {
+    				GameServerCommands.createGame(outToServer, this.gameName, roomName, "");
+    			}
     		} else {
     			GameServerCommands.joinGame(outToServer, roomName, "");
     		}

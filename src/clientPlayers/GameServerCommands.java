@@ -4,9 +4,17 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class GameServerCommands {
-
+	
+	public static void createGameWithScoreAndDealer(DataOutputStream outToServer, String game, String gameName, String pass, int team1Score, int team2Score, int dealerIndex) throws IOException  {
+	    sendMessage(outToServer, "/create " + game + " " + gameName + " " + pass + " " + team1Score + " " + team2Score + " " + dealerIndex);
+	}
+	    
     public static void createGame(DataOutputStream outToServer, String game, String gameName, String pass) throws IOException  {
     	sendMessage(outToServer, "/create " + game + " " + gameName + " " + pass);
+    }
+    
+    public static void createGameWithScore(DataOutputStream outToServer, String game, String gameName, String pass, int team1Score, int team2Score) throws IOException  {
+    	sendMessage(outToServer, "/create " + game + " " + gameName + " " + pass + " " + team1Score + " " + team2Score);
     }
     
     public static void sendInvite(DataOutputStream outToServer, String playerName) throws IOException {

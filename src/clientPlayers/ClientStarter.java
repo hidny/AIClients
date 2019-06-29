@@ -19,6 +19,9 @@ public class ClientStarter  extends Thread {
 	
     //TODO: accept a number as an args so I can have 100 run at once.
     public static void main(String args[]) throws Exception {
+    	
+    	//TODO: handle args the proper way
+    	
     	String gameName = "mellow";
     	String desiredName = "mellowAI2";
     	String roomName = "aigame";
@@ -44,7 +47,21 @@ public class ClientStarter  extends Thread {
     		}
     	}
     	
-    	ClientStarter starter = new ClientStarter(gameName, desiredName, roomName, aiLevel, isFast);
+    	int startRed = 0;
+    	int startBlue = 0;
+    	int dealerIndex = -1;
+    	
+    	if(args.length >= 6) {
+    		startRed = Integer.parseInt(args[5]);
+    		startBlue = Integer.parseInt(args[6]);
+    	}
+    	
+    	if(args.length >=7) {
+    		dealerIndex = Integer.parseInt(args[7]);
+    	}
+    	
+    	
+    	ClientStarter starter = new ClientStarter(gameName, desiredName, roomName, aiLevel, isFast, startRed, startBlue, dealerIndex);
 		
     	starter.start();
     }
@@ -55,12 +72,20 @@ public class ClientStarter  extends Thread {
     private int aiLevel;
     private boolean isFast;
     
-    public ClientStarter(String gameName, String desiredName, String roomName, int aiLevel, boolean isFast) {
+    //Mellow
+    private int startRed = 0;
+    private int startBlue = 0;
+    private int dealerIndex = -1;
+    
+    public ClientStarter(String gameName, String desiredName, String roomName, int aiLevel, boolean isFast, int startRed, int startBlue, int dealerIndex) {
     	this.gameName = gameName.toLowerCase();
     	this.desiredName = desiredName;
     	this.roomName = roomName;
     	this.aiLevel = aiLevel;
     	this.isFast = isFast;
+    	this.startRed = startRed;
+    	this.startBlue = startBlue;
+    	this.dealerIndex = dealerIndex;
     }
     
     public void run() {
@@ -72,7 +97,7 @@ public class ClientStarter  extends Thread {
 			Socket clientSocket = new Socket("localhost", 6789);
 			
 			//For now, the host is player 1 and the joiner is player 2... and there's no way to change it. :(
-			serverListener = new ServerRequestHandler(clientSocket, desiredName, this.gameName, roomName, true, aiLevel, isFast);
+			serverListener = new ServerRequestHandler(clientSocket, desiredName, this.gameName, roomName, true, aiLevel, isFast, this.startRed, this.startBlue, this.dealerIndex);
 			
 			serverListener.run();
 			
