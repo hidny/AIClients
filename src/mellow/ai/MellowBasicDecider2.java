@@ -157,6 +157,12 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	
 	
 	@Override
+	public void receiveUnParsedMessageFromServer(String msg) {
+		// TODO: use if you want...
+		
+	}
+	
+	@Override
 	public void setupCardsForNewRound(String cards[]) {
 		System.out.println("Printing cards");
 		cardsPlayedThisRound = 0;

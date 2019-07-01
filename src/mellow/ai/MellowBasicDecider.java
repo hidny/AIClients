@@ -75,6 +75,15 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	private int cardsPlayedThisRound;
 	private String cardStringsPlayed[] = new String[52];
 	
+	
+
+
+	@Override
+	public void receiveUnParsedMessageFromServer(String msg) {
+		// TODO: use if you want...
+		
+	}
+	
 	public MellowBasicDecider(boolean isFast) {
 		
 	}
@@ -680,5 +689,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return ret;
 		
 	}
+
 
 }

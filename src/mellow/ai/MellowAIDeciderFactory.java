@@ -7,7 +7,7 @@ public class MellowAIDeciderFactory {
 		if(aiLevel <= 1) {
 			return new MellowBasicDecider(isFast);
 		} else if(aiLevel == USER_INPUT_TESTCASES) {
-			return new MellowBasicDecider(isFast);
+			return new MellowQueryUserForTestcase();
 		} else {
 			//Default:
 			return new MellowBasicDecider(isFast);
