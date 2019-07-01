@@ -311,7 +311,7 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	
 	@Override
 	public String getBidToMake() {
-		return null;
+		return "1";
 	}
 	
 	

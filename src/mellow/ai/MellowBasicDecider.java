@@ -480,7 +480,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	@Override
 	public String getBidToMake() {
 		// TODO Auto-generated method stub
-		return null;
+		return "1";
 	}
 
 	

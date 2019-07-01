@@ -12,9 +12,15 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	private ArrayList<String> cardList = null;
 	
 	int INDEX_CURRENT_PLAYER = 0;
+	int NUM_PLAYERS = 4;
+	int NUM_CARDS = 52;
+	
 	private String playerNames[] = new String[4];
 	
+	String scoreAtStartOfRound = "";
+	String savedBidHistory = "";
 	String savedPlayHistory = "";
+	int numCardsPlayedInRound = 0;
 	
 	@Override
 	public void receiveUnParsedMessageFromServer(String msg) {
@@ -28,19 +34,35 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	@Override
 	public void receiveBid(String playerName, int bid) {
-		
+		if(bid > 0) {
+			savedBidHistory += playerName + " bid " + bid  + ".\n";
+		} else if(bid == 0){
+			savedBidHistory += playerName + " bid mellow.\n";
+		} else {
+			System.err.println("ERROR: bid below 0");
+		}
 	}
 
 	public void getPlayedCard(String playerName, String card) {
 		
-		//TODO: Add an indicator when fight is over...
+		if(numCardsPlayedInRound % NUM_PLAYERS == 0) {
+			savedPlayHistory += "--new round--\n";
+		}
+		numCardsPlayedInRound++;
 		
 		//Update the cards the current player has:
 		if(playerName.equals(playerNames[INDEX_CURRENT_PLAYER])) {
 			cardList.remove(card);
+		}
+		
+		savedPlayHistory += playerName + " played the " + card  + ".\n";
+		
+		//Setup for a new round:
+		if(numCardsPlayedInRound >= NUM_CARDS) {
+			numCardsPlayedInRound = 0;
 			savedPlayHistory = "";
-		} else {
-			savedPlayHistory += playerName + " played the " + card  + ".\n";
+			savedBidHistory = "";
+			scoreAtStartOfRound = "";
 		}
 		
 	}
@@ -52,16 +74,25 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		for(int i=0; i<cards.length; i++) {
 			cardList.add(cards[i]+ "");
 		}
+		
+		
 	}
 
 	@Override
 	public void updateScores(int teamAScore, int teanBScore) {
-		
+		scoreAtStartOfRound += "Your Score      Their Score\n";
+		scoreAtStartOfRound += " " + teamAScore + ("    ").substring((4-teamAScore +"").length()) + "                " + teanBScore + "\n";
 	}
 
 	@Override
 	public String getCardToPlay() {
 
+		System.out.println("Score at start:");
+		System.out.println(scoreAtStartOfRound);
+		System.out.println();
+		System.out.println("Bid history:");
+		System.out.println(savedBidHistory);
+		System.out.println();
 		System.out.println("Play history:");
 		System.out.println(savedPlayHistory);
 
@@ -77,17 +108,39 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		//TODO: Give User enough input to decide what to do
 		//and alternatives
-		return in.nextLine();
+		return in.nextLine().toUpperCase();
 	}
 
 	@Override
 	public String getBidToMake() {
+		System.out.println();
+		System.out.println();
+		System.out.println("Score at start:");
+		System.out.println(scoreAtStartOfRound);
+		System.out.println("Bid history:");
+		System.out.println(savedBidHistory);
+		
+		//Sort the cards
+		cardList = sort(cardList);
+		
+		System.out.println("Cards in hand:");
+		for(int i=0; i<cardList.size(); i++) {
+			System.out.print(cardList.get(i) + " ");
+		}
+		System.out.println();
+		
 		//TODO: Give User enough input to decide what to do
 		//and alternatives
 		
 		///TODO: display the cards in a similar way to getCardToPlay()
 		
-		return in.nextLine();
+		String bid = in.nextLine();
+		
+		if(bid.toLowerCase().startsWith("mellow")) { 
+			bid = "0";
+		}
+		
+		return bid;
 	}
 
 	@Override

@@ -172,15 +172,20 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 						} else {
 							System.out.println("Current total:");
 						}
-						
 						if(playerInTeamA == 1) {
 							System.out.println("US(team A): " + tokens[0]);
 							System.out.println("THEM(team B): " + tokens[tokens.length - 1]);
-							//mellowGUIVars.updateScore(int(tokens[0]), int(tokens[len(tokens) - 1]))
 						} else {
 							System.out.println("THEM(team A) :" + tokens[0]);
 							System.out.println("US(team B): " + tokens[tokens.length - 1]);
-							//mellowGUIVars.updateScore(int(tokens[len(tokens) - 1]), int(tokens[0]))
+						}
+						
+						if(endOfRoundIndex != 1 && endOfRoundIndex != 2) {
+							if(playerInTeamA == 1) {
+								gameAIAgent.updateScores(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[tokens.length - 1]));
+							} else {
+								gameAIAgent.updateScores(Integer.parseInt(tokens[tokens.length - 1]), Integer.parseInt(tokens[0]));
+							}
 						}
 					}
 				} else if(serverMessage.contains(WIN)) {
@@ -200,6 +205,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 							
 							if(players[i] != null && serverMessage.split(" ") != null && serverMessage.split(" ").length >= 3 && serverMessage.contains(players[i]) && isInteger(serverMessage.split(" ")[3])) {
 								System.out.println(players[i]  + " bids " + serverMessage.split(" ")[3]);
+								gameAIAgent.receiveBid(players[i], Integer.parseInt(serverMessage.split(" ")[3]));
 							}
 						}
 					}
@@ -232,7 +238,18 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 		if(itsYourBid) {
 			itsYourBid = false;
 			itsYourTurn = false;
-			return "/move 1";
+			
+			String bid = gameAIAgent.getBidToMake();
+			
+			//Make sure bid is an integer:
+			int temp = 1;
+			try {
+				temp = Integer.parseInt(bid);
+			} catch (Exception e) {
+				temp = 1;
+			}
+			
+			return "/move " + temp;
 			
 		} else if(itsYourTurn) {
 			itsYourBid = false;

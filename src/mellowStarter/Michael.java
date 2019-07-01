@@ -8,7 +8,7 @@ import mellow.ai.MellowAIDeciderFactory;
 //In fast speed setting: 1 test game takes 70 seconds. (Pretty fast!)
 public class Michael {
 	public static void main(String[] args) {
-		String autoArgs[] = {"mellow", "Michael", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "13", "37", "0"};
+		String autoArgs[] = {"mellow", "Michael", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "13", "37", "1"};
 		try {
 			ClientStarter.main(autoArgs);
 		} catch (Exception e) {
