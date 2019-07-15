@@ -3,6 +3,8 @@ package mellow.ai;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import clientPlayers.ServerRequestHandler;
+
 public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	
@@ -97,18 +99,26 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		System.out.println(savedPlayHistory);
 
 		//Sort the cards
-		cardList = sort(cardList);
+		cardList = MellowAIListener.sort(cardList);
 		
 		System.out.println("Cards in hand:");
 		for(int i=0; i<cardList.size(); i++) {
 			System.out.print(cardList.get(i) + " ");
 		}
 		System.out.println();
+		
 		//TODO: how do I know who I am?
 		
 		//TODO: Give User enough input to decide what to do
 		//and alternatives
-		return in.nextLine().toUpperCase();
+		System.out.println("Please play a card:");
+		String play = in.nextLine().toUpperCase();
+		
+		System.out.println("Can you list alternative plays that aren't that bad?");
+		String alternativeTODO = in.nextLine();
+		
+		return play;
+		
 	}
 
 	@Override
@@ -121,7 +131,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		System.out.println(savedBidHistory);
 		
 		//Sort the cards
-		cardList = sort(cardList);
+		cardList = MellowAIListener.sort(cardList);
 		
 		System.out.println("Cards in hand:");
 		for(int i=0; i<cardList.size(); i++) {
@@ -133,12 +143,14 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		//and alternatives
 		
 		///TODO: display the cards in a similar way to getCardToPlay()
-		
+		System.out.println("What's your bid:");
 		String bid = in.nextLine();
 		
 		if(bid.toLowerCase().startsWith("mellow")) { 
 			bid = "0";
 		}
+		System.out.println("Can you list alternative bids that aren't that bad?");
+		String alternativeTODO = in.nextLine();
 		
 		return bid;
 	}
@@ -152,61 +164,6 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	}
 	
 	
-	
-	//UTIL
-	//Lazy O(n^2) sort: (a hand is only 13 cards... so the sorting of it could be inefficient for this purpose)
-	public ArrayList<String> sort(ArrayList<String> cardList) {
-		String tmp;
-		
-		for(int i=0; i<cardList.size(); i++) {
-			for(int j=i+1; j<cardList.size(); j++) {
-				if(getMellowCardNumber(cardList.get(i)) > getMellowCardNumber(cardList.get(j))  ) {
-					tmp = cardList.get(i) + "";
-					cardList.set(i, cardList.get(j) + "");
-					cardList.set(j, tmp + "");
-				}
-			}
-		}
-		
-		return cardList;
-	}
-	
-	
-	private static int getMellowCardNumber(String cardString) {
-		int x = -1;
-		int y = -1;
-		if(cardString.charAt(0) >= '2' && cardString.charAt(0) <= '9') {
-			x = (int)cardString.charAt(0) - (int)('2');
-		} else if(cardString.charAt(0) == 'T') {
-			x = 8;
-		} else if(cardString.charAt(0) == 'J') {
-			x = 9;
-		} else if(cardString.charAt(0) == 'Q') {
-			x = 10;
-		} else if(cardString.charAt(0) == 'K') {
-			x = 11;
-		} else if(cardString.charAt(0) == 'A') {
-			x = 12;
-		} else {
-			System.out.println("Number unknown! Uh oh!");
-			System.exit(1);
-		}
-		
-		if(cardString.charAt(1)=='S') {
-			y = 0;
-		} else if(cardString.charAt(1)=='H') {
-			y = 1;
-		} else if(cardString.charAt(1)=='C') {
-			y = 2;
-		} else if(cardString.charAt(1)=='D') {
-			y = 3;
-		} else {
-			System.out.println("Suit unknown! Uh oh!");
-			System.exit(1);
-		}
-		
-		return y*13 - x;
-	}
 	
 
 }

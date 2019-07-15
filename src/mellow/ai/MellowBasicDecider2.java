@@ -306,11 +306,12 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	public String AIFourthThrow() {
 		return null;
 	}
-	//END AIS for non-nellow bid games
+	//END AIS for non-mellow bid games
 	
 	
 	@Override
 	public String getBidToMake() {
+		//TODO: convert python function from github to here.
 		return "1";
 	}
 	

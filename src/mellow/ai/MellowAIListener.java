@@ -5,6 +5,7 @@ import clientPlayers.GamePlayerInterface;
 //import connectfour.Position;
 import deck.DeckFunctions;
 
+import java.util.ArrayList;
 import java.util.concurrent.locks.*;
 
 
@@ -13,6 +14,8 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 
 	public static final String HELLO_MSG = "Hello";
 	public static final String START_MSG = "Starting Mellow!";
+	public static final String START_POINTS_1 = " start with ";
+	public static final String START_POINTS_2 = " points";
 	
 	public static final String YOUR_BID = "What\'s your bid?";
 	public static final String YOUR_TURN = "Play a card!";
@@ -35,7 +38,10 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 	public static final String END_OF_ROUND = "END ROUND!";
 	
 	public static final int NUMBER_OF_EOR_MESSAGES = 3;
+
+	private int endOfRoundIndex = NUMBER_OF_EOR_MESSAGES;
 	
+	//State variables:
 	private boolean gameStarted;
 	private String players[];
 	
@@ -44,12 +50,15 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 	
 	private boolean itsYourBid;
 	private boolean itsYourTurn;
-	private int endOfRoundIndex = NUMBER_OF_EOR_MESSAGES;
-	private int playerInTeamA = -1;
 	
 	private MellowAIDeciderInterface gameAIAgent = null;
 	
 	private String currentPlayerName = null;
+
+	private boolean currentPlayerInFirstTeam = true;
+	private int tempPlayerAStartScore= 0;
+
+	//End state variables
 	
 	public MellowAIListener(long aiLevel, boolean isFast) {
 		gameAIAgent = MellowAIDeciderFactory.getAI(aiLevel, isFast);
@@ -94,11 +103,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					//TODO: playerInTeamA logic
 					while (players[0].equals(currentPlayerName) == false ) {
 						players = shiftArrayByOne(players);
-						if(playerInTeamA == 0) {
-							playerInTeamA = 1;
-						} else {
-							playerInTeamA = 0;
-						}
+						currentPlayerInFirstTeam = !currentPlayerInFirstTeam;
 					}
 					
 					System.out.println("Players:");
@@ -106,10 +111,10 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 						System.out.println(players[i]);
 					}
 					
-					if(playerInTeamA == 1) {
-						System.out.println("In team A");
+					if(currentPlayerInFirstTeam) {
+						System.out.println("In first team");
 					} else {
-						System.out.println("In team B");
+						System.out.println("In second team");
 					}
 					
 					gameAIAgent.setNameOfPlayers(players);
@@ -117,7 +122,37 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					this.gameStarted = true;
 				
 				//TODO: should I use a lock?
-				
+				} else if(serverMessage.contains(START_POINTS_1) && serverMessage.contains(START_POINTS_2)) {
+					
+					//Update one teams score:
+					String player1 = serverMessage.split(" ")[2];
+					String player2 = serverMessage.split(" ")[4];
+					System.out.println("player 1:" + player1);
+					System.out.println("player 2:" + player2);
+					System.out.println("current player" + currentPlayerName);
+					System.out.println(currentPlayerInFirstTeam);
+					
+					boolean currentPlayerInList = (currentPlayerName.equals(player1) || currentPlayerName.equals(player2));
+					
+					if(currentPlayerInList) {
+						System.out.println("In list");
+					} else {
+						System.out.println("no in list");
+					}
+					int score = Integer.parseInt(serverMessage.split(" ")[7]);
+					
+					if((currentPlayerInFirstTeam && currentPlayerInList) || (currentPlayerInFirstTeam == false && currentPlayerInList == false)) {
+						tempPlayerAStartScore = score;
+					} else {
+						
+						//Updates scores in such a way that the AI always thinks it's player 0 and part of team A:
+						if(currentPlayerInFirstTeam) {
+							gameAIAgent.updateScores(tempPlayerAStartScore, score);
+						} else {
+							gameAIAgent.updateScores(score, tempPlayerAStartScore);
+						}
+					}
+					
 				} else if(serverMessage.contains(PLAYING_CARD)) {
 					//From Game(public): Michael playing: 9S
 					String player = serverMessage.split(" ")[2];
@@ -172,7 +207,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 						} else {
 							System.out.println("Current total:");
 						}
-						if(playerInTeamA == 1) {
+						if(currentPlayerInFirstTeam) {
 							System.out.println("US(team A): " + tokens[0]);
 							System.out.println("THEM(team B): " + tokens[tokens.length - 1]);
 						} else {
@@ -181,7 +216,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 						}
 						
 						if(endOfRoundIndex != 1 && endOfRoundIndex != 2) {
-							if(playerInTeamA == 1) {
+							if(currentPlayerInFirstTeam) {
 								gameAIAgent.updateScores(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[tokens.length - 1]));
 							} else {
 								gameAIAgent.updateScores(Integer.parseInt(tokens[tokens.length - 1]), Integer.parseInt(tokens[0]));
@@ -214,23 +249,23 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 			} else if(serverMessage.startsWith(PRIVATE_MSG)) {
 				serverMessage = serverMessage.substring(serverMessage.indexOf(PRIVATE_MSG) + PRIVATE_MSG.length());
 				serverMessage = serverMessage.trim();
-				String cardsTemp[] = serverMessage.split(" ");
+				String cardsInHandTemp[] = serverMessage.split(" ");
+				
 				
 				if(serverMessage.contains(YOUR_BID)) {
 					//serverMessage = serverMessage.substring(serverMessage.indexOf(YOUR_BID) + YOUR_BID.length());
 					itsYourBid = true;
 				} else if(serverMessage.contains(YOUR_TURN)) {
 					itsYourTurn = true;
-				} else if(cardsTemp.length > 0 && isACard(cardsTemp[0])) {
-					if(cardsTemp.length == NUM_CARDS/NUM_PLAYERS) {
-						gameAIAgent.setupCardsForNewRound(cardsTemp);
+				} else if(cardsInHandTemp.length > 0 && isACard(cardsInHandTemp[0])) {
+					
+					System.out.println("Sorted cards:");
+					
+					printSortedCards(cardsInHandTemp);
+					
+					if(cardsInHandTemp.length == NUM_CARDS/NUM_PLAYERS) {
+						gameAIAgent.setupCardsForNewRound(cardsInHandTemp);
 					}
-				} else {
-					System.out.println("WTF!!!");
-					for(int i=0; i<cardsTemp.length; i++) {
-						System.out.println(cardsTemp[i]);
-					}
-					System.exit(1);
 				}
 			}
 		}
@@ -318,4 +353,81 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 	 }
 
 	
+
+	    
+	    //TODO: UTIL:
+
+		public static void printSortedCards(String[] cards) {
+			
+			ArrayList<String> tempCardList = new ArrayList<String>();
+			
+			for(int i=0; i<cards.length; i++) {
+				tempCardList.add(cards[i]+ "");
+			}
+			String printLine = "";
+			
+			tempCardList = sort(tempCardList);
+			
+			for(int i=0; i<tempCardList.size(); i++) {
+				printLine += tempCardList.get(i) + " ";
+			}
+			System.out.println(printLine);
+			
+		}
+		//UTIL
+		//Lazy O(n^2) sort: (a hand is only 13 cards... so the sorting of it could be inefficient for this purpose)
+		public static ArrayList<String> sort(ArrayList<String> cardList) {
+			String tmp;
+			
+			for(int i=0; i<cardList.size(); i++) {
+				for(int j=i+1; j<cardList.size(); j++) {
+					if(getMellowCardNumber(cardList.get(i)) > getMellowCardNumber(cardList.get(j))  ) {
+						tmp = cardList.get(i) + "";
+						cardList.set(i, cardList.get(j) + "");
+						cardList.set(j, tmp + "");
+					}
+				}
+			}
+			
+			return cardList;
+		}
+		
+
+		
+		private static int getMellowCardNumber(String cardString) {
+			int x = -1;
+			int y = -1;
+			if(cardString.charAt(0) >= '2' && cardString.charAt(0) <= '9') {
+				x = (int)cardString.charAt(0) - (int)('2');
+			} else if(cardString.charAt(0) == 'T') {
+				x = 8;
+			} else if(cardString.charAt(0) == 'J') {
+				x = 9;
+			} else if(cardString.charAt(0) == 'Q') {
+				x = 10;
+			} else if(cardString.charAt(0) == 'K') {
+				x = 11;
+			} else if(cardString.charAt(0) == 'A') {
+				x = 12;
+			} else {
+				System.out.println("Number unknown! Uh oh!");
+				System.exit(1);
+			}
+			
+			if(cardString.charAt(1)=='S') {
+				y = 0;
+			} else if(cardString.charAt(1)=='H') {
+				y = 1;
+			} else if(cardString.charAt(1)=='C') {
+				y = 2;
+			} else if(cardString.charAt(1)=='D') {
+				y = 3;
+			} else {
+				System.out.println("Suit unknown! Uh oh!");
+				System.exit(1);
+			}
+			
+			return y*13 - x;
+		}
+		
 }

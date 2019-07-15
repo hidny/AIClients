@@ -23,7 +23,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	int tempAScore;
 	int tempBScore;
 	
-	ArrayList<Integer> currentCards;
 	
 	
 	//TODO: know where the dealer is for bidding.
@@ -91,20 +90,21 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	@Override
 	public void setupCardsForNewRound(String cards[]) {
-		System.out.println("Printing cards");
+		//System.out.println("Printing cards");
 		cardsPlayedThisRound = 0;
 		
 		 setupInfoForNewRound();
 		 
 		 for(int i=0; i<cards.length; i++) {
-				System.out.println(cards[i]);
+				//System.out.println(cards[i]);
 				cardsCurrentlyHeldByPlayer[0][getMellowCardNumber(cards[i])/13][getMellowCardNumber(cards[i])%13]  = CERTAINTY;
 				cardsCurrentlyHeldByPlayer[1][getMellowCardNumber(cards[i])/13][getMellowCardNumber(cards[i])%13]  = IMPOSSIBLE;
 				cardsCurrentlyHeldByPlayer[2][getMellowCardNumber(cards[i])/13][getMellowCardNumber(cards[i])%13]  = IMPOSSIBLE;
 				cardsCurrentlyHeldByPlayer[3][getMellowCardNumber(cards[i])/13][getMellowCardNumber(cards[i])%13]  = IMPOSSIBLE;
 				
 			}
-		 
+		
+		 /*
 		System.out.println("Table:");
 		 for(int i=0; i<cardsUsed.length; i++) {
 				for(int j=0; j<cardsUsed[0].length; j++) {
@@ -116,7 +116,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				}
 				System.out.println();
 			}
-		 
+		 */
 		 updateNumberOfMaster();
 		 
 		 System.out.println("Number of Master cards: " + numberOfMaster);
@@ -125,7 +125,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			 cardStringsPlayed[i] = "";
 		 }
 		
-		System.out.println("Done printing cards");
+		//System.out.println("Done printing cards");
 	}
 	
 	private int getNextMaster() {
@@ -277,7 +277,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	@Override
 	public void getPlayedCard(String playerName, String card) {
-		// TODO Auto-generated method stub
 		int indexPlayer = convertPlayerNameToIndex(playerName);
 		int cardNum = getMellowCardNumber(card);
 		cardsUsed[cardNum/NUM_NUMBERS][cardNum%NUM_NUMBERS] = true;
@@ -476,11 +475,197 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	}
 	//END AIS for non-nellow bid games
 	
+	private int CURRENT_PLAYER = 0;
+	private int ACE = 12;
+	private int KING = 11;
+	
+	private int getNumberOfAces() {
+		int ret = 0;
+		for(int i=0; i<NUM_SUITS; i++) {
+			if(cardsCurrentlyHeldByPlayer[CURRENT_PLAYER][i][ACE]  == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
+	private int getNumberOfKings() {
+		int ret = 0;
+		for(int i=0; i<NUM_SUITS; i++) {
+			if(cardsCurrentlyHeldByPlayer[CURRENT_PLAYER][i][KING]  == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
+	private int getNumberOfCardsOneSuit(int suit) {
+		int ret = 0;
+		for(int i=0; i<13; i++) {
+			if(cardsCurrentlyHeldByPlayer[CURRENT_PLAYER][suit][i]  == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
+	
+	private boolean hasCard(String card) {
+		int num = getMellowCardNumber(card);
+		
+		return cardsCurrentlyHeldByPlayer[CURRENT_PLAYER][num/13][num%13]  == CERTAINTY;
+			
+	}
+	
+	
+	//TODO: will need to test/improve.
 	
 	@Override
 	public String getBidToMake() {
-		// TODO Auto-generated method stub
-		return "1";
+		//Converted python function from github to java here:
+		
+		double bid = 0.0;
+		
+		//#Add number of aces:
+		//bid = bid + getNumberOfAces(hand)
+		bid += getNumberOfAces();
+		
+		System.out.println("Number of aces: " + getNumberOfAces());
+		
+		//if trumping means losing a king or queen of spades, then it doesn't mean much
+		boolean trumpingIsSacrifice = false;
+		
+		
+		//Add king of spades if 1 or 2 other spade
+		if (hasCard("KS") && getNumberOfCardsOneSuit(0) >= 2) {
+		
+			bid += 1.0;
+			if (getNumberOfCardsOneSuit(0) == 2) {
+				bid = bid - 0.2;
+				trumpingIsSacrifice = true;
+			}
+			System.out.println("I have the KS");
+		}
+			
+		//Add queen of spacdes if 2 other spaces
+		if (hasCard("QS") && getNumberOfCardsOneSuit(0) >= 3) {
+			bid += 1.0;
+			trumpingIsSacrifice = true;
+			System.out.println("I have the QS");
+		}
+			
+			
+		if (hasCard("JS") && getNumberOfCardsOneSuit(0) >= 4 && (hasCard("QS") || hasCard("KS") || hasCard("AS"))) {
+			bid += bid + 0.15;
+			System.out.println("I have the JS and a higher one... bonus I guess!");
+		}
+		
+		if(getNumberOfCardsOneSuit(0) >= 4 ) {
+			trumpingIsSacrifice = true;
+		}
+			
+		
+		double trumpResevoir = 0.0;
+		
+		//Add a bid for every extra spade over 3 you have:
+		if (getNumberOfCardsOneSuit(0) >= 3) {
+			bid += getNumberOfCardsOneSuit(0) - 3.5;
+			
+			if (hasCard("JS")) {
+				bid +=  0.5;
+			} else if (hasCard("TS")) {
+				bid += 0.3;
+				trumpResevoir = 0.201;
+			} else if(getNumberOfCardsOneSuit(1) < 2 ||  getNumberOfCardsOneSuit(2) < 2 ||  getNumberOfCardsOneSuit(3) < 2) {
+				bid += 0.2;
+				trumpResevoir = 0.301;
+			} else {
+				trumpResevoir = 0.501;
+			}
+		}
+			//TODO: 5+ spades should give a special bonus depending on the offsuits.
+		    // The "take everything" bonus :P
+		
+		
+		int numOffSuitKings = 0;
+		if(hasCard("KS")) {
+			numOffSuitKings = getNumberOfKings() - 1;
+		} else {
+			numOffSuitKings = getNumberOfKings();
+		}
+		
+		bid += 0.75 * numOffSuitKings;
+
+		//offsuit king adjust if too many or too little of a single suit:
+		//TODO: COPY/PASTE CODE loop through suits:
+		if(hasCard("KH") && getNumberOfCardsOneSuit(1) == 1) {
+			bid = bid - 0.55;
+		} else if(hasCard("KH") && getNumberOfCardsOneSuit(1) > 5) {
+			bid = bid - 0.35;
+		} else if(hasCard("KH") && (hasCard("QH") || hasCard("AH"))) {
+			bid = bid + 0.26;
+		}
+		
+		if(hasCard("KC") && getNumberOfCardsOneSuit(2) == 1) {
+			bid = bid - 0.55;
+		} else if(hasCard("KC") && getNumberOfCardsOneSuit(2) > 5) {
+			bid = bid - 0.35;
+		} else if(hasCard("KC") && (hasCard("QC") || hasCard("AC"))) {
+			bid = bid + 0.26;
+		}
+		
+		if(hasCard("KD") && getNumberOfCardsOneSuit(3) == 1) {
+			bid = bid - 0.55;
+		} else if(hasCard("KD") && getNumberOfCardsOneSuit(3) > 5) {
+			bid = bid - 0.35;
+		} else if(hasCard("KD") && (hasCard("QD") || hasCard("AD"))) {
+			bid = bid + 0.26;
+		}
+		
+		//END offsuit king adjustment logic
+		//END TODO COPY/PASTE CODE
+			
+		if(getNumberOfCardsOneSuit(1) < 3 || getNumberOfCardsOneSuit(2) < 3|| getNumberOfCardsOneSuit(3) < 3) {
+			if(getNumberOfCardsOneSuit(0) >= 2 && getNumberOfCardsOneSuit(0) < 4 && trumpingIsSacrifice == false ) {
+
+				bid += 0.3;
+				
+				if( (getNumberOfCardsOneSuit(1) < 3 && getNumberOfCardsOneSuit(2) < 3) ||
+						(getNumberOfCardsOneSuit(1) < 3 && getNumberOfCardsOneSuit(3) < 3) ||
+						(getNumberOfCardsOneSuit(2) < 3 && getNumberOfCardsOneSuit(3) < 3) ) {
+					bid += 0.75; 
+				} else if(getNumberOfCardsOneSuit(1) < 2 || getNumberOfCardsOneSuit(2) < 2 || getNumberOfCardsOneSuit(3) < 2) {
+					bid += 0.75;
+				}
+
+			} else if(getNumberOfCardsOneSuit(0) >= 4 && trumpResevoir > 0) {
+				if( (getNumberOfCardsOneSuit(1) < 3 && getNumberOfCardsOneSuit(2) < 3) ||
+						(getNumberOfCardsOneSuit(1) < 3 && getNumberOfCardsOneSuit(3) < 3) ||
+						(getNumberOfCardsOneSuit(2) < 3 && getNumberOfCardsOneSuit(3) < 3) ) {
+					bid += trumpResevoir; 
+				} else if(getNumberOfCardsOneSuit(1) < 2 || getNumberOfCardsOneSuit(2) < 2 || getNumberOfCardsOneSuit(3) < 2) {
+					bid += trumpResevoir;
+				}
+			}
+		}
+		
+		//TODO: didn't handle mellow
+		//Didn't handle akqjt (a sweep)
+		
+		if(getNumberOfCardsOneSuit(0) == 0) {
+			bid = bid  - 1;
+		}
+		
+		int intBid = (int) Math.floor(bid);
+		
+		if (bid < 0) {
+			bid = 0;
+		}
+	
+		System.out.println("Final bid " + intBid);
+
+		
+		return intBid + "";
 	}
 
 	
