@@ -99,7 +99,7 @@ public class ClientStarter  extends Thread {
 			//For now, the host is player 1 and the joiner is player 2... and there's no way to change it. :(
 			serverListener = new ServerRequestHandler(clientSocket, desiredName, this.gameName, roomName, true, aiLevel, isFast, this.startRed, this.startBlue, this.dealerIndex);
 			
-			serverListener.run();
+			serverListener.listenAndRespond();
 			
 			
 			clientSocket.close();

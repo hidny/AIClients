@@ -658,8 +658,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		int intBid = (int) Math.floor(bid);
 		
-		if (bid < 0) {
-			bid = 0;
+		if (intBid < 0) {
+			intBid = 0;
 		}
 	
 		System.out.println("Final bid " + intBid);

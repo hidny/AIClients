@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 
-public class ServerRequestHandler extends Thread {
+public class ServerRequestHandler {
 
 	public static final String EOT = "**end of transmission**\n";
 	public static final String EOC = "Goodbye.";
@@ -52,7 +52,6 @@ public class ServerRequestHandler extends Thread {
     
     public ServerRequestHandler(Socket socket, String desiredName, String gameName, String roomName, boolean create, int aiLevel, boolean isFast, int team1Score, int team2Score, int dealerIndex) {
     		   
-        super("ClientListener");
         this.socket = socket;
         this.clientState = 0;
         this.desiredName = desiredName;
@@ -80,7 +79,7 @@ public class ServerRequestHandler extends Thread {
     }
     
 
-    public void run() {
+    public void listenAndRespond() {
     	String currentMsgFromServer;
     	String currentServerLine;
     	

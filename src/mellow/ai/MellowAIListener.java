@@ -45,9 +45,6 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 	private boolean gameStarted;
 	private String players[];
 	
-	//TODO: use locks to defend against spamming.
-	private Lock turnLock;
-	
 	private boolean itsYourBid;
 	private boolean itsYourTurn;
 	
@@ -86,7 +83,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 
 	
 	//pre: server message is only 1 transmission
-	public String getClientResponse(String serverMessage) {
+	public synchronized String getClientResponse(String serverMessage) {
 		
 		System.out.println("Mellow ack received: " + serverMessage);
 		
@@ -175,6 +172,8 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					String dealer = serverMessage.split(" ")[serverMessage.split(" ").length - 1];
 					
 					dealer = removeLastNewLines(dealer);
+
+					gameAIAgent.setDealer(dealer);
 
 					String direction = getRelativePosPlayer(dealer);
 					System.out.println(direction + "(" + dealer + ") is dealer.");
@@ -276,6 +275,9 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 			
 			String bid = gameAIAgent.getBidToMake();
 			
+			if(bid == null || bid.trim().equals("") || bid.contains("-")) {
+				bid = "1";
+			}
 			//Make sure bid is an integer:
 			int temp = 1;
 			try {
@@ -290,7 +292,9 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 			itsYourBid = false;
 			itsYourTurn = false;
 			String cardToPlay = gameAIAgent.getCardToPlay();
-			if(cardToPlay == null) {
+			
+			
+			if(cardToPlay == null || cardToPlay.trim().equals("")) {
 				return "/move 1";
 			} else {
 				return "/move " + cardToPlay;

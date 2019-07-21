@@ -70,7 +70,7 @@ public class ClientJoinerStarter  extends Thread {
 			
 			serverListener = new ServerRequestHandler(clientSocket, desiredName, this.gameName, roomName, false, aiLevel, isFast);
 			
-			serverListener.run();
+			serverListener.listenAndRespond();
 			
 			
 			clientSocket.close();

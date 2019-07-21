@@ -10,7 +10,6 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	private Scanner in = new Scanner(System.in);
 	
-	//TODO: use
 	private ArrayList<String> cardList = null;
 	
 	int INDEX_CURRENT_PLAYER = 0;
@@ -24,14 +23,21 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	String savedPlayHistory = "";
 	int numCardsPlayedInRound = 0;
 	
+	int dealerIndex = -1;
+	
 	@Override
 	public void receiveUnParsedMessageFromServer(String msg) {
 		
 	}
 
+	
 	@Override
 	public void setDealer(String playerName) {
-		
+		for(int i=0; i<NUM_PLAYERS; i++) {
+			if(playerName.equals(playerNames[i])) {
+				dealerIndex = i;
+			}
+		}
 	}
 
 	@Override
@@ -83,11 +89,27 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	@Override
 	public void updateScores(int teamAScore, int teanBScore) {
 		scoreAtStartOfRound += "Your Score      Their Score\n";
-		scoreAtStartOfRound += " " + teamAScore + ("    ").substring((4-teamAScore +"").length()) + "                " + teanBScore + "\n";
+		scoreAtStartOfRound += " " + teamAScore + ("       ").substring( (teamAScore +"").length() ) + "         " + teanBScore + "\n";
 	}
 
 	@Override
 	public String getCardToPlay() {
+		
+		//TODO: create string then print all at once and put this stuff in a function ( getGamePlayerStateString() ??)
+		System.out.println();
+		System.out.println();
+		System.out.println("Your name: " + playerNames[0]);
+		if(dealerIndex ==0 ) { 
+			System.out.println("You are the dealer");
+		} else if(dealerIndex == 1) {
+			System.out.println("Dealer is on your left");
+		} else if(dealerIndex == 2) {
+			System.out.println("Dealer is your partner opposite you.");
+		} else if(dealerIndex == 3) {
+			System.out.println("Dealer is on your right");
+		} else {
+			System.out.println("ERROR: unknown dealer");
+		}
 
 		System.out.println("Score at start:");
 		System.out.println(scoreAtStartOfRound);
@@ -107,10 +129,6 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		}
 		System.out.println();
 		
-		//TODO: how do I know who I am?
-		
-		//TODO: Give User enough input to decide what to do
-		//and alternatives
 		System.out.println("Please play a card:");
 		String play = in.nextLine().toUpperCase();
 		
@@ -125,6 +143,20 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	public String getBidToMake() {
 		System.out.println();
 		System.out.println();
+		System.out.println("Your name: " + playerNames[0]);
+		
+		if(dealerIndex ==0 ) { 
+			System.out.println("You are the dealer");
+		} else if(dealerIndex == 1) {
+			System.out.println("Dealer is on your left");
+		} else if(dealerIndex == 2) {
+			System.out.println("Dealer is your partner opposite you.");
+		} else if(dealerIndex == 3) {
+			System.out.println("Dealer is on your right");
+		} else {
+			System.out.println("ERROR: unknown dealer");
+		}
+		
 		System.out.println("Score at start:");
 		System.out.println(scoreAtStartOfRound);
 		System.out.println("Bid history:");
@@ -139,10 +171,6 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		}
 		System.out.println();
 		
-		//TODO: Give User enough input to decide what to do
-		//and alternatives
-		
-		///TODO: display the cards in a similar way to getCardToPlay()
 		System.out.println("What's your bid:");
 		String bid = in.nextLine();
 		
@@ -150,6 +178,8 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			bid = "0";
 		}
 		System.out.println("Can you list alternative bids that aren't that bad?");
+		
+		//TODO
 		String alternativeTODO = in.nextLine();
 		
 		return bid;
