@@ -95,39 +95,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	@Override
 	public String getCardToPlay() {
 		
-		//TODO: create string then print all at once and put this stuff in a function ( getGamePlayerStateString() ??)
-		System.out.println();
-		System.out.println();
-		System.out.println("Your name: " + playerNames[0]);
-		if(dealerIndex ==0 ) { 
-			System.out.println("You are the dealer");
-		} else if(dealerIndex == 1) {
-			System.out.println("Dealer is on your left");
-		} else if(dealerIndex == 2) {
-			System.out.println("Dealer is your partner opposite you.");
-		} else if(dealerIndex == 3) {
-			System.out.println("Dealer is on your right");
-		} else {
-			System.out.println("ERROR: unknown dealer");
-		}
-
-		System.out.println("Score at start:");
-		System.out.println(scoreAtStartOfRound);
-		System.out.println();
-		System.out.println("Bid history:");
-		System.out.println(savedBidHistory);
-		System.out.println();
-		System.out.println("Play history:");
-		System.out.println(savedPlayHistory);
-
-		//Sort the cards
-		cardList = MellowAIListener.sort(cardList);
-		
-		System.out.println("Cards in hand:");
-		for(int i=0; i<cardList.size(); i++) {
-			System.out.print(cardList.get(i) + " ");
-		}
-		System.out.println();
+		System.out.println(getGamePlayerStateString());
 		
 		System.out.println("Please play a card:");
 		String play = in.nextLine().toUpperCase();
@@ -141,35 +109,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	@Override
 	public String getBidToMake() {
-		System.out.println();
-		System.out.println();
-		System.out.println("Your name: " + playerNames[0]);
-		
-		if(dealerIndex ==0 ) { 
-			System.out.println("You are the dealer");
-		} else if(dealerIndex == 1) {
-			System.out.println("Dealer is on your left");
-		} else if(dealerIndex == 2) {
-			System.out.println("Dealer is your partner opposite you.");
-		} else if(dealerIndex == 3) {
-			System.out.println("Dealer is on your right");
-		} else {
-			System.out.println("ERROR: unknown dealer");
-		}
-		
-		System.out.println("Score at start:");
-		System.out.println(scoreAtStartOfRound);
-		System.out.println("Bid history:");
-		System.out.println(savedBidHistory);
-		
-		//Sort the cards
-		cardList = MellowAIListener.sort(cardList);
-		
-		System.out.println("Cards in hand:");
-		for(int i=0; i<cardList.size(); i++) {
-			System.out.print(cardList.get(i) + " ");
-		}
-		System.out.println();
+		System.out.println(getGamePlayerStateString());
 		
 		System.out.println("What's your bid:");
 		String bid = in.nextLine();
@@ -195,5 +135,49 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	
 	
+	private String getGamePlayerStateString() {
+		String ret = "\n\n\n";
+		
+		ret += "Your name: " + playerNames[0] + "\n";
+		ret += "\n\n";
+		ret += "Your name: " + playerNames[0] + "\n";
+		
+		if(dealerIndex ==0 ) { 
+			ret += "You are the dealer" + "\n";
+		} else if(dealerIndex == 1) {
+			ret += "Dealer is on your left" + "\n";
+		} else if(dealerIndex == 2) {
+			ret += "Dealer is your partner opposite you." + "\n";
+		} else if(dealerIndex == 3) {
+			ret += "Dealer is on your right" + "\n";
+		} else {
+			ret += "ERROR: unknown dealer" + "\n";
+			System.exit(1);
+		}
+
+		ret += "Score at start:" + "\n";
+		ret += scoreAtStartOfRound + "\n";
+		
+		ret += "\n";
+		ret += "Bid history:" + "\n";
+		ret += savedBidHistory + "\n";
+		ret += "\n";
+		
+		if(savedPlayHistory.trim().equals("") == false) {
+			ret += "Play history:"  + "\n";
+			ret += savedPlayHistory + "\n";
+		}
+
+		//Sort the cards
+		cardList = MellowAIListener.sort(cardList);
+		
+		ret += "Cards in hand:" + "\n";
+		for(int i=0; i<cardList.size(); i++) {
+			ret += cardList.get(i) + " ";
+		}
+		ret += "\n";
+		
+		return ret;
+	}
 
 }
