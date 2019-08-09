@@ -1,5 +1,7 @@
 package mellow.ai;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -92,16 +94,30 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		scoreAtStartOfRound += " " + teamAScore + ("       ").substring( (teamAScore +"").length() ) + "         " + teanBScore + "\n";
 	}
 
+	
 	@Override
 	public String getCardToPlay() {
 		
+
+		System.out.println("\n\n");
 		System.out.println(getGamePlayerStateString());
 		
+		//If it's the last case to play, you don't have any choices to make:
+		if(NUM_CARDS - numCardsPlayedInRound <= NUM_PLAYERS) {
+			return cardList.get(0).toUpperCase() + " ";
+		}
+		
+		//Continue as if there's a significant choice to make:
 		System.out.println("Please play a card:");
 		String play = in.nextLine().toUpperCase();
 		
+		
+		
 		System.out.println("Can you list alternative plays that aren't that bad?");
 		String alternativeTODO = in.nextLine();
+		
+		//Make test case:
+		printTestCase(play, alternativeTODO);
 		
 		return play;
 		
@@ -109,7 +125,10 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	@Override
 	public String getBidToMake() {
+		
+		System.out.println("\n\n");
 		System.out.println(getGamePlayerStateString());
+		
 		
 		System.out.println("What's your bid:");
 		String bid = in.nextLine();
@@ -117,10 +136,14 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		if(bid.toLowerCase().startsWith("mellow")) { 
 			bid = "0";
 		}
+		
+		
 		System.out.println("Can you list alternative bids that aren't that bad?");
 		
 		//TODO
 		String alternativeTODO = in.nextLine();
+		
+		printTestCase(bid, alternativeTODO);
 		
 		return bid;
 	}
@@ -136,10 +159,8 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	
 	private String getGamePlayerStateString() {
-		String ret = "\n\n\n";
+		String ret = "";
 		
-		ret += "Your name: " + playerNames[0] + "\n";
-		ret += "\n\n";
 		ret += "Your name: " + playerNames[0] + "\n";
 		
 		if(dealerIndex ==0 ) { 
@@ -180,4 +201,68 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		return ret;
 	}
 
+	public PrintWriter getTestCaseWriter() {
+		int num = getTestCaseNumber();
+		return getTestCaseWriter(num);
+	}
+	
+	private synchronized int getTestCaseNumber() {
+		int num = 0;
+		File f;
+		try {
+			
+			//TODO: look up how to make directories so it could automatically create directories as required
+			//f = new File("testcases\\" + this.playerNames[0]);
+			
+			do {
+				num++;
+				f = new File("testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt");
+			} while(f.exists());
+			
+			
+		} catch( Exception e) {
+			num = -1;
+			e.printStackTrace();
+		}
+		
+		return num;
+		
+	}
+	
+	private synchronized PrintWriter getTestCaseWriter(int num) {
+
+		PrintWriter testCaseFile = null;
+		try {
+			testCaseFile = new PrintWriter(new File("testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt"));
+			
+		} catch( Exception e) {
+			e.printStackTrace();
+		}
+		return testCaseFile;
+		
+	}
+	
+	
+	//TODO: maybe organize the test cases better than this?
+	public void printTestCase(String bid, String alternativeTODO) {
+		try {
+			
+			PrintWriter newTestCase = getTestCaseWriter();
+			newTestCase.println(getGamePlayerStateString());
+			newTestCase.flush();
+			
+			newTestCase.println("Expert response:");
+			newTestCase.println(bid.toUpperCase());
+			newTestCase.flush();
+			
+			newTestCase.println("Expert alternative response:");
+			newTestCase.println(alternativeTODO.toUpperCase());
+			newTestCase.flush();
+			newTestCase.close();
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
