@@ -160,7 +160,7 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 		return "MellowBasicDecider2AI";
 	}
 
-	public void resetStateForNewGame() {
+	public void resetStateForNewRound() {
 		cardsUsed = new boolean[NUM_SUITS][NUM_NUMBERS];
 		cardsCurrentlyHeldByPlayer = new int[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
 		CardsUsedByPlayer = new boolean[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];

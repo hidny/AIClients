@@ -76,7 +76,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	private int cardsPlayedThisRound;
 	private String cardStringsPlayed[] = new String[NUM_CARDS];
 	
-	public void resetStateForNewGame() {
+	public void resetStateForNewRound() {
 		cardsUsed = new boolean[NUM_SUITS][NUM_NUMBERS];
 		cardsCurrentlyHeldByPlayer = new int[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
 		CardsUsedByPlayer = new boolean[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];

@@ -9,6 +9,11 @@ import clientPlayers.ServerRequestHandler;
 
 public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
+	/*How to read large text from console output:
+	 * https://stackoverflow.com/questions/790720/eclipse-ide-how-to-zoom-in-on-text
+	 * "go to Eclipse > Prefences > General > Appearance > Color and Fonts > Basic > Text Font
+		Font problem will resolved I guess.Dont need a any plugin for this."
+	 */
 	
 	private Scanner in = new Scanner(System.in);
 	
@@ -37,13 +42,12 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	}
 	
 	@Override
-	public void resetStateForNewGame() {
+	public void resetStateForNewRound() {
 		dealerIndex = -1;
 		numCardsPlayedInRound = 0;
 		savedPlayHistory = "";
 		savedBidHistory = "";
 		scoreAtStartOfRound = "";
-		playerNames= new String[4];
 	}
 	
 	@Override
@@ -82,7 +86,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		//Setup for a new round:
 		if(numCardsPlayedInRound >= NUM_CARDS) {
-			resetStateForNewGame();
+			resetStateForNewRound();
 		}
 		
 	}
@@ -193,7 +197,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		} else if(dealerIndex == 3) {
 			ret += "Dealer is on your right" + "\n";
 		} else {
-			ret += "ERROR: unknown dealer" + "\n";
+			System.out.println("ERROR: unknown dealer");
 			System.exit(1);
 		}
 

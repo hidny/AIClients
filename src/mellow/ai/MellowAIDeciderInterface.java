@@ -3,7 +3,7 @@ package mellow.ai;
 public interface MellowAIDeciderInterface {
 
 
-	public void resetStateForNewGame();
+	public void resetStateForNewRound();
 	
 	public void receiveUnParsedMessageFromServer(String msg);
 	

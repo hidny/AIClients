@@ -97,7 +97,7 @@ public class testCaseParser {
 		
 		boolean ret = false;
 		
-		decider.resetStateForNewGame();
+		decider.resetStateForNewRound();
 		
 		try {
 			Scanner in = new Scanner(testCaseFile);
@@ -245,14 +245,20 @@ public class testCaseParser {
 				System.out.println("****************************");
 				
 				response = play;
+				
 			}
+			
+			if(response == null || response.trim().equals("")) {
+				response = "FAIL: (LACK OF RESPONSE)";
+			}
+			
+
 			
 			do {
 				cur = in.nextLine();
 			} while(cur.startsWith("Expert response:") == false);
 
 			cur = in.nextLine();
-			System.out.println("Expert response: " + cur);
 			String expertResponse = cur;
 			
 			do {
@@ -260,10 +266,12 @@ public class testCaseParser {
 			} while(cur.startsWith("Expert alternative response:") == false);
 
 			cur = in.nextLine();
-			System.out.println("Acceptable alternative response: " + cur);
 			String expertAltResponse = cur;
-			
+
+
 			System.out.println("AI response: " + response);
+			System.out.println("Expert response: " + expertResponse);
+			System.out.println("Acceptable alternative response: " + expertAltResponse);
 			
 			if(expertResponse.contains(response)) {
 				System.out.println("AI matches expert response! (PASS)");
