@@ -180,7 +180,7 @@ public class ServerRequestHandler {
     	if(gameStarted == false && create == true && type == GameServerAck.FULL_HOUSE) {
     		
     		try {
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

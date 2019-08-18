@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import mellow.cardUtils.handUtilsQueryForTestcase;
 import clientPlayers.ServerRequestHandler;
 
 public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
@@ -12,7 +13,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	/*How to read large text from console output:
 	 * https://stackoverflow.com/questions/790720/eclipse-ide-how-to-zoom-in-on-text
 	 * "go to Eclipse > Prefences > General > Appearance > Color and Fonts > Basic > Text Font
-		Font problem will resolved I guess.Dont need a any plugin for this."
+		Font problem will resolved I guess. Dont need a any plugin for this."
 	 */
 	
 	private Scanner in = new Scanner(System.in);
@@ -20,8 +21,8 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	private ArrayList<String> cardList = null;
 	
 	int INDEX_CURRENT_PLAYER = 0;
-	int NUM_PLAYERS = 4;
-	int NUM_CARDS = 52;
+	static int NUM_PLAYERS = 4;
+	static int NUM_CARDS = 52;
 	
 	private String playerNames[] = new String[4];
 	
@@ -31,6 +32,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	int numCardsPlayedInRound = 0;
 	
 	int dealerIndex = -1;
+	
+	//Card that was lead in a fight
+	String tempLeadingCard = "";
 	
 	public String toString() {
 		return "MellowQueryUserForTestcase PLAYER";
@@ -43,6 +47,15 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	@Override
 	public void resetStateForNewRound() {
+		
+		if(savedPlayHistory.equals("") == false) {
+			//Print last hand for user to see
+			String printStr = getGamePlayerStateString();
+			printStr += "END OF ROUND. Input anything to continue";
+			System.out.println(printStr);
+			in.nextLine();
+		}
+		
 		dealerIndex = -1;
 		numCardsPlayedInRound = 0;
 		savedPlayHistory = "";
@@ -74,7 +87,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		if(numCardsPlayedInRound % NUM_PLAYERS == 0) {
 			savedPlayHistory += "--new round--\n";
+			tempLeadingCard = card;
 		}
+		
 		numCardsPlayedInRound++;
 		
 		//Update the cards the current player has:
@@ -86,6 +101,15 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		//Setup for a new round:
 		if(numCardsPlayedInRound >= NUM_CARDS) {
+			
+			//Wait N seconds so the final state of the round will printed at the bottom of the console:
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			resetStateForNewRound();
 		}
 		
@@ -126,25 +150,49 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	public String getCardToPlay() {
 		
 
-		String printStatement = "\n\n" + getGamePlayerStateString() +"\n";
+		String printStr = "\n\n" + getGamePlayerStateString() +"\n";
+		String play = "";
 		
 		//If it's the last case to play, you don't have any choices to make:
 		if(NUM_CARDS - numCardsPlayedInRound <= NUM_PLAYERS) {
-			return cardList.get(0).toUpperCase() + " ";
+			
+			
+			printStr += "You are playing your last card: " + cardList.get(0).toUpperCase() + "\n";
+			printStr += "Input anything to continue";
+			System.out.println(printStr);
+			
+			in.nextLine();
+			
+			play = cardList.get(0).toUpperCase() + " ";
+			
+		} else if(isNextCardLeading(numCardsPlayedInRound) == false && handUtilsQueryForTestcase.hasOnlyOneChoice(tempLeadingCard, cardList)) {
+			
+			play = handUtilsQueryForTestcase.getOnlyCardToPlay(tempLeadingCard, cardList);
+			printStr += "You are playing the " + play + "\n(It's the only legal card to play)\n";
+			printStr += "Input anything to continue";
+			System.out.println(printStr);
+			
+			in.nextLine();
+			
+			//For now, make the test case because I don't think the ais follow the rules correctly :(
+			//(I make the server force them to follow the rules)
+			printTestCase(play, "");
+			
+		} else {
+		
+			//Actually make a choice 
+			printStr += "Please play a card:";
+			System.out.println(printStr);
+			
+			
+			play = in.nextLine().toUpperCase();
+			
+			System.out.println("Can you list alternative plays that aren't that bad?");
+			String alternative = in.nextLine();
+			
+			//Make test case:
+			printTestCase(play, alternative);
 		}
-		
-
-		printStatement += "Please play a card:";
-		System.out.println(printStatement);
-		
-		
-		String play = in.nextLine().toUpperCase();
-		
-		System.out.println("Can you list alternative plays that aren't that bad?");
-		String alternative = in.nextLine();
-		
-		//Make test case:
-		printTestCase(play, alternative);
 		
 		return play;
 		
@@ -153,9 +201,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	@Override
 	public String getBidToMake() {
 		
-		String printStatement = "\n\n" + getGamePlayerStateString() +"\n";
-		printStatement += "What's your bid:";
-		System.out.println(printStatement);
+		String printStr = "\n\n" + getGamePlayerStateString() +"\n";
+		printStr += "What's your bid:";
+		System.out.println(printStr);
 		
 		String bid = in.nextLine();
 		
@@ -227,6 +275,10 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		ret += "\n";
 		
 		return ret;
+	}
+	
+	public static boolean isNextCardLeading(int numCardsPlayedInRound) {
+		return numCardsPlayedInRound % NUM_PLAYERS == 0;
 	}
 
 	public PrintWriter getTestCaseWriter() {
