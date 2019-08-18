@@ -112,6 +112,7 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	public static final int NUM_PLAYERS = 4;
 	public static final int NUM_SUITS = 4;
 	public static final int NUM_NUMBERS = 13;
+	public static final int NUM_CARDS = NUM_SUITS * NUM_NUMBERS;
 	public static final int CURRENT_AGENT_INDEX = 0;
 	
 	public static final int SPADE = 0;
@@ -119,8 +120,6 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	public static final int CLUB = 2;
 	public static final int DIAMOND = 3;
 	
-	
-	boolean cardsUsed[][] = new boolean[NUM_SUITS][NUM_NUMBERS];
 	
 	
 	
@@ -131,6 +130,9 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	int IMPOSSIBLE =0;
 	int CERTAINTY = 1000;
 	int DONTKNOW = -1;
+	
+
+	boolean cardsUsed[][] = new boolean[NUM_SUITS][NUM_NUMBERS];
 	
 	int cardsCurrentlyHeldByPlayer[][][] = new int[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
 	
@@ -147,14 +149,27 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	
 	private String players[] = new String[NUM_PLAYERS];
 	
-	
 	private int cardsPlayedThisRound;
-	private String cardStringsPlayed[] = new String[52];
+	private String cardStringsPlayed[] = new String[NUM_CARDS];
 	
 	public MellowBasicDecider2(boolean isFast) {
 		
 	}
 	
+	public String toString() {
+		return "MellowBasicDecider2AI";
+	}
+
+	public void resetStateForNewGame() {
+		cardsUsed = new boolean[NUM_SUITS][NUM_NUMBERS];
+		cardsCurrentlyHeldByPlayer = new int[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
+		CardsUsedByPlayer = new boolean[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
+		isVoid = new boolean[NUM_PLAYERS][NUM_SUITS];
+		players = new String[NUM_PLAYERS];
+		cardsPlayedThisRound =0;
+		cardStringsPlayed = new String[NUM_CARDS];
+		
+	}
 	
 	@Override
 	public void receiveUnParsedMessageFromServer(String msg) {
@@ -163,7 +178,7 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	}
 	
 	@Override
-	public void setupCardsForNewRound(String cards[]) {
+	public void setCardsForNewRound(String cards[]) {
 		System.out.println("Printing cards");
 		cardsPlayedThisRound = 0;
 		
@@ -240,7 +255,7 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	}
 
 	@Override
-	public void getPlayedCard(String playerName, String card) {
+	public void receiveCardPlayed(String playerName, String card) {
 		
 		int indexPlayer = playerNameToIndex(playerName);
 		int cardNum = getCardNum(card);
@@ -253,11 +268,11 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 		
 		cardStringsPlayed[cardsPlayedThisRound] = card;
 		cardsPlayedThisRound++;
-		System.out.println("Cards played this round: " + cardsPlayedThisRound);
+		//System.out.println("Cards played this round: " + cardsPlayedThisRound);
 	}
 
 	@Override
-	public void updateScores(int teamAScore, int teanBScore) {
+	public void setNewScores(int teamAScore, int teanBScore) {
 		
 	}
 

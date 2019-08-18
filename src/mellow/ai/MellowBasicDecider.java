@@ -34,7 +34,13 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	public static final int NUM_PLAYERS = 4;
 	public static final int NUM_SUITS = 4;
 	public static final int NUM_NUMBERS = 13;
+	public static final int NUM_CARDS = NUM_SUITS * NUM_NUMBERS;
 	public static final int CURRENT_AGENT_INDEX = 0;
+	
+
+	int IMPOSSIBLE =0;
+	int CERTAINTY = 1000;
+	int DONTKNOW = -1;
 	
 	public static final int SPADE = 0;
 	public static final int HEART = 1;
@@ -50,9 +56,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	//1: west cards
 	//2: north cards
 	//3: east cards
-	int IMPOSSIBLE =0;
-	int CERTAINTY = 1000;
-	int DONTKNOW = -1;
 	
 	int cardsCurrentlyHeldByPlayer[][][] = new int[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
 	
@@ -70,11 +73,20 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	private String players[] = new String[NUM_PLAYERS];
 	
-	
 	private int cardsPlayedThisRound;
-	private String cardStringsPlayed[] = new String[52];
+	private String cardStringsPlayed[] = new String[NUM_CARDS];
 	
-	
+	public void resetStateForNewGame() {
+		cardsUsed = new boolean[NUM_SUITS][NUM_NUMBERS];
+		cardsCurrentlyHeldByPlayer = new int[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
+		CardsUsedByPlayer = new boolean[NUM_PLAYERS][NUM_SUITS][NUM_NUMBERS];
+		isVoid = new boolean[NUM_PLAYERS][NUM_SUITS];
+		numberOfMaster = 0;
+		players = new String[NUM_PLAYERS];
+		cardsPlayedThisRound =0;
+		cardStringsPlayed = new String[NUM_CARDS];
+		
+	}
 
 
 	@Override
@@ -86,10 +98,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	public MellowBasicDecider(boolean isFast) {
 		
 	}
+
+	public String toString() {
+		return "MellowBasicDeciderAI";
+	}
 	
-	
+	//TODO: don't make this so destructive... OR: have testcase say orig card in hand!!!
 	@Override
-	public void setupCardsForNewRound(String cards[]) {
+	public void setCardsForNewRound(String cards[]) {
 		//System.out.println("Printing cards");
 		cardsPlayedThisRound = 0;
 		
@@ -276,7 +292,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	}
 
 	@Override
-	public void getPlayedCard(String playerName, String card) {
+	public void receiveCardPlayed(String playerName, String card) {
 		int indexPlayer = convertPlayerNameToIndex(playerName);
 		int cardNum = getMellowCardNumber(card);
 		cardsUsed[cardNum/NUM_NUMBERS][cardNum%NUM_NUMBERS] = true;
@@ -289,11 +305,11 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		cardStringsPlayed[cardsPlayedThisRound] = card;
 		cardsPlayedThisRound++;
-		System.out.println("Cards played this round: " + cardsPlayedThisRound);
+		//System.out.println("Cards played this round: " + cardsPlayedThisRound);
 	}
 
 	@Override
-	public void updateScores(int teamAScore, int teanBScore) {
+	public void setNewScores(int teamAScore, int teanBScore) {
 		// TODO Auto-generated method stub
 		
 	}

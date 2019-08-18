@@ -144,9 +144,9 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 						
 						//Updates scores in such a way that the AI always thinks it's player 0 and part of team A:
 						if(currentPlayerInFirstTeam) {
-							gameAIAgent.updateScores(tempPlayerAStartScore, score);
+							gameAIAgent.setNewScores(tempPlayerAStartScore, score);
 						} else {
-							gameAIAgent.updateScores(score, tempPlayerAStartScore);
+							gameAIAgent.setNewScores(score, tempPlayerAStartScore);
 						}
 					}
 					
@@ -166,7 +166,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					String direction = getRelativePosPlayer(player);
 					System.out.println(direction + "(" + player + ") plays " + card);
 					
-					gameAIAgent.getPlayedCard(player, card);
+					gameAIAgent.receiveCardPlayed(player, card);
 					
 				} else if(serverMessage.contains(DEALER_MSG)) {
 					String dealer = serverMessage.split(" ")[serverMessage.split(" ").length - 1];
@@ -216,9 +216,9 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 						
 						if(endOfRoundIndex != 1 && endOfRoundIndex != 2) {
 							if(currentPlayerInFirstTeam) {
-								gameAIAgent.updateScores(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[tokens.length - 1]));
+								gameAIAgent.setNewScores(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[tokens.length - 1]));
 							} else {
-								gameAIAgent.updateScores(Integer.parseInt(tokens[tokens.length - 1]), Integer.parseInt(tokens[0]));
+								gameAIAgent.setNewScores(Integer.parseInt(tokens[tokens.length - 1]), Integer.parseInt(tokens[0]));
 							}
 						}
 					}
@@ -263,7 +263,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					printSortedCards(cardsInHandTemp);
 					
 					if(cardsInHandTemp.length == NUM_CARDS/NUM_PLAYERS) {
-						gameAIAgent.setupCardsForNewRound(cardsInHandTemp);
+						gameAIAgent.setCardsForNewRound(cardsInHandTemp);
 					}
 				}
 			}

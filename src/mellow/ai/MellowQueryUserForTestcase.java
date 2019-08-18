@@ -27,11 +27,24 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	int dealerIndex = -1;
 	
+	public String toString() {
+		return "MellowQueryUserForTestcase PLAYER";
+	}
+	
 	@Override
 	public void receiveUnParsedMessageFromServer(String msg) {
 		
 	}
-
+	
+	@Override
+	public void resetStateForNewGame() {
+		dealerIndex = -1;
+		numCardsPlayedInRound = 0;
+		savedPlayHistory = "";
+		savedBidHistory = "";
+		scoreAtStartOfRound = "";
+		playerNames= new String[4];
+	}
 	
 	@Override
 	public void setDealer(String playerName) {
@@ -53,7 +66,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		}
 	}
 
-	public void getPlayedCard(String playerName, String card) {
+	public void receiveCardPlayed(String playerName, String card) {
 		
 		if(numCardsPlayedInRound % NUM_PLAYERS == 0) {
 			savedPlayHistory += "--new round--\n";
@@ -69,27 +82,37 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		//Setup for a new round:
 		if(numCardsPlayedInRound >= NUM_CARDS) {
-			numCardsPlayedInRound = 0;
-			savedPlayHistory = "";
-			savedBidHistory = "";
-			scoreAtStartOfRound = "";
+			resetStateForNewGame();
 		}
 		
 	}
+	
 
+
+	private String OrigHand = "";
+	
 	@Override
-	public void setupCardsForNewRound(String[] cards) {
+	public void setCardsForNewRound(String[] cards) {
 		cardList = new ArrayList<String>();
 		
 		for(int i=0; i<cards.length; i++) {
 			cardList.add(cards[i]+ "");
 		}
 		
-		
+		if(cardList.size() == NUM_CARDS/NUM_PLAYERS) {
+			//Sort the cards
+			cardList = MellowAIListener.sort(cardList);
+			
+			OrigHand = "";
+			for(int i=0; i<cardList.size(); i++) {
+				OrigHand += cardList.get(i) + " ";
+			}
+			OrigHand += "\n";
+		}
 	}
 
 	@Override
-	public void updateScores(int teamAScore, int teanBScore) {
+	public void setNewScores(int teamAScore, int teanBScore) {
 		scoreAtStartOfRound += "Your Score      Their Score\n";
 		scoreAtStartOfRound += " " + teamAScore + ("       ").substring( (teamAScore +"").length() ) + "         " + teanBScore + "\n";
 	}
@@ -99,25 +122,25 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	public String getCardToPlay() {
 		
 
-		System.out.println("\n\n");
-		System.out.println(getGamePlayerStateString());
+		String printStatement = "\n\n" + getGamePlayerStateString() +"\n";
 		
 		//If it's the last case to play, you don't have any choices to make:
 		if(NUM_CARDS - numCardsPlayedInRound <= NUM_PLAYERS) {
 			return cardList.get(0).toUpperCase() + " ";
 		}
 		
-		//Continue as if there's a significant choice to make:
-		System.out.println("Please play a card:");
+
+		printStatement += "Please play a card:";
+		System.out.println(printStatement);
+		
+		
 		String play = in.nextLine().toUpperCase();
 		
-		
-		
 		System.out.println("Can you list alternative plays that aren't that bad?");
-		String alternativeTODO = in.nextLine();
+		String alternative = in.nextLine();
 		
 		//Make test case:
-		printTestCase(play, alternativeTODO);
+		printTestCase(play, alternative);
 		
 		return play;
 		
@@ -126,11 +149,10 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	@Override
 	public String getBidToMake() {
 		
-		System.out.println("\n\n");
-		System.out.println(getGamePlayerStateString());
+		String printStatement = "\n\n" + getGamePlayerStateString() +"\n";
+		printStatement += "What's your bid:";
+		System.out.println(printStatement);
 		
-		
-		System.out.println("What's your bid:");
 		String bid = in.nextLine();
 		
 		if(bid.toLowerCase().startsWith("mellow")) { 
@@ -140,10 +162,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		System.out.println("Can you list alternative bids that aren't that bad?");
 		
-		//TODO
-		String alternativeTODO = in.nextLine();
+		String alternative = in.nextLine();
 		
-		printTestCase(bid, alternativeTODO);
+		printTestCase(bid, alternative);
 		
 		return bid;
 	}
@@ -178,6 +199,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 		ret += "Score at start:" + "\n";
 		ret += scoreAtStartOfRound + "\n";
+		
+		ret += "Cards dealt:" + "\n";
+		ret += OrigHand + "\n";
 		
 		ret += "\n";
 		ret += "Bid history:" + "\n";
@@ -242,10 +266,10 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 	}
 	
-	
-	//TODO: maybe organize the test cases better than this?
-	public void printTestCase(String bid, String alternativeTODO) {
+
+	public void printTestCase(String bid, String alternative) {
 		try {
+			
 			
 			PrintWriter newTestCase = getTestCaseWriter();
 			newTestCase.println(getGamePlayerStateString());
@@ -256,7 +280,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			newTestCase.flush();
 			
 			newTestCase.println("Expert alternative response:");
-			newTestCase.println(alternativeTODO.toUpperCase());
+			newTestCase.println(alternative.toUpperCase());
 			newTestCase.flush();
 			newTestCase.close();
 			
