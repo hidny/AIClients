@@ -4,8 +4,8 @@ public class Constants {
 
 	public static final int NUM_PLAYERS = 4;
 	public static final int NUM_SUITS = 4;
-	public static final int NUM_NUMBERS = 13;
-	public static final int NUM_CARDS = NUM_SUITS * NUM_NUMBERS;
+	public static final int NUM_RANKS = 13;
+	public static final int NUM_CARDS = NUM_SUITS * NUM_RANKS;
 	public static final int CURRENT_AGENT_INDEX = 0;
 	
 	public static final int SPADE = 0;
@@ -13,6 +13,7 @@ public class Constants {
 	public static final int CLUB = 2;
 	public static final int DIAMOND = 3;
 	
+	public static final String OFFSUITS[] = {"H", "C", "D"};
 
 	//Current player index is 0
 	//Left guy index is 1

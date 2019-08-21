@@ -31,11 +31,11 @@ public class BooleanTableDataModel {
 	private int THREE = 1;
 	private int TWO = 0;
 	
-	boolean cardsUsed[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_NUMBERS];
+	private boolean cardsUsed[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
-	int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_NUMBERS];
+	private int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
-	boolean CardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_NUMBERS];
+	private boolean CardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 
 	//Map:
 	//  2  3  4 5 .. A
@@ -45,19 +45,26 @@ public class BooleanTableDataModel {
 	//C
 	
 	
-	boolean isVoid[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+	private boolean isVoid[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 	
 	
 	private String players[] = new String[Constants.NUM_PLAYERS];
 	
 	private int cardsPlayedThisRound = 0;
+	
+	public int getCardsPlayedThisRound() {
+		return cardsPlayedThisRound;
+	}
+
 	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
 
 	
+	
+	
 	public void resetStateForNewRound() {
-		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_NUMBERS];
-		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_NUMBERS];
-		CardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_NUMBERS];
+		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
+		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		CardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		isVoid = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		players = new String[Constants.NUM_PLAYERS];
 		cardsPlayedThisRound =0;
@@ -103,7 +110,7 @@ public class BooleanTableDataModel {
 				
 			}
 		
-		 for(int i=0; i<Constants.NUM_SUITS*Constants.NUM_NUMBERS; i++) {
+		 for(int i=0; i<Constants.NUM_SUITS*Constants.NUM_RANKS; i++) {
 			 cardStringsPlayed[i] = "";
 		 }
 				
@@ -112,10 +119,10 @@ public class BooleanTableDataModel {
 	public void updateDataModelWithPlayedCard(String playerName, String card) {
 		int indexPlayer = convertPlayerNameToIndex(playerName);
 		int cardNum = getMellowCardIndex(card);
-		cardsUsed[cardNum/Constants.NUM_NUMBERS][cardNum%Constants.NUM_NUMBERS] = true;
-		CardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_NUMBERS][cardNum%Constants.NUM_NUMBERS] = true;
+		cardsUsed[cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
+		CardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
-			cardsCurrentlyHeldByPlayer[i][cardNum/Constants.NUM_NUMBERS][cardNum%Constants.NUM_NUMBERS] = IMPOSSIBLE;
+			cardsCurrentlyHeldByPlayer[i][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = IMPOSSIBLE;
 		}
 		
 		
@@ -162,7 +169,8 @@ public class BooleanTableDataModel {
 					if(cardsUsed[i][j]) {
 						continue;
 					} else if(cardsCurrentlyHeldByPlayer[0][i][j] == CERTAINTY) {
-						return getCardString(Constants.NUM_NUMBERS * i + j);
+						//TODO: NUM_NUMBERS -> NUM_RANKS
+						return getCardString(Constants.NUM_RANKS * i + j);
 					} else {
 						break;
 					}
@@ -192,7 +200,7 @@ public class BooleanTableDataModel {
 		
 		int cardIndex = getMellowCardIndex(getCardLeaderThrow());
 		
-		int suitNumber = cardIndex/Constants.NUM_NUMBERS;
+		int suitNumber = cardIndex/Constants.NUM_RANKS;
 		
 		for(int i=(cardIndex + 1) %13; i%13 != 0; i++) {
 			for(int j=0; j<Constants.NUM_PLAYERS; j++) {
@@ -214,7 +222,7 @@ public class BooleanTableDataModel {
 	
 	
 	public boolean currentPlayerHasMasterInSuit(int suitIndex) {
-		for(int i=Constants.NUM_NUMBERS - 1; i>=0; i--) {
+		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
 			if(cardsUsed[suitIndex][i] == true) {
 				continue;
 			} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
@@ -232,7 +240,7 @@ public class BooleanTableDataModel {
 		String cardToPlay = "";
 		
 		FOUNDCARD:
-		for(int i=0; i<Constants.NUM_NUMBERS; i++) {
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
 			//TODO: have no pref between the off suits... or have a smart preference.
 			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
@@ -249,7 +257,7 @@ public class BooleanTableDataModel {
 		String  cardToPlay = null;
 		
 		FOUNDCARD:
-		for(int i=0; i<Constants.NUM_NUMBERS; i++) {
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
 			//TODO: have no pref between the off suits... or have a smart preference.
 			for(int j=Constants.NUM_SUITS - 1; j>=0; j--) {
 				if(j == Constants.SPADE) {
@@ -267,12 +275,12 @@ public class BooleanTableDataModel {
 	//END LOWEST CARD
 
 	public String getCardInHandClosestOverSameSuit(String card) {
-		int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_NUMBERS];
+		int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
 		int rankIndex = getRankIndex(card);
 		
-		for(int j=rankIndex+1; j< Constants.NUM_NUMBERS; j++) {
+		for(int j=rankIndex+1; j< Constants.NUM_RANKS; j++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][j] == CERTAINTY) {
 				return getCardString(rankIndex, suitIndex);
 			}
@@ -282,7 +290,7 @@ public class BooleanTableDataModel {
 	
 	//Basic numbers:
 
-	private int getNumberOfAces() {
+	public int getNumberOfAces() {
 		int ret = 0;
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][ACE]  == CERTAINTY) {
@@ -292,7 +300,7 @@ public class BooleanTableDataModel {
 		return ret;
 	}
 	
-	private int getNumberOfKings() {
+	public int getNumberOfKings() {
 		int ret = 0;
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][KING]  == CERTAINTY) {
@@ -302,7 +310,8 @@ public class BooleanTableDataModel {
 		return ret;
 	}
 	
-	private int getNumberOfCardsOneSuit(int suit) {
+	//TODO: suit strings please
+	public int getNumberOfCardsOneSuit(int suit) {
 		int ret = 0;
 		for(int i=0; i<13; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suit][i]  == CERTAINTY) {
@@ -312,13 +321,55 @@ public class BooleanTableDataModel {
 		return ret;
 	}
 	
+	//Opponent card logic:
+
+	//pre: current player has a card in suit Index.
+	public String currentPlayergetHighestInSuit(int suitIndex) {
+		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+		System.out.println("AHH! Searching for highest in " + suitIndex + " when player has no card in that suit.");
+		System.exit(1);
+		return "";
+	}
+	
+	//pre: current player has a card in suit Index.
+	public String currentPlayergetLowestInSuit(int suitIndex) {
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+		System.out.println("AHH! Searching for lowest in " + suitIndex + " when player has no card in that suit.");
+		System.exit(1);
+		return "";
+	}
+	
+	
+	
+	public boolean playerMightHaveSuit(int playerIndex, int suitIndex) {
+		for(int j=0; j<Constants.NUM_RANKS; j++) {
+			if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][j] != IMPOSSIBLE) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+//TODO: suspicious function
+	//TODO: Might delete or make private and only accept Strings from other classes 
+	public boolean currentAgentHasSuit(int suitIndex) {
+		return playerMightHaveSuit(Constants.CURRENT_AGENT_INDEX, suitIndex);
+	}
 	
 	//Card logic:
 
 	public boolean hasCard(String card) {
 		int num = getMellowCardIndex(card);
 		
-		return cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][num/Constants.NUM_NUMBERS][num%Constants.NUM_NUMBERS]  == CERTAINTY;
+		return cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][num/Constants.NUM_RANKS][num%Constants.NUM_RANKS]  == CERTAINTY;
 			
 	}
 
@@ -359,7 +410,7 @@ public class BooleanTableDataModel {
 	}
 	
 	public static String getCardString(int rankIndex, int suitIndex) {
-		return getCardString(Constants.NUM_NUMBERS * suitIndex + rankIndex);
+		return getCardString(Constants.NUM_RANKS * suitIndex + rankIndex);
 	}
 	public static String getCardString(int cardIndex) {
 		String ret = "";
@@ -407,7 +458,7 @@ public class BooleanTableDataModel {
 
 		//Play trump/spade
 		if(CardStringFunctions.getIndexOfSuit(card) == Constants.SPADE) {
-			return Constants.NUM_NUMBERS + getRankIndex(card);
+			return Constants.NUM_RANKS + getRankIndex(card);
 		
 		//Follow suit
 		} else if(CardStringFunctions.getIndexOfSuit(card) == CardStringFunctions.getIndexOfSuit(getCardLeaderThrow())) {
@@ -441,9 +492,10 @@ public class BooleanTableDataModel {
 		return x;
 	}
 	
+
 	//Names
 
-	private int convertPlayerNameToIndex(String playerName) {
+	public int convertPlayerNameToIndex(String playerName) {
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
 			if(this.players[i].equals(playerName)) {
 				return i;
@@ -453,6 +505,11 @@ public class BooleanTableDataModel {
 		return -1;
 	}
 	
+	public void setNameOfPlayers(String players[]) {
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			this.players[i] = players[i] + "";
+		}
+	}
 
 	
 }
