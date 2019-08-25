@@ -252,11 +252,10 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			cardToPlay = dataModel.getCardClosestOverCurrentWinner();
 			
 		} else {
-			//TODO: not implemented yet:
 			cardToPlay = dataModel.getJunkiestCardToFollowLead();
 			
 		}
-		//NEVER MIND!
+
 		return cardToPlay;
 	}
 	//END AIS for non-nellow bid games

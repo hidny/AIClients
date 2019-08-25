@@ -270,26 +270,12 @@ public class BooleanTableDataModel {
 		
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][leadCardsuitIndex][i] == CERTAINTY) {
-				return false;
+				return true;
 			}
 		}
 		
-		return true;
+		return false;
 	}
-	
-	public String getCardInHandClosestOverCurrentWinner() {
-
-		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
-		
-		if(throwNumber == 0) {
-			System.err.println("ERROR: calling getCardInHandClosestOverCurrentWinner on 1st throw.");
-			System.exit(1);
-		}
-
-		return getCardInHandClosestOverSameSuit(getCurrentFightWinningCard());
-		
-	}
-
 	
 	public boolean isPartnerWinningFight() {
 
@@ -317,6 +303,56 @@ public class BooleanTableDataModel {
 	
 	//TODO
 	public String getJunkiestCardToFollowLead() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling get getJunkiestCardToFollowLead on 1st throw.");
+			System.exit(1);
+		}
+		
+		int leadSuitIndex = getSuitOfLeaderThrow();
+		//TODO
+		//if must follow suit
+		if(throwerMustFollowSuit()) {
+			
+			for(int i=TWO; i <= ACE; i++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][leadSuitIndex][i] == CERTAINTY) {
+					return getCardString(i, leadSuitIndex);
+				}
+			}
+			System.err.println("In getJunkiestCardToFollowLead thrower must follow suit but has nothing in suit to throw. (Logically impossible)");
+			System.exit(1);
+			
+		} else {
+			
+			//TODO: make the logic more complicated...
+			
+			//Play smallest off-suit:
+			for(int i=TWO; i <= ACE; i++) {
+				for(int j=1; j < Constants.NUM_SUITS; j++) {
+					if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
+						return getCardString(i, j);
+					}
+				}
+			}
+			
+			//Play smallest spade:
+			for(int i=TWO; i <= ACE; i++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][Constants.SPADE][i] == CERTAINTY) {
+					return getCardString(i, Constants.SPADE);
+				}
+			}
+			
+
+			System.err.println("In getJunkiestCardToFollowLead thrower must not follow suit but has no off-suit to throw. (Logically impossible)");
+			System.exit(1);
+			
+		}
+		
+		System.err.println("ERROR in getJunkiestCardToFollowLead");
+		
+		System.exit(1);
+		
 		return null;
 	}
 	
