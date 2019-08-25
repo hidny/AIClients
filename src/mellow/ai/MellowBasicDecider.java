@@ -17,11 +17,6 @@ import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
 
 //Because there are so many rules to go through
 
-//“The fact that we live at the bottom of a deep gravity well, on the surface of a gas covered planet going
-//around a nuclear fireball 90 million miles away and think this to be normal is obviously some indication
-//of how skewed our perspective tends to be.”
-//-Douglas Adams
-
 public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	//TODO: make this an interface...
@@ -35,33 +30,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	// :(
 	
 	
-	public static final int NUM_PLAYERS = 4;
-	public static final int NUM_SUITS = 4;
-	public static final int NUM_NUMBERS = 13;
-	public static final int NUM_CARDS = NUM_SUITS * NUM_NUMBERS;
-	public static final int CURRENT_AGENT_INDEX = 0;
-	
-
-	int IMPOSSIBLE =0;
-	int CERTAINTY = 1000;
-	int DONTKNOW = -1;
-	
 	public static final int SPADE = 0;
 	public static final int HEART = 1;
 	public static final int CLUB = 2;
 	public static final int DIAMOND = 3;
 	
-	
-	//boolean cardsUsed[][] = new boolean[NUM_SUITS][NUM_NUMBERS];
-	
-	
-	
+	//index
 	//0: myCardsUsed
 	//1: west cards
 	//2: north cards
 	//3: east cards
 	
-
 	public void resetStateForNewRound() {
 		dataModel.resetStateForNewRound();
 		
@@ -156,7 +135,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			System.out.println("***********");
 			System.out.println("Leading low:");
 			System.out.println("***********");
-			cardToPlay = dataModel.getLowCardToPlay();
+			cardToPlay = dataModel.getLowCardToLead();
 		}
 		return cardToPlay;
 	}
@@ -175,9 +154,9 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 				System.out.println("***********");
 				System.out.println("2nd FOLLOW SUIT HIGH");
-				cardToPlay = dataModel.currentPlayergetHighestInSuit(leaderSuitIndex);
+				cardToPlay = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
 				//don't play high if leader played higher.
-				if( dataModel.cardAGreaterThanCardB(cardToPlay, dataModel.getCardLeaderThrow())) {
+				if( dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, dataModel.getCardLeaderThrow())) {
 					System.out.println("2nd NEVER MIND FOLLOW SUIT LOW");
 					cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
 				}
@@ -198,7 +177,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			} else {
 				System.out.println("***********");
 				System.out.println("2nd play low off.");
-				cardToPlay = dataModel.getLowOffSuitCardToPlay();
+				cardToPlay = dataModel.getLowOffSuitCardToLead();
 			}
 				
 		}
@@ -220,17 +199,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				if( dataModel.getSuitOfSecondThrow() == SPADE) {
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
 					if(cardToPlay == null) {
-						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+						cardToPlay = dataModel.getLowOffSuitCardToLead();
 					}
 				} else {
 					if(dataModel.didLeaderPlayMasterAndIsWinning()) {
-						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+						cardToPlay = dataModel.getLowOffSuitCardToLead();
 					} else {
 						cardToPlay = dataModel.currentPlayergetLowestInSuit(SPADE);
 					}
 				}
 			} else {
-				cardToPlay = dataModel.getLowOffSuitCardToPlay();
+				cardToPlay = dataModel.getLowOffSuitCardToLead();
 			}
 		//FOLLOW SUIT:
 		} else {
@@ -238,9 +217,9 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
 			} else {
 				if(dataModel.getSuitOfSecondThrow() != dataModel.getSuitOfLeaderThrow()) {
-					String testCard = dataModel.currentPlayergetHighestInSuit(leaderSuitIndex);
+					String testCard = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
 					
-					if(dataModel.cardAGreaterThanCardB(testCard, dataModel.getCardLeaderThrow())) {
+					if(dataModel.cardAGreaterThanCardBGivenLeadCard(testCard, dataModel.getCardLeaderThrow())) {
 						cardToPlay = testCard;
 						
 					} else {
@@ -248,9 +227,9 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					}
 					
 				} else {
-					String testCard = dataModel.currentPlayergetHighestInSuit(leaderSuitIndex);
-					if(dataModel.cardAGreaterThanCardB(testCard, dataModel.getCardLeaderThrow()) && dataModel.cardAGreaterThanCardB(testCard, dataModel.getCardSecondThrow()) ) {
-						cardToPlay = dataModel.currentPlayergetHighestInSuit(leaderSuitIndex);
+					String testCard = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
+					if(dataModel.cardAGreaterThanCardBGivenLeadCard(testCard, dataModel.getCardLeaderThrow()) && dataModel.cardAGreaterThanCardBGivenLeadCard(testCard, dataModel.getCardSecondThrow()) ) {
+						cardToPlay = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
 						
 					} else {
 						cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
@@ -263,28 +242,20 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return cardToPlay;
 	}
 	
-	//TODO: complete this if you feel like it.
-	//TODO: KISS
 	public String AIFourthThrow() {
 		String cardToPlay = null;
-		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
-		if(leaderSuitIndex == SPADE) {
-			
-			String highestCard = dataModel.currentPlayergetHighestInSuit(leaderSuitIndex);
+		if(dataModel.isPartnerWinningFight()) {
+			cardToPlay = dataModel.getJunkiestCardToFollowLead();
+
+		} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+			cardToPlay = dataModel.getCardClosestOverCurrentWinner();
 			
 		} else {
-			//Follow off-suit:
-			if(dataModel.currentAgentHasSuit(leaderSuitIndex) == true) {
-				String highestCard = dataModel.currentPlayergetHighestInSuit(leaderSuitIndex);
-				//if(cardPower(highestCard) > cardPower(highestCard) )
-				
-			//Don't folow suit.
-			} else {
-				
-			}
+			//TODO: not implemented yet:
+			cardToPlay = dataModel.getJunkiestCardToFollowLead();
+			
 		}
-		
 		//NEVER MIND!
 		return cardToPlay;
 	}

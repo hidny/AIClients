@@ -19,5 +19,10 @@ public class Constants {
 	//Left guy index is 1
 	//Partner is 2
 	//Right guy index is 3
-	private int CURRENT_PLAYER_INDEX = 0;
+	public static final int CURRENT_PLAYER_INDEX = 0;
+	public static final int LEFT_PLAYER_INDEX = 0;
+	
+	public static final int CURRENT_PARTNER_INDEX = 2;
+	public static final int RIGHT_PLAYER_INDEX = 3;
+	
 }

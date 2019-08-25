@@ -160,6 +160,165 @@ public class BooleanTableDataModel {
 		return CardStringFunctions.getIndexOfSuit(cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 2]);
 	}
 	
+	//pre: function is called when AI is deciding the 2nd, 3rd or 4th throu
+	public String getCurrentFightWinningCard() {
+		
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERRO: calling get Current Fight Winning Card on 1st throw.");
+			System.exit(1);
+		}
+
+		String currentWinner = getCardLeaderThrow();
+		
+		if(throwNumber > 1) {
+			if(cardAGreaterThanCardBGivenLeadCard(getCardSecondThrow(), currentWinner)) {
+				currentWinner = getCardSecondThrow();
+			}
+		}
+		
+		if(throwNumber > 2) {
+			if(cardAGreaterThanCardBGivenLeadCard(getCardThirdThrow(), currentWinner)) {
+				currentWinner = getCardThirdThrow();
+			}
+		}
+		
+		return currentWinner;
+		
+	}
+	
+	public boolean throwerHasCardToBeatCurrentWinner() {
+		if(getCardClosestOverCurrentWinner() != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public String getCardClosestOverCurrentWinner() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling couldGoOverCurrentWinner on 1st throw.");
+			System.exit(1);
+		}
+		
+		String currentWinnerCard = getCurrentFightWinningCard();
+		int winnerSuitIndex = CardStringFunctions.getIndexOfSuit(currentWinnerCard);
+		int winnerRankIndex = getRankIndex(currentWinnerCard);
+
+		//Check if offsuit can win
+		if(winnerSuitIndex != Constants.SPADE) {
+			
+			for(int i=winnerRankIndex + 1; i <= ACE; i++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][winnerSuitIndex][i] == CERTAINTY) {
+					return getCardString(i, winnerSuitIndex);
+				}
+			}
+		}
+		
+		//Check if spade can win
+		if(throwerCouldPlaySpade()) {
+			int startRankIndex = TWO;
+			
+			if(winnerSuitIndex == Constants.SPADE) {
+				startRankIndex = winnerRankIndex + 1;
+			}
+			
+			for(int i=startRankIndex; i <= ACE; i++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][winnerSuitIndex][i] == CERTAINTY) {
+					return getCardString(i, winnerSuitIndex);
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	public boolean throwerCouldPlaySpade() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling getCardInHandClosestOverCurrentWinner on 1st throw.");
+			System.exit(1);
+		}
+
+		if(currentAgentHasSuit(Constants.SPADE) == false) {
+			return false;
+		}
+		
+		int leadCardsuitIndex = CardStringFunctions.getIndexOfSuit(getCardLeaderThrow());
+		
+		if(leadCardsuitIndex == Constants.SPADE || throwerMustFollowSuit() == false) {
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+	
+	public boolean throwerMustFollowSuit() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling throwerMustFollowSuit on 1st throw.");
+			System.exit(1);
+		}
+		
+		int leadCardsuitIndex = CardStringFunctions.getIndexOfSuit(getCardLeaderThrow());
+		
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][leadCardsuitIndex][i] == CERTAINTY) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public String getCardInHandClosestOverCurrentWinner() {
+
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling getCardInHandClosestOverCurrentWinner on 1st throw.");
+			System.exit(1);
+		}
+
+		return getCardInHandClosestOverSameSuit(getCurrentFightWinningCard());
+		
+	}
+
+	
+	public boolean isPartnerWinningFight() {
+
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		if(throwNumber <= 1) {
+			System.err.println("ERROR: calling get isPartnerWinningFight 1st or 2nd throw. (throw index: " + throwNumber + ")");
+			System.exit(1);
+		}
+		
+		if(throwNumber == 2) {
+			if(getCardLeaderThrow().equals(getCurrentFightWinningCard())) {
+				return true;
+			}
+		} else if(throwNumber == 3) {
+			if(getCardSecondThrow().equals(getCurrentFightWinningCard())) {
+				return true;
+			}
+		} else {
+			System.err.println("ERROR: calling get isPartnerWinningFight and got impossible throw number. (throw index: " + throwNumber + ")");
+			System.exit(1);
+		}
+		
+		return false;
+	}
+	
+	//TODO
+	public String getJunkiestCardToFollowLead() {
+		return null;
+	}
 	
 	//Deterministic and bad:
 	public String getMasterCard() {
@@ -211,9 +370,9 @@ public class BooleanTableDataModel {
 			}
 		}
 		
-		if(cardsPlayedThisRound % 4 > 1 && cardAGreaterThanCardB(getCardLeaderThrow(), getCardSecondThrow())) {
+		if(cardsPlayedThisRound % 4 > 1 && cardAGreaterThanCardBGivenLeadCard(getCardLeaderThrow(), getCardSecondThrow())) {
 			return false;
-		} else if(cardsPlayedThisRound % 4 > 2 && cardAGreaterThanCardB(getCardLeaderThrow(), getCardThirdThrow())) {
+		} else if(cardsPlayedThisRound % 4 > 2 && cardAGreaterThanCardBGivenLeadCard(getCardLeaderThrow(), getCardThirdThrow())) {
 			return false;
 		}
 		
@@ -236,7 +395,7 @@ public class BooleanTableDataModel {
 	//END of MASTER FUNCTIONS
 
 	//LOWEST CARD
-	public String getLowCardToPlay() {
+	public String getLowCardToLead() {
 		String cardToPlay = "";
 		
 		FOUNDCARD:
@@ -253,7 +412,7 @@ public class BooleanTableDataModel {
 	}
 	
 
-	public String getLowOffSuitCardToPlay() {
+	public String getLowOffSuitCardToLead() {
 		String  cardToPlay = null;
 		
 		FOUNDCARD:
@@ -273,7 +432,7 @@ public class BooleanTableDataModel {
 	}
 
 	//END LOWEST CARD
-
+	
 	public String getCardInHandClosestOverSameSuit(String card) {
 		int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		
@@ -324,7 +483,7 @@ public class BooleanTableDataModel {
 	//Opponent card logic:
 
 	//pre: current player has a card in suit Index.
-	public String currentPlayergetHighestInSuit(int suitIndex) {
+	public String currentPlayerGetHighestInSuit(int suitIndex) {
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				return getCardString(13*suitIndex + i);
@@ -450,7 +609,7 @@ public class BooleanTableDataModel {
 	}
 	
 
-	public boolean cardAGreaterThanCardB(String cardA, String cardB) {
+	public boolean cardAGreaterThanCardBGivenLeadCard(String cardA, String cardB) {
 		return getCardPower(cardA) > getCardPower(cardB);
 	}
 
@@ -491,6 +650,8 @@ public class BooleanTableDataModel {
 		}
 		return x;
 	}
+	
+	//Forth throw:
 	
 
 	//Names
