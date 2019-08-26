@@ -311,7 +311,7 @@ public class BooleanTableDataModel {
 		}
 		
 		int leadSuitIndex = getSuitOfLeaderThrow();
-		//TODO
+
 		//if must follow suit
 		if(throwerMustFollowSuit()) {
 			
@@ -325,7 +325,7 @@ public class BooleanTableDataModel {
 			
 		} else {
 			
-			//TODO: make the logic more complicated...
+			//TODO: make the logic more sophisticated...
 			
 			//Play smallest off-suit:
 			for(int i=TWO; i <= ACE; i++) {
@@ -354,6 +354,93 @@ public class BooleanTableDataModel {
 		System.exit(1);
 		
 		return null;
+	}
+	
+	public boolean throwerCanOnlyPlayOneCard() {
+		return getNumCardsThatCouldBeThrown() == 1;
+	}
+	
+	public String getOnlyCardCurrentPlayerCouldPlay() {
+		if(throwerCanOnlyPlayOneCard() == false) {
+			System.err.println("ERROR: calling getOnlyCardCurrentPlayerCouldPlay when player has more than 1 card to play");
+			System.exit(1);
+		}
+		
+		if(getNumCardsInCurrentPlayerHand() == 1) {
+			return getLastCardInHand();
+		} else {
+			
+			if(throwerMustFollowSuit() == false) {
+				System.err.println("ERROR: calling getOnlyCardCurrentPlayerCouldPlay and player has more than 1 card,\n doesn\'t need to follow suit and apparrently has to play single card.\nThis doesn\'t happen in Mellow.");
+				System.exit(1);
+			}
+			
+			return getJunkiestCardToFollowLead();
+		}
+	}
+	
+	public String getLastCardInHand() {
+		if(getNumCardsInCurrentPlayerHand() != 1) {
+			System.err.println("ERROR: calling getLastCardInHand when player has more than 1 card to play");
+			System.exit(1);
+		}
+		
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			for(int j=TWO; j<=ACE; j++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][i][j] == CERTAINTY) {
+					return getCardString(j, i);
+				}
+			}
+		}
+		
+		System.err.println("ERROR: could not find last card in getLastCardInHand");
+		System.exit(1);
+		return null;
+	}
+	
+	public int getNumCardsThatCouldBeThrown() {
+		int throwerIndex = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+
+		if(throwerIndex == 0 || throwerMustFollowSuit() == false) {
+			return getNumCardsInCurrentPlayerHand();
+		}
+	
+		int leadSuit = getSuitOfLeaderThrow();
+		int currentNumCards = 0;
+		
+		for(int i=TWO; i<=ACE; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][leadSuit][i] == CERTAINTY) {
+				currentNumCards++;
+			}
+		}
+		
+		
+		if(currentNumCards == 0) {
+			System.err.println("ERROR: less than 1 card in hand according to getNumCardsThatCouldBeThrown");
+			System.exit(1);
+		}
+		
+		return currentNumCards;
+		
+		
+	}
+	
+	public int getNumCardsInCurrentPlayerHand() {
+		int throwerIndex = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		int ret = (Constants.NUM_CARDS / Constants.NUM_PLAYERS) - (cardsPlayedThisRound - throwerIndex) / Constants.NUM_PLAYERS;
+		
+		//Sanity checks:
+		if(ret <= 0) {
+			System.err.println("ERROR: less than 1 card in hand according to getNumCardsInCurrentPlayerHand");
+			System.exit(1);
+		} else if(ret > Constants.NUM_RANKS) {
+			System.err.println("ERROR: more than " + Constants.NUM_RANKS + " cards in hand according to getNumCardsInCurrentPlayerHand");
+			System.exit(1);
+		}
+		
+		return ret;
+		
 	}
 	
 	//Deterministic and bad:

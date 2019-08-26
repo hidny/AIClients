@@ -94,6 +94,11 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	@Override
 	public String getCardToPlay() {
 		
+		if(dataModel.throwerCanOnlyPlayOneCard()) {
+			System.out.println("**Forced to play card");
+			return dataModel.getOnlyCardCurrentPlayerCouldPlay();
+		}
+		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		//leader:
 		String cardToPlay = null;
