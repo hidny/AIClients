@@ -120,7 +120,7 @@ public class testCaseParser {
 			
 			do {
 				cur = in.nextLine();
-			} while(cur.startsWith("Dealer") == false || cur.contains("You are the dealer"));
+			} while(cur.startsWith("Dealer") == false && cur.contains("You are the dealer") == false);
 			
 			
 			int dealerIndex = 0;
@@ -197,7 +197,7 @@ public class testCaseParser {
 				
 				do {
 					cur = in.nextLine();
-				} while(cur.startsWith("Play history") == false);
+				} while(cur.startsWith("Play history") == false && cur.startsWith("Cards in hand:") == false);
 				
 				
 				actionIndex = (dealerIndex + 1) % NUM_PLAYERS;
@@ -206,7 +206,7 @@ public class testCaseParser {
 				String cardsInFight[] = new String[NUM_PLAYERS];
 				int cardNumbersInFight[] = new int[NUM_PLAYERS];
 				
-				do {
+				while(cur.equals("Cards in hand:") == false) {
 					cur = in.nextLine();
 				
 					if(cur.equals("Cards in hand:") == false) {
@@ -233,7 +233,7 @@ public class testCaseParser {
 						}
 					}
 					
-				} while(cur.equals("Cards in hand:") == false);
+				}
 				
 				cur = in.nextLine();
 				
