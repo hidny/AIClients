@@ -45,9 +45,6 @@ public class BooleanTableDataModel {
 	//C
 	
 	
-	private boolean isVoid[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
-	
-	
 	private String players[] = new String[Constants.NUM_PLAYERS];
 	
 	private int cardsPlayedThisRound = 0;
@@ -65,7 +62,6 @@ public class BooleanTableDataModel {
 		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		CardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
-		isVoid = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		players = new String[Constants.NUM_PLAYERS];
 		cardsPlayedThisRound =0;
 		cardStringsPlayed = new String[Constants.NUM_CARDS];
@@ -87,12 +83,17 @@ public class BooleanTableDataModel {
 			}
 		}
 		
+	}
+	
+	//TODO: update cardsCurrentlHeldByPlayer
+	public boolean isVoid(int playerIndex, int suitIndex) {
 		
-		for(int i=0; i<isVoid.length; i++) {
-			for(int j=0; j<isVoid[0].length; j++) {
-				isVoid[i][j] = false;
+		for(int i=TWO; i<=ACE; i++) {
+			if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][i] != IMPOSSIBLE) {
+				return false;
 			}
 		}
+		return true;
 	}
 	
 	
@@ -116,9 +117,20 @@ public class BooleanTableDataModel {
 				
 	}
 	
+	
+	
 	public void updateDataModelWithPlayedCard(String playerName, String card) {
+		
 		int indexPlayer = convertPlayerNameToIndex(playerName);
 		int cardNum = getMellowCardIndex(card);
+
+		//Sanity check:
+		if(cardsCurrentlyHeldByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] == IMPOSSIBLE) {
+			System.err.println("ERROR: card played is supposedly impossible in updateDataModelWithPlayedCard");
+			System.exit(1);
+		}
+		//End sanity check
+		
 		cardsUsed[cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		CardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
@@ -129,6 +141,19 @@ public class BooleanTableDataModel {
 		cardStringsPlayed[cardsPlayedThisRound] = card;
 		cardsPlayedThisRound++;
 		//System.out.println("Cards played this round: " + cardsPlayedThisRound);
+		
+
+		//Check if non-leading player didn't follow suit (and is void in suit)
+		if(cardsPlayedThisRound % 4 != 0 ) {
+			if(CardStringFunctions.getIndexOfSuit(card) != getSuitOfLeaderThrow()) {
+				for(int i=TWO; i<=ACE; i++) {
+					cardsCurrentlyHeldByPlayer[indexPlayer][getSuitOfLeaderThrow()][i] = IMPOSSIBLE;
+				}
+			}
+		}
+		//End check
+		
+		//TODO: Do some logically deductions here and figure out which player must have cards by process of elimination
 	}
 
 	//pre: leader card thrown
@@ -187,6 +212,46 @@ public class BooleanTableDataModel {
 		return currentWinner;
 		
 	}
+	
+	
+	//TODO
+	public boolean hasNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() {
+		return getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() != null;
+	}
+	
+	//TODO:
+	//pre: thrower is 2nd or 3rd
+	//post: null if can't play a card that might 
+	public String getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning on 1st throw. (Not meant to do that)");
+			System.exit(1);
+		}
+		
+		if(throwNumber == 3) {
+			System.err.println("ERROR: calling getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning on 4th throw. (Doesn\'t make sense)");
+			System.exit(1);
+		}
+		
+		int leadSuit = this.getSuitOfLeaderThrow();
+		
+		//TRUMP:
+		if(isVoid(0, leadSuit)) {
+			if(isVoid(0, Constants.SPADE) == false) {
+				//
+			}
+		
+		//Follow suit:
+		} else {
+			//get currentPlayerTop card in suit
+			//for curent between currentPlayer Top card and next top card: could 4th thrower have it
+		}
+		
+		return null;
+	}
+	
 	
 	public boolean throwerHasCardToBeatCurrentWinner() {
 		if(getCardClosestOverCurrentWinner() != null) {
@@ -461,6 +526,27 @@ public class BooleanTableDataModel {
 		 return null;
 	}
 	
+	
+	public boolean leaderPlayedMaster() {
+		return isMasterCard(getCardLeaderThrow());
+	}
+	
+	public boolean isMasterCard(String card) {
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rank = getRankIndex(card);
+		for(int i=rank+1; i <= ACE; i++) {
+			for(int j=0; j<Constants.NUM_PLAYERS; j++) {
+				if(cardsCurrentlyHeldByPlayer[j][suitIndex][i] != IMPOSSIBLE) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	private int getNumSuitsWithMastersInHand() {
 		 int numberOfMasters = 0;
 		 for(int i=0; i<cardsUsed.length; i++) {
@@ -477,43 +563,22 @@ public class BooleanTableDataModel {
 		}
 		 return numberOfMasters;
 	}
-
-	public boolean didLeaderPlayMasterAndIsWinning() {
-		
-		int cardIndex = getMellowCardIndex(getCardLeaderThrow());
-		
-		int suitNumber = cardIndex/Constants.NUM_RANKS;
-		
-		for(int i=(cardIndex + 1) %13; i%13 != 0; i++) {
-			for(int j=0; j<Constants.NUM_PLAYERS; j++) {
-				if(cardsCurrentlyHeldByPlayer[j][suitNumber][i] != IMPOSSIBLE) {
-					return false;
-				}
-						
-			}
-		}
-		
-		if(cardsPlayedThisRound % 4 > 1 && cardAGreaterThanCardBGivenLeadCard(getCardLeaderThrow(), getCardSecondThrow())) {
-			return false;
-		} else if(cardsPlayedThisRound % 4 > 2 && cardAGreaterThanCardBGivenLeadCard(getCardLeaderThrow(), getCardThirdThrow())) {
-			return false;
-		}
-		
-		return true;
+	
+	public boolean hasMasterInSuit(int suitIndex) {
+		return getMasterInSuit(suitIndex) != null;
 	}
 	
-	
-	public boolean currentPlayerHasMasterInSuit(int suitIndex) {
+	public String getMasterInSuit(int suitIndex) {
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
 			if(cardsUsed[suitIndex][i] == true) {
 				continue;
 			} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
-				return true;
+				return getCardString(i, suitIndex);
 			} else {
-				return false;
+				return null;
 			}
 		}
-		return false;
+		return null;
 	}
 	//END of MASTER FUNCTIONS
 
@@ -535,7 +600,7 @@ public class BooleanTableDataModel {
 	}
 	
 
-	public String getLowOffSuitCardToLead() {
+	public String getLowOffSuitCardToPlay() {
 		String  cardToPlay = null;
 		
 		FOUNDCARD:
@@ -555,6 +620,10 @@ public class BooleanTableDataModel {
 	}
 
 	//END LOWEST CARD
+	
+	public boolean couldPlayCardInHandOverCardInSameSuit(String card) {
+		return getCardInHandClosestOverSameSuit(card) != null;
+	}
 	
 	public String getCardInHandClosestOverSameSuit(String card) {
 		int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];

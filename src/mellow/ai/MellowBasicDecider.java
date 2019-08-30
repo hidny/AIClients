@@ -156,7 +156,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex)) {
 			//FOLLOW SUIT.
-			if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
+			if(dataModel.hasMasterInSuit(leaderSuitIndex)) {
 				System.out.println("***********");
 				System.out.println("2nd FOLLOW SUIT HIGH");
 				cardToPlay = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
@@ -182,7 +182,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			} else {
 				System.out.println("***********");
 				System.out.println("2nd play low off.");
-				cardToPlay = dataModel.getLowOffSuitCardToLead();
+				cardToPlay = dataModel.getLowOffSuitCardToPlay();
 			}
 				
 		}
@@ -201,44 +201,73 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
 			if(dataModel.currentAgentHasSuit(SPADE)) {
+				
+				//TODO: simplicfy: just play over 2nd thrower if possible
 				if( dataModel.getSuitOfSecondThrow() == SPADE) {
-					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
-					if(cardToPlay == null) {
-						cardToPlay = dataModel.getLowOffSuitCardToLead();
+					
+					//if could trump over
+					if(dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.getCardSecondThrow())) {
+						cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
+					
+						//else
+						if(cardToPlay == null) {
+							System.err.println("ERROR: unexpected null in 3rd thrower");
+							System.exit(1);
+						}
+					} else {
+						
+						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+						
 					}
 				} else {
-					if(dataModel.didLeaderPlayMasterAndIsWinning()) {
-						cardToPlay = dataModel.getLowOffSuitCardToLead();
+					if(dataModel.leaderPlayedMaster()) {
+						//PLAY OFF
+						cardToPlay = dataModel.getLowOffSuitCardToPlay();
 					} else {
+						//TRUMP
 						cardToPlay = dataModel.currentPlayergetLowestInSuit(SPADE);
 					}
 				}
 			} else {
-				cardToPlay = dataModel.getLowOffSuitCardToLead();
+				cardToPlay = dataModel.getLowOffSuitCardToPlay();
 			}
+		
 		//FOLLOW SUIT:
 		} else {
+			
+			//If TRUMPED
 			if(dataModel.getSuitOfLeaderThrow() != SPADE && dataModel.getSuitOfSecondThrow() == SPADE) {
-				cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
+					cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
+			
+			//FIGHT WITHIN SUIT:
 			} else {
-				if(dataModel.getSuitOfSecondThrow() != dataModel.getSuitOfLeaderThrow()) {
-					String testCard = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
+				
+				//If lead is winning
+				if(dataModel.cardAGreaterThanCardBGivenLeadCard(dataModel.getCardLeaderThrow(), dataModel.getCardSecondThrow())) {
 					
-					if(dataModel.cardAGreaterThanCardBGivenLeadCard(testCard, dataModel.getCardLeaderThrow())) {
-						cardToPlay = testCard;
+					
+					
+					if(dataModel.getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() != null) {
 						
-					} else {
-						cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
 					}
+					//if 3rd thrower could decrease chance of 4th winning
+							//play high in suit
+					//else
+						//play low in suit
 					
+				
+				//If 2nd thrower is winning:
 				} else {
-					String testCard = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
-					if(dataModel.cardAGreaterThanCardBGivenLeadCard(testCard, dataModel.getCardLeaderThrow()) && dataModel.cardAGreaterThanCardBGivenLeadCard(testCard, dataModel.getCardSecondThrow()) ) {
-						cardToPlay = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
-						
-					} else {
-						cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
-					}
+				
+					
+				//if 2nd is winning play
+					//if could play over
+						//if 4th doesn't have suit
+							//play barely over
+						//else
+							//play highest over
+					//else
+						//play lower
 				}
 			}
 		}
