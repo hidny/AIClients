@@ -49,11 +49,13 @@ public class BooleanTableDataModel {
 	
 	private int cardsPlayedThisRound = 0;
 	
+	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
+
+	
 	public int getCardsPlayedThisRound() {
 		return cardsPlayedThisRound;
 	}
 
-	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
 
 	
 	
@@ -225,6 +227,7 @@ public class BooleanTableDataModel {
 	public String getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
+		//Check preconditions:
 		if(throwNumber == 0) {
 			System.err.println("ERROR: calling getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning on 1st throw. (Not meant to do that)");
 			System.exit(1);
@@ -235,22 +238,196 @@ public class BooleanTableDataModel {
 			System.exit(1);
 		}
 		
-		int leadSuit = this.getSuitOfLeaderThrow();
+		//Get card that's thrown and is currently winning:
+		String currentlyWinningCard = this.getCardLeaderThrow();
 		
-		//TRUMP:
-		if(isVoid(0, leadSuit)) {
-			if(isVoid(0, Constants.SPADE) == false) {
-				//
+		if(throwNumber > 1) {
+			if( this.cardAGreaterThanCardBGivenLeadCard(this.getCardSecondThrow(), this.getCardLeaderThrow())) {
+				currentlyWinningCard = this.getCardSecondThrow();
+			}	
+		}
+
+		boolean[][] cardsOverCurrentlyWinningCard = getCardsStrictlyMorePowerfulThanCard(currentlyWinningCard);
+		
+		int fourthThrowerIndex = 3 - throwNumber;
+		
+		//TODO: reduce # of loops by 2 by creating only 1 loop to go thru the cards
+		
+		//For every card in current players hand, check if it can possible reduce the number of ways 4th thrower can win:
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			for(int j=0; j<Constants.NUM_RANKS; j++) {
+				String tempCard = getCardString(j, i);
+				
+				if(nonLeadPlayerCouldMaybeThrowCard(Constants.CURRENT_PLAYER_INDEX, tempCard)
+						&& cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][i][j] == CERTAINTY
+						&& cardsOverCurrentlyWinningCard[i][j]) {
+					
+					//At this point, we have a potential card that's playable, and stronger than the best card so far...
+					//We just need to check if it could reduce the # of ways the 4th thrower can win:
+					
+					boolean[][] cardsUnderPotentialCard = getCardsStrictlyLessPowerfulThanCard(tempCard);
+					
+					//Fourth thrower index
+					for(int m=0; m<Constants.NUM_SUITS; m++) {
+						for(int n=0; n<Constants.NUM_RANKS; n++) {
+							
+							if(cardsUnderPotentialCard[m][n]
+									&& cardsOverCurrentlyWinningCard[m][n]) {
+								String tempCard2 = getCardString(n, m);
+
+								if(nonLeadPlayerCouldMaybeThrowCard(fourthThrowerIndex, tempCard2) &&
+										cardsCurrentlyHeldByPlayer[fourthThrowerIndex][m][n] != IMPOSSIBLE
+										) {
+									return tempCard;
+								}
+							}
+							
+						}
+					}
+				}
 			}
-		
-		//Follow suit:
-		} else {
-			//get currentPlayerTop card in suit
-			//for curent between currentPlayer Top card and next top card: could 4th thrower have it
 		}
 		
 		return null;
 	}
+	
+	
+	
+	public boolean nonLeadPlayerCouldMaybeThrowCard(int playerIndex, String card) {
+		
+		int dealerSuit = this.getSuitOfLeaderThrow();
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rankIndex = getRankIndex(card);
+		
+		//Check if player could have card:
+		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
+
+			//Check if player throwing this card means she's reneging.
+			if(isVoid(playerIndex, dealerSuit) == false && suitIndex != dealerSuit) {
+				//reneging
+				return false;
+			} else {
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean[][] getCardsStrictlyLessPowerfulThanCard(String card) {
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rankIndex = getRankIndex(card);
+		
+		boolean ret[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
+
+		for(int i=0; i<ret.length; i++) {
+			for(int j=0; j<ret[0].length; j++) {
+				ret[i][j] = false;
+			}
+		}
+		
+		int leadSuit = this.getSuitOfLeaderThrow();
+		
+		int upperLimitDealerSuit;
+		
+		//card is off-suit non trump
+		if(suitIndex != Constants.SPADE && leadSuit != suitIndex ) {
+			return ret;
+		
+		//Card trumps lead suit
+		} else if(suitIndex == Constants.SPADE && leadSuit != Constants.SPADE) {
+			upperLimitDealerSuit = ACE;
+		
+		//Card is lead suit
+		} else if(suitIndex == leadSuit){
+			upperLimitDealerSuit = rankIndex - 1;
+
+		} else {
+			System.err.println("ERROR in getCardsStrictlyLessPowerfulThanCard. Reached case that should be impossible");
+			System.exit(1);
+			upperLimitDealerSuit = -1;
+		}
+		
+		//Get list of cards under card in leadsuit:
+		for(int i=upperLimitDealerSuit; i>=TWO; i--) {
+			ret[leadSuit][i] = true;
+		}
+		
+		//Get list of off-suit non-trump cards
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			if(i != Constants.SPADE && i != leadSuit) {
+				for(int j=0; j<Constants.NUM_RANKS; j++) {
+					ret[i][j] = true;
+				}
+			}
+		}
+
+		//Get spades under card
+		if(suitIndex == Constants.SPADE) {
+			int upperLimitSpadeSuit = rankIndex - 1;
+			for(int i=upperLimitSpadeSuit; i>=TWO; i--) {
+				ret[Constants.SPADE][i] = true;
+			}
+		}
+
+		return ret;
+	}
+	
+	public boolean[][] getCardsStrictlyMorePowerfulThanCard(String card) {
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rankIndex = getRankIndex(card);
+		
+		boolean ret[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
+
+		for(int i=0; i<ret.length; i++) {
+			for(int j=0; j<ret[0].length; j++) {
+				ret[i][j] = false;
+			}
+		}
+		
+		int leadSuit = this.getSuitOfLeaderThrow();
+		
+		int lowerLimitDealerSuit;
+		
+		//card is off-suit non trump
+		if(suitIndex != Constants.SPADE && leadSuit != suitIndex ) {
+			lowerLimitDealerSuit = TWO;
+		
+		//Card trumps lead suit
+		} else if(suitIndex == Constants.SPADE && leadSuit != Constants.SPADE) {
+			lowerLimitDealerSuit = ACE + 1;
+		
+		//Card is lead suit
+		} else if(suitIndex == leadSuit){
+			lowerLimitDealerSuit = rankIndex + 1;
+
+		} else {
+			System.err.println("ERROR in getCardsStrictlyMorePowerfulThanCard. Reached case that should be impossible");
+			System.exit(1);
+			lowerLimitDealerSuit = -1;
+		}
+		
+		for(int i=lowerLimitDealerSuit; i<=ACE; i++) {
+			ret[leadSuit][i] = true;
+		}
+		
+		int lowerLimitSpadeSuit;
+		if(suitIndex != Constants.SPADE) {
+			lowerLimitSpadeSuit = TWO;
+		} else {
+			lowerLimitSpadeSuit = rankIndex + 1;
+		}
+
+		for(int i=lowerLimitSpadeSuit; i<=ACE; i++) {
+			ret[Constants.SPADE][i] = true;
+		}
+
+		return ret;
+	}
+	
 	
 	
 	public boolean throwerHasCardToBeatCurrentWinner() {
@@ -639,6 +816,7 @@ public class BooleanTableDataModel {
 		return null;
 	}
 	
+	
 	//Basic numbers:
 
 	public int getNumberOfAces() {
@@ -675,7 +853,7 @@ public class BooleanTableDataModel {
 	//Opponent card logic:
 
 	//pre: current player has a card in suit Index.
-	public String currentPlayerGetHighestInSuit(int suitIndex) {
+	public String getCardCurrentPlayerGetHighestInSuit(int suitIndex) {
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				return getCardString(13*suitIndex + i);
@@ -687,7 +865,7 @@ public class BooleanTableDataModel {
 	}
 	
 	//pre: current player has a card in suit Index.
-	public String currentPlayergetLowestInSuit(int suitIndex) {
+	public String getCardCurrentPlayergetLowestInSuit(int suitIndex) {
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				return getCardString(13*suitIndex + i);

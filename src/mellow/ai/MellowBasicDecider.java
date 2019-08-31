@@ -159,16 +159,16 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			if(dataModel.hasMasterInSuit(leaderSuitIndex)) {
 				System.out.println("***********");
 				System.out.println("2nd FOLLOW SUIT HIGH");
-				cardToPlay = dataModel.currentPlayerGetHighestInSuit(leaderSuitIndex);
+				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 				//don't play high if leader played higher.
 				if( dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, dataModel.getCardLeaderThrow())) {
 					System.out.println("2nd NEVER MIND FOLLOW SUIT LOW");
-					cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
+					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
 				}
 				System.out.println("***********");
 			} else {
 				System.out.println("2nd FOLLOW SUIT LOW");
-				cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
+				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
 			}
 			
 		} else {
@@ -178,7 +178,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			if(dataModel.currentAgentHasSuit(SPADE)) {
 					System.out.println("***********");
 					System.out.println("2nd trump low.");
-					cardToPlay = dataModel.currentPlayergetLowestInSuit(SPADE);
+					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
 			} else {
 				System.out.println("***********");
 				System.out.println("2nd play low off.");
@@ -198,6 +198,10 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			//check to see if we could trump:
 			//If we could trump, just trump :)
 			
+		
+		//TODO: this is all wrong!
+		
+		/*
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
 			if(dataModel.currentAgentHasSuit(SPADE)) {
@@ -220,6 +224,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 						
 					}
 				} else {
+					//TODO: what if leader(partner) plays a higher card than 2nd throw that isn't master, but 4th is out of that suit... and 
 					if(dataModel.leaderPlayedMaster()) {
 						//PLAY OFF
 						cardToPlay = dataModel.getLowOffSuitCardToPlay();
@@ -234,10 +239,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		//FOLLOW SUIT:
 		} else {
+			*/
+		
+		//Follow suit:
+		if(dataModel.currentAgentHasSuit(leaderSuitIndex)) {
 			
-			//If TRUMPED
+			//If leader got TRUMPED by 2nd player:
 			if(dataModel.getSuitOfLeaderThrow() != SPADE && dataModel.getSuitOfSecondThrow() == SPADE) {
-					cardToPlay = dataModel.currentPlayergetLowestInSuit(leaderSuitIndex);
+					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
 			
 			//FIGHT WITHIN SUIT:
 			} else {
@@ -245,29 +254,47 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				//If lead is winning
 				if(dataModel.cardAGreaterThanCardBGivenLeadCard(dataModel.getCardLeaderThrow(), dataModel.getCardSecondThrow())) {
 					
-					
-					
-					if(dataModel.getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() != null) {
+					if(dataModel.hasNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning()) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 						
+					} else {
+						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					}
-					//if 3rd thrower could decrease chance of 4th winning
-							//play high in suit
-					//else
-						//play low in suit
-					
 				
 				//If 2nd thrower is winning:
 				} else {
 				
-					
-				//if 2nd is winning play
-					//if could play over
-						//if 4th doesn't have suit
-							//play barely over
+					//If currentAgent could play over 2nd thrower:
+					if(dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.getCardSecondThrow())) {
+						
+						//Sanity check:
+						if(dataModel.getSuitOfSecondThrow() != dataModel.getSuitOfLeaderThrow()) {
+							System.err.println("ERROR: At this point, I expected the 2nd thrower to have followed suit.");
+							System.exit(1);
+						}
+						
+						//If we know 4th is void:
+						if(dataModel.isVoid(1, dataModel.getSuitOfLeaderThrow())) {
+							
+							//Play highest to force 4th to play even higher... or stop 4th thrower from winning:
+							cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
+						
+						} else {
+							//play barely over 2nd thrower to force 4th thrower to trump for the win:
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						}
+					} else {
+						
+						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+					}
+					//if 2nd is winning play
+						//if could play over
+							//if 4th doesn't have suit
+								//play barely over
+							//else
+								//play highest over
 						//else
-							//play highest over
-					//else
-						//play lower
+							//play lower
 				}
 			}
 		}
