@@ -469,8 +469,8 @@ public class BooleanTableDataModel {
 			}
 			
 			for(int i=startRankIndex; i <= ACE; i++) {
-				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][winnerSuitIndex][i] == CERTAINTY) {
-					return getCardString(i, winnerSuitIndex);
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][Constants.SPADE][i] == CERTAINTY) {
+					return getCardString(i, Constants.SPADE);
 				}
 			}
 		}
@@ -803,14 +803,13 @@ public class BooleanTableDataModel {
 	}
 	
 	public String getCardInHandClosestOverSameSuit(String card) {
-		int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
 		int rankIndex = getRankIndex(card);
 		
 		for(int j=rankIndex+1; j< Constants.NUM_RANKS; j++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][j] == CERTAINTY) {
-				return getCardString(rankIndex, suitIndex);
+				return getCardString(j, suitIndex);
 			}
 		}
 		return null;
