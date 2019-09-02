@@ -6,6 +6,9 @@ public class Constants {
 	public static final int NUM_SUITS = 4;
 	public static final int NUM_RANKS = 13;
 	public static final int NUM_CARDS = NUM_SUITS * NUM_RANKS;
+	
+	public static final int NUM_STARTING_CARDS_IN_HAND = 13;
+	
 	public static final int CURRENT_AGENT_INDEX = 0;
 	
 	public static final int SPADE = 0;

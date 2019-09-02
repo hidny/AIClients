@@ -55,37 +55,9 @@ public class BooleanTableDataModel {
 	public int getCardsPlayedThisRound() {
 		return cardsPlayedThisRound;
 	}
-
-
 	
 	
 	
-	public void resetStateForNewRound() {
-		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
-		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
-		CardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
-		players = new String[Constants.NUM_PLAYERS];
-		cardsPlayedThisRound =0;
-		cardStringsPlayed = new String[Constants.NUM_CARDS];
-		
-		resetCardKnowledgeTableForNewRound();
-	}
-	
-	public void resetCardKnowledgeTableForNewRound() {
-		for(int i=0; i<cardsUsed.length; i++) {
-			for(int j=0; j<cardsUsed[0].length; j++) {
-				cardsUsed[i][j] = false;
-				for(int k=0; k< Constants.NUM_PLAYERS; k++) {
-					CardsUsedByPlayer[k][i][j] = false;
-				}
-				for(int k=1; k< Constants.NUM_PLAYERS; k++) {
-					cardsCurrentlyHeldByPlayer[k][i][j] = DONTKNOW;
-				}
-				cardsCurrentlyHeldByPlayer[0][i][j] = IMPOSSIBLE;
-			}
-		}
-		
-	}
 	
 	//TODO: update cardsCurrentlHeldByPlayer
 	public boolean isVoid(int playerIndex, int suitIndex) {
@@ -100,6 +72,10 @@ public class BooleanTableDataModel {
 	
 	
 	public void setupCardsInHandForNewRound(String cards[]) {
+		
+		resetStateForNewRound();
+		resetCardKnowledgeTableForNewRound();
+		
 		//System.out.println("Printing cards");
 		cardsPlayedThisRound = 0;
 		
@@ -117,6 +93,34 @@ public class BooleanTableDataModel {
 			 cardStringsPlayed[i] = "";
 		 }
 				
+	}
+
+	//TODO
+	//Technically not needed to be called because setupCardsInHandForNewRound will call it.
+	public void resetStateForNewRound() {
+		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
+		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		CardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		cardsPlayedThisRound =0;
+		cardStringsPlayed = new String[Constants.NUM_CARDS];
+		
+	}
+	
+	
+	private void resetCardKnowledgeTableForNewRound() {
+		for(int i=0; i<cardsUsed.length; i++) {
+			for(int j=0; j<cardsUsed[0].length; j++) {
+				cardsUsed[i][j] = false;
+				for(int k=0; k< Constants.NUM_PLAYERS; k++) {
+					CardsUsedByPlayer[k][i][j] = false;
+				}
+				for(int k=1; k< Constants.NUM_PLAYERS; k++) {
+					cardsCurrentlyHeldByPlayer[k][i][j] = DONTKNOW;
+				}
+				cardsCurrentlyHeldByPlayer[0][i][j] = IMPOSSIBLE;
+			}
+		}
+		
 	}
 	
 	

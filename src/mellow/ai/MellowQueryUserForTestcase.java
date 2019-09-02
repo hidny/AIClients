@@ -292,11 +292,11 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		try {
 			
 			//TODO: look up how to make directories so it could automatically create directories as required
-			//f = new File("testcases\\" + this.playerNames[0]);
+			//f = new File(""..\\TestCaseAndReplayDatatestcases\\" + this.playerNames[0]);
 			
 			do {
 				num++;
-				f = new File("testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt");
+				f = new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt");
 			} while(f.exists());
 			
 			
@@ -313,7 +313,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 		PrintWriter testCaseFile = null;
 		try {
-			testCaseFile = new PrintWriter(new File("testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt"));
+			testCaseFile = new PrintWriter(new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt"));
 			
 		} catch( Exception e) {
 			e.printStackTrace();

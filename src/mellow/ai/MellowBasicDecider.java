@@ -41,6 +41,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	//2: north cards
 	//3: east cards
 	
+	
 	public void resetStateForNewRound() {
 		dataModel.resetStateForNewRound();
 		

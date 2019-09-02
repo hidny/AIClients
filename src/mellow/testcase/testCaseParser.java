@@ -49,7 +49,7 @@ public class testCaseParser {
 		//https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
 		
 		//TODO: standardize this and add constant file
-		File folder = new File("testcases\\Michael");
+		File folder = new File("..\\TestCaseAndReplayData\\testcases\\Michael");
 		
 		File[] listOfFiles = folder.listFiles();
 

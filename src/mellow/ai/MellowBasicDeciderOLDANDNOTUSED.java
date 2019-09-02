@@ -96,7 +96,7 @@ import java.util.ArrayList;
  * This is HARD... I feel like I need to teach it to be approximate.
  */
 
-public class MellowBasicDecider2 implements MellowAIDeciderInterface {
+public class MellowBasicDeciderOLDANDNOTUSED implements MellowAIDeciderInterface {
 	int tempAScore;
 	int tempBScore;
 	
@@ -152,7 +152,7 @@ public class MellowBasicDecider2 implements MellowAIDeciderInterface {
 	private int cardsPlayedThisRound;
 	private String cardStringsPlayed[] = new String[NUM_CARDS];
 	
-	public MellowBasicDecider2(boolean isFast) {
+	public MellowBasicDeciderOLDANDNOTUSED(boolean isFast) {
 		
 	}
 	

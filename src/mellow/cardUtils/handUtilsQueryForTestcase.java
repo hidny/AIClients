@@ -46,8 +46,6 @@ public class handUtilsQueryForTestcase {
 			return cardList.get(0);
 		}
 		
-		int numCardsToFollowSuit = 0;
-		
 		String suitLeadingCard = getSuitString(leadingCard);
 		for(int i=0; i<cardList.size(); i++) {
 			String currentSuit = getSuitString(cardList.get(i));
