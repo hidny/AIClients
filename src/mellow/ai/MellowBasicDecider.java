@@ -348,7 +348,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			
 			
 		if (dataModel.hasCard("JS") && dataModel.getNumberOfCardsOneSuit(0) >= 4 && (dataModel.hasCard("QS") || dataModel.hasCard("KS") || dataModel.hasCard("AS"))) {
-			bid += bid + 0.15;
+			bid += 0.15;
 			System.out.println("I have the JS and a higher one... bonus I guess!");
 		}
 		
@@ -360,7 +360,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		double trumpResevoir = 0.0;
 		
 		//Add a bid for every extra spade over 3 you have:
-		if (dataModel.getNumberOfCardsOneSuit(0) >= 3) {
+		if (dataModel.getNumberOfCardsOneSuit(0) >= 4) {
 			bid += dataModel.getNumberOfCardsOneSuit(0) - 3.5;
 			
 			if (dataModel.hasCard("JS")) {
@@ -374,6 +374,16 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			} else {
 				trumpResevoir = 0.501;
 			}
+			
+			//ADD
+			//This didn't make it better :( different things failed...
+			//If you have the AS or KS, trumping is more likely (I think)
+			if(dataModel.hasCard("AS") || dataModel.hasCard("KS")) {
+				bid += trumpResevoir;
+				trumpResevoir = 0.0;
+			}
+			//END ADD
+			
 		}
 			//TODO: 5+ spades should give a special bonus depending on the offsuits.
 		    // The "take everything" bonus :P
@@ -433,6 +443,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			bid = bid  - 1;
 		}
 		
+		System.out.println("Bid double: " + bid);
 		int intBid = (int) Math.floor(bid);
 		
 		if (intBid < 0) {
