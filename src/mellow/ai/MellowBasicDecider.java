@@ -334,6 +334,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			bid += 1.0;
 			if (dataModel.getNumberOfCardsOneSuit(0) == 2) {
 				bid = bid - 0.2;
+				
 				trumpingIsSacrifice = true;
 			}
 			System.out.println("I have the KS");
@@ -346,18 +347,15 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			System.out.println("I have the QS");
 		}
 			
-			
-		if (dataModel.hasCard("JS") && dataModel.getNumberOfCardsOneSuit(0) >= 4 && (dataModel.hasCard("QS") || dataModel.hasCard("KS") || dataModel.hasCard("AS"))) {
-			bid += 0.15;
-			System.out.println("I have the JS and a higher one... bonus I guess!");
-		}
-		
+	
 		if(dataModel.getNumberOfCardsOneSuit(0) >= 4 ) {
 			trumpingIsSacrifice = true;
 		}
-			
 		
-		double trumpResevoir = 0.0;
+		double trumpResevoir= 0.0;
+		if (dataModel.getNumberOfCardsOneSuit(0) == 3) {
+			trumpResevoir = 0.44;
+		}
 		
 		//Add a bid for every extra spade over 3 you have:
 		if (dataModel.getNumberOfCardsOneSuit(0) >= 4) {
@@ -374,15 +372,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			} else {
 				trumpResevoir = 0.501;
 			}
-			
-			//ADD
-			//This didn't make it better :( different things failed...
-			//If you have the AS or KS, trumping is more likely (I think)
-			if(dataModel.hasCard("AS") || dataModel.hasCard("KS")) {
-				bid += trumpResevoir;
-				trumpResevoir = 0.0;
-			}
-			//END ADD
 			
 		}
 			//TODO: 5+ spades should give a special bonus depending on the offsuits.
@@ -401,11 +390,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		//offsuit king adjust if too many or too little of a single suit:
 		for(int i=0; i<Constants.OFFSUITS.length; i++) {
 			String off = Constants.OFFSUITS[i];
-			if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(1) == 1) {
+			if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) == 1) {
 				bid = bid - 0.55;
-			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(1) > 5) {
-				bid = bid - 0.35;
-			} else if(dataModel.hasCard("K" + off) && (dataModel.hasCard("Q" + off) || dataModel.hasCard("A" + off))) {
+			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) > 5) {
+				bid = bid - 0.65;
+			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) > 4) {
+				bid = bid - 0.25;
+			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) > 3) {
+				bid = bid - 0.20;
+			}
+			
+			if(dataModel.hasCard("K" + off) && (dataModel.hasCard("Q" + off) || dataModel.hasCard("A" + off))) {
 				bid = bid + 0.26;
 			}
 		}
