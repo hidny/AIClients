@@ -359,18 +359,18 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		//Add a bid for every extra spade over 3 you have:
 		if (dataModel.getNumberOfCardsOneSuit(0) >= 4) {
-			bid += dataModel.getNumberOfCardsOneSuit(0) - 3.5;
+			bid += dataModel.getNumberOfCardsOneSuit(0) - 4.0;
 			
 			if (dataModel.hasCard("JS")) {
-				bid +=  0.5;
+				bid +=  1.0;
 			} else if (dataModel.hasCard("TS")) {
-				bid += 0.3;
+				bid += 0.8;
 				trumpResevoir = 0.201;
 			} else if(dataModel.getNumberOfCardsOneSuit(1) < 2 ||  dataModel.getNumberOfCardsOneSuit(2) < 2 ||  dataModel.getNumberOfCardsOneSuit(3) < 2) {
-				bid += 0.2;
+				bid += 0.7;
 				trumpResevoir = 0.301;
 			} else {
-				trumpResevoir = 0.501;
+				trumpResevoir = 1.001;
 			}
 			
 		}
