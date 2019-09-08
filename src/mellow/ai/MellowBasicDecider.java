@@ -150,9 +150,55 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		String cardToPlay = null;
 		//get suit to follow.
 		
+		
+		//START REALLY OLD CODE:
+		//SEE NOTES FOR BETTER PLAN
+		//TODO: pseudo code for not following suit
+		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
+		String leaderCard = dataModel.getCardLeaderThrow();
 		
+		//TODO currentAgentHasSuit and isVoid does the same thing...?
+		if(dataModel.currentAgentHasSuit(leaderSuitIndex)) {
+			
+			if(dataModel.couldPlayCardInHandOverCardInSameSuit(leaderCard)) {
+				
+				boolean thirdVoid = dataModel.isVoid(1, leaderSuitIndex);
+				boolean fourthVoid = dataModel.isVoid(2, leaderSuitIndex);
+			
+			
+				if(thirdVoid && fourthVoid) {	
+					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
+
+				} else if(thirdVoid && fourthVoid == false) {
+					//Maybe play low? I don't know...
+					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
+				
+				} else if(thirdVoid == false && fourthVoid) {
+					//TODO This doesn't really work if trump is spade... 
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+					
+				} else if(thirdVoid == false && fourthVoid == false){
+					
+					if(dataModel.hasMasterInSuit(leaderSuitIndex)) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+					} else {
+						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+					}
+					
+				} else {
+					System.err.println("ERROR: this condition shouldn't happen in get ai 2nd throw");
+					System.exit(1);
+				}
+
+			} else {
+				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+			}
+			
+			System.out.println("TEST LATEST CODE 2nd");
+		}
+		/*
 		System.out.println("Suit Index Leader: " + dataModel.getSuitOfLeaderThrow() + "  " + dataModel.getCardString(13*dataModel.getSuitOfLeaderThrow()).substring(1));
 		
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex)) {
@@ -187,7 +233,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 				
 		}
-		
+		//END REALLY OLD CODE
+		*/
 	
 		return cardToPlay;
 	}

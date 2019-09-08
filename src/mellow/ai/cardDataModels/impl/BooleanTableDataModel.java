@@ -57,9 +57,6 @@ public class BooleanTableDataModel {
 	}
 	
 	
-	
-	
-	//TODO: update cardsCurrentlHeldByPlayer
 	public boolean isVoid(int playerIndex, int suitIndex) {
 		
 		for(int i=TWO; i<=ACE; i++) {
@@ -69,7 +66,7 @@ public class BooleanTableDataModel {
 		}
 		return true;
 	}
-	
+
 	
 	public void setupCardsInHandForNewRound(String cards[]) {
 		
@@ -880,20 +877,10 @@ public class BooleanTableDataModel {
 	}
 	
 	
-	
-	public boolean playerMightHaveSuit(int playerIndex, int suitIndex) {
-		for(int j=0; j<Constants.NUM_RANKS; j++) {
-			if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][j] != IMPOSSIBLE) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 //TODO: suspicious function
 	//TODO: Might delete or make private and only accept Strings from other classes 
 	public boolean currentAgentHasSuit(int suitIndex) {
-		return playerMightHaveSuit(Constants.CURRENT_AGENT_INDEX, suitIndex);
+		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}
 	
 	//Card logic:
