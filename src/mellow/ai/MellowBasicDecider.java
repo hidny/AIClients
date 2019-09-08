@@ -141,7 +141,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			System.out.println("***********");
 			System.out.println("Leading low:");
 			System.out.println("***********");
-			cardToPlay = dataModel.getLowCardToLead();
+			cardToPlay = dataModel.getLowOffSuitCardToLead();
 		}
 		return cardToPlay;
 	}
@@ -150,7 +150,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		String cardToPlay = null;
 		//get suit to follow.
 		
-		
+		System.out.println("2nd throw");
 		//START REALLY OLD CODE:
 		//SEE NOTES FOR BETTER PLAN
 		//TODO: pseudo code for not following suit
@@ -200,9 +200,13 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			//No following suit:
 		} else {
 			
-			//no trumping: play off
+			//no trumping: play off:
 			if(leaderSuitIndex== SPADE || dataModel.isVoid(0, SPADE)) {
 				cardToPlay = dataModel.getLowOffSuitCardToPlay();
+				
+				//Must play trump:
+			} else if(dataModel.currentPlayerMustTrump()) {
+				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
 				
 				//Option to trump:
 			} else {
@@ -216,6 +220,11 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				} else if((dataModel.isVoid(2, SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false) && (13 - dataModel.getNumCardsPlayedForSuit(SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(SPADE)) {
 					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
 
+					
+					if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
+						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+					}
+					
 				} else {
 					cardToPlay = dataModel.getLowOffSuitCardToPlay();
 				}
@@ -229,7 +238,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	public String AIThirdThrow() {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
-		
 		
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {

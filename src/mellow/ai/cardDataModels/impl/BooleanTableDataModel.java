@@ -725,6 +725,23 @@ public class BooleanTableDataModel {
 		
 	}
 	
+	//(Ignore the cards in playerIndex's hand)
+	public boolean isEffectivelyMasterCardForPlayer(int playerIndex, String card) {
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rank = getRankIndex(card);
+		for(int i=rank+1; i <= ACE; i++) {
+			for(int j=0; j<Constants.NUM_PLAYERS; j++) {
+				if(j != playerIndex && cardsCurrentlyHeldByPlayer[j][suitIndex][i] != IMPOSSIBLE) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	private int getNumSuitsWithMastersInHand() {
 		 int numberOfMasters = 0;
 		 for(int i=0; i<cardsUsed.length; i++) {
@@ -761,7 +778,7 @@ public class BooleanTableDataModel {
 	//END of MASTER FUNCTIONS
 
 	//LOWEST CARD
-	public String getLowCardToLead() {
+	public String getLowOffSuitCardToLead() {
 		String cardToPlay = "";
 		
 		FOUNDCARD:
@@ -1052,5 +1069,15 @@ public class BooleanTableDataModel {
 		return ret;
 	}
 	
+	public boolean currentPlayerMustTrump() {
+		for(int i =0; i<Constants.NUM_SUITS; i++) {
+			if(i != Constants.SPADE) {
+				if(isVoid(Constants.CURRENT_AGENT_INDEX, i) == false) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
 }
