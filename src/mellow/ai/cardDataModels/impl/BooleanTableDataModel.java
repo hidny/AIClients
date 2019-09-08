@@ -51,7 +51,7 @@ public class BooleanTableDataModel {
 	
 	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
 
-	
+
 	public int getCardsPlayedThisRound() {
 		return cardsPlayedThisRound;
 	}
@@ -1031,6 +1031,26 @@ public class BooleanTableDataModel {
 			this.players[i] = players[i] + "";
 		}
 	}
-
+	
+	public int getNumCardsCurrentUserStartedWithInSuit(int suit) {
+		int ret = 0;
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suit][i] == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
+	public int getNumCardsPlayedForSuit(int suit) {
+		int ret = 0;
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
+			if(cardsUsed[suit][i]) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
 	
 }

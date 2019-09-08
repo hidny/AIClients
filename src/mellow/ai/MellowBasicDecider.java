@@ -196,45 +196,32 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
 			}
 			
-			System.out.println("TEST LATEST CODE 2nd");
-		}
-		/*
-		System.out.println("Suit Index Leader: " + dataModel.getSuitOfLeaderThrow() + "  " + dataModel.getCardString(13*dataModel.getSuitOfLeaderThrow()).substring(1));
-		
-		if(dataModel.currentAgentHasSuit(leaderSuitIndex)) {
-			//FOLLOW SUIT.
-			if(dataModel.hasMasterInSuit(leaderSuitIndex)) {
-				System.out.println("***********");
-				System.out.println("2nd FOLLOW SUIT HIGH");
-				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
-				//don't play high if leader played higher.
-				if( dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, dataModel.getCardLeaderThrow())) {
-					System.out.println("2nd NEVER MIND FOLLOW SUIT LOW");
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
-				}
-				System.out.println("***********");
-			} else {
-				System.out.println("2nd FOLLOW SUIT LOW");
-				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
-			}
 			
+			//No following suit:
 		} else {
-			//check to see if we could trump:
-			//If we could trump, just trump :)
-		
-			if(dataModel.currentAgentHasSuit(SPADE)) {
-					System.out.println("***********");
-					System.out.println("2nd trump low.");
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
-			} else {
-				System.out.println("***********");
-				System.out.println("2nd play low off.");
+			
+			//no trumping: play off
+			if(leaderSuitIndex== SPADE || dataModel.isVoid(0, SPADE)) {
 				cardToPlay = dataModel.getLowOffSuitCardToPlay();
-			}
 				
+				//Option to trump:
+			} else {
+				if(dataModel.isMasterCard(leaderCard) && dataModel.getNumCardsPlayedForSuit(SPADE) < 2 * Constants.NUM_PLAYERS) {
+					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
+
+				} else if(dataModel.isMasterCard(leaderCard) && (dataModel.isVoid(2, SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false)) {
+					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
+
+				//I guess we should trump if we don't have much spade?
+				} else if((dataModel.isVoid(2, SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false) && (13 - dataModel.getNumCardsPlayedForSuit(SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(SPADE)) {
+					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
+
+				} else {
+					cardToPlay = dataModel.getLowOffSuitCardToPlay();
+				}
+			}
 		}
-		//END REALLY OLD CODE
-		*/
+		
 	
 		return cardToPlay;
 	}
