@@ -14,6 +14,7 @@ public class BooleanTableDataModel {
 	int CERTAINTY = 1000;
 	int DONTKNOW = -1;
 	
+	int BID_NOT_SET = -1;
 	
 	//This is dumb: Think about changing it later.
 	//Higher number means higher power
@@ -46,6 +47,8 @@ public class BooleanTableDataModel {
 	
 	
 	private String players[] = new String[Constants.NUM_PLAYERS];
+	private int bids[];
+	private int tricks[];
 	
 	private int cardsPlayedThisRound = 0;
 	
@@ -56,6 +59,39 @@ public class BooleanTableDataModel {
 		return cardsPlayedThisRound;
 	}
 	
+	public void setBid(String playerName, int bid) {
+		bids[convertPlayerNameToIndex(playerName)] = bid;
+	}
+	
+	public int getBid(String playerName) {
+		return bids[convertPlayerNameToIndex(playerName)];
+	}
+	
+	public int getBid(int indexPlayer) {
+		return bids[indexPlayer];
+	}
+	
+	public int getTricks(String playerName) {
+		return tricks[convertPlayerNameToIndex(playerName)];
+	}
+	
+	public int getTrick(int indexPlayer) {
+		return tricks[indexPlayer];
+	}
+	
+	
+	public boolean someoneBidMellow() {
+		for(int i=0; i<bids.length; i++) {
+			if(bids[i] == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean burntMellow(int playerIndex) {
+		return bids[playerIndex] == 0 && tricks[playerIndex] > 0;
+	}
 	
 	public boolean isVoid(int playerIndex, int suitIndex) {
 		
@@ -89,7 +125,12 @@ public class BooleanTableDataModel {
 		 for(int i=0; i<Constants.NUM_SUITS*Constants.NUM_RANKS; i++) {
 			 cardStringsPlayed[i] = "";
 		 }
-				
+		 
+		 bids = new int[Constants.NUM_PLAYERS];
+		 tricks = new int[Constants.NUM_PLAYERS];
+		 for(int i=0; i<bids.length; i++) {
+			bids[i] = BID_NOT_SET;
+		 }
 	}
 
 	//TODO
@@ -101,6 +142,11 @@ public class BooleanTableDataModel {
 		cardsPlayedThisRound =0;
 		cardStringsPlayed = new String[Constants.NUM_CARDS];
 		
+		bids = new int[Constants.NUM_PLAYERS];
+		tricks = new int[Constants.NUM_PLAYERS];
+		for(int i=0; i<bids.length; i++) {
+			bids[i] = BID_NOT_SET;
+		 }
 	}
 	
 	
@@ -134,6 +180,9 @@ public class BooleanTableDataModel {
 		}
 		//End sanity check
 		
+		//Update tricks (if needed)
+		handleTrickBeforeRegistering4thCardIfNeeded(indexPlayer, card);
+		
 		cardsUsed[cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		CardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
@@ -158,6 +207,30 @@ public class BooleanTableDataModel {
 		
 		//TODO: Do some logically deductions here and figure out which player must have cards by process of elimination
 	}
+	
+	private void handleTrickBeforeRegistering4thCardIfNeeded(int indexPlayer, String card) {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 3) {
+			if(cardAGreaterThanCardBGivenLeadCard(card, getCurrentFightWinningCard())) { 
+				tricks[indexPlayer]++;
+			} else {
+				String winningCard = getCurrentFightWinningCard();
+				
+				if(getCardLeaderThrow().equals(winningCard)) {
+					tricks[(indexPlayer + 1)%4]++;
+				} else if(getCardSecondThrow().equals(winningCard)) {
+					tricks[(indexPlayer + 2)%4]++;
+				} else if(getCardThirdThrow().equals(winningCard)) {
+					tricks[(indexPlayer + 3)%4]++;
+				} else {
+					System.err.println("ERROR: unknown fight winner!");
+					System.exit(1);
+				}
+			
+			}
+		}
+	}
 
 	//pre: leader card thrown
 	public String getCardLeaderThrow() {
@@ -173,6 +246,7 @@ public class BooleanTableDataModel {
 		return cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 2];
 	}
 	
+	
 	//pre leader card thrown
 	public int getSuitOfLeaderThrow() {
 		return CardStringFunctions.getIndexOfSuit(cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 0]);
@@ -187,6 +261,7 @@ public class BooleanTableDataModel {
 	public int getSuitOfThirdThrow() {
 		return CardStringFunctions.getIndexOfSuit(cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 2]);
 	}
+	
 	
 	//pre: function is called when AI is deciding the 2nd, 3rd or 4th throu
 	public String getCurrentFightWinningCard() {
@@ -211,6 +286,7 @@ public class BooleanTableDataModel {
 				currentWinner = getCardThirdThrow();
 			}
 		}
+		
 		
 		return currentWinner;
 		

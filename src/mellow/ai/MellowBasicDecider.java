@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
+import mellow.ai.situationHandlers.PlaySituation;
 
 //_______________________
 //This is a basic AI that handles non-mellow rounds for someone who is leading, 2nd, and 3rd.
@@ -77,8 +78,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	@Override
 	public void receiveBid(String playerName, int bid) {
-		// TODO Auto-generated method stub
-		
+		dataModel.setBid(playerName, bid);
 	}
 
 	@Override
@@ -95,261 +95,65 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	@Override
 	public String getCardToPlay() {
 		
+
+		for(int i=0; i<4; i++) {
+			if(dataModel.burntMellow(i)) {
+				System.out.println("TEST BURNT MELLOW index; " + i);
+			}
+		}
+		
 		if(dataModel.throwerCanOnlyPlayOneCard()) {
 			System.out.println("**Forced to play card");
 			return dataModel.getOnlyCardCurrentPlayerCouldPlay();
 		}
 		
+		if(dataModel.someoneBidMellow()) {
+			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0) {
+				System.out.println("MELLOW TEST");
+				return null;
+			} else {
+				//TODO: REPLACE
+				return PlaySituation.handleNormalThrow(dataModel);
+			}
+		} else {
+			return PlaySituation.handleNormalThrow(dataModel);
+		}
+		
+		
+	}
+
+	
+	public String handleThrowAsSingleMellowBidder() {
+
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		//leader:
 		String cardToPlay = null;
 		System.out.println("**Inside get card to play");
-		if(throwIndex == 0) {
-			cardToPlay = AILeaderThrow();
+		if(dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX)) {
+			System.out.println("BURNT MELLOW");
+		}
+		/*if(throwIndex == 0) {
+			cardToPlay = AILeaderThrow(dataModel);
 			
 		//second play low
 		} else if(throwIndex == 1) {
-			cardToPlay = AISecondThrow();
+			cardToPlay = AISecondThrow(dataModel);
 		//TODO
 		//third plays high.
 		} else if(throwIndex == 2) {
-			cardToPlay = AIThirdThrow();
+			cardToPlay = AIThirdThrow(dataModel);
 		//TODO:
 		//last barely makes the trick or plays low.
 		} else {
-			cardToPlay = AIFourthThrow();
+			cardToPlay = AIFourthThrow(dataModel);
 		}
 		
 		if(cardToPlay != null) {
 			System.out.println("AI decided on " + cardToPlay);
 		}
-		
+		*/
 		return cardToPlay;
 	}
-
-	//AIs for non-mellow bid games:
-	
-	public String AILeaderThrow() {
-		String cardToPlay = null;
-		if(dataModel.getMasterCard() != null) {
-			//play a master card:
-			cardToPlay = dataModel.getMasterCard();
-			System.out.println("***********");
-			System.out.println("Playing master card: " + cardToPlay);
-			System.out.println("***********");
-		} else {
-			System.out.println("***********");
-			System.out.println("Leading low:");
-			System.out.println("***********");
-			cardToPlay = dataModel.getLowOffSuitCardToLead();
-		}
-		return cardToPlay;
-	}
-	
-	public String AISecondThrow() {
-		String cardToPlay = null;
-		//get suit to follow.
-		
-		System.out.println("2nd throw");
-		//START REALLY OLD CODE:
-		//SEE NOTES FOR BETTER PLAN
-		//TODO: pseudo code for not following suit
-		
-		//TODO: only deal with string (No index)
-		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
-		String leaderCard = dataModel.getCardLeaderThrow();
-		
-		//TODO currentAgentHasSuit and isVoid does the same thing...?
-		if(dataModel.currentAgentHasSuit(leaderSuitIndex)) {
-			
-			if(dataModel.couldPlayCardInHandOverCardInSameSuit(leaderCard)) {
-				
-				boolean thirdVoid = dataModel.isVoid(1, leaderSuitIndex);
-				boolean fourthVoid = dataModel.isVoid(2, leaderSuitIndex);
-			
-			
-				if(thirdVoid && fourthVoid) {	
-					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
-
-				} else if(thirdVoid && fourthVoid == false) {
-					//Maybe play low? I don't know...
-					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
-				
-				} else if(thirdVoid == false && fourthVoid) {
-					//TODO This doesn't really work if trump is spade... 
-					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
-					
-				} else if(thirdVoid == false && fourthVoid == false){
-					
-					if(dataModel.hasMasterInSuit(leaderSuitIndex)) {
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
-					} else {
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
-					}
-					
-				} else {
-					System.err.println("ERROR: this condition shouldn't happen in get ai 2nd throw");
-					System.exit(1);
-				}
-
-			} else {
-				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
-			}
-			
-			
-			//No following suit:
-		} else {
-			
-			//no trumping: play off:
-			if(leaderSuitIndex== SPADE || dataModel.isVoid(0, SPADE)) {
-				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-				
-				//Must play trump:
-			} else if(dataModel.currentPlayerMustTrump()) {
-				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
-				
-				//Option to trump:
-			} else {
-				if(dataModel.isMasterCard(leaderCard) && dataModel.getNumCardsPlayedForSuit(SPADE) < 2 * Constants.NUM_PLAYERS) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
-
-				} else if(dataModel.isMasterCard(leaderCard) && (dataModel.isVoid(2, SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false)) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
-
-				//I guess we should trump if we don't have much spade?
-				} else if((dataModel.isVoid(2, SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false) && (13 - dataModel.getNumCardsPlayedForSuit(SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(SPADE)) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
-
-					
-					if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
-						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-					}
-					
-				} else {
-					cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-				}
-			}
-		}
-		
-	
-		return cardToPlay;
-	}
-	
-	public String AIThirdThrow() {
-		String cardToPlay = null;
-		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
-		
-		//CAN'T FOLLOW SUIT:
-		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
-
-			if(dataModel.currentAgentHasSuit(SPADE)) {
-				
-				//2nd thrower trumped:
-				if( dataModel.getSuitOfSecondThrow() == SPADE) {
-					
-					//if could trump over, just go barely over
-					if(dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.getCardSecondThrow())) {
-						
-						//TODO: what if 4th thrower is also able to trump? That gets into weird logic
-						cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
-					
-					} else {
-						//If can't trump over
-						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-						
-					}
-				} else {
-					
-					//if your partner played master and 2nd thrower didn't trump over
-					if(dataModel.leaderPlayedMaster()) {
-						//PLAY OFF because leaderPlayedMaster
-						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-					} else {
-						//TRUMP
-						
-						//TODO: what if leader(partner) plays a higher card than 2nd throw that isn't master, but 4th could trump too... 
-						//... I don't even know. That gets into weird logic
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(SPADE);
-					}
-				}
-				
-				//No Spade, so play off:
-			} else {
-				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-			}
-		
-		//FOLLOW SUIT:
-		} else {
-			
-			//If leader got TRUMPED by 2nd player:
-			if(dataModel.getSuitOfLeaderThrow() != SPADE && dataModel.getSuitOfSecondThrow() == SPADE) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
-			
-			//FIGHT WITHIN SUIT:
-			} else {
-				
-				//If lead is winning
-				if(dataModel.cardAGreaterThanCardBGivenLeadCard(dataModel.getCardLeaderThrow(), dataModel.getCardSecondThrow())) {
-					
-					if(dataModel.hasNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning()) {
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
-						
-					} else {
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
-					}
-				
-				//If 2nd thrower is winning:
-				} else {
-				
-					//If currentAgent could play over 2nd thrower:
-					if(dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.getCardSecondThrow())) {
-						
-						//Sanity check:
-						if(dataModel.getSuitOfSecondThrow() != dataModel.getSuitOfLeaderThrow()) {
-							System.err.println("ERROR: At this point, I expected the 2nd thrower to have followed suit.");
-							System.exit(1);
-						}
-						
-						//If we know 4th is void:
-						if(dataModel.isVoid(1, dataModel.getSuitOfLeaderThrow())) {
-							
-							//Play highest to force 4th to play even higher... or stop 4th thrower from winning:
-							cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
-						
-						} else {
-							//play barely over 2nd thrower to force 4th thrower to trump for the win:
-							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
-						}
-					} else {
-						
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
-					}
-				}
-			}
-		}
-				
-	
-		return cardToPlay;
-	}
-	
-	public String AIFourthThrow() {
-		String cardToPlay = null;
-		
-		if(dataModel.isPartnerWinningFight()) {
-			cardToPlay = dataModel.getJunkiestCardToFollowLead();
-
-		} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
-			cardToPlay = dataModel.getCardClosestOverCurrentWinner();
-			
-		} else {
-			cardToPlay = dataModel.getJunkiestCardToFollowLead();
-			
-		}
-
-		return cardToPlay;
-	}
-	//END AIS for non-nellow bid games
-	
 	
 	
 	//TODO: will need to test/improve.
