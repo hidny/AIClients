@@ -202,7 +202,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== SPADE || dataModel.isVoid(0, SPADE)) {
-				cardToPlay = dataModel.getLowOffSuitCardToPlay();
+				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 				
 				//Must play trump:
 			} else if(dataModel.currentPlayerMustTrump()) {
@@ -222,11 +222,11 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 					
 					if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
-						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 					}
 					
 				} else {
-					cardToPlay = dataModel.getLowOffSuitCardToPlay();
+					cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 				}
 			}
 		}
@@ -255,7 +255,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					
 					} else {
 						//If can't trump over
-						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 						
 					}
 				} else {
@@ -263,7 +263,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					//if your partner played master and 2nd thrower didn't trump over
 					if(dataModel.leaderPlayedMaster()) {
 						//PLAY OFF because leaderPlayedMaster
-						cardToPlay = dataModel.getLowOffSuitCardToPlay();
+						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 					} else {
 						//TRUMP
 						
@@ -275,7 +275,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				
 				//No Spade, so play off:
 			} else {
-				cardToPlay = dataModel.getLowOffSuitCardToPlay();
+				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
 		
 		//FOLLOW SUIT:

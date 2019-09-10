@@ -795,7 +795,7 @@ public class BooleanTableDataModel {
 	}
 	
 
-	public String getLowOffSuitCardToPlay() {
+	public String getLowOffSuitCardToPlayElseLowestSpade() {
 		String  cardToPlay = null;
 		
 		FOUNDCARD:
@@ -810,6 +810,22 @@ public class BooleanTableDataModel {
 					break FOUNDCARD;
 				}
 			}
+		}
+		
+		if(cardToPlay == null) {
+			for(int i=0; i<Constants.NUM_RANKS; i++) {
+				
+					if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][Constants.SPADE][i] == CERTAINTY) {
+						cardToPlay = getCardString(13 * Constants.SPADE + i);
+						break;
+					}
+				
+			}
+		}
+		
+		if(cardToPlay == null) {
+			System.err.println("ERROR: didn't expect null in getLowOffSuitCardToPlayElseLowestSpade");
+			System.exit(1);
 		}
 		return cardToPlay;
 	}

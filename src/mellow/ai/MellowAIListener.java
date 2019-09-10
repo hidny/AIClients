@@ -295,6 +295,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 			
 			
 			if(cardToPlay == null || cardToPlay.trim().equals("")) {
+				System.out.println("ERROR: DIDNT FIND A CARD");
 				return "/move 1";
 			} else {
 				return "/move " + cardToPlay;
