@@ -181,7 +181,7 @@ public class BooleanTableDataModel {
 		//End sanity check
 		
 		//Update tricks (if needed)
-		handleTrickBeforeRegistering4thCardIfNeeded(indexPlayer, card);
+		handleTrickIfPlayedCardIs4thThrow(indexPlayer, card);
 		
 		cardsUsed[cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		CardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
@@ -205,10 +205,54 @@ public class BooleanTableDataModel {
 		}
 		//End check
 		
-		//TODO: Do some logically deductions here and figure out which player must have cards by process of elimination
+		logicallyDeduceWhoHasCardsByProcessOfElimination();
+		
 	}
 	
-	private void handleTrickBeforeRegistering4thCardIfNeeded(int indexPlayer, String card) {
+	//Does what it says, but I haven't really tested it...
+	//I guess it works?
+	private void logicallyDeduceWhoHasCardsByProcessOfElimination() {
+
+		for(int i=0; i<cardsCurrentlyHeldByPlayer[0].length; i++) {
+			for(int j=0; j<cardsCurrentlyHeldByPlayer[0][0].length; j++) {
+				if(cardsUsed[i][j] == false && cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][j] != CERTAINTY) {
+
+					int numImpossible = 0;
+					
+					for(int k=0; k<cardsCurrentlyHeldByPlayer.length; k++) {
+						if(cardsCurrentlyHeldByPlayer[k][i][j] == IMPOSSIBLE) {
+							numImpossible++;
+						}
+					}
+					
+					if(numImpossible == 3) {
+						int numCertain = 0;
+						for(int k=0; k<cardsCurrentlyHeldByPlayer.length; k++) {
+							if(cardsCurrentlyHeldByPlayer[k][i][j] != IMPOSSIBLE) {
+								
+								if(cardsCurrentlyHeldByPlayer[k][i][j] != CERTAINTY) {
+									//System.out.println("TEST: FOUND THAT CARD IS CERTAIN!");
+								}
+								cardsCurrentlyHeldByPlayer[k][i][j] = CERTAINTY;
+								numCertain++;
+							}
+						}
+						
+						if(numCertain != 1) {
+							System.err.println("ERROR: the logic for figuring out who has what card is messed up! Num certain: " + numCertain);
+							System.exit(1);
+						}
+						
+					} else if(numImpossible == 4) {
+						System.err.println("ERROR: there's a card that isn't accounted for!");
+						System.exit(1);
+					}
+				}
+			}
+		}
+	}
+	
+	private void handleTrickIfPlayedCardIs4thThrow(int indexPlayer, String card) {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
 		if(throwNumber == 3) {
@@ -853,6 +897,23 @@ public class BooleanTableDataModel {
 	}
 	//END of MASTER FUNCTIONS
 
+	public String getHighestOffSuitCardToLead() {
+		String cardToPlay = "";
+		
+		FOUNDCARD:
+		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
+			//TODO: have no pref between the off suits... or have a smart preference.
+			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
+					cardToPlay = getCardString(13 * j + i);
+					break FOUNDCARD;
+				}
+			}
+		}
+		return cardToPlay;
+	}
+	
+	
 	//LOWEST CARD
 	public String getLowOffSuitCardToLead() {
 		String cardToPlay = "";
@@ -918,6 +979,24 @@ public class BooleanTableDataModel {
 		int rankIndex = getRankIndex(card);
 		
 		for(int j=rankIndex+1; j< Constants.NUM_RANKS; j++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][j] == CERTAINTY) {
+				return getCardString(j, suitIndex);
+			}
+		}
+		return null;
+	}
+	
+
+	public boolean couldPlayCardInHandUnderCardInSameSuit(String card) {
+		return getCardInHandClosestUnderSameSuit(card) != null;
+	}
+	
+	public String getCardInHandClosestUnderSameSuit(String card) {
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rankIndex = getRankIndex(card);
+		
+		for(int j=rankIndex-1; j >= 0; j--) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][j] == CERTAINTY) {
 				return getCardString(j, suitIndex);
 			}
