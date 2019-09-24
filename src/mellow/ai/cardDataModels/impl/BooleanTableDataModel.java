@@ -36,7 +36,7 @@ public class BooleanTableDataModel {
 	
 	private int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
-	private boolean CardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+	private boolean cardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 
 	//Map:
 	//  2  3  4 5 .. A
@@ -138,7 +138,7 @@ public class BooleanTableDataModel {
 	public void resetStateForNewRound() {
 		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
-		CardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		cardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsPlayedThisRound =0;
 		cardStringsPlayed = new String[Constants.NUM_CARDS];
 		
@@ -155,7 +155,7 @@ public class BooleanTableDataModel {
 			for(int j=0; j<cardsUsed[0].length; j++) {
 				cardsUsed[i][j] = false;
 				for(int k=0; k< Constants.NUM_PLAYERS; k++) {
-					CardsUsedByPlayer[k][i][j] = false;
+					cardsUsedByPlayer[k][i][j] = false;
 				}
 				for(int k=1; k< Constants.NUM_PLAYERS; k++) {
 					cardsCurrentlyHeldByPlayer[k][i][j] = DONTKNOW;
@@ -184,7 +184,7 @@ public class BooleanTableDataModel {
 		handleTrickIfPlayedCardIs4thThrow(indexPlayer, card);
 		
 		cardsUsed[cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
-		CardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
+		cardsUsedByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = true;
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
 			cardsCurrentlyHeldByPlayer[i][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] = IMPOSSIBLE;
 		}
@@ -205,7 +205,75 @@ public class BooleanTableDataModel {
 		}
 		//End check
 		
-		logicallyDeduceWhoHasCardsByProcessOfElimination();
+		do {
+			logicallyDeduceWhoHasCardsByProcessOfElimination();
+		} while(logicallyDeduceEntireOpponentHandFoundSomething());
+		
+		
+	}
+	
+	
+	public boolean logicallyDeduceEntireOpponentHandFoundSomething() {
+
+		boolean foundSomething = false;
+		
+		for(int k=0; k<4; k++) {
+			if(k == Constants.CURRENT_AGENT_INDEX) {
+				continue;
+			}
+			
+			int numCardsLeft = Constants.NUM_STARTING_CARDS_IN_HAND;
+			
+			for(int i=0; i<cardsUsedByPlayer[0].length; i++) {
+				for(int j=0; j<cardsUsedByPlayer[0][0].length; j++) {
+					if(cardsUsedByPlayer[k][i][j]) {
+						numCardsLeft--;
+					}
+				}
+			}
+			//System.out.println("Num cards left: " + numCardsLeft);
+			
+			int numPossibleCards = 0;
+			int numCertain = 0;
+			for(int i=0; i<cardsCurrentlyHeldByPlayer[0].length; i++) {
+				for(int j=0; j<cardsCurrentlyHeldByPlayer[0][0].length; j++) {
+					if(cardsCurrentlyHeldByPlayer[k][i][j] != IMPOSSIBLE) {
+						numPossibleCards++;
+					}
+				}
+			}
+
+			//System.out.println("Num possible cards: " + numPossibleCards);
+			
+			if(numPossibleCards == numCardsLeft) {
+				for(int i=0; i<cardsCurrentlyHeldByPlayer[0].length; i++) {
+					for(int j=0; j<cardsCurrentlyHeldByPlayer[0][0].length; j++) {
+						if(cardsCurrentlyHeldByPlayer[k][i][j] != IMPOSSIBLE) {
+							
+							if(cardsCurrentlyHeldByPlayer[k][i][j] != CERTAINTY) {
+								
+								if(foundSomething == false) {
+									System.out.println("TEST: making cards impossible");
+								}
+								
+								foundSomething = true;
+							}
+							
+							cardsCurrentlyHeldByPlayer[k][i][j] = CERTAINTY;
+						}
+					}
+				}
+				
+				
+			} else if(numPossibleCards < numCardsLeft) {
+				System.err.println("ERROR: something bad happened in updateDataModelWithPlayedCard");
+				System.exit(1);
+			}
+
+
+		}
+		
+		return foundSomething;
 		
 	}
 	
