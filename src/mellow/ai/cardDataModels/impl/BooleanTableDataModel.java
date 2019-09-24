@@ -217,8 +217,8 @@ public class BooleanTableDataModel {
 
 		boolean foundSomething = false;
 		
-		for(int k=0; k<4; k++) {
-			if(k == Constants.CURRENT_AGENT_INDEX) {
+		for(int playerIndex=0; playerIndex<4; playerIndex++) {
+			if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
 				continue;
 			}
 			
@@ -226,7 +226,7 @@ public class BooleanTableDataModel {
 			
 			for(int i=0; i<cardsUsedByPlayer[0].length; i++) {
 				for(int j=0; j<cardsUsedByPlayer[0][0].length; j++) {
-					if(cardsUsedByPlayer[k][i][j]) {
+					if(cardsUsedByPlayer[playerIndex][i][j]) {
 						numCardsLeft--;
 					}
 				}
@@ -237,7 +237,7 @@ public class BooleanTableDataModel {
 			int numCertain = 0;
 			for(int i=0; i<cardsCurrentlyHeldByPlayer[0].length; i++) {
 				for(int j=0; j<cardsCurrentlyHeldByPlayer[0][0].length; j++) {
-					if(cardsCurrentlyHeldByPlayer[k][i][j] != IMPOSSIBLE) {
+					if(cardsCurrentlyHeldByPlayer[playerIndex][i][j] != IMPOSSIBLE) {
 						numPossibleCards++;
 					}
 				}
@@ -248,9 +248,9 @@ public class BooleanTableDataModel {
 			if(numPossibleCards == numCardsLeft) {
 				for(int i=0; i<cardsCurrentlyHeldByPlayer[0].length; i++) {
 					for(int j=0; j<cardsCurrentlyHeldByPlayer[0][0].length; j++) {
-						if(cardsCurrentlyHeldByPlayer[k][i][j] != IMPOSSIBLE) {
+						if(cardsCurrentlyHeldByPlayer[playerIndex][i][j] != IMPOSSIBLE) {
 							
-							if(cardsCurrentlyHeldByPlayer[k][i][j] != CERTAINTY) {
+							if(cardsCurrentlyHeldByPlayer[playerIndex][i][j] != CERTAINTY) {
 								
 								if(foundSomething == false) {
 									System.out.println("TEST: making cards impossible");
@@ -259,7 +259,14 @@ public class BooleanTableDataModel {
 								foundSomething = true;
 							}
 							
-							cardsCurrentlyHeldByPlayer[k][i][j] = CERTAINTY;
+							for(int k=0; k<Constants.NUM_PLAYERS; k++) {
+								if(k == playerIndex) {
+									cardsCurrentlyHeldByPlayer[playerIndex][i][j] = CERTAINTY;
+								} else {
+									cardsCurrentlyHeldByPlayer[k][i][j] = IMPOSSIBLE;
+								}
+							}
+							
 						}
 					}
 				}
