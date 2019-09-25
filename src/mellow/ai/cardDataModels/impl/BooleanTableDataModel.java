@@ -234,7 +234,6 @@ public class BooleanTableDataModel {
 			//System.out.println("Num cards left: " + numCardsLeft);
 			
 			int numPossibleCards = 0;
-			int numCertain = 0;
 			for(int i=0; i<cardsCurrentlyHeldByPlayer[0].length; i++) {
 				for(int j=0; j<cardsCurrentlyHeldByPlayer[0][0].length; j++) {
 					if(cardsCurrentlyHeldByPlayer[playerIndex][i][j] != IMPOSSIBLE) {
@@ -412,12 +411,10 @@ public class BooleanTableDataModel {
 	}
 	
 	
-	//TODO
 	public boolean hasNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() {
 		return getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() != null;
 	}
 	
-	//TODO:
 	//pre: thrower is 2nd or 3rd
 	//post: null if can't play a card that might 
 	public String getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() {
@@ -739,7 +736,7 @@ public class BooleanTableDataModel {
 		return false;
 	}
 	
-	//TODO
+	//TODO: this is only useful for a bad player...
 	public String getJunkiestCardToFollowLead() {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 
@@ -889,7 +886,6 @@ public class BooleanTableDataModel {
 					if(cardsUsed[i][j]) {
 						continue;
 					} else if(cardsCurrentlyHeldByPlayer[0][i][j] == CERTAINTY) {
-						//TODO: NUM_NUMBERS -> NUM_RANKS
 						return getCardString(Constants.NUM_RANKS * i + j);
 					} else {
 						break;
@@ -977,7 +973,7 @@ public class BooleanTableDataModel {
 		
 		FOUNDCARD:
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
-			//TODO: have no pref between the off suits... or have a smart preference.
+			//TODO: have no preference between the off suits... or have a smart preference.
 			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
 					cardToPlay = getCardString(13 * j + i);
@@ -995,7 +991,7 @@ public class BooleanTableDataModel {
 		
 		FOUNDCARD:
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
-			//TODO: have no pref between the off suits... or have a smart preference.
+			//TODO: have no preference between the off suits... or have a smart preference.
 			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
 					cardToPlay = getCardString(13 * j + i);
@@ -1012,7 +1008,7 @@ public class BooleanTableDataModel {
 		
 		FOUNDCARD:
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
-			//TODO: have no pref between the off suits... or have a smart preference.
+			//TODO: have no preference between the off suits... or have a smart preference.
 			for(int j=Constants.NUM_SUITS - 1; j>=0; j--) {
 				if(j == Constants.SPADE) {
 					continue;
@@ -1102,7 +1098,7 @@ public class BooleanTableDataModel {
 		return ret;
 	}
 	
-	//TODO: suit strings please
+	//TODO: suit strings param please (nah!)
 	public int getNumberOfCardsOneSuit(int suit) {
 		int ret = 0;
 		for(int i=0; i<13; i++) {
@@ -1141,7 +1137,7 @@ public class BooleanTableDataModel {
 	
 	
 //TODO: suspicious function
-	//TODO: Might delete or make private and only accept Strings from other classes 
+	//TODO: Might delete or make private and only accept Strings from other classes (Nah!)
 	public boolean currentAgentHasSuit(int suitIndex) {
 		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}
