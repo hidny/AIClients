@@ -1,5 +1,6 @@
 package mellow.ai.simulation;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import mellow.Constants;
@@ -36,6 +37,7 @@ public class SimulationTests {
 		
 		System.out.println("Test serving the cards:");
 		testServeCarsdsBasedOnPartitionAndIndexInfo();
+		testServeCarsdsBasedOnPartitionAndIndexInfo2();
 	}
 	
 	//TODO: save these tests somewhere
@@ -264,6 +266,7 @@ public class SimulationTests {
 		
 		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList);
 		
+		System.out.println("I broke it!");
 		System.out.println("answer (prediction: 4) " + answer);
 		
 	}
@@ -471,20 +474,10 @@ public class SimulationTests {
 			playerList[2] = 3;
 			
 
+			int numWays = (int)(SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList));
 			
-			for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList); i++) {
-				SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnRandIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList, i);
-				
-				System.out.println("Suits for combo #" + i);
-				for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
-					for(int k=0; k<test.suitsTakenByPlayer[0].length; k++) {
-						System.out.print(test.suitsTakenByPlayer[j][k] + "  ");
-					}
-					System.out.println();
-				}
-			}
-			
-			for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList); i++) {
+			System.out.println("Num ways found: " + numWays);
+			for(int i=0; i<numWays; i++) {
 				SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnRandIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList, i);
 				
 				System.out.println("Suits for combo #" + i);
@@ -738,5 +731,74 @@ public class SimulationTests {
 			System.out.println();
 			System.out.println();
 		}
+		
+		
+		
+		//TODO: this test case is exposing buggy behaviour
+
+		//Test getSelectedPartitionAndIndex by going thru all 4 combos?
+				public static void testServeCarsdsBasedOnPartitionAndIndexInfo2() {
+					
+					String unknownCards[] = new String[]{"AS", "KS", "QS", "JS", "AH", "KH"};
+					
+					int numUnknownCardsPerSuit[] = SimulationSetup.getNumUnknownPerSuit(unknownCards);
+					
+					//step 2: Get available spaces by player
+					int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
+					numSpacesAvailPerPlayer[0] = 0;
+					numSpacesAvailPerPlayer[1] = 2;
+					numSpacesAvailPerPlayer[2] = 2;
+					numSpacesAvailPerPlayer[3] = 2;
+					
+					boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+					originalIsVoidList[2][0] = true;
+					
+					int playerList[] = new int[Constants.NUM_PLAYERS];
+					playerList[0] = 1;
+					playerList[1] = 2;
+					playerList[2] = 3;
+					playerList[3] = 0;
+					
+					
+					for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList); i++) {
+						SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnRandIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList, i);
+						
+						System.out.println("Suits for combo #" + i);
+						for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
+							for(int k=0; k<test.suitsTakenByPlayer[j].length; k++) {
+								System.out.print(test.suitsTakenByPlayer[j][k] + "  ");
+							}
+							System.out.println(" (combo index: " + test.comboIndex[j] + ")");
+						}
+						
+						
+					}
+					
+					ArrayList<String> combos = new ArrayList<String>();
+					
+					System.out.println("TEST");
+					System.out.println("Number of ways to do this (expected: 6): " + SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList));
+					System.out.println("Make sure everything found is diffent");
+					
+					for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList); comboInd++) {
+						SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnRandIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerList, comboInd);
+						
+						String ret[][] = SimulationSetup.serveCarsdsBasedOnPartitionAndIndexInfo(playerList, suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
+						System.out.println("Unknown card distribution for combo #" + comboInd);
+						
+						for(int i=0; i<ret.length; i++) {
+							System.out.print("player " + i + ":  ");
+							for(int j=0; j<ret[i].length; j++) {
+								System.out.print(ret[i][j] + " ");
+								
+							}
+							System.out.println("");
+						}
+						System.out.println("");
+					}
+					
+					System.out.println();
+					System.out.println();
+				}
 }
 		

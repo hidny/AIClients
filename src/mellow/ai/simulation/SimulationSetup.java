@@ -84,8 +84,15 @@ public class SimulationSetup {
 					numVoids[i]++;
 				}
 			}
+			
 		}
 		//END TODO: put into function
+		
+		if(numVoids[playerList[depth]] ==Constants.NUM_SUITS && numSpacesAvailPerPlayer[playerList[depth]] > 0) {
+			System.out.println("ERROR: call getSelectedPartitionAndIndex on impossible conditions");
+			System.out.println(depth);
+			System.exit(1);
+		}
 		
 		long prevNumCombosSkippedThru = 0L;
 		long numCombosSkippedThru = 0L;
@@ -150,12 +157,15 @@ public class SimulationSetup {
 				numWaysToSetupAllPlayersWithSuitPartitions *= getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerList, depth + 1);
 				
 			} else if(depth + 2 == playerList.length) {
-				//do nothing (Last player has only 1 way to pick up remaining cards)
+				//WRONG: do nothing (Last player has only 1 way to pick up remaining cards)
+				
+				//Just do what's in if condition.
+				numWaysToSetupAllPlayersWithSuitPartitions *= getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerList, depth + 1);
 			}
 			
 			numCombosSkippedThru += numWaysToSetupAllPlayersWithSuitPartitions;
 			
-			if(numCombosSkippedThru > randIndexNumber) {
+			if(numCombosSkippedThru > randIndexNumber && numWaysToSetupAllPlayersWithSuitPartitions > 0) {
 				//TODO: maybe break immediately?
 				
 				selectedPartitionAndIndexToFillIn.setSuitsTakenByPlayers(playerList[depth], suitsTakenByPlayer);
@@ -163,6 +173,12 @@ public class SimulationSetup {
 				long numWays = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerList, depth + 1);
 				long indexFromStartOfCombo = (randIndexNumber - prevNumCombosSkippedThru);
 				long currentPlayerComboNumber;
+				
+				if(numWays == 0) {
+					combo = getNextCombination(combo);
+					continue COMBO;
+				}
+				
 				
 				//If depth + 2 == playerList.length, we are just dividing by 1 which does nothing.
 				if(depth + 2 < playerList.length) {
@@ -189,10 +205,14 @@ public class SimulationSetup {
 		}
 		
 		if(numCombosSkippedThru <= randIndexNumber) {
+			System.out.println(numCombosSkippedThru + "  vs " + randIndexNumber);
 			System.err.println("ERROR: something went wrong in getSelectedPartitionAndIndex randIndexNumber is too big");
+			System.out.println("depth: " + depth);
 			System.exit(1);
 		}
 
+		System.err.println("ERROR: did not return selectedPartitionAndIndexToFillIn");
+		System.exit(1);
 		return null;
 		
 		
@@ -218,6 +238,26 @@ public class SimulationSetup {
 	
 	public static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], int playerList[], int depth) {
 
+		//PUT IN FUNCTION
+		//Check if current player taking remaining cards:
+		int numUnknownCardsLeft = 0;
+		for(int i=0; i<numUnknownCardsPerSuit.length; i++) {
+			numUnknownCardsLeft += numUnknownCardsPerSuit[i];
+		}//END
+		
+		//PUT IN FUNCTION
+		//If current player is taking remaining cards:
+		if(numUnknownCardsLeft == numSpacesAvailPerPlayer[playerList[depth]]) {
+			for(int i=0; i<Constants.NUM_SUITS; i++) {
+				if(originalIsVoidList[playerList[depth]][i] == true && numUnknownCardsPerSuit[i] > 0) {
+					return 0;
+				}
+			}
+			
+			return 1;
+		}
+		//END
+		
 		boolean voids[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		int numVoids[] = new int[Constants.NUM_PLAYERS];
 		//TODO: put into function
@@ -230,6 +270,12 @@ public class SimulationSetup {
 				}
 			}
 		}
+
+		//Exit with 0 if obviously can't pick up cards:
+		if(numVoids[playerList[depth]] ==Constants.NUM_SUITS && numSpacesAvailPerPlayer[playerList[depth]] > 0) {
+			return 0;
+		}
+		
 		//END TODO: put into function
 
 		if(numSpacesAvailPerPlayer[playerList[depth]] == 0) {
@@ -300,6 +346,7 @@ public class SimulationSetup {
 				
 			} else if(depth + 2 == playerList.length) {
 				//do nothing (Last player has only 1 way to pick up remaining cards)
+				numWaysToSetupAllPlayersWithSuitPartitions *= getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerList, depth + 1);
 			}
 			ret += numWaysToSetupAllPlayersWithSuitPartitions;
 			
@@ -314,6 +361,10 @@ public class SimulationSetup {
 	
 	public static int[] convertComboToArray(boolean combo[], int size) {
 		int ret[] = new int[size];
+		
+		if(size == 0) {
+			return ret;
+		}
 		
 		int currentIndex = 0;
 		int currentSize = 0;
