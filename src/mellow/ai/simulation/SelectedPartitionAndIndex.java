@@ -18,20 +18,25 @@ public class SelectedPartitionAndIndex {
 	public int suitsTakenByPlayer[][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 	
 	
-	public void setSuitsTakenByPlayers(int playerIndex, int suitsTaken[]) {
+	public void setSuitsTakenByPlayers(int playerIndex, int suitsTakenByPlayerInput[]) {
 		//TODO: make hard-copy if needed...
-		suitsTakenByPlayer[playerIndex] = suitsTaken;
+		this.suitsTakenByPlayer[playerIndex] = suitsTakenByPlayerInput;
 	}
 	
 	public void setPlayerComboNumber(int playerIndex, long indexCombo) {
 		this.comboIndex[playerIndex] = indexCombo; 
 	}
 	
-	public void giveWhatsLeftToNextPlayer(int playerIndex, int suitsTaken[]) {
-		setSuitsTakenByPlayers(playerIndex, suitsTaken);
+	public void giveWhatsLeftToNextPlayer(int playerIndex, int suitsTakenByPlayerInput[]) {
+		setSuitsTakenByPlayers(playerIndex, suitsTakenByPlayerInput);
 		setPlayerComboNumber(playerIndex, 0);
 		
-		
+	}
+	
+	//This function doesn't really do anything, but it's pretty explicit...
+	public void giveNoCardsToPlayer(int playerIndex) {
+		setSuitsTakenByPlayers(playerIndex, new int[Constants.NUM_SUITS]);
+		setPlayerComboNumber(playerIndex, 0);
 	}
 	
 }
