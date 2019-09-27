@@ -41,6 +41,8 @@ public class SimulationTests {
 		testServeCarsdsBasedOnPartitionAndIndexInfo5();
 		testServeCarsdsBasedOnPartitionAndIndexInfo6();
 		
+		testProbabilityPartnerHasASorKS();
+		
 	}
 	
 	public static void setupSimulationTest1(BooleanTableDataModel dataModel) {
@@ -841,6 +843,78 @@ public class SimulationTests {
 		System.out.println();
 	}
 	
+	
+	//Proof of concept: (could I use these functions to do probabilities:
+	//Answer: YES!
+	public static void testProbabilityPartnerHasASorKS() {
+		
+		System.out.println("Test case where I check if these function could figure out probabilities.");
+		System.out.println("The probability my partner has the AS or KS is something I think about a lot in mellow, so let\'s test that!");
+		
+		//pretend current player has QS and a bunch of clubs...
+		String unknownCards1[] = new String[]{"AS", "KS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
+											"AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
+											"AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
+											"AC"};
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards1);
+		
+		//step 2: Get available spaces by player
+		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
+		numSpacesAvailPerPlayer[0] = 0;
+		numSpacesAvailPerPlayer[1] = 13;
+		numSpacesAvailPerPlayer[2] = 13;
+		numSpacesAvailPerPlayer[3] = 13;
+		
+		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		
+		long totalNumWays = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		
+		System.out.println("Number of ways to distribute cards (expected: (39 choose 13)* (26 choose 13) = 84 478 098 072 866 400): " + totalNumWays);
+		
+		//Case where partner has AS:
+		//Same as unknownCards1 minus AS
+		String unknownCards2[] = new String[]{"KS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
+				"AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
+				"AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
+				"AC"};
+		
+		numUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuitMellow(unknownCards2);
+		
+		//step 2: Get available spaces by player
+		numSpacesAvailPerPlayer[2] = 12;
+		
+		long totalNumWaysAS = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		
+		//Case where partner has AS and KS:
+		//Same as unknownCards1 minus AS and KS
+		String unknownCards3[] = new String[]{"JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
+				"AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
+				"AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
+				"AC"};
+		
+		System.out.println("Number of ways to distribute cards when partner has AS (expected: (38 choose 12)* (26 choose 13) = 28 159 366 024 288 800): " + totalNumWaysAS);
+		
+		numUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuitMellow(unknownCards3);
+		
+		//step 2: Get available spaces by player
+		numSpacesAvailPerPlayer[2] = 11;
+		
+		long totalNumWaysASKS = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		
+		System.out.println("Number of ways to distribute cards when partner has AS and KS (expected: (37 choose 11)* (26 choose 13) = 8 892 431 376 091 200): " + totalNumWaysASKS);
+		
+		//use Principle of Inclusion and Exclusion and the fact that odds of AS is the same as KS.
+		long numWaysPartnerASorKS = 2 * totalNumWaysAS - totalNumWaysASKS;
+		
+		double probPartnerASorKS = (1.0 * numWaysPartnerASorKS) / (1.0 * totalNumWays);
+		System.out.println("Probability of partner having AS or KS: ");
+		System.out.println("Expected: (approx 1-(2/3)^2 = .55) More exact: = 1-(26/39)*(25/38) = 0.56140...)");
+		System.out.println("Actual: " + probPartnerASorKS);
+		
+		System.out.println();
+		System.out.println();
+	}
+
 				//TODO: make complicated test where you can't predict the answer ahead of time.. just to check if it still works...
 }
 		
