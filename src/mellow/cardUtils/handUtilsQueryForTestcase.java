@@ -2,6 +2,8 @@ package mellow.cardUtils;
 
 import java.util.ArrayList;
 
+import mellow.Constants;
+
 //Class filled with mellow util functions.
 // Will organize as this files gets bigger
 public class handUtilsQueryForTestcase {
@@ -58,5 +60,8 @@ public class handUtilsQueryForTestcase {
 		System.exit(1);
 		return "ERROR";
 	}
+	
+	
+
 	
 }

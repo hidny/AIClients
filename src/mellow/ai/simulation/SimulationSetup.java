@@ -8,13 +8,14 @@ import mellow.ai.simulation.SelectedPartitionAndIndex;
 
 public class SimulationSetup {
 
-	//TODO: playerList and numSpacesAvailPerPlayer arrays assume there's an unused player 0... this is ugly... Oh well
-
-	//TODO: If getNumberOfWaysToSimulate < N, then make it deterministic because why not?
-
 	public static Random random = new Random();
 	
-	public static String[][] distributeUnknownCards(String unknownCards[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
+	//TODO: rework logic from the top-down considering:
+		// 1) This should be generalizable to euchre
+		// 2) If getNumberOfWaysToSimulate < N, we will make it deterministic
+		// 3) Try to avoid calling root of getNumberOfWaysToSimulate more than once for same config.
+	/*
+	public static String[][] distributeUnk555nownCards(String unknownCards[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
 		
 		long numWays = getNumberOfWaysToSimulate(getNumUnknownPerSuit(unknownCards), numSpacesAvailPerPlayer, originalIsVoidList);
 		
@@ -28,11 +29,11 @@ public class SimulationSetup {
 		String ret[][] = serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 		
 		return ret;
-	}
+	}*/
 
 	public static long getRandNumberFrom0ToN(long numWays) {
 		//The do while loop is to remove bias.
-		//Without it, the bias could be high if the number of ways is high...
+		//Without it, the bias could be high if the numWays is close to 2^63.
 		//For example, if we consider simulating everyone's hand at the beginning of the round we have: (39 choose 13) * (26 choose 13) ways.
 		//compared to 2^64 possible longs.
 		//Because:
@@ -66,20 +67,10 @@ public class SimulationSetup {
 	}
 	
 	
-	public static int[] getNumUnknownPerSuit(String unknownCards[]) {
-		int numUnknownCardsPerSuit[] = new int[Constants.NUM_SUITS];
-		
-		for(int i=0; i<numUnknownCardsPerSuit.length; i++) {
-			numUnknownCardsPerSuit[i] = 0;
-		}
-		
-		for(int i=0; i<unknownCards.length; i++) {
-			numUnknownCardsPerSuit[CardStringFunctions.getIndexOfSuit(unknownCards[i])]++;
-		}
-		
-		return numUnknownCardsPerSuit;
-	}
 	
+	//pre: As long as the answer is less than 2^63, it should get the right answer.
+	// All calculations in Euchre and Mellow will be less than 2^63, but other cards games with 5 players may overflow the return value.
+	// You might get performance improvements by reordering which players get their cards first, but life's too short.
 	public static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
 		return getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, 0);
 	}
@@ -189,8 +180,6 @@ public class SimulationSetup {
 			selectedPartitionAndIndexToFillIn.giveWhatsLeftToNextPlayer(depth, numUnknownCardsPerSuit);
 			return selectedPartitionAndIndexToFillIn;
 		}
-		
-		
 	//END Skipping conditions
 		
 		long prevNumCombosSkippedThru = 0L;
@@ -245,8 +234,7 @@ public class SimulationSetup {
 					//Last player to fill-in shouldn't make it to the while loop in this function
 					System.err.println("ERROR: something went wrong in getSelectedPartitionAndIndex. Last player wasted time and iterated thru suit partitions.");
 					System.exit(1);
-					
-					return selectedPartitionAndIndexToFillIn;
+					return null;
 				}
 				
 			}
@@ -265,7 +253,7 @@ public class SimulationSetup {
 			System.exit(1);
 		}
 
-		System.err.println("ERROR: did not return selectedPartitionAndIndexToFillIn");
+		System.err.println("ERROR: did not return selectedPartitionAndIndexToFillIn and numCombosSkippedThru is bigger than comboIndexNumber?");
 		System.exit(1);
 		return null;
 		
@@ -303,7 +291,6 @@ public class SimulationSetup {
 	
 	public static boolean[] getVoidSuitArrayForPlayer(int numUnknownCardsPerSuit[], boolean originalIsVoidList[][], int depth) {
 		boolean voidSuit[] = new boolean[Constants.NUM_SUITS];
-		//TODO: put into function
 		for(int i=0; i<voidSuit.length; i++) {
 			if(originalIsVoidList[depth][i] || numUnknownCardsPerSuit[i] == 0) {
 				voidSuit[i] = true;
@@ -510,38 +497,17 @@ public class SimulationSetup {
 		return pascalTriangle;
 	}
 	
-	public static long[][] createPascalTriangle(int size, long modulo) {
-		size = size+1;
-		long pascalTriangle[][] = new long[size][size];
-		
-		for(int i=0; i<size; i++) {
-			for(int j=0; j<size; j++) {
-				pascalTriangle[i][j] = 0;
-			}
-		}
-		
-		pascalTriangle[0][0] = 1;
-				
-		for(int i=1; i<size; i++) {
-			for(int j=0; j<size; j++) {
-				pascalTriangle[i][j] = pascalTriangle[i-1][j];
-				if(j>0) {
-					pascalTriangle[i][j] = (pascalTriangle[i][j] + pascalTriangle[i-1][j-1]) % modulo;
-				}
-			}
-		}
-		
-		return pascalTriangle;
-	}
-
 	
 	private static String TAKEN = null;
 	
-	//TODO: OMG TEST more!
+	//TODO: OMG TEST more! (Test that all combinations are different)
+	//TODO: clean the code up...
 	public static String[][] serveCarsdsBasedOnPartitionAndIndexInfo(SelectedPartitionAndIndex selectedSuitsAndCombos, String unknownCards[], int numSpacesAvailPerPlayer[]) {
+		
+		//TODO: put in functions
 		String unknownCardsPerSuit[][] = new String[Constants.NUM_SUITS][];
 		
-		int curNumUnknownCardsPerSuit[] = SimulationSetup.getNumUnknownPerSuit(unknownCards);
+		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
 		int currentIndexPerSuit[] = new int[Constants.NUM_SUITS];
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
@@ -554,7 +520,7 @@ public class SimulationSetup {
 			unknownCardsPerSuit[indexSuit][currentIndexPerSuit[indexSuit]] = unknownCards[i];
 			currentIndexPerSuit[indexSuit]++;
 		}
-		
+		//END PUT IN FUNCTIONS
 		
 		String unknownCardDistPerPlayer[][] = new String[Constants.NUM_PLAYERS][];
 		
@@ -566,6 +532,7 @@ public class SimulationSetup {
 			
 			long currentComboNum = selectedSuitsAndCombos.comboIndex[playerI];
 			
+			//TODO 1: put in function
 			//Work backwards from suit list and give player the cards:
 			for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 				
@@ -576,6 +543,7 @@ public class SimulationSetup {
 				
 				boolean combo[] = convertComboNumberToArray(curNumUnknownCardsPerSuit[suit], numCardsPlayerWillTake, comboNumberForSuit);
 				
+				//TODO 2: put in function
 				for(int i=0, j=0; i<unknownCardsPerSuit[suit].length && j<combo.length; i++) {
 					if(unknownCardsPerSuit[suit][i] != TAKEN) {
 						if(combo[j]) {
@@ -590,9 +558,11 @@ public class SimulationSetup {
 						j++;
 					}
 				}
+				//END TODO2
 				
 				currentComboNum /= numWaysToSetupSuitForPlayer;
 			}
+			//END TODO 1
 			
 			if(currentComboNum != 0) {
 				System.err.println("ERROR: Distributing the cards messed up and didn\'t end up with correct combo num");
@@ -600,7 +570,7 @@ public class SimulationSetup {
 			}
 			
 			if(curCardsTakenByPlayer != unknownCardDistPerPlayer[playerI].length) {
-				System.out.println("ERROR: Distributing the cards messed up.");
+				System.out.println("ERROR: Distributing the cards messed up and player didn't end up with correct # of cards.");
 				System.exit(1);
 			}
 		}

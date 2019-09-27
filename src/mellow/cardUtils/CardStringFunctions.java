@@ -1,5 +1,7 @@
 package mellow.cardUtils;
 
+import mellow.Constants;
+
 public class CardStringFunctions {
 
 	public static int getIndexOfSuit(String card) {
@@ -20,4 +22,18 @@ public class CardStringFunctions {
 		return index;
 	}
 	
+
+	public static int[] organizeCardsBySuitMellow(String cards[]) {
+		int cardsPerSuit[] = new int[Constants.NUM_SUITS];
+		
+		for(int i=0; i<cardsPerSuit.length; i++) {
+			cardsPerSuit[i] = 0;
+		}
+		
+		for(int i=0; i<cards.length; i++) {
+			cardsPerSuit[CardStringFunctions.getIndexOfSuit(cards[i])]++;
+		}
+		
+		return cardsPerSuit;
+	}
 }
