@@ -43,6 +43,9 @@ public class SimulationTests {
 		
 		testProbabilityPartnerHasASorKS();
 		
+
+		testServeCarsdsBasedOnPartitionAndIndexInfo7();
+		
 	}
 	
 	public static void setupSimulationTest1(BooleanTableDataModel dataModel) {
@@ -844,7 +847,7 @@ public class SimulationTests {
 	}
 	
 	
-	//Proof of concept: (could I use these functions to do probabilities:
+	//Proof of concept: Could I use these functions to do probabilities?
 	//Answer: YES!
 	public static void testProbabilityPartnerHasASorKS() {
 		
@@ -915,6 +918,72 @@ public class SimulationTests {
 		System.out.println();
 	}
 
-				//TODO: make complicated test where you can't predict the answer ahead of time.. just to check if it still works...
+	
+	//Here's a cool thing I found:
+	public static void testServeCarsdsBasedOnPartitionAndIndexInfo7() {
+		
+		System.out.println("Test case where 3 players have N cards each of 3 different suits, and each player is void in a suit different than the other 2:");
+		System.out.println("The number of ways to do this is equal to the Franel numbers a(n) = Sum_{k = 0..n} binomial(n,k)^3. (A000172)");
+		
+		int PLAYERS_UNKNOWN = 3;
+		//getCombination(2*i, i)
+		for(int i=0; i<=Constants.NUM_RANKS; i++) {
+
+			String unknownCards[] = new String[PLAYERS_UNKNOWN*i];
+			for(int j=0; j<PLAYERS_UNKNOWN; j++) {
+				for(int k=0; k<i; k++) {
+					unknownCards[j*i + k] = Constants.FULL_DECK[Constants.NUM_RANKS * j + k];
+				}
+			}
+			
+			int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+			
+			//step 2: Get available spaces by player
+			int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
+			numSpacesAvailPerPlayer[0] = 0;
+			numSpacesAvailPerPlayer[1] = i;
+			numSpacesAvailPerPlayer[2] = i;
+			numSpacesAvailPerPlayer[3] = i;
+			
+			boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+			for(int j=0; j<3; j++) {
+				originalIsVoidList[j+1][j] = true;
+			}
+			
+			long expected =0L;
+			for(int j=0; j<=i; j++) {
+				expected += (long)Math.pow(SimulationSetup.getCombination(i, j), 3);
+			}
+			
+			long actual = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+	
+			System.out.println("Number of ways to do this (expected: " + expected + "): " + actual);
+			
+			if(i < 3) {
+				for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+					
+					
+					SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+					String ret[][] = SimulationSetup.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
+					System.out.println("Unknown card distribution for combo #" + comboInd);
+					
+					for(int i1=0; i1<ret.length; i1++) {
+						System.out.print("player " + i + ":  ");
+						for(int j=0; j<ret[i1].length; j++) {
+							System.out.print(ret[i1][j] + " ");
+							
+						}
+						System.out.println("");
+					}
+					System.out.println("");
+				}
+			}
+
+			if(expected != actual) {
+				System.out.println("ERROR (in testServeCarsdsBasedOnPartitionAndIndexInfo7): number of ways players could have cards doesn't match what's predicted");
+				System.exit(1);
+			}
+		}
+	}
 }
 		

@@ -68,9 +68,11 @@ public class SimulationSetup {
 	
 	
 	
+	
 	//pre: As long as the answer is less than 2^63, it should get the right answer.
 	// All calculations in Euchre and Mellow will be less than 2^63, but other cards games with 5 players may overflow the return value.
 	// You might get performance improvements by reordering which players get their cards first, but life's too short.
+
 	public static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
 		return getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, 0);
 	}
@@ -117,6 +119,8 @@ public class SimulationSetup {
 			int suitsTakenByPlayer[] = getNumCardsOfEachSuitTakenByPlayer(voidSuit, suitArrayForEachNonVoidSuit);
 			int numCardsPerSuitAfterTake[] = getCardsPerSuitRemainingAfterTake(numUnknownCardsPerSuit, suitsTakenByPlayer);
 			
+
+			//TODO: There might be a way to skip bad suit partitions more quickly than this... but whatever
 			 if( suitPartitionImpossibleToTake(numCardsPerSuitAfterTake, suitsTakenByPlayer, numUnknownCardsPerSuit) ) {
 				suitPartitionIter = getNextCombination(suitPartitionIter);
 				continue;
@@ -534,32 +538,19 @@ public class SimulationSetup {
 			
 			//TODO 1: put in function
 			//Work backwards from suit list and give player the cards:
-			for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
+			for(int indexSuit=Constants.NUM_SUITS - 1; indexSuit>=0; indexSuit--) {
 				
-				int numCardsPlayerWillTake = selectedSuitsAndCombos.suitsTakenByPlayer[playerI][suit];
+				int numCardsPlayerWillTake = selectedSuitsAndCombos.suitsTakenByPlayer[playerI][indexSuit];
 				
-				long numWaysToSetupSuitForPlayer = SimulationSetup.getCombination(curNumUnknownCardsPerSuit[suit], numCardsPlayerWillTake);
+				long numWaysToSetupSuitForPlayer = SimulationSetup.getCombination(curNumUnknownCardsPerSuit[indexSuit], numCardsPlayerWillTake);
 				int comboNumberForSuit = (int)( currentComboNum % numWaysToSetupSuitForPlayer);
 				
-				boolean combo[] = convertComboNumberToArray(curNumUnknownCardsPerSuit[suit], numCardsPlayerWillTake, comboNumberForSuit);
+				boolean combo[] = convertComboNumberToArray(curNumUnknownCardsPerSuit[indexSuit], numCardsPlayerWillTake, comboNumberForSuit);
 				
-				//TODO 2: put in function
-				for(int i=0, j=0; i<unknownCardsPerSuit[suit].length && j<combo.length; i++) {
-					if(unknownCardsPerSuit[suit][i] != TAKEN) {
-						if(combo[j]) {
-							//System.out.println("Space avail for player " + playerList[playerI] + ": " + numSpacesAvailPerPlayer[playerList[playerI]] +   " curCardsTakenByPlayer: " + curCardsTakenByPlayer);
-							unknownCardDistPerPlayer[playerI][curCardsTakenByPlayer] =
-									unknownCardsPerSuit[suit][i];
-							
-							curCardsTakenByPlayer++;
-							unknownCardsPerSuit[suit][i] = TAKEN;
-							curNumUnknownCardsPerSuit[suit]--;
-						}
-						j++;
-					}
-				}
-				//END TODO2
+				playerTakeCardsFromSuitAccordingToCombination(unknownCardsPerSuit[indexSuit], combo, unknownCardDistPerPlayer[playerI], curCardsTakenByPlayer);
 				
+				curCardsTakenByPlayer += numCardsPlayerWillTake;
+				curNumUnknownCardsPerSuit[indexSuit] -= numCardsPlayerWillTake;
 				currentComboNum /= numWaysToSetupSuitForPlayer;
 			}
 			//END TODO 1
@@ -577,6 +568,25 @@ public class SimulationSetup {
 		
 		
 		return unknownCardDistPerPlayer;
+	}
+	
+	
+	
+	//The arrays are passed by value, so I could only change the values of the elements of the arrays... which I do
+	public static void playerTakeCardsFromSuitAccordingToCombination(String unknownCardsForSuit[], boolean combo[], String playerHandToPopulate[], int curCardsTakenByPlayer) {
+		for(int i=0, j=0; i<unknownCardsForSuit.length && j<combo.length; i++) {
+			if(unknownCardsForSuit[i] != TAKEN) {
+				if(combo[j]) {
+					playerHandToPopulate[curCardsTakenByPlayer] =
+							unknownCardsForSuit[i];
+					
+					unknownCardsForSuit[i] = TAKEN;
+					curCardsTakenByPlayer++;
+				}
+				j++;
+			}
+		}
+		
 	}
 	
 
