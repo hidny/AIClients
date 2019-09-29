@@ -960,6 +960,7 @@ public class SimulationTests {
 			System.out.println("Number of ways to do this (expected: " + expected + "): " + actual);
 			
 			if(i < 3) {
+				//TODO: Make sure every combination obtained thru the algorithm is different!
 				for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
 					
 					

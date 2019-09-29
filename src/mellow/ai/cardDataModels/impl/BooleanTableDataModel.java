@@ -3,6 +3,8 @@ package mellow.ai.cardDataModels.impl;
 import java.util.ArrayList;
 
 import mellow.Constants;
+import mellow.ai.simulation.SelectedPartitionAndIndex;
+import mellow.ai.simulation.SimulationSetup;
 import mellow.cardUtils.*;
 
 public class BooleanTableDataModel {
@@ -10,27 +12,27 @@ public class BooleanTableDataModel {
 	int AIScore;
 	int OpponentScore;
 
-	int IMPOSSIBLE =0;
-	int CERTAINTY = 1000;
-	int DONTKNOW = -1;
+	static final int IMPOSSIBLE =0;
+	static final int CERTAINTY = 1000;
+	static final int DONTKNOW = -1;
 	
-	int BID_NOT_SET = -1;
+	static final int BID_NOT_SET = -1;
 	
 	//This is dumb: Think about changing it later.
 	//Higher number means higher power
-	private int ACE = 12;
-	private int KING = 11;
-	private int QUEEN = 10;
-	private int JACK = 9;
-	private int TEN = 8;
-	private int NINE = 7;
-	private int EIGHT = 6;
-	private int SEVEN = 5;
-	private int SIX = 4;
-	private int FIVE = 3;
-	private int FOUR = 2;
-	private int THREE = 1;
-	private int TWO = 0;
+	private static final int ACE = 12;
+	private static final int KING = 11;
+	private static final int QUEEN = 10;
+	private static final int JACK = 9;
+	private static final int TEN = 8;
+	private static final int NINE = 7;
+	private static final int EIGHT = 6;
+	private static final int SEVEN = 5;
+	private static final int SIX = 4;
+	private static final int FIVE = 3;
+	private static final int FOUR = 2;
+	private static final int THREE = 1;
+	private static final int TWO = 0;
 	
 	private boolean cardsUsed[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
@@ -192,6 +194,7 @@ public class BooleanTableDataModel {
 		
 		cardStringsPlayed[cardsPlayedThisRound] = card;
 		cardsPlayedThisRound++;
+		
 		//System.out.println("Cards played this round: " + cardsPlayedThisRound);
 		
 
@@ -204,7 +207,8 @@ public class BooleanTableDataModel {
 			}
 		}
 		//End check
-		
+
+		numWaysOthersPlayersCoubleHaveCards = NEED_TO_RECALCULATE;
 		do {
 			logicallyDeduceWhoHasCardsByProcessOfElimination();
 		} while(logicallyDeduceEntireOpponentHandFoundSomething());
@@ -324,6 +328,117 @@ public class BooleanTableDataModel {
 				}
 			}
 		}
+	}
+	
+	
+	public long NEED_TO_RECALCULATE = -1;
+	private long numWaysOthersPlayersCoubleHaveCards = NEED_TO_RECALCULATE;
+
+	//TODO TEST
+	public long getCurrentNumWaysOtherPlayersCouldHaveCards() {
+		if(numWaysOthersPlayersCoubleHaveCards != NEED_TO_RECALCULATE) {
+			return numWaysOthersPlayersCoubleHaveCards;
+		}
+		
+		String unknownCards[] = getUnknownCards();
+		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
+		boolean originalIsVoidList[][] = createVoidArray();
+		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
+
+		return SimulationSetup.getNumberOfWaysToSimulate(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+	}
+	
+	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex) {
+		
+		String unknownCards[] = getUnknownCards();
+		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
+		boolean originalIsVoidList[][] = createVoidArray();
+		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
+		
+		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
+				SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex);
+		
+		return SimulationSetup.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
+		
+	}
+	
+	public int[] getNumUnknownSpaceAvailablePerPlayer() {
+		int ret[] = new int[Constants.NUM_PLAYERS];
+		
+		for(int player=0; player<Constants.NUM_PLAYERS; player++) {
+			ret[player] = Constants.NUM_STARTING_CARDS_IN_HAND;
+		}
+		
+		//..TODO!!! MINUS NUM USED CARDS PER PLAYER!
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			boolean cardFound = false;
+			
+			for(int player=0; player<Constants.NUM_PLAYERS && cardFound == false; player++) {
+				if(cardsUsedByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS]) {
+					ret[player]--;
+					cardFound = true;
+				}
+			}
+		}
+		
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			boolean cardFound = false;
+			
+			for(int player=0; player<Constants.NUM_PLAYERS && cardFound == false; player++) {
+				if(cardsCurrentlyHeldByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS] == CERTAINTY) {
+					ret[player]--;
+					cardFound = true;
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+	private boolean[][] createVoidArray() {
+		boolean ret[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		for(int i=0; i<ret.length; i++) {
+			for(int j=0; j<ret[0].length; j++) {
+				ret[i][j] = isVoid(i, j);
+			}
+		}
+		return ret;
+	}
+	
+	private String[] getUnknownCards() {
+
+		int numUnknownCards = 0;
+		
+		NEXT_CARD:
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int player=0; player<Constants.NUM_PLAYERS; player++) {
+				if(dontKnowIfPlayerHasCard(cardsCurrentlyHeldByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS])) {
+					numUnknownCards++;
+					continue NEXT_CARD;
+				}
+			}
+		}
+		
+		String unknownCards[] = new String[numUnknownCards];
+		int currentCardIndex = 0;
+		
+		NEXT_CARD:
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int player=0; player<Constants.NUM_PLAYERS; player++) {
+				if(dontKnowIfPlayerHasCard(cardsCurrentlyHeldByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS])) {
+
+					unknownCards[currentCardIndex] = getCardString(i);
+					currentCardIndex++;
+					continue NEXT_CARD;
+				}
+			}
+		}
+		
+		return unknownCards;
+	}
+	
+	private static boolean dontKnowIfPlayerHasCard(int statusNum) {
+		return statusNum != CERTAINTY && statusNum != IMPOSSIBLE;
 	}
 	
 	private void handleTrickIfPlayedCardIs4thThrow(int indexPlayer, String card) {
@@ -802,7 +917,7 @@ public class BooleanTableDataModel {
 		}
 		
 		if(getNumCardsInCurrentPlayerHand() == 1) {
-			return getLastCardInHand();
+			return getLastRemainingCardInHand();
 		} else {
 			
 			if(throwerMustFollowSuit() == false) {
@@ -814,7 +929,7 @@ public class BooleanTableDataModel {
 		}
 	}
 	
-	public String getLastCardInHand() {
+	public String getLastRemainingCardInHand() {
 		if(getNumCardsInCurrentPlayerHand() != 1) {
 			System.err.println("ERROR: calling getLastCardInHand when player has more than 1 card to play");
 			System.exit(1);

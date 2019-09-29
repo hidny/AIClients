@@ -2,12 +2,20 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
+import mellow.ai.simulation.MonteCarloMain;
 
 public class PlaySituation {
 
 	public static String handleNormalThrow(BooleanTableDataModel dataModel) {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		
+		//TODO TESTING:
+		//if(throwIndex>=Constants.NUM_CARDS)
+		//MonteCarloMain.runSimulation(dataModel);
+		
+		//END TESTING
+		
 		//leader:
 		String cardToPlay = null;
 		System.out.println("**Inside get card to play");

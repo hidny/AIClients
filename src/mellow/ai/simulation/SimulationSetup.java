@@ -8,6 +8,7 @@ import mellow.ai.simulation.SelectedPartitionAndIndex;
 
 public class SimulationSetup {
 
+	
 	public static Random random = new Random();
 	
 	public static long getRandNumberFrom0ToN(long numWays) {
@@ -480,7 +481,6 @@ public class SimulationSetup {
 		return pascalTriangle;
 	}
 	
-	//TODO: OMG TEST more! (Test that all combinations are different)
 	public static String[][] serveCarsdsBasedOnPartitionAndIndexInfo(SelectedPartitionAndIndex selectedSuitsAndCombos, String unknownCards[], int numSpacesAvailPerPlayer[]) {
 		
 		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
@@ -491,6 +491,7 @@ public class SimulationSetup {
 		for(int playerI=0; playerI< numSpacesAvailPerPlayer.length; playerI++) {
 			long cardCombinationNumberForPlayer = selectedSuitsAndCombos.comboIndex[playerI];
 			playerHandsToPopulate[playerI] = new String[numSpacesAvailPerPlayer[playerI]];
+			
 			populatePlayerCardsWithUnknownCardsAccordingToSelectedSuitsAndCombos(unknownCardsPerSuit, curNumUnknownCardsPerSuit, selectedSuitsAndCombos.suitsTakenByPlayer[playerI], cardCombinationNumberForPlayer, playerHandsToPopulate[playerI]);
 		}
 		
