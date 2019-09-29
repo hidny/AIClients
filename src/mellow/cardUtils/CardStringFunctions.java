@@ -23,7 +23,7 @@ public class CardStringFunctions {
 	}
 	
 
-	public static int[] organizeCardsBySuitMellow(String cards[]) {
+	public static int[] organizeCardsBySuit(String cards[]) {
 		int cardsPerSuit[] = new int[Constants.NUM_SUITS];
 		
 		for(int i=0; i<cardsPerSuit.length; i++) {

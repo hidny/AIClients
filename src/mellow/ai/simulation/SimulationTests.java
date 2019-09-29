@@ -299,7 +299,7 @@ public class SimulationTests {
 	}
 
 	public static void setupSimulationTest8() {
-		int ret[] = CardStringFunctions.organizeCardsBySuitMellow(new String[]{"AS", "AH", "KH", "QH", "KS", "2C", "2S", "2H"});
+		int ret[] = CardStringFunctions.organizeCardsBySuit(new String[]{"AS", "AH", "KH", "QH", "KS", "2C", "2S", "2H"});
 		
 		System.out.println("Spade (3) " + ret[0]);
 		System.out.println("Hearts (4) " + ret[1]);
@@ -313,7 +313,7 @@ public class SimulationTests {
 		
 		String unknownCards[] = new String[]{"AS", "AH", "KH"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -362,7 +362,7 @@ public class SimulationTests {
 		
 		String unknownCards[] = new String[]{"AS", "AH", "KH"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -568,7 +568,7 @@ public class SimulationTests {
 		
 		String unknownCards[] = new String[]{"AS", "AH", "KH"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -619,7 +619,7 @@ public class SimulationTests {
 		
 		String unknownCards[] = new String[]{"AS", "KS", "QS", "JS", "AH", "KH"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -676,7 +676,7 @@ public class SimulationTests {
 		System.out.println("Test case where there's no unknown cards");
 		String unknownCards[] = new String[]{};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -717,7 +717,7 @@ public class SimulationTests {
 		System.out.println("Test case where everyone gets 2 cards");
 		String unknownCards[] = new String[]{"AS", "KS", "AH", "KH", "AD", "KD"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -764,7 +764,7 @@ public class SimulationTests {
 		System.out.println("Test case where everyone grabs from 1 suit except for player 2");
 		String unknownCards[] = new String[]{"AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S", "2C", "3C"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -809,7 +809,7 @@ public class SimulationTests {
 		System.out.println("Test case where 2 people are void that\'s in my notebook:");
 		String unknownCards[] = new String[]{"2H", "7C", "9D"};
 		
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -859,7 +859,7 @@ public class SimulationTests {
 											"AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
 											"AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
 											"AC"};
-		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards1);
+		int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards1);
 		
 		//step 2: Get available spaces by player
 		int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];
@@ -881,7 +881,7 @@ public class SimulationTests {
 				"AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
 				"AC"};
 		
-		numUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuitMellow(unknownCards2);
+		numUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuit(unknownCards2);
 		
 		//step 2: Get available spaces by player
 		numSpacesAvailPerPlayer[2] = 12;
@@ -897,7 +897,7 @@ public class SimulationTests {
 		
 		System.out.println("Number of ways to distribute cards when partner has AS (expected: (38 choose 12)* (26 choose 13) = 28 159 366 024 288 800): " + totalNumWaysAS);
 		
-		numUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuitMellow(unknownCards3);
+		numUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuit(unknownCards3);
 		
 		//step 2: Get available spaces by player
 		numSpacesAvailPerPlayer[2] = 11;
@@ -936,7 +936,7 @@ public class SimulationTests {
 				}
 			}
 			
-			int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
+			int numUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
 			
 			//step 2: Get available spaces by player
 			int numSpacesAvailPerPlayer[] = new int[Constants.NUM_PLAYERS];

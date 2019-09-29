@@ -10,27 +10,6 @@ public class SimulationSetup {
 
 	public static Random random = new Random();
 	
-	//TODO: rework logic from the top-down considering:
-		// 1) This should be generalizable to euchre
-		// 2) If getNumberOfWaysToSimulate < N, we will make it deterministic
-		// 3) Try to avoid calling root of getNumberOfWaysToSimulate more than once for same config.
-	/*
-	public static String[][] distributeUnk555nownCards(String unknownCards[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
-		
-		long numWays = getNumberOfWaysToSimulate(getNumUnknownPerSuit(unknownCards), numSpacesAvailPerPlayer, originalIsVoidList);
-		
-		long randIndexNumber = getRandNumberFrom0ToN(numWays);
-		
-		System.out.println("randIndexNumber: " + randIndexNumber);
-		
-		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = getSelectedPartitionAndIndexBasedOnCombinationIndex(
-								getNumUnknownPerSuit(unknownCards), numSpacesAvailPerPlayer, originalIsVoidList, randIndexNumber);
-		
-		String ret[][] = serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
-		
-		return ret;
-	}*/
-
 	public static long getRandNumberFrom0ToN(long numWays) {
 		//The do while loop is to remove bias.
 		//Without it, the bias could be high if the numWays is close to 2^63.
@@ -501,92 +480,97 @@ public class SimulationSetup {
 		return pascalTriangle;
 	}
 	
-	
-	private static String TAKEN = null;
-	
 	//TODO: OMG TEST more! (Test that all combinations are different)
-	//TODO: clean the code up...
 	public static String[][] serveCarsdsBasedOnPartitionAndIndexInfo(SelectedPartitionAndIndex selectedSuitsAndCombos, String unknownCards[], int numSpacesAvailPerPlayer[]) {
 		
-		//TODO: put in functions
-		String unknownCardsPerSuit[][] = new String[Constants.NUM_SUITS][];
+		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
+		String unknownCardsPerSuit[][] =  getUnknownCardsPerSuit(curNumUnknownCardsPerSuit, unknownCards);
 		
-		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuitMellow(unknownCards);
-		int currentIndexPerSuit[] = new int[Constants.NUM_SUITS];
-		
-		for(int i=0; i<Constants.NUM_SUITS; i++) {
-			unknownCardsPerSuit[i] = new String[curNumUnknownCardsPerSuit[i]];
-			currentIndexPerSuit[i] = 0;
-		}
-		
-		for(int i=0; i<unknownCards.length; i++) {
-			int indexSuit = CardStringFunctions.getIndexOfSuit(unknownCards[i]);
-			unknownCardsPerSuit[indexSuit][currentIndexPerSuit[indexSuit]] = unknownCards[i];
-			currentIndexPerSuit[indexSuit]++;
-		}
-		//END PUT IN FUNCTIONS
-		
-		String unknownCardDistPerPlayer[][] = new String[Constants.NUM_PLAYERS][];
+		String playerHandsToPopulate[][] = new String[Constants.NUM_PLAYERS][];
 		
 		for(int playerI=0; playerI< numSpacesAvailPerPlayer.length; playerI++) {
-			
-			int curCardsTakenByPlayer=0;
-			
-			unknownCardDistPerPlayer[playerI] = new String[numSpacesAvailPerPlayer[playerI]];
-			
-			long currentComboNum = selectedSuitsAndCombos.comboIndex[playerI];
-			
-			//TODO 1: put in function
-			//Work backwards from suit list and give player the cards:
-			for(int indexSuit=Constants.NUM_SUITS - 1; indexSuit>=0; indexSuit--) {
-				
-				int numCardsPlayerWillTake = selectedSuitsAndCombos.suitsTakenByPlayer[playerI][indexSuit];
-				
-				long numWaysToSetupSuitForPlayer = SimulationSetup.getCombination(curNumUnknownCardsPerSuit[indexSuit], numCardsPlayerWillTake);
-				int comboNumberForSuit = (int)( currentComboNum % numWaysToSetupSuitForPlayer);
-				
-				boolean combo[] = convertComboNumberToArray(curNumUnknownCardsPerSuit[indexSuit], numCardsPlayerWillTake, comboNumberForSuit);
-				
-				playerTakeCardsFromSuitAccordingToCombination(unknownCardsPerSuit[indexSuit], combo, unknownCardDistPerPlayer[playerI], curCardsTakenByPlayer);
-				
-				curCardsTakenByPlayer += numCardsPlayerWillTake;
-				curNumUnknownCardsPerSuit[indexSuit] -= numCardsPlayerWillTake;
-				currentComboNum /= numWaysToSetupSuitForPlayer;
-			}
-			//END TODO 1
-			
-			if(currentComboNum != 0) {
-				System.err.println("ERROR: Distributing the cards messed up and didn\'t end up with correct combo num");
-				System.exit(1);
-			}
-			
-			if(curCardsTakenByPlayer != unknownCardDistPerPlayer[playerI].length) {
-				System.out.println("ERROR: Distributing the cards messed up and player didn't end up with correct # of cards.");
-				System.exit(1);
-			}
+			long cardCombinationNumberForPlayer = selectedSuitsAndCombos.comboIndex[playerI];
+			playerHandsToPopulate[playerI] = new String[numSpacesAvailPerPlayer[playerI]];
+			populatePlayerCardsWithUnknownCardsAccordingToSelectedSuitsAndCombos(unknownCardsPerSuit, curNumUnknownCardsPerSuit, selectedSuitsAndCombos.suitsTakenByPlayer[playerI], cardCombinationNumberForPlayer, playerHandsToPopulate[playerI]);
 		}
 		
-		
-		return unknownCardDistPerPlayer;
+		return playerHandsToPopulate;
 	}
 	
+	public static void populatePlayerCardsWithUnknownCardsAccordingToSelectedSuitsAndCombos(String unknownCardsPerSuit[][], int curNumCardsRemainingPerSuit[], int suitsTakenByPlayer[], long cardCombinationNumberForPlayer, String playerHandToPopulate[]) {
+		
+		int curCardsTakenByPlayer=0;
+		
+		long currentComboNumber = cardCombinationNumberForPlayer;
+		
+		for(int indexSuit=Constants.NUM_SUITS - 1; indexSuit>=0; indexSuit--) {
+			
+			int numCardsPlayerWillTakeOfSuit = suitsTakenByPlayer[indexSuit];
+			
+			long numWaysToSetupSuitForPlayer = SimulationSetup.getCombination(curNumCardsRemainingPerSuit[indexSuit], numCardsPlayerWillTakeOfSuit);
+			
+			int comboNumberForSuit = (int)( currentComboNumber % numWaysToSetupSuitForPlayer);
+			
+			boolean combo[] = convertComboNumberToArray(curNumCardsRemainingPerSuit[indexSuit], numCardsPlayerWillTakeOfSuit, comboNumberForSuit);
+			
+			playerTakeCardsFromSuitAccordingToCombination(unknownCardsPerSuit[indexSuit], combo, playerHandToPopulate, curCardsTakenByPlayer);
+			
+			curCardsTakenByPlayer += numCardsPlayerWillTakeOfSuit;
+			curNumCardsRemainingPerSuit[indexSuit] -= numCardsPlayerWillTakeOfSuit;
+			currentComboNumber /= numWaysToSetupSuitForPlayer;
+		}
+		
+		if(currentComboNumber != 0) {
+			System.err.println("ERROR: Distributing the cards messed up and didn\'t end up with correct combo num");
+			System.exit(1);
+		}
+		
+		if(curCardsTakenByPlayer != playerHandToPopulate.length) {
+			System.out.println("ERROR: Distributing the cards messed up and player didn't end up with correct # of cards.");
+			System.exit(1);
+		}
+	}
 	
+
+	private static String CARD_TAKEN = null;
 	
-	//The arrays are passed by value, so I could only change the values of the elements of the arrays... which I do
 	public static void playerTakeCardsFromSuitAccordingToCombination(String unknownCardsForSuit[], boolean combo[], String playerHandToPopulate[], int curCardsTakenByPlayer) {
+		
+		//Note about java array primitives:
+		//The arrays are passed by value, so I could only change the values of the elements of the arrays... which I do
 		for(int i=0, j=0; i<unknownCardsForSuit.length && j<combo.length; i++) {
-			if(unknownCardsForSuit[i] != TAKEN) {
+			if(unknownCardsForSuit[i] != CARD_TAKEN) {
 				if(combo[j]) {
 					playerHandToPopulate[curCardsTakenByPlayer] =
 							unknownCardsForSuit[i];
 					
-					unknownCardsForSuit[i] = TAKEN;
+					unknownCardsForSuit[i] = CARD_TAKEN;
 					curCardsTakenByPlayer++;
 				}
 				j++;
 			}
 		}
 		
+	}
+
+	public static String[][] getUnknownCardsPerSuit(int curNumUnknownCardsPerSuit[], String unknownCards[]) {
+		
+		String unknownCardsPerSuit[][] = new String[Constants.NUM_SUITS][];
+		
+		int currentArrayIndexPerSuit[] = new int[Constants.NUM_SUITS];
+		
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			unknownCardsPerSuit[i] = new String[curNumUnknownCardsPerSuit[i]];
+			currentArrayIndexPerSuit[i] = 0;
+		}
+		
+		for(int i=0; i<unknownCards.length; i++) {
+			int indexSuit = CardStringFunctions.getIndexOfSuit(unknownCards[i]);
+			unknownCardsPerSuit[indexSuit][currentArrayIndexPerSuit[indexSuit]] = unknownCards[i];
+			currentArrayIndexPerSuit[indexSuit]++;
+		}
+		
+		return unknownCardsPerSuit;
 	}
 	
 
