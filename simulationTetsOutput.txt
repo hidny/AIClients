@@ -1,0 +1,2897 @@
+[Console output redirected to file:C:\Users\Michael\Desktop\eclipse\greenOutput.txt]
+Hello from a thread!
+Sending message: /create mellow mellowpy  13 37 1
+Sending message: /join mellowpy 
+Sending message: /join mellowpy 
+Sending message: /join mellowpy 
+Sending message: /start
+Mellow ack received: Countdown started.
+Mellow ack received: Starting game in:
+Game started!
+Game started!
+Game started!
+Mellow ack received: 5
+Mellow ack received: 5
+Mellow ack received: 5
+Mellow ack received: 5
+Mellow ack received: 4
+Mellow ack received: 4
+Mellow ack received: 4
+Mellow ack received: 4
+Mellow ack received: 3
+Mellow ack received: 3
+Mellow ack received: 3
+Mellow ack received: 3
+Mellow ack received: 2
+Mellow ack received: 2
+Mellow ack received: 2
+Mellow ack received: 2
+Mellow ack received: 1
+Mellow ack received: 1
+Mellow ack received: 1
+Mellow ack received: 1
+Mellow ack received: From Game(public): Starting Mellow! garbageTestData & Richard vs Phil & Doris
+Players:
+garbageTestData
+Phil
+Richard
+Doris
+In first team
+Mellow ack received: From Game(public): Starting Mellow! garbageTestData & Richard vs Phil & Doris
+Players:
+Phil
+Richard
+Doris
+garbageTestData
+In second team
+Mellow ack received: From Game(public): Starting Mellow! garbageTestData & Richard vs Phil & Doris
+Players:
+Richard
+Doris
+garbageTestData
+Phil
+In first team
+Mellow ack received: From Game(public): Starting Mellow! garbageTestData & Richard vs Phil & Doris
+Players:
+Doris
+garbageTestData
+Phil
+Richard
+In second team
+Mellow ack received: From Game(public): garbageTestData & Richard start with 13 points.
+player 1:garbageTestData
+player 2:Richard
+current playergarbageTestData
+true
+In list
+Mellow ack received: From Game(public): garbageTestData & Richard start with 13 points.
+player 1:garbageTestData
+player 2:Richard
+current playerPhil
+false
+no in list
+Mellow ack received: From Game(public): garbageTestData & Richard start with 13 points.
+player 1:garbageTestData
+player 2:Richard
+current playerRichard
+true
+In list
+Mellow ack received: From Game(public): garbageTestData & Richard start with 13 points.
+player 1:garbageTestData
+player 2:Richard
+current playerDoris
+false
+no in list
+Mellow ack received: From Game(public): Phil & Doris start with 37 points.
+player 1:Phil
+player 2:Doris
+current playergarbageTestData
+true
+no in list
+Mellow ack received: From Game(public): Phil & Doris start with 37 points.
+player 1:Phil
+player 2:Doris
+current playerPhil
+false
+In list
+Mellow ack received: From Game(public): Phil & Doris start with 37 points.
+player 1:Phil
+player 2:Doris
+current playerRichard
+true
+no in list
+Mellow ack received: From Game(public): Phil & Doris start with 37 points.
+player 1:Phil
+player 2:Doris
+current playerDoris
+false
+In list
+Mellow ack received: From Game(public): First dealer is Phil
+west(Phil) is dealer.
+Mellow ack received: From Game(public): First dealer is Phil
+south(Phil) is dealer.
+Mellow ack received: From Game(public): First dealer is Phil
+east(Phil) is dealer.
+Mellow ack received: From Game(public): First dealer is Phil
+north(Phil) is dealer.
+Mellow ack received: From Game(private): QC 9S JS TH 9C KD 3C 7C KH TC 5H AD JD 
+Sorted cards:
+Mellow ack received: From Game(private): 2S 6H AC 6S 8H JH AS 8C TD 9H TS 5S JC 
+Sorted cards:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+AS TS 6S 5S 2S JH 9H 8H 6H AC JC 8C TD 
+Mellow ack received: From Game(private): 8S 6D 2C 3H 4H 5C KS 3S 2H 7H QH 4S 3D 
+Sorted cards:
+KS 8S 4S 3S QH 7H 4H 3H 2H 5C 2C 6D 3D 
+Mellow ack received: From Game(private): 6C QD KC 8D 2D 7D 9D AH 5D 4D 4C QS 7S 
+Sorted cards:
+QS 7S AH KC 6C 4C QD 9D 8D 7D 5D 4D 2D 
+Mellow ack received: From Game(public): Richard's turn to bid:
+Mellow ack received: From Game(public): Richard's turn to bid:
+Mellow ack received: From Game(public): Richard's turn to bid:
+Mellow ack received: From Game(public): Richard's turn to bid:
+Mellow ack received: From Game(private): What's your bid?
+Number of aces: 0
+I have the KS
+Bid double: 2.001
+Final bid 2
+Sending message: /move 2
+Mellow ack received: From Game(private): Thank you.
+Mellow ack received: From Game(public): Richard: 2
+Richard bids 2
+Mellow ack received: From Game(public): Richard: 2
+Richard bids 2
+Mellow ack received: From Game(public): Richard: 2
+Richard bids 2
+Mellow ack received: From Game(public): Richard: 2
+Richard bids 2
+Mellow ack received: From Game(public): Doris's turn to bid:
+Mellow ack received: From Game(public): Doris's turn to bid:
+Mellow ack received: From Game(public): Doris's turn to bid:
+Mellow ack received: From Game(public): Doris's turn to bid:
+Mellow ack received: From Game(private): What's your bid?
+Number of aces: 1
+Bid double: 2.8
+Final bid 2
+Sending message: /move 2
+Mellow ack received: From Game(private): Thank you.
+Mellow ack received: From Game(public): Doris: 2
+Doris bids 2
+Mellow ack received: From Game(public): Doris: 2
+Doris bids 2
+Mellow ack received: From Game(public): Doris: 2
+Doris bids 2
+Mellow ack received: From Game(public): Doris: 2
+Doris bids 2
+Mellow ack received: From Game(public): garbageTestData's turn to bid:
+Mellow ack received: From Game(public): garbageTestData's turn to bid:
+Mellow ack received: From Game(public): garbageTestData's turn to bid:
+Mellow ack received: From Game(public): garbageTestData's turn to bid:
+Mellow ack received: From Game(private): What's your bid?
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+
+
+Cards in hand:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+What's your bid:
+
+Can you list alternative bids that aren't that bad?
+
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you.
+Mellow ack received: From Game(public): garbageTestData: 1
+garbageTestData bids 1
+Mellow ack received: From Game(public): garbageTestData: 1
+garbageTestData bids 1
+Mellow ack received: From Game(public): garbageTestData: 1
+garbageTestData bids 1
+Mellow ack received: From Game(public): garbageTestData: 1
+garbageTestData bids 1
+Mellow ack received: From Game(public): Phil's turn to bid:
+Mellow ack received: From Game(public): Phil's turn to bid:
+Mellow ack received: From Game(public): Phil's turn to bid:
+Mellow ack received: From Game(public): Phil's turn to bid:
+Mellow ack received: From Game(private): What's your bid?
+Number of aces: 2
+Bid double: 4.0009999999999994
+Final bid 4
+Sending message: /move 4
+Mellow ack received: From Game(private): Thank you.
+Mellow ack received: From Game(public): Phil: 4
+Phil bids 4
+Mellow ack received: From Game(public): Phil: 4
+Phil bids 4
+Mellow ack received: From Game(public): Phil: 4
+Phil bids 4
+Mellow ack received: From Game(public): Phil: 4
+Phil bids 4
+Mellow ack received: From Game(public): Bids:
+Mellow ack received: From Game(public): Bids:
+Mellow ack received: From Game(public): Bids:
+Mellow ack received: From Game(public): Bids:
+Mellow ack received: From Game(public):   3
+Mellow ack received: From Game(public):   3
+Mellow ack received: From Game(public):   3
+Mellow ack received: From Game(public):   3
+Mellow ack received: From Game(public):   6
+Mellow ack received: From Game(public):   6
+Mellow ack received: From Game(public):   6
+Mellow ack received: From Game(public):   6
+Mellow ack received: From Game(public): Dealer Index: 1
+Mellow ack received: From Game(public): Dealer Index: 1
+Mellow ack received: From Game(public): Dealer Index: 1
+Mellow ack received: From Game(public): Dealer Index: 1
+Mellow ack received: From Game(public): Dealer: Phil
+Mellow ack received: From Game(public): Dealer: Phil
+Mellow ack received: From Game(public): Dealer: Phil
+Mellow ack received: From Game(public): Dealer: Phil
+Mellow ack received: From Game(private): QC 9S JS TH 9C KD 3C 7C KH TC 5H AD JD 
+Sorted cards:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+Mellow ack received: From Game(private): 2S 6H AC 6S 8H JH AS 8C TD 9H TS 5S JC 
+Sorted cards:
+AS TS 6S 5S 2S JH 9H 8H 6H AC JC 8C TD 
+Mellow ack received: From Game(private): 8S 6D 2C 3H 4H 5C KS 3S 2H 7H QH 4S 3D 
+Sorted cards:
+KS 8S 4S 3S QH 7H 4H 3H 2H 5C 2C 6D 3D 
+Mellow ack received: From Game(private): 6C QD KC 8D 2D 7D 9D AH 5D 4D 4C QS 7S 
+Sorted cards:
+QS 7S AH KC 6C 4C QD 9D 8D 7D 5D 4D 2D 
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Leading low:
+***********
+AI decided on 2C
+Sending message: /move 2C
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 2C
+player: Richard
+card: 2C
+----------
+north(Richard) plays 2C
+Mellow ack received: From Game(public): Richard playing: 2C
+player: Richard
+card: 2C
+----------
+west(Richard) plays 2C
+Mellow ack received: From Game(public): Richard playing: 2C
+player: Richard
+card: 2C
+----------
+south(Richard) plays 2C
+Mellow ack received: From Game(public): Richard playing: 2C
+player: Richard
+card: 2C
+----------
+east(Richard) plays 2C
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 4C
+Sending message: /move 4C
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 4C
+player: Doris
+card: 4C
+----------
+east(Doris) plays 4C
+Mellow ack received: From Game(public): Doris playing: 4C
+player: Doris
+card: 4C
+----------
+north(Doris) plays 4C
+Mellow ack received: From Game(public): Doris playing: 4C
+player: Doris
+card: 4C
+----------
+west(Doris) plays 4C
+Mellow ack received: From Game(public): Doris playing: 4C
+player: Doris
+card: 4C
+----------
+south(Doris) plays 4C
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+
+Cards in hand:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: QC
+player: garbageTestData
+card: QC
+----------
+south(garbageTestData) plays QC
+Mellow ack received: From Game(public): garbageTestData playing: QC
+player: garbageTestData
+card: QC
+----------
+east(garbageTestData) plays QC
+Mellow ack received: From Game(public): garbageTestData playing: QC
+player: garbageTestData
+card: QC
+----------
+north(garbageTestData) plays QC
+Mellow ack received: From Game(public): garbageTestData playing: QC
+player: garbageTestData
+card: QC
+----------
+west(garbageTestData) plays QC
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on AC
+Sending message: /move AC
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: AC
+player: Phil
+card: AC
+----------
+west(Phil) plays AC
+Mellow ack received: From Game(public): Phil playing: AC
+player: Phil
+card: AC
+----------
+south(Phil) plays AC
+Mellow ack received: From Game(public): Phil playing: AC
+player: Phil
+card: AC
+----------
+east(Phil) plays AC
+Mellow ack received: From Game(public): Phil playing: AC
+player: Phil
+card: AC
+----------
+north(Phil) plays AC
+Mellow ack received: From Game(public): Fight Winner: Phil
+west(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+south(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+east(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+north(Phil) won the trick.
+Mellow ack received: From Game(private): JD 9S JS TH 9C KD 3C 7C KH TC 5H AD 
+Sorted cards:
+JS 9S KH TH 5H TC 9C 7C 3C AD KD JD 
+Mellow ack received: From Game(private): 2S 6H JC 6S 8H JH AS 8C TD 9H TS 5S 
+Sorted cards:
+AS TS 6S 5S 2S JH 9H 8H 6H JC 8C TD 
+Mellow ack received: From Game(private): 8S 6D 3D 3H 4H 5C KS 3S 2H 7H QH 4S 
+Sorted cards:
+KS 8S 4S 3S QH 7H 4H 3H 2H 5C 6D 3D 
+Mellow ack received: From Game(private): 6C QD KC 8D 2D 7D 9D AH 5D 4D 7S QS 
+Sorted cards:
+QS 7S AH KC 6C QD 9D 8D 7D 5D 4D 2D 
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Leading low:
+***********
+AI decided on 2S
+Sending message: /move 2S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 2S
+player: Phil
+card: 2S
+----------
+west(Phil) plays 2S
+Mellow ack received: From Game(public): Phil playing: 2S
+player: Phil
+card: 2S
+----------
+south(Phil) plays 2S
+Mellow ack received: From Game(public): Phil playing: 2S
+player: Phil
+card: 2S
+----------
+north(Phil) plays 2S
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Phil playing: 2S
+player: Phil
+card: 2S
+----------
+east(Phil) plays 2S
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 3S
+Sending message: /move 3S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 3S
+player: Richard
+card: 3S
+----------
+north(Richard) plays 3S
+Mellow ack received: From Game(public): Richard playing: 3S
+player: Richard
+card: 3S
+----------
+west(Richard) plays 3S
+Mellow ack received: From Game(public): Richard playing: 3S
+player: Richard
+card: 3S
+----------
+south(Richard) plays 3S
+Mellow ack received: From Game(public): Richard playing: 3S
+player: Richard
+card: 3S
+----------
+east(Richard) plays 3S
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on QS
+Sending message: /move QS
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: QS
+player: Doris
+card: QS
+----------
+east(Doris) plays QS
+Mellow ack received: From Game(public): Doris playing: QS
+player: Doris
+card: QS
+----------
+north(Doris) plays QS
+Mellow ack received: From Game(public): Doris playing: QS
+player: Doris
+card: QS
+----------
+west(Doris) plays QS
+Mellow ack received: From Game(public): Doris playing: QS
+player: Doris
+card: QS
+----------
+south(Doris) plays QS
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+
+Cards in hand:
+JS 9S KH TH 5H TC 9C 7C 3C AD KD JD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData playing: 9S
+player: garbageTestData
+card: 9S
+----------
+south(garbageTestData) plays 9S
+Mellow ack received: From Game(public): garbageTestData playing: 9S
+player: garbageTestData
+card: 9S
+----------
+east(garbageTestData) plays 9S
+Mellow ack received: From Game(public): garbageTestData playing: 9S
+player: garbageTestData
+card: 9S
+----------
+north(garbageTestData) plays 9S
+Mellow ack received: From Game(public): garbageTestData playing: 9S
+player: garbageTestData
+card: 9S
+----------
+west(garbageTestData) plays 9S
+Mellow ack received: From Game(public): Fight Winner: Doris
+east(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+north(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+west(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+south(Doris) won the trick.
+Mellow ack received: From Game(private): JD AD JS TH 9C KD 3C 7C KH TC 5H 
+Sorted cards:
+JS KH TH 5H TC 9C 7C 3C AD KD JD 
+Mellow ack received: From Game(private): 5S 6H JC 6S 8H JH AS 8C TD 9H TS 
+Sorted cards:
+AS TS 6S 5S JH 9H 8H 6H JC 8C TD 
+Mellow ack received: From Game(private): 8S 6D 3D 3H 4H 5C KS 4S 2H 7H QH 
+Sorted cards:
+KS 8S 4S QH 7H 4H 3H 2H 5C 6D 3D 
+Mellow ack received: From Game(private): 6C QD KC 8D 2D 7D 9D AH 5D 4D 7S 
+Sorted cards:
+7S AH KC 6C QD 9D 8D 7D 5D 4D 2D 
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Playing master card: KC
+***********
+AI decided on KC
+Sending message: /move KC
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: KC
+player: Doris
+card: KC
+----------
+east(Doris) plays KC
+Mellow ack received: From Game(public): Doris playing: KC
+player: Doris
+card: KC
+----------
+north(Doris) plays KC
+Mellow ack received: From Game(public): Doris playing: KC
+player: Doris
+card: KC
+----------
+west(Doris) plays KC
+Mellow ack received: From Game(public): Doris playing: KC
+player: Doris
+card: KC
+----------
+south(Doris) plays KC
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+
+Cards in hand:
+JS KH TH 5H TC 9C 7C 3C AD KD JD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData playing: 9C
+player: garbageTestData
+card: 9C
+----------
+south(garbageTestData) plays 9C
+Mellow ack received: From Game(public): garbageTestData playing: 9C
+player: garbageTestData
+card: 9C
+----------
+east(garbageTestData) plays 9C
+Mellow ack received: From Game(public): garbageTestData playing: 9C
+player: garbageTestData
+card: 9C
+----------
+north(garbageTestData) plays 9C
+Mellow ack received: From Game(public): garbageTestData playing: 9C
+player: garbageTestData
+card: 9C
+----------
+west(garbageTestData) plays 9C
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 8C
+Sending message: /move 8C
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 8C
+player: Phil
+card: 8C
+----------
+west(Phil) plays 8C
+Mellow ack received: From Game(public): Phil playing: 8C
+player: Phil
+card: 8C
+----------
+south(Phil) plays 8C
+Mellow ack received: From Game(public): Phil playing: 8C
+player: Phil
+card: 8C
+----------
+east(Phil) plays 8C
+Mellow ack received: From Game(public): Phil playing: 8C
+player: Phil
+card: 8C
+----------
+north(Phil) plays 8C
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move 5C
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 5C
+player: Richard
+card: 5C
+----------
+north(Richard) plays 5C
+Mellow ack received: From Game(public): Richard playing: 5C
+player: Richard
+card: 5C
+----------
+west(Richard) plays 5C
+Mellow ack received: From Game(public): Richard playing: 5C
+player: Richard
+card: 5C
+----------
+south(Richard) plays 5C
+Mellow ack received: From Game(public): Richard playing: 5C
+player: Richard
+card: 5C
+----------
+east(Richard) plays 5C
+Mellow ack received: From Game(public): Fight Winner: Doris
+east(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+north(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+west(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+south(Doris) won the trick.
+Mellow ack received: From Game(private): JD AD JS TH 5H KD 3C 7C KH TC 
+Sorted cards:
+JS KH TH 5H TC 7C 3C AD KD JD 
+Mellow ack received: From Game(private): 5S 6H JC 6S 8H JH AS TS TD 9H 
+Sorted cards:
+AS TS 6S 5S JH 9H 8H 6H JC TD 
+Mellow ack received: From Game(private): 8S 6D 3D 3H 4H QH KS 4S 2H 7H 
+Sorted cards:
+KS 8S 4S QH 7H 4H 3H 2H 6D 3D 
+Mellow ack received: From Game(private): 6C QD 7S 8D 2D 7D 9D AH 5D 4D 
+Sorted cards:
+7S AH 6C QD 9D 8D 7D 5D 4D 2D 
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Playing master card: AH
+***********
+AI decided on AH
+Sending message: /move AH
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: AH
+player: Doris
+card: AH
+----------
+east(Doris) plays AH
+Mellow ack received: From Game(public): Doris playing: AH
+player: Doris
+card: AH
+----------
+north(Doris) plays AH
+Mellow ack received: From Game(public): Doris playing: AH
+player: Doris
+card: AH
+----------
+west(Doris) plays AH
+Mellow ack received: From Game(public): Doris playing: AH
+player: Doris
+card: AH
+----------
+south(Doris) plays AH
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+
+Cards in hand:
+JS KH TH 5H TC 7C 3C AD KD JD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData playing: TH
+player: garbageTestData
+card: TH
+----------
+south(garbageTestData) plays TH
+Mellow ack received: From Game(public): garbageTestData playing: TH
+player: garbageTestData
+card: TH
+----------
+east(garbageTestData) plays TH
+Mellow ack received: From Game(public): garbageTestData playing: TH
+player: garbageTestData
+card: TH
+----------
+north(garbageTestData) plays TH
+Mellow ack received: From Game(public): garbageTestData playing: TH
+player: garbageTestData
+card: TH
+----------
+west(garbageTestData) plays TH
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 6H
+Sending message: /move 6H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 6H
+player: Phil
+card: 6H
+----------
+west(Phil) plays 6H
+Mellow ack received: From Game(public): Phil playing: 6H
+player: Phil
+card: 6H
+----------
+south(Phil) plays 6H
+Mellow ack received: From Game(public): Phil playing: 6H
+player: Phil
+card: 6H
+----------
+east(Phil) plays 6H
+Mellow ack received: From Game(public): Phil playing: 6H
+player: Phil
+card: 6H
+----------
+north(Phil) plays 6H
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 2H
+Sending message: /move 2H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 2H
+player: Richard
+card: 2H
+----------
+north(Richard) plays 2H
+Mellow ack received: From Game(public): Richard playing: 2H
+player: Richard
+card: 2H
+----------
+west(Richard) plays 2H
+Mellow ack received: From Game(public): Richard playing: 2H
+player: Richard
+card: 2H
+----------
+south(Richard) plays 2H
+Mellow ack received: From Game(public): Richard playing: 2H
+player: Richard
+card: 2H
+----------
+east(Richard) plays 2H
+Mellow ack received: From Game(public): Fight Winner: Doris
+east(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+north(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+west(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+south(Doris) won the trick.
+Mellow ack received: From Game(private): JD AD JS TC 5H KD 3C 7C KH 
+Sorted cards:
+JS KH 5H TC 7C 3C AD KD JD 
+Mellow ack received: From Game(private): 5S 9H JC 6S 8H JH AS TS TD 
+Sorted cards:
+AS TS 6S 5S JH 9H 8H JC TD 
+Mellow ack received: From Game(private): 8S 6D 3D 3H 4H QH KS 4S 7H 
+Sorted cards:
+KS 8S 4S QH 7H 4H 3H 6D 3D 
+Mellow ack received: From Game(private): 6C QD 7S 8D 2D 7D 9D 4D 5D 
+Sorted cards:
+7S 6C QD 9D 8D 7D 5D 4D 2D 
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Leading low:
+***********
+AI decided on 2D
+Sending message: /move 2D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 2D
+player: Doris
+card: 2D
+----------
+east(Doris) plays 2D
+Mellow ack received: From Game(public): Doris playing: 2D
+player: Doris
+card: 2D
+----------
+north(Doris) plays 2D
+Mellow ack received: From Game(public): Doris playing: 2D
+player: Doris
+card: 2D
+----------
+west(Doris) plays 2D
+Mellow ack received: From Game(public): Doris playing: 2D
+player: Doris
+card: 2D
+----------
+south(Doris) plays 2D
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+
+Cards in hand:
+JS KH 5H TC 7C 3C AD KD JD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: JD
+player: garbageTestData
+card: JD
+----------
+south(garbageTestData) plays JD
+Mellow ack received: From Game(public): garbageTestData playing: JD
+player: garbageTestData
+card: JD
+----------
+east(garbageTestData) plays JD
+Mellow ack received: From Game(public): garbageTestData playing: JD
+player: garbageTestData
+card: JD
+----------
+north(garbageTestData) plays JD
+Mellow ack received: From Game(public): garbageTestData playing: JD
+player: garbageTestData
+card: JD
+----------
+west(garbageTestData) plays JD
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move TD
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: TD
+player: Phil
+card: TD
+----------
+west(Phil) plays TD
+Mellow ack received: From Game(public): Phil playing: TD
+player: Phil
+card: TD
+----------
+south(Phil) plays TD
+Mellow ack received: From Game(public): Phil playing: TD
+player: Phil
+card: TD
+----------
+east(Phil) plays TD
+Mellow ack received: From Game(public): Phil playing: TD
+player: Phil
+card: TD
+----------
+north(Phil) plays TD
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 3D
+Sending message: /move 3D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 3D
+player: Richard
+card: 3D
+----------
+north(Richard) plays 3D
+Mellow ack received: From Game(public): Richard playing: 3D
+player: Richard
+card: 3D
+----------
+west(Richard) plays 3D
+Mellow ack received: From Game(public): Richard playing: 3D
+player: Richard
+card: 3D
+----------
+south(Richard) plays 3D
+Mellow ack received: From Game(public): Richard playing: 3D
+player: Richard
+card: 3D
+----------
+east(Richard) plays 3D
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+south(garbageTestData) won the trick.
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+east(garbageTestData) won the trick.
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+north(garbageTestData) won the trick.
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+west(garbageTestData) won the trick.
+Mellow ack received: From Game(private): KH AD JS TC 5H KD 3C 7C 
+Sorted cards:
+JS KH 5H TC 7C 3C AD KD 
+Mellow ack received: From Game(private): 5S 9H JC 6S 8H JH AS TS 
+Sorted cards:
+AS TS 6S 5S JH 9H 8H JC 
+Mellow ack received: From Game(private): 8S 6D 7H 3H 4H QH KS 4S 
+Sorted cards:
+KS 8S 4S QH 7H 4H 3H 6D 
+Mellow ack received: From Game(private): 6C QD 7S 8D 5D 7D 9D 4D 
+Sorted cards:
+7S 6C QD 9D 8D 7D 5D 4D 
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+
+Cards in hand:
+JS KH 5H TC 7C 3C AD KD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: KH
+player: garbageTestData
+card: KH
+----------
+south(garbageTestData) plays KH
+Mellow ack received: From Game(public): garbageTestData playing: KH
+player: garbageTestData
+card: KH
+----------
+east(garbageTestData) plays KH
+Mellow ack received: From Game(public): garbageTestData playing: KH
+player: garbageTestData
+card: KH
+----------
+north(garbageTestData) plays KH
+Mellow ack received: From Game(public): garbageTestData playing: KH
+player: garbageTestData
+card: KH
+----------
+west(garbageTestData) plays KH
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 8H
+Sending message: /move 8H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 8H
+player: Phil
+card: 8H
+----------
+west(Phil) plays 8H
+Mellow ack received: From Game(public): Phil playing: 8H
+player: Phil
+card: 8H
+----------
+south(Phil) plays 8H
+Mellow ack received: From Game(public): Phil playing: 8H
+player: Phil
+card: 8H
+----------
+east(Phil) plays 8H
+Mellow ack received: From Game(public): Phil playing: 8H
+player: Phil
+card: 8H
+----------
+north(Phil) plays 8H
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 3H
+Sending message: /move 3H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 3H
+player: Richard
+card: 3H
+----------
+north(Richard) plays 3H
+Mellow ack received: From Game(public): Richard playing: 3H
+player: Richard
+card: 3H
+----------
+west(Richard) plays 3H
+Mellow ack received: From Game(public): Richard playing: 3H
+player: Richard
+card: 3H
+----------
+south(Richard) plays 3H
+Mellow ack received: From Game(public): Richard playing: 3H
+player: Richard
+card: 3H
+----------
+east(Richard) plays 3H
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 7S
+Sending message: /move 7S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 7S
+player: Doris
+card: 7S
+----------
+east(Doris) plays 7S
+Mellow ack received: From Game(public): Doris playing: 7S
+player: Doris
+card: 7S
+----------
+north(Doris) plays 7S
+Mellow ack received: From Game(public): Doris playing: 7S
+player: Doris
+card: 7S
+----------
+west(Doris) plays 7S
+Mellow ack received: From Game(public): Doris playing: 7S
+player: Doris
+card: 7S
+----------
+south(Doris) plays 7S
+Mellow ack received: From Game(public): Fight Winner: Doris
+east(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+north(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+west(Doris) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Doris
+south(Doris) won the trick.
+Mellow ack received: From Game(private): 7C AD JS TC 5H KD 3C 
+Sorted cards:
+JS 5H TC 7C 3C AD KD 
+Mellow ack received: From Game(private): 5S 9H JC 6S TS JH AS 
+Sorted cards:
+AS TS 6S 5S JH 9H JC 
+Mellow ack received: From Game(private): 8S 6D 7H 4S 4H QH KS 
+Sorted cards:
+KS 8S 4S QH 7H 4H 6D 
+Mellow ack received: From Game(private): 6C QD 4D 8D 5D 7D 9D 
+Sorted cards:
+6C QD 9D 8D 7D 5D 4D 
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Initial Action index: 3
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Leading low:
+***********
+AI decided on 4D
+Sending message: /move 4D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 4D
+player: Doris
+card: 4D
+----------
+east(Doris) plays 4D
+Mellow ack received: From Game(public): Doris playing: 4D
+player: Doris
+card: 4D
+----------
+north(Doris) plays 4D
+Mellow ack received: From Game(public): Doris playing: 4D
+player: Doris
+card: 4D
+----------
+west(Doris) plays 4D
+Mellow ack received: From Game(public): Doris playing: 4D
+player: Doris
+card: 4D
+----------
+south(Doris) plays 4D
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+
+Cards in hand:
+JS 5H TC 7C 3C AD KD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData tried to renege.
+Mellow ack received: From Game(public): garbageTestData playing: AD
+player: garbageTestData
+card: AD
+----------
+south(garbageTestData) plays AD
+Mellow ack received: From Game(public): garbageTestData playing: AD
+player: garbageTestData
+card: AD
+----------
+east(garbageTestData) plays AD
+Mellow ack received: From Game(public): garbageTestData playing: AD
+player: garbageTestData
+card: AD
+----------
+north(garbageTestData) plays AD
+Mellow ack received: From Game(public): garbageTestData playing: AD
+player: garbageTestData
+card: AD
+----------
+west(garbageTestData) plays AD
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 5S
+Sending message: /move 5S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 5S
+player: Phil
+card: 5S
+----------
+west(Phil) plays 5S
+Mellow ack received: From Game(public): Phil playing: 5S
+player: Phil
+card: 5S
+----------
+south(Phil) plays 5S
+Mellow ack received: From Game(public): Phil playing: 5S
+player: Phil
+card: 5S
+----------
+east(Phil) plays 5S
+Mellow ack received: From Game(public): Phil playing: 5S
+player: Phil
+card: 5S
+----------
+north(Phil) plays 5S
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move 6D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 6D
+player: Richard
+card: 6D
+----------
+north(Richard) plays 6D
+Mellow ack received: From Game(public): Richard playing: 6D
+player: Richard
+card: 6D
+----------
+west(Richard) plays 6D
+Mellow ack received: From Game(public): Richard playing: 6D
+player: Richard
+card: 6D
+----------
+south(Richard) plays 6D
+Mellow ack received: From Game(public): Richard playing: 6D
+player: Richard
+card: 6D
+----------
+east(Richard) plays 6D
+Mellow ack received: From Game(public): Fight Winner: Phil
+west(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+south(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+east(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+north(Phil) won the trick.
+Mellow ack received: From Game(private): 7C 3C JS TC 5H KD 
+Sorted cards:
+JS 5H TC 7C 3C KD 
+Mellow ack received: From Game(private): AS 9H JC 6S TS JH 
+Sorted cards:
+AS TS 6S JH 9H JC 
+Mellow ack received: From Game(private): 8S KS 7H 4S 4H QH 
+Sorted cards:
+KS 8S 4S QH 7H 4H 
+Mellow ack received: From Game(private): 6C QD 9D 8D 5D 7D 
+Sorted cards:
+6C QD 9D 8D 7D 5D 
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Playing master card: JC
+***********
+AI decided on JC
+Sending message: /move JC
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: JC
+player: Phil
+card: JC
+----------
+west(Phil) plays JC
+Mellow ack received: From Game(public): Phil playing: JC
+player: Phil
+card: JC
+----------
+south(Phil) plays JC
+Mellow ack received: From Game(public): Phil playing: JC
+player: Phil
+card: JC
+----------
+east(Phil) plays JC
+Mellow ack received: From Game(public): Phil playing: JC
+player: Phil
+card: JC
+----------
+north(Phil) plays JC
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 4S
+Sending message: /move 4S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 4S
+player: Richard
+card: 4S
+----------
+north(Richard) plays 4S
+Mellow ack received: From Game(public): Richard playing: 4S
+player: Richard
+card: 4S
+----------
+west(Richard) plays 4S
+Mellow ack received: From Game(public): Richard playing: 4S
+player: Richard
+card: 4S
+----------
+south(Richard) plays 4S
+Mellow ack received: From Game(public): Richard playing: 4S
+player: Richard
+card: 4S
+----------
+east(Richard) plays 4S
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move 6C
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 6C
+player: Doris
+card: 6C
+----------
+east(Doris) plays 6C
+Mellow ack received: From Game(public): Doris playing: 6C
+player: Doris
+card: 6C
+----------
+north(Doris) plays 6C
+Mellow ack received: From Game(public): Doris playing: 6C
+player: Doris
+card: 6C
+----------
+west(Doris) plays 6C
+Mellow ack received: From Game(public): Doris playing: 6C
+player: Doris
+card: 6C
+----------
+south(Doris) plays 6C
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+garbageTestData played the AD.
+Phil played the 5S.
+Richard played the 6D.
+--new round--
+Phil played the JC.
+Richard played the 4S.
+Doris played the 6C.
+
+Cards in hand:
+JS 5H TC 7C 3C KD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: 7C
+player: garbageTestData
+card: 7C
+----------
+south(garbageTestData) plays 7C
+Mellow ack received: From Game(public): garbageTestData playing: 7C
+player: garbageTestData
+card: 7C
+----------
+east(garbageTestData) plays 7C
+Mellow ack received: From Game(public): garbageTestData playing: 7C
+player: garbageTestData
+card: 7C
+----------
+north(garbageTestData) plays 7C
+Mellow ack received: From Game(public): garbageTestData playing: 7C
+player: garbageTestData
+card: 7C
+----------
+west(garbageTestData) plays 7C
+Mellow ack received: From Game(public): Fight Winner: Richard
+north(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+west(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+south(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+east(Richard) won the trick.
+Mellow ack received: From Game(private): KD 3C JS TC 5H 
+Sorted cards:
+JS 5H TC 3C KD 
+Mellow ack received: From Game(private): AS 9H JH 6S TS 
+Sorted cards:
+AS TS 6S JH 9H 
+Mellow ack received: From Game(private): 8S KS 7H QH 4H 
+Sorted cards:
+KS 8S QH 7H 4H 
+Mellow ack received: From Game(private): 7D QD 9D 8D 5D 
+Sorted cards:
+QD 9D 8D 7D 5D 
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Playing master card: QH
+***********
+AI decided on QH
+Sending message: /move QH
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: QH
+player: Richard
+card: QH
+----------
+north(Richard) plays QH
+Mellow ack received: From Game(public): Richard playing: QH
+player: Richard
+card: QH
+----------
+west(Richard) plays QH
+Mellow ack received: From Game(public): Richard playing: QH
+player: Richard
+card: QH
+----------
+south(Richard) plays QH
+Mellow ack received: From Game(public): Richard playing: QH
+player: Richard
+card: QH
+----------
+east(Richard) plays QH
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 5D
+Sending message: /move 5D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 5D
+player: Doris
+card: 5D
+----------
+east(Doris) plays 5D
+Mellow ack received: From Game(public): Doris playing: 5D
+player: Doris
+card: 5D
+----------
+north(Doris) plays 5D
+Mellow ack received: From Game(public): Doris playing: 5D
+player: Doris
+card: 5D
+----------
+west(Doris) plays 5D
+Mellow ack received: From Game(public): Doris playing: 5D
+player: Doris
+card: 5D
+----------
+south(Doris) plays 5D
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+garbageTestData played the AD.
+Phil played the 5S.
+Richard played the 6D.
+--new round--
+Phil played the JC.
+Richard played the 4S.
+Doris played the 6C.
+garbageTestData played the 7C.
+--new round--
+Richard played the QH.
+Doris played the 5D.
+
+Cards in hand:
+JS 5H TC 3C KD 
+
+You are playing the 5H
+(It's the only legal card to play)
+Input anything to continue
+
+Sending message: /move 5H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: 5H
+player: garbageTestData
+card: 5H
+----------
+south(garbageTestData) plays 5H
+Mellow ack received: From Game(public): garbageTestData playing: 5H
+player: garbageTestData
+card: 5H
+----------
+east(garbageTestData) plays 5H
+Mellow ack received: From Game(public): garbageTestData playing: 5H
+player: garbageTestData
+card: 5H
+----------
+north(garbageTestData) plays 5H
+Mellow ack received: From Game(public): garbageTestData playing: 5H
+player: garbageTestData
+card: 5H
+----------
+west(garbageTestData) plays 5H
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 9H
+Sending message: /move 9H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 9H
+player: Phil
+card: 9H
+----------
+west(Phil) plays 9H
+Mellow ack received: From Game(public): Phil playing: 9H
+player: Phil
+card: 9H
+----------
+south(Phil) plays 9H
+Mellow ack received: From Game(public): Phil playing: 9H
+player: Phil
+card: 9H
+----------
+east(Phil) plays 9H
+Mellow ack received: From Game(public): Phil playing: 9H
+player: Phil
+card: 9H
+----------
+north(Phil) plays 9H
+Mellow ack received: From Game(public): Fight Winner: Richard
+north(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+west(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+south(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+east(Richard) won the trick.
+Mellow ack received: From Game(private): KD 3C JS TC 
+Sorted cards:
+JS TC 3C KD 
+Mellow ack received: From Game(private): AS TS JH 6S 
+Sorted cards:
+AS TS 6S JH 
+Mellow ack received: From Game(private): 8S KS 7H 4H 
+Sorted cards:
+KS 8S 7H 4H 
+Mellow ack received: From Game(private): 7D QD 9D 8D 
+Sorted cards:
+QD 9D 8D 7D 
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Leading low:
+***********
+AI decided on 4H
+Sending message: /move 4H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 4H
+player: Richard
+card: 4H
+----------
+north(Richard) plays 4H
+Mellow ack received: From Game(public): Richard playing: 4H
+player: Richard
+card: 4H
+----------
+west(Richard) plays 4H
+Mellow ack received: From Game(public): Richard playing: 4H
+player: Richard
+card: 4H
+----------
+south(Richard) plays 4H
+Mellow ack received: From Game(public): Richard playing: 4H
+player: Richard
+card: 4H
+----------
+east(Richard) plays 4H
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 7D
+Sending message: /move 7D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 7D
+player: Doris
+card: 7D
+----------
+east(Doris) plays 7D
+Mellow ack received: From Game(public): Doris playing: 7D
+player: Doris
+card: 7D
+----------
+north(Doris) plays 7D
+Mellow ack received: From Game(public): Doris playing: 7D
+player: Doris
+card: 7D
+----------
+west(Doris) plays 7D
+Mellow ack received: From Game(public): Doris playing: 7D
+player: Doris
+card: 7D
+----------
+south(Doris) plays 7D
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+garbageTestData played the AD.
+Phil played the 5S.
+Richard played the 6D.
+--new round--
+Phil played the JC.
+Richard played the 4S.
+Doris played the 6C.
+garbageTestData played the 7C.
+--new round--
+Richard played the QH.
+Doris played the 5D.
+garbageTestData played the 5H.
+Phil played the 9H.
+--new round--
+Richard played the 4H.
+Doris played the 7D.
+
+Cards in hand:
+JS TC 3C KD 
+
+Please play a card:
+
+Can you list alternative plays that aren't that bad?
+
+ERROR: DIDNT FIND A CARD
+Sending message: /move 1
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: KD
+player: garbageTestData
+card: KD
+----------
+south(garbageTestData) plays KD
+Mellow ack received: From Game(public): garbageTestData playing: KD
+player: garbageTestData
+card: KD
+----------
+east(garbageTestData) plays KD
+Mellow ack received: From Game(public): garbageTestData playing: KD
+player: garbageTestData
+card: KD
+----------
+north(garbageTestData) plays KD
+Mellow ack received: From Game(public): garbageTestData playing: KD
+player: garbageTestData
+card: KD
+----------
+west(garbageTestData) plays KD
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move JH
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: JH
+player: Phil
+card: JH
+----------
+south(Phil) plays JH
+Mellow ack received: From Game(public): Phil playing: JH
+player: Phil
+card: JH
+----------
+east(Phil) plays JH
+Mellow ack received: From Game(public): Phil playing: JH
+player: Phil
+card: JH
+----------
+north(Phil) plays JH
+Mellow ack received: From Game(public): Fight Winner: Phil
+south(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+east(Phil) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Phil
+north(Phil) won the trick.
+Mellow ack received: From Game(private): AS TS 6S 
+Sorted cards:
+AS TS 6S 
+Mellow ack received: From Game(private): 8S KS 7H 
+Sorted cards:
+KS 8S 7H 
+Mellow ack received: From Game(private): 8D QD 9D 
+Sorted cards:
+QD 9D 8D 
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+***********
+Leading low:
+***********
+AI decided on 6S
+Sending message: /move 6S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: 6S
+player: Phil
+card: 6S
+----------
+south(Phil) plays 6S
+Mellow ack received: From Game(public): Phil playing: 6S
+player: Phil
+card: 6S
+----------
+east(Phil) plays 6S
+Mellow ack received: From Game(public): Phil playing: 6S
+player: Phil
+card: 6S
+----------
+north(Phil) plays 6S
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+2nd throw
+AI decided on 8S
+Sending message: /move 8S
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 8S
+player: Richard
+card: 8S
+----------
+west(Richard) plays 8S
+Mellow ack received: From Game(public): Richard playing: 8S
+player: Richard
+card: 8S
+----------
+south(Richard) plays 8S
+Mellow ack received: From Game(public): Richard playing: 8S
+player: Richard
+card: 8S
+----------
+east(Richard) plays 8S
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Inside get card to play
+AI decided on 8D
+Sending message: /move 8D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 8D
+player: Doris
+card: 8D
+----------
+north(Doris) plays 8D
+Mellow ack received: From Game(public): Doris playing: 8D
+player: Doris
+card: 8D
+----------
+west(Doris) plays 8D
+Mellow ack received: From Game(public): Doris playing: 8D
+player: Doris
+card: 8D
+----------
+south(Doris) plays 8D
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil playing: JH
+player: Phil
+card: JH
+----------
+west(Phil) plays JH
+Mellow ack received: From Game(public): Fight Winner: Phil
+west(Phil) won the trick.
+Mellow ack received: From Game(private): TC 3C JS 
+Sorted cards:
+JS TC 3C 
+Mellow ack received: From Game(public): Initial Action index: 1
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil playing: 6S
+player: Phil
+card: 6S
+----------
+west(Phil) plays 6S
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard playing: 8S
+player: Richard
+card: 8S
+----------
+north(Richard) plays 8S
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris playing: 8D
+player: Doris
+card: 8D
+----------
+east(Doris) plays 8D
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+garbageTestData played the AD.
+Phil played the 5S.
+Richard played the 6D.
+--new round--
+Phil played the JC.
+Richard played the 4S.
+Doris played the 6C.
+garbageTestData played the 7C.
+--new round--
+Richard played the QH.
+Doris played the 5D.
+garbageTestData played the 5H.
+Phil played the 9H.
+--new round--
+Richard played the 4H.
+Doris played the 7D.
+garbageTestData played the KD.
+Phil played the JH.
+--new round--
+Phil played the 6S.
+Richard played the 8S.
+Doris played the 8D.
+
+Cards in hand:
+JS TC 3C 
+
+You are playing the JS
+(It's the only legal card to play)
+Input anything to continue
+Sending message: /move JS
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: JS
+player: garbageTestData
+card: JS
+----------
+south(garbageTestData) plays JS
+Mellow ack received: From Game(public): garbageTestData playing: JS
+player: garbageTestData
+card: JS
+----------
+east(garbageTestData) plays JS
+Mellow ack received: From Game(public): garbageTestData playing: JS
+player: garbageTestData
+card: JS
+----------
+north(garbageTestData) plays JS
+Mellow ack received: From Game(public): garbageTestData playing: JS
+player: garbageTestData
+card: JS
+----------
+west(garbageTestData) plays JS
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+south(garbageTestData) won the trick.
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+east(garbageTestData) won the trick.
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+north(garbageTestData) won the trick.
+Mellow ack received: From Game(public): Fight Winner: garbageTestData
+west(garbageTestData) won the trick.
+Mellow ack received: From Game(private): TC 3C 
+Sorted cards:
+TC 3C 
+Mellow ack received: From Game(private): AS TS 
+Sorted cards:
+AS TS 
+Mellow ack received: From Game(private): 7H KS 
+Sorted cards:
+KS 7H 
+Mellow ack received: From Game(private): 9D QD 
+Sorted cards:
+QD 9D 
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): Initial Action index: 0
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+garbageTestData played the AD.
+Phil played the 5S.
+Richard played the 6D.
+--new round--
+Phil played the JC.
+Richard played the 4S.
+Doris played the 6C.
+garbageTestData played the 7C.
+--new round--
+Richard played the QH.
+Doris played the 5D.
+garbageTestData played the 5H.
+Phil played the 9H.
+--new round--
+Richard played the 4H.
+Doris played the 7D.
+garbageTestData played the KD.
+Phil played the JH.
+--new round--
+Phil played the 6S.
+Richard played the 8S.
+Doris played the 8D.
+garbageTestData played the JS.
+
+Cards in hand:
+TC 3C 
+
+Please play a card:
+3
+Can you list alternative plays that aren't that bad?
+
+Sending message: /move 3
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): garbageTestData playing: TC
+player: garbageTestData
+card: TC
+----------
+south(garbageTestData) plays TC
+Mellow ack received: From Game(public): garbageTestData playing: TC
+player: garbageTestData
+card: TC
+----------
+east(garbageTestData) plays TC
+Mellow ack received: From Game(public): garbageTestData playing: TC
+player: garbageTestData
+card: TC
+----------
+north(garbageTestData) plays TC
+Mellow ack received: From Game(public): garbageTestData playing: TC
+player: garbageTestData
+card: TC
+----------
+west(garbageTestData) plays TC
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(public): Phil's turn:
+Mellow ack received: From Game(private): Play a card!
+RUN SIMULATION
+a
+Unknown card distribution for simulation #0
+player 0:  
+player 1:  9D 
+player 2:  QD 3C 
+player 3:  KS 
+
+a
+Unknown card distribution for simulation #1
+player 0:  
+player 1:  QD 
+player 2:  9D 3C 
+player 3:  KS 
+
+a
+Unknown card distribution for simulation #2
+player 0:  
+player 1:  KS 
+player 2:  9D QD 
+player 3:  3C 
+
+a
+Unknown card distribution for simulation #3
+player 0:  
+player 1:  KS 
+player 2:  9D 3C 
+player 3:  QD 
+
+a
+Unknown card distribution for simulation #4
+player 0:  
+player 1:  KS 
+player 2:  QD 3C 
+player 3:  9D 
+
+a
+**Inside get card to play
+2nd throw
+AI decided on TS
+Sending message: /move TS
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Phil playing: TS
+player: Phil
+card: TS
+----------
+west(Phil) plays TS
+Mellow ack received: From Game(public): Phil playing: TS
+player: Phil
+card: TS
+----------
+south(Phil) plays TS
+Mellow ack received: From Game(public): Phil playing: TS
+player: Phil
+card: TS
+----------
+east(Phil) plays TS
+TEST: making cards impossible
+Mellow ack received: From Game(public): Phil playing: TS
+player: Phil
+card: TS
+----------
+north(Phil) plays TS
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+RUN SIMULATION
+a
+Unknown card distribution for simulation #0
+player 0:  
+player 1:  9D QD 
+player 2:  3C 
+player 3:  
+
+a
+Unknown card distribution for simulation #1
+player 0:  
+player 1:  9D 3C 
+player 2:  QD 
+player 3:  
+
+a
+Unknown card distribution for simulation #2
+player 0:  
+player 1:  QD 3C 
+player 2:  9D 
+player 3:  
+
+a
+**Inside get card to play
+AI decided on KS
+Sending message: /move KS
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: KS
+player: Richard
+card: KS
+----------
+north(Richard) plays KS
+Mellow ack received: From Game(public): Richard playing: KS
+player: Richard
+card: KS
+----------
+west(Richard) plays KS
+Mellow ack received: From Game(public): Richard playing: KS
+player: Richard
+card: KS
+----------
+south(Richard) plays KS
+Mellow ack received: From Game(public): Richard playing: KS
+player: Richard
+card: KS
+----------
+east(Richard) plays KS
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+RUN SIMULATION
+a
+Unknown card distribution for simulation #0
+player 0:  
+player 1:  
+player 2:  7H 
+player 3:  AS 
+
+a
+Unknown card distribution for simulation #1
+player 0:  
+player 1:  
+player 2:  AS 
+player 3:  7H 
+
+a
+**Inside get card to play
+AI decided on 9D
+Sending message: /move 9D
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: 9D
+player: Doris
+card: 9D
+----------
+east(Doris) plays 9D
+Mellow ack received: From Game(public): Doris playing: 9D
+player: Doris
+card: 9D
+----------
+north(Doris) plays 9D
+Mellow ack received: From Game(public): Doris playing: 9D
+player: Doris
+card: 9D
+----------
+west(Doris) plays 9D
+Mellow ack received: From Game(public): Doris playing: 9D
+player: Doris
+card: 9D
+----------
+south(Doris) plays 9D
+Mellow ack received: From Game(public): Fight Winner: Richard
+north(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+west(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+south(Richard) won the trick.
+Mellow ack received: From Game(public): Fight Winner: Richard
+east(Richard) won the trick.
+Mellow ack received: From Game(private): 3C 
+Sorted cards:
+3C 
+Mellow ack received: From Game(private): AS 
+Sorted cards:
+AS 
+Mellow ack received: From Game(private): 7H 
+Sorted cards:
+7H 
+Mellow ack received: From Game(private): QD 
+Sorted cards:
+QD 
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Initial Action index: 2
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(public): Richard's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move 7H
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Richard playing: 7H
+player: Richard
+card: 7H
+----------
+north(Richard) plays 7H
+Mellow ack received: From Game(public): Richard playing: 7H
+player: Richard
+card: 7H
+----------
+west(Richard) plays 7H
+Mellow ack received: From Game(public): Richard playing: 7H
+player: Richard
+card: 7H
+----------
+south(Richard) plays 7H
+Mellow ack received: From Game(public): Richard playing: 7H
+player: Richard
+card: 7H
+----------
+east(Richard) plays 7H
+TEST: making cards impossible
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(public): Doris's turn:
+Mellow ack received: From Game(private): Play a card!
+**Forced to play card
+Sending message: /move QD
+Mellow ack received: From Game(private): Thank you!
+Mellow ack received: From Game(public): Doris playing: QD
+player: Doris
+card: QD
+----------
+east(Doris) plays QD
+Mellow ack received: From Game(public): Doris playing: QD
+player: Doris
+card: QD
+----------
+north(Doris) plays QD
+TEST: making cards impossible
+Mellow ack received: From Game(public): Doris playing: QD
+player: Doris
+card: QD
+----------
+west(Doris) plays QD
+TEST: making cards impossible
+Mellow ack received: From Game(public): Doris playing: QD
+player: Doris
+card: QD
+----------
+south(Doris) plays QD
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(public): garbageTestData's turn:
+Mellow ack received: From Game(private): Play a card!
+
+
+Your name: garbageTestData
+Dealer is on your left
+Score at start:
+Your Score      Their Score
+ 13              37
+
+Cards dealt:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+
+Bid history:
+Richard bid 2.
+Doris bid 2.
+garbageTestData bid 1.
+Phil bid 4.
+
+
+Play history:
+--new round--
+Richard played the 2C.
+Doris played the 4C.
+garbageTestData played the QC.
+Phil played the AC.
+--new round--
+Phil played the 2S.
+Richard played the 3S.
+Doris played the QS.
+garbageTestData played the 9S.
+--new round--
+Doris played the KC.
+garbageTestData played the 9C.
+Phil played the 8C.
+Richard played the 5C.
+--new round--
+Doris played the AH.
+garbageTestData played the TH.
+Phil played the 6H.
+Richard played the 2H.
+--new round--
+Doris played the 2D.
+garbageTestData played the JD.
+Phil played the TD.
+Richard played the 3D.
+--new round--
+garbageTestData played the KH.
+Phil played the 8H.
+Richard played the 3H.
+Doris played the 7S.
+--new round--
+Doris played the 4D.
+garbageTestData played the AD.
+Phil played the 5S.
+Richard played the 6D.
+--new round--
+Phil played the JC.
+Richard played the 4S.
+Doris played the 6C.
+garbageTestData played the 7C.
+--new round--
+Richard played the QH.
+Doris played the 5D.
+garbageTestData played the 5H.
+Phil played the 9H.
+--new round--
+Richard played the 4H.
+Doris played the 7D.
+garbageTestData played the KD.
+Phil played the JH.
+--new round--
+Phil played the 6S.
+Richard played the 8S.
+Doris played the 8D.
+garbageTestData played the JS.
+--new round--
+garbageTestData played the TC.
+Phil played the TS.
+Richard played the KS.
+Doris played the 9D.
+--new round--
+Richard played the 7H.
+Doris played the QD.
+
+Cards in hand:
+3C 
+
+You are playing your last card: 3C
+Input anything to continue

@@ -11,8 +11,11 @@ public class PlaySituation {
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		//TODO TESTING:
-		//if(throwIndex>=Constants.NUM_CARDS)
-		MonteCarloMain.runSimulation(dataModel);
+		if( dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS - 2 * Constants.NUM_PLAYERS) {
+			//TODO: check with dataModel to make sure we're not already in a simulation...
+			//Also add var in datamodel to keep track of how deep in simulation we're in...
+			MonteCarloMain.runSimulation(dataModel);
+		}
 		
 		//END TESTING
 		
