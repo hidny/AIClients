@@ -69,7 +69,7 @@ public class MonteCarloMain {
 			System.out.println("Unknown card distribution for simulation #" + i);
 			
 			for(int i1=0; i1<distCards.length; i1++) {
-				System.out.print("player " + i + ":  ");
+				System.out.print("player " + i1 + ":  ");
 				for(int j=0; j<distCards[i1].length; j++) {
 					System.out.print(distCards[i1][j] + " ");
 					

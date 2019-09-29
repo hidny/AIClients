@@ -12,7 +12,7 @@ public class PlaySituation {
 		
 		//TODO TESTING:
 		//if(throwIndex>=Constants.NUM_CARDS)
-		//MonteCarloMain.runSimulation(dataModel);
+		MonteCarloMain.runSimulation(dataModel);
 		
 		//END TESTING
 		
