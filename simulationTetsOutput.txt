@@ -2895,3 +2895,24 @@ Cards in hand:
 
 You are playing your last card: 3C
 Input anything to continue
+
+
+Manual testing:
+
+I put this in a notepad file and checked if
+simulations align with it:
+
+Michael:
+JS 9S KH TH 5H QC TC 9C 7C 3C AD KD JD 
+
+Phil:
+AS TS 6S 5S 2S JH 9H 8H 6H AC JC 8C TD
+
+Richard:
+KS 8S 4S 3S QH 7H 4H 3H 2H 5C 2C 6D 3D
+
+Doris: 
+QS 7S AH KC 6C 4C QD 9D 8D 7D 5D 4D 2D
+
+It's consistent!
+At least one of the simulations is the set to the real way the cards are distributed.
