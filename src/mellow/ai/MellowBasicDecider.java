@@ -3,7 +3,7 @@ package mellow.ai;
 import java.util.ArrayList;
 
 import mellow.Constants;
-import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
+import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.situationHandlers.PlaySituation;
 import mellow.cardUtils.CardStringFunctions;
 
@@ -23,7 +23,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	//TODO: make this an interface...
 	
-	BooleanTableDataModel dataModel = new BooleanTableDataModel();
+	DataModel dataModel = new DataModel();
 	
 	
 	//TODO: know where the dealer is for bidding.

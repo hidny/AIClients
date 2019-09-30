@@ -1,12 +1,12 @@
 package mellow.ai.situationHandlers;
 
 import mellow.Constants;
-import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
+import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.MonteCarloMain;
 
 public class PlaySituation {
 
-	public static String handleNormalThrow(BooleanTableDataModel dataModel) {
+	public static String handleNormalThrow(DataModel dataModel) {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
@@ -48,7 +48,7 @@ public class PlaySituation {
 	
 	//AIs for non-mellow bid games:
 	
-	public static String AILeaderThrow(BooleanTableDataModel dataModel) {
+	public static String AILeaderThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		if(dataModel.getMasterCard() != null) {
 			//play a master card:
@@ -65,7 +65,7 @@ public class PlaySituation {
 		return cardToPlay;
 	}
 	
-	public static String AISecondThrow(BooleanTableDataModel dataModel) {
+	public static String AISecondThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		//get suit to follow.
 		
@@ -154,7 +154,7 @@ public class PlaySituation {
 		return cardToPlay;
 	}
 	
-	public static String AIThirdThrow(BooleanTableDataModel dataModel) {
+	public static String AIThirdThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
@@ -251,7 +251,7 @@ public class PlaySituation {
 		return cardToPlay;
 	}
 	
-	public static String AIFourthThrow(BooleanTableDataModel dataModel) {
+	public static String AIFourthThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		
 		if(dataModel.isPartnerWinningFight()) {

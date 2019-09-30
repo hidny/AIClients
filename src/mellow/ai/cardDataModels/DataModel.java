@@ -1,4 +1,4 @@
-package mellow.ai.cardDataModels.impl;
+package mellow.ai.cardDataModels;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import mellow.ai.simulation.SelectedPartitionAndIndex;
 import mellow.ai.simulation.SimulationSetup;
 import mellow.cardUtils.*;
 
-public class BooleanTableDataModel {
+public class DataModel {
 
 	int AIScore;
 	int OpponentScore;
@@ -17,6 +17,7 @@ public class BooleanTableDataModel {
 	static final int DONTKNOW = -1;
 	
 	static final int BID_NOT_SET = -1;
+	static final int PLAYER_UNKNOWN = -1;
 	
 	//This is dumb: Think about changing it later.
 	//Higher number means higher power
@@ -54,8 +55,10 @@ public class BooleanTableDataModel {
 	
 	private int cardsPlayedThisRound = 0;
 	
+	
 	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
-
+	private int playerWhoPlayedCard[] = new int[Constants.NUM_CARDS];
+	
 
 	public int getCardsPlayedThisRound() {
 		return cardsPlayedThisRound;
@@ -126,6 +129,7 @@ public class BooleanTableDataModel {
 		
 		 for(int i=0; i<Constants.NUM_SUITS*Constants.NUM_RANKS; i++) {
 			 cardStringsPlayed[i] = "";
+			 playerWhoPlayedCard[i] = PLAYER_UNKNOWN;
 		 }
 		 
 		 bids = new int[Constants.NUM_PLAYERS];
@@ -143,6 +147,7 @@ public class BooleanTableDataModel {
 		cardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsPlayedThisRound =0;
 		cardStringsPlayed = new String[Constants.NUM_CARDS];
+		playerWhoPlayedCard = new int[Constants.NUM_CARDS];
 		
 		bids = new int[Constants.NUM_PLAYERS];
 		tricks = new int[Constants.NUM_PLAYERS];
@@ -193,6 +198,7 @@ public class BooleanTableDataModel {
 		
 		
 		cardStringsPlayed[cardsPlayedThisRound] = card;
+		playerWhoPlayedCard[cardsPlayedThisRound] = indexPlayer;
 		cardsPlayedThisRound++;
 		
 		//System.out.println("Cards played this round: " + cardsPlayedThisRound);

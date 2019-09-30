@@ -2,7 +2,7 @@ package mellow.ai.simulation;
 
 import java.util.Scanner;
 
-import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
+import mellow.ai.cardDataModels.DataModel;
 
 public class MonteCarloMain {
 
@@ -17,7 +17,7 @@ public class MonteCarloMain {
 
 	//Return number string for bid
 	//Return card for action
-	public static String runSimulation(BooleanTableDataModel dataModel) {
+	public static String runSimulation(DataModel dataModel) {
 		
 		//For testing:
 		Scanner in = new Scanner(System.in);

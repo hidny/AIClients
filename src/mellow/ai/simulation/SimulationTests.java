@@ -3,14 +3,14 @@ package mellow.ai.simulation;
 import java.util.Random;
 
 import mellow.Constants;
-import mellow.ai.cardDataModels.impl.BooleanTableDataModel;
+import mellow.ai.cardDataModels.DataModel;
 import mellow.cardUtils.CardStringFunctions;
 
 public class SimulationTests {
 
 	public static void main(String[] args) {
 		System.out.println("start");
-		BooleanTableDataModel dataModel = new BooleanTableDataModel();
+		DataModel dataModel = new DataModel();
 		setupSimulationTest1(dataModel);
 		setupSimulationTest2(dataModel);
 		setupSimulationTest3(dataModel);
@@ -48,7 +48,7 @@ public class SimulationTests {
 		
 	}
 	
-	public static void setupSimulationTest1(BooleanTableDataModel dataModel) {
+	public static void setupSimulationTest1(DataModel dataModel) {
 		
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
 		
@@ -82,7 +82,7 @@ public class SimulationTests {
 	}
 	
 
-	public static void setupSimulationTest2(BooleanTableDataModel dataModel) {
+	public static void setupSimulationTest2(DataModel dataModel) {
 		
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
 		
@@ -127,7 +127,7 @@ public class SimulationTests {
 		System.out.println("answer (prediction: (39 choose 26) times (26 choose 13): (84 478 098 072 866 400) " + answer);
 	}
 	
-	public static void setupSimulationTest3(BooleanTableDataModel dataModel) {
+	public static void setupSimulationTest3(DataModel dataModel) {
 		
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
 		//step 1: Get unknown cards by suit
@@ -171,7 +171,7 @@ public class SimulationTests {
 		
 	}
 	
-	public static void setupSimulationTest4(BooleanTableDataModel dataModel) {
+	public static void setupSimulationTest4(DataModel dataModel) {
 		
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
 		
@@ -217,7 +217,7 @@ public class SimulationTests {
 		
 	}
 	
-	public static void setupSimulationTest5(BooleanTableDataModel dataModel) {
+	public static void setupSimulationTest5(DataModel dataModel) {
 		
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
 		
@@ -264,7 +264,7 @@ public class SimulationTests {
 	}
 	
 	
-	public static void setupSimulationTest7(BooleanTableDataModel dataModel) {
+	public static void setupSimulationTest7(DataModel dataModel) {
 	
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
 		
