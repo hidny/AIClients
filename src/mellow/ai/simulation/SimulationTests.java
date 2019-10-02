@@ -4,6 +4,7 @@ import java.util.Random;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 import mellow.cardUtils.CardStringFunctions;
 
 public class SimulationTests {

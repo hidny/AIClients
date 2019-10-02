@@ -1,10 +1,12 @@
-package mellow.ai;
+package mellow.ai.aiDecider;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import mellow.ai.listener.MellowAIListener;
+import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.handUtilsQueryForTestcase;
 import clientPlayers.ServerRequestHandler;
 
@@ -129,7 +131,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		if(cardList.size() == NUM_CARDS/NUM_PLAYERS) {
 			//Sort the cards
-			cardList = MellowAIListener.sort(cardList);
+			cardList = CardStringFunctions.sort(cardList);
 			
 			OrigHand = "";
 			for(int i=0; i<cardList.size(); i++) {
@@ -266,7 +268,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		}
 
 		//Sort the cards
-		cardList = MellowAIListener.sort(cardList);
+		cardList = CardStringFunctions.sort(cardList);
 		
 		ret += "Cards in hand:" + "\n";
 		for(int i=0; i<cardList.size(); i++) {

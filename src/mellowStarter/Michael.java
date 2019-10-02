@@ -1,7 +1,7 @@
 package mellowStarter;
 
 import clientPlayers.ClientStarter;
-import mellow.ai.MellowAIDeciderFactory;
+import mellow.ai.aiDecider.MellowAIDeciderFactory;
 
 //Will host and wait until there's a full house...
 

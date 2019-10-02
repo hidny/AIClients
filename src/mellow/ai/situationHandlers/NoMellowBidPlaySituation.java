@@ -4,7 +4,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.MonteCarloMain;
 
-public class PlaySituation {
+public class NoMellowBidPlaySituation {
 
 	public static String handleNormalThrow(DataModel dataModel) {
 
@@ -14,7 +14,17 @@ public class PlaySituation {
 		if( dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS - 2 * Constants.NUM_PLAYERS) {
 			//TODO: check with dataModel to make sure we're not already in a simulation...
 			//Also add var in datamodel to keep track of how deep in simulation we're in...
-			MonteCarloMain.runSimulation(dataModel);
+			
+			if(dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS -  Constants.NUM_PLAYERS) {
+				System.err.println("ERROR: In handleNormalThrow where there's only one card to decide on.");
+				System.exit(1);
+			}
+			
+			//TEST SIMULATION: Hope that Input player doesn't lead 2nd last round,s o simulation could start:
+			if(dataModel.getCardsPlayedThisRound() == 44) {
+				MonteCarloMain.runSimulation(dataModel);
+				
+			}
 		}
 		
 		//END TESTING

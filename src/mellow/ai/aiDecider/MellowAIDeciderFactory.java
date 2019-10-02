@@ -1,4 +1,5 @@
-package mellow.ai;
+package mellow.ai.aiDecider;
+
 
 public class MellowAIDeciderFactory {
 

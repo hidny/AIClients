@@ -1,10 +1,10 @@
-package mellow.ai;
+package mellow.ai.aiDecider;
 
 import java.util.ArrayList;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
-import mellow.ai.situationHandlers.PlaySituation;
+import mellow.ai.situationHandlers.NoMellowBidPlaySituation;
 import mellow.cardUtils.CardStringFunctions;
 
 //_______________________
@@ -13,17 +13,14 @@ import mellow.cardUtils.CardStringFunctions;
 //After some calculations, I realized there are hundreds of unique mellow situations that I'd have to make rules for
 //to force it to play like me.
 
-
-//Because I'm lazy, I'm going to not create hundreds of rules and try to program it where it
+//In complicated cases, I'm going to just make run it a monte-carlo simulation so the AI
 //can make up it's own mind.
 
-//Because there are so many rules to go through
 
 public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
-	//TODO: make this an interface...
 	
-	DataModel dataModel = new DataModel();
+	DataModel dataModel;
 	
 	
 	//TODO: know where the dealer is for bidding.
@@ -31,6 +28,23 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	//TODO: handle case where there's a mellow and then double mellow...
 	// :(
 	
+
+	//TODO: take away isFast option and put it in the listener?
+	
+	public MellowBasicDecider(boolean isFast) {
+		this.dataModel = new DataModel();
+	}
+	
+	//Initialize data model:
+	public MellowBasicDecider() {
+		this.dataModel = new DataModel();
+	}
+	
+	//Use datamodel that already exists:
+	//(this helps with creating a decider that enters in the middle of the game.)
+	public MellowBasicDecider(DataModel dataModelInput) {
+		this.dataModel = dataModelInput;
+	}
 	
 	public static final int SPADE = 0;
 	public static final int HEART = 1;
@@ -56,13 +70,20 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 	}
 	
-	public MellowBasicDecider(boolean isFast) {
-		
-	}
 
 	public String toString() {
 		return "MellowBasicDeciderAI";
 	}
+	
+
+	@Override
+	public void setNameOfPlayers(String players[]) {
+		if(dataModel == null) {
+			System.out.println("BOO!");
+		}
+		dataModel.setNameOfPlayers(players);
+	}
+	
 	
 	//TODO: don't make this so destructive... OR: have testcase say orig card in hand!!!
 	@Override
@@ -73,7 +94,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	@Override
 	public void setDealer(String playerName) {
-		// TODO Auto-generated method stub
+		// TODO: Actually set the dealer you lazy bones!
 		
 	}
 
@@ -89,7 +110,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	@Override
 	public void setNewScores(int teamAScore, int teanBScore) {
-		// TODO Auto-generated method stub
+		// TODO: Actually set the score lazy bones!
 		
 	}
 
@@ -116,7 +137,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		}
 		
 		if(numActiveMellows == 0) {
-			return PlaySituation.handleNormalThrow(dataModel);
+			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 			
 		} else if(numActiveMellows == 1) {
 			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0) {
@@ -126,7 +147,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			} else {
 
 				//TODO: not quite right: (Need to protect mellow or attack mellow...)
-				return PlaySituation.handleNormalThrow(dataModel);
+				return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 			}
 			
 		} else if(numActiveMellows == 2) {
@@ -139,7 +160,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			} else {
 
 				//TODO: not quite right: (Need to protect mellow or attack mellow...)
-				return PlaySituation.handleNormalThrow(dataModel);
+				return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 				
 			}
 			
@@ -154,7 +175,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	}
 
 	
-	public String handleThrowAsSingleActiveMellowBidder() {
+	private String handleThrowAsSingleActiveMellowBidder() {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		//leader:
@@ -180,7 +201,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return cardToPlay;
 	}
 	
-	public String AIMellowLead() {
+	private String AIMellowLead() {
 		
 		String highestSpade = dataModel.getCardCurrentPlayerGetHighestInSuit(SPADE);
 		
@@ -190,7 +211,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return highestSpade;
 	}
 	
-	public String AIMellowFollow() {
+	private String AIMellowFollow() {
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
 		String cardToPlay = "";
@@ -398,11 +419,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return intBid + "";
 	}
 
-	
-	@Override
-	public void setNameOfPlayers(String players[]) {
-		dataModel.setNameOfPlayers(players);
-	}
 	
 
 }

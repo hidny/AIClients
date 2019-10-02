@@ -1,23 +1,23 @@
 package mellow.ai.cardDataModels;
 
-import java.util.ArrayList;
-
 import mellow.Constants;
-import mellow.ai.simulation.SelectedPartitionAndIndex;
 import mellow.ai.simulation.SimulationSetup;
+import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 import mellow.cardUtils.*;
 
+
+//PRE: The DataModel expects queries from current player only when it's the current player's turn
+//      AND current player has multiple choices.
 public class DataModel {
 
-	int AIScore;
-	int OpponentScore;
 
 	static final int IMPOSSIBLE =0;
 	static final int CERTAINTY = 1000;
 	static final int DONTKNOW = -1;
 	
 	static final int BID_NOT_SET = -1;
-	static final int PLAYER_UNKNOWN = -1;
+	static final int CARD_NOT_PLAYED_YET = -1;
+	static final int INDEX_SUCH_THAT_CURRENT_PLAYER_BIDS_FIRST = Constants.NUM_PLAYERS - 1;
 	
 	//This is dumb: Think about changing it later.
 	//Higher number means higher power
@@ -35,6 +35,16 @@ public class DataModel {
 	private static final int THREE = 1;
 	private static final int TWO = 0;
 	
+
+	//TODO: actually be able to set these variables:
+	//TODO: Make setter function for AIScore and opponent score and dealer
+	private int AIScore;
+	private int OpponentScore;
+	
+	//TODO: with setter function, just have a sanity check that the first bidder is the right player
+	private int dealerIndexAtStartOfRound;
+	//END TODO
+	
 	private boolean cardsUsed[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
 	private int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
@@ -50,14 +60,140 @@ public class DataModel {
 	
 	
 	private String players[] = new String[Constants.NUM_PLAYERS];
-	private int bids[];
-	private int tricks[];
+	
+	public String[] getPlayers() {
+		return players;
+	}
+
+
+	private int bidsMadeThisRound = 0;
+	private int bids[] = new int[Constants.NUM_PLAYERS];
+	private int tricks[] = new int[Constants.NUM_PLAYERS];
 	
 	private int cardsPlayedThisRound = 0;
-	
-	
 	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
 	private int playerWhoPlayedCard[] = new int[Constants.NUM_CARDS];
+	
+
+	public DataModel createHardCopy() {
+		DataModel copy = new DataModel();
+		
+		//TODO: actually use follwing 3 variables:
+		copy.AIScore = AIScore;
+		copy.OpponentScore = OpponentScore;
+		copy.dealerIndexAtStartOfRound = dealerIndexAtStartOfRound;
+		//END TODO
+		
+		for(int i=0; i<cardsUsed.length; i++) {
+			for(int j=0; j<cardsUsed[0].length; j++) {
+				copy.cardsUsed[i][j] = cardsUsed[i][j];
+			}
+		}
+		
+		for(int i=0; i<cardsCurrentlyHeldByPlayer.length; i++) {
+			for(int j=0; j<cardsCurrentlyHeldByPlayer[0].length; j++) {
+				for(int k=0; k<cardsCurrentlyHeldByPlayer[0][0].length; k++) {
+					copy.cardsCurrentlyHeldByPlayer[i][j][k] = cardsCurrentlyHeldByPlayer[i][j][k];
+					copy.cardsUsedByPlayer[i][j][k] = cardsUsedByPlayer[i][j][k];
+				}
+			}
+		}
+		
+		copy.bidsMadeThisRound = bidsMadeThisRound;
+		copy.cardsPlayedThisRound = cardsPlayedThisRound;
+		
+		for(int i=0; i<players.length; i++) {
+			copy.players[i] = players[i];
+			copy.bids[i] = bids[i];
+			copy.tricks[i] = tricks[i];
+		}
+		
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			copy.cardStringsPlayed[i] = cardStringsPlayed[i];
+			copy.playerWhoPlayedCard[i] = playerWhoPlayedCard[i];
+		}
+		return copy;
+	}
+
+	//Makes a data model representing a possible view from another player's perspective
+	public DataModel getDataModelFromPerspectiveOfPlayerI(int playerIndex, String simulatedUnknownCardDist[][]) {
+		
+		//TODO: TEST comment this part out for a basic test of getDataModelFromPerspectiveOfPlayerI
+		if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
+			return createHardCopy();
+		}
+		//END TODO
+		
+		DataModel playerDM = new DataModel();
+
+		playerDM.resetStateForNewRound();
+		
+		if(playerIndex == Constants.CURRENT_PARTNER_INDEX) {
+			playerDM.AIScore = AIScore;
+			playerDM.OpponentScore = OpponentScore;
+		} else {
+			playerDM.OpponentScore = OpponentScore;
+			playerDM.AIScore = AIScore;
+		}
+		
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			playerDM.players[translateIndexToOtherPlayerPerspective(playerIndex, i)] = players[i];
+		}
+		
+		int curNumCardsGiven = 0;
+		String cardsHeld[] = new String[Constants.NUM_STARTING_CARDS_IN_HAND];
+		
+		//get player the cards the data model already knows about
+		for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+			for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+				if(cardsUsedByPlayer[playerIndex][suit][rank] || cardsCurrentlyHeldByPlayer[playerIndex][suit][rank] == CERTAINTY) {
+					cardsHeld[curNumCardsGiven] = getCardString(rank, suit);
+					curNumCardsGiven++;
+				}
+			}
+		}
+		
+		//Give player the unknown cards that we are guessing it has:
+		for(int i=0; curNumCardsGiven < Constants.NUM_STARTING_CARDS_IN_HAND; i++, curNumCardsGiven++) {
+			cardsHeld[curNumCardsGiven] = simulatedUnknownCardDist[playerIndex][i];
+		}
+		
+		if(curNumCardsGiven != Constants.NUM_STARTING_CARDS_IN_HAND) {
+			System.err.println("ERROR: something went wrong in getDataModelFromPerspectiveOfPlayerI. Number of cards given: " + curNumCardsGiven + "(Expected: " + Constants.NUM_STARTING_CARDS_IN_HAND + ")");
+			System.exit(1);
+		}
+		
+		cardsHeld = CardStringFunctions.sort(cardsHeld);
+
+		//Get player up-to-date with what happened during the round:
+		
+		//Set Cards-in-hand and reset knowledge of round....
+		playerDM.setupCardsInHandForNewRound(cardsHeld);
+		
+		playerDM.dealerIndexAtStartOfRound = translateIndexToOtherPlayerPerspective(playerIndex, dealerIndexAtStartOfRound);
+		
+		//Set bids:
+		for(int i=0; i<bidsMadeThisRound; i++) {
+			int bidIndexDataModel = (dealerIndexAtStartOfRound + 1 + i ) % Constants.NUM_PLAYERS;
+			int bidIndexPers = translateIndexToOtherPlayerPerspective(playerIndex, bidIndexDataModel);
+			
+			playerDM.bids[bidIndexPers] = bids[bidIndexDataModel];
+		}
+		playerDM.bidsMadeThisRound = bidsMadeThisRound;
+		
+		//Set cards played:
+		for(int i=0; i<cardsPlayedThisRound; i++) {
+			//System.out.println("In " + players[0] + "'s create player from perpective of " + playerDM.players[0] + ": " + players[ playerWhoPlayedCard[i]] + " played " + cardStringsPlayed[i]);
+			
+			playerDM.updateDataModelWithPlayedCard(players[ playerWhoPlayedCard[i] ], cardStringsPlayed[i]);
+		}
+		
+		return playerDM;
+	}
+	
+	public static int translateIndexToOtherPlayerPerspective(int playerIndex, int index) {
+		return (index  - playerIndex + Constants.NUM_PLAYERS) % Constants.NUM_PLAYERS;
+	}
 	
 
 	public int getCardsPlayedThisRound() {
@@ -65,7 +201,15 @@ public class DataModel {
 	}
 	
 	public void setBid(String playerName, int bid) {
+		
+		//TODO: make dealer index a requirement before 1st bid is made and make this a sanity check later...
+		if(bidsMadeThisRound == 0) {
+			//Set player on the left of the playerName as dealer if playerName made the first bid:
+			dealerIndexAtStartOfRound = (convertPlayerNameToIndex(playerName) + Constants.NUM_PLAYERS - 1) % Constants.NUM_PLAYERS;
+		}
 		bids[convertPlayerNameToIndex(playerName)] = bid;
+		
+		bidsMadeThisRound++;
 	}
 	
 	public int getBid(String playerName) {
@@ -83,7 +227,6 @@ public class DataModel {
 	public int getTrick(int indexPlayer) {
 		return tricks[indexPlayer];
 	}
-	
 	
 	public boolean someoneBidMellow() {
 		for(int i=0; i<bids.length; i++) {
@@ -108,53 +251,54 @@ public class DataModel {
 		return true;
 	}
 
-	
-	public void setupCardsInHandForNewRound(String cards[]) {
-		
-		resetStateForNewRound();
-		resetCardKnowledgeTableForNewRound();
-		
-		//System.out.println("Printing cards");
-		cardsPlayedThisRound = 0;
-		
-		 
-		 for(int i=0; i<cards.length; i++) {
-				//System.out.println(cards[i]);
-				cardsCurrentlyHeldByPlayer[0][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = CERTAINTY;
-				cardsCurrentlyHeldByPlayer[1][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = IMPOSSIBLE;
-				cardsCurrentlyHeldByPlayer[2][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = IMPOSSIBLE;
-				cardsCurrentlyHeldByPlayer[3][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = IMPOSSIBLE;
-				
-			}
-		
-		 for(int i=0; i<Constants.NUM_SUITS*Constants.NUM_RANKS; i++) {
-			 cardStringsPlayed[i] = "";
-			 playerWhoPlayedCard[i] = PLAYER_UNKNOWN;
-		 }
-		 
-		 bids = new int[Constants.NUM_PLAYERS];
-		 tricks = new int[Constants.NUM_PLAYERS];
-		 for(int i=0; i<bids.length; i++) {
-			bids[i] = BID_NOT_SET;
-		 }
-	}
 
-	//TODO
-	//Technically not needed to be called because setupCardsInHandForNewRound will call it.
+	//Resets everything except for the scores and the deal indexes.
 	public void resetStateForNewRound() {
+		
+		//dealerIndex will be set properly after the first bid
+		//Before the bid, assume dealer is such that current player is first to bid... just in case it is first to bid
+		dealerIndexAtStartOfRound = INDEX_SUCH_THAT_CURRENT_PLAYER_BIDS_FIRST;
+		
 		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsPlayedThisRound =0;
+		cardsPlayedThisRound = 0;
 		cardStringsPlayed = new String[Constants.NUM_CARDS];
 		playerWhoPlayedCard = new int[Constants.NUM_CARDS];
 		
 		bids = new int[Constants.NUM_PLAYERS];
 		tricks = new int[Constants.NUM_PLAYERS];
+		
+		
 		for(int i=0; i<bids.length; i++) {
 			bids[i] = BID_NOT_SET;
 		 }
+		
+		 for(int i=0; i<Constants.NUM_SUITS*Constants.NUM_RANKS; i++) {
+			 cardStringsPlayed[i] = "";
+			 playerWhoPlayedCard[i] = CARD_NOT_PLAYED_YET;
+		 }
+
+		resetCardKnowledgeTableForNewRound();
+		 
 	}
+	
+	public void setupCardsInHandForNewRound(String cards[]) {
+		
+		//System.out.println("Printing cards");
+		 
+		 for(int i=0; i<cards.length; i++) {
+			//System.out.println(cards[i]);
+			cardsCurrentlyHeldByPlayer[0][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = CERTAINTY;
+			cardsCurrentlyHeldByPlayer[1][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = IMPOSSIBLE;
+			cardsCurrentlyHeldByPlayer[2][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = IMPOSSIBLE;
+			cardsCurrentlyHeldByPlayer[3][getMellowCardIndex(cards[i])/13][getMellowCardIndex(cards[i])%13]  = IMPOSSIBLE;
+			
+		}
+		
+	}
+
 	
 	
 	private void resetCardKnowledgeTableForNewRound() {
@@ -182,7 +326,7 @@ public class DataModel {
 
 		//Sanity check:
 		if(cardsCurrentlyHeldByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] == IMPOSSIBLE) {
-			System.err.println("ERROR: card played is supposedly impossible in updateDataModelWithPlayedCard");
+			System.err.println("ERROR: card played is supposedly impossible in updateDataModelWithPlayedCard " + players[Constants.CURRENT_AGENT_INDEX]);
 			System.exit(1);
 		}
 		//End sanity check
@@ -214,7 +358,7 @@ public class DataModel {
 		}
 		//End check
 
-		numWaysOthersPlayersCoubleHaveCards = NEED_TO_RECALCULATE;
+		numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
 		do {
 			logicallyDeduceWhoHasCardsByProcessOfElimination();
 		} while(logicallyDeduceEntireOpponentHandFoundSomething());
@@ -261,9 +405,9 @@ public class DataModel {
 							
 							if(cardsCurrentlyHeldByPlayer[playerIndex][i][j] != CERTAINTY) {
 								
-								if(foundSomething == false) {
-									System.out.println("TEST: making cards impossible");
-								}
+								//if(foundSomething == false) {
+								//	System.out.println("TEST: making cards impossible");
+								//}
 								
 								foundSomething = true;
 							}
@@ -328,7 +472,7 @@ public class DataModel {
 						}
 						
 					} else if(numImpossible == 4) {
-						System.err.println("ERROR: there's a card that isn't accounted for!");
+						System.err.println("ERROR: there's a card that isn't accounted for! player: " + players[Constants.CURRENT_AGENT_INDEX]);
 						System.exit(1);
 					}
 				}
@@ -337,13 +481,12 @@ public class DataModel {
 	}
 	
 	
-	public long NEED_TO_RECALCULATE = -1;
-	private long numWaysOthersPlayersCoubleHaveCards = NEED_TO_RECALCULATE;
+	public static final long NEED_TO_RECALCULATE = -1;
+	private long numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
 
-	//TODO TEST
 	public long getCurrentNumWaysOtherPlayersCouldHaveCards() {
-		if(numWaysOthersPlayersCoubleHaveCards != NEED_TO_RECALCULATE) {
-			return numWaysOthersPlayersCoubleHaveCards;
+		if(numWaysOthersPlayersCouldHaveCards != NEED_TO_RECALCULATE) {
+			return numWaysOthersPlayersCouldHaveCards;
 		}
 		
 		String unknownCards[] = getUnknownCards();
@@ -375,7 +518,6 @@ public class DataModel {
 			ret[player] = Constants.NUM_STARTING_CARDS_IN_HAND;
 		}
 		
-		//..TODO!!! MINUS NUM USED CARDS PER PLAYER!
 		for(int i=0; i<Constants.NUM_CARDS; i++) {
 			boolean cardFound = false;
 			
@@ -470,7 +612,67 @@ public class DataModel {
 			}
 		}
 	}
+	
+	//Returns the index of the person who's turn is
+	//where the player the data model represents is index 0.
+	//This is allowed to be queried whenever
+	public int getCurrentActionIndex() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 
+		if(throwNumber == 0) {
+			if(cardsPlayedThisRound == 0) {
+				int indexPlayer = (dealerIndexAtStartOfRound + 1) % Constants.NUM_PLAYERS;
+				return indexPlayer;
+
+			} else if(cardsPlayedThisRound > 0) {
+				//Simulate fight:
+				int numCardsPlayedBeforeFight = cardsPlayedThisRound - Constants.NUM_PLAYERS;
+				
+				int leadPlayerIndex = playerWhoPlayedCard[numCardsPlayedBeforeFight];
+	
+				String leadCard = cardStringsPlayed[numCardsPlayedBeforeFight];
+				
+				int leadSuit = CardStringFunctions.getIndexOfSuit(leadCard);
+				
+				String winningCard = leadCard;
+				
+				int currentWinningIndex = 0;
+				
+				for(int fightIndex=1; fightIndex<Constants.NUM_PLAYERS; fightIndex++) {
+					
+					String currentCard = cardStringsPlayed[numCardsPlayedBeforeFight + fightIndex];
+					
+					if(getCardPower(currentCard, leadSuit) > getCardPower(winningCard, leadSuit)) {
+						winningCard = currentCard;
+						currentWinningIndex = fightIndex;
+					}
+				}
+				
+				return (leadPlayerIndex + currentWinningIndex) % Constants.NUM_PLAYERS;
+
+			} else {
+				System.err.println("ERROR: Negative cards played... What?");
+				System.exit(1);
+				return -1;
+			}
+		} else {
+			int indexPlayer = (getPrevThrowerIndex() + 1) % Constants.NUM_PLAYERS;
+			return indexPlayer;
+		}
+	}
+	
+	private int getPrevThrowerIndex() {
+		return playerWhoPlayedCard[cardsPlayedThisRound - 1];
+	}
+
+	public boolean currentThrowIsLeading() {
+		if(cardsPlayedThisRound >= Constants.NUM_CARDS) {
+			System.err.println("ERROR: the round is over... why do you care if current throw is leading?");
+			System.exit(1);
+		}
+		return cardsPlayedThisRound % 4 == 0 && cardsPlayedThisRound < Constants.NUM_CARDS;
+	}
+	
 	//pre: leader card thrown
 	public String getCardLeaderThrow() {
 		return cardStringsPlayed[cardsPlayedThisRound - (cardsPlayedThisRound%4) + 0];
@@ -1002,11 +1204,11 @@ public class DataModel {
 	//Deterministic and bad:
 	public String getMasterCard() {
 		//TODO: order the search for master randomly between the off-suits:
-		 for(int i=cardsUsed.length - 1; i>0; i--) {
-				for(int j=cardsUsed[0].length - 1; j>=0; j--) {
+		 for(int i=Constants.NUM_SUITS - 1; i>=0; i--) {
+				for(int j=Constants.NUM_RANKS - 1; j>=0; j--) {
 					if(cardsUsed[i][j]) {
 						continue;
-					} else if(cardsCurrentlyHeldByPlayer[0][i][j] == CERTAINTY) {
+					} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][j] == CERTAINTY) {
 						return getCardString(Constants.NUM_RANKS * i + j);
 					} else {
 						break;
@@ -1350,17 +1552,17 @@ public class DataModel {
 	
 
 	public boolean cardAGreaterThanCardBGivenLeadCard(String cardA, String cardB) {
-		return getCardPower(cardA) > getCardPower(cardB);
+		return getCardPower(cardA, getSuitOfLeaderThrow()) > getCardPower(cardB, getSuitOfLeaderThrow());
 	}
-
-	public int getCardPower(String card) {
+	
+	public int getCardPower(String card, int leadSuit) {
 
 		//Play trump/spade
 		if(CardStringFunctions.getIndexOfSuit(card) == Constants.SPADE) {
 			return Constants.NUM_RANKS + getRankIndex(card);
 		
 		//Follow suit
-		} else if(CardStringFunctions.getIndexOfSuit(card) == CardStringFunctions.getIndexOfSuit(getCardLeaderThrow())) {
+		} else if(CardStringFunctions.getIndexOfSuit(card) == leadSuit) {
 			return getRankIndex(card);
 
 		//Play off-suit
@@ -1442,5 +1644,90 @@ public class DataModel {
 		}
 		return true;
 	}
+	
+	public String[] getListOfPossibleActions() {
+		if(stillInBiddingPhase()) {
+			//Return all bids:
+			String ret[] = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"};
+			return ret;
+		} else {
+			String cardsHeld[] = getCurrentPlayerHandRemaining();
+			if(currentThrowIsLeading()) {
+				return cardsHeld;
+			} else {
+				int leadSuitIndex = getSuitOfLeaderThrow();
+				
+				if(currentAgentHasSuit(leadSuitIndex)) {
+					//Follow suit:
+					
+					int curNumChoices = 0;
+					for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+						if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][leadSuitIndex][rank] == CERTAINTY) {
+							curNumChoices++;
+						}
+					}
+					
+					if(curNumChoices == 0) {
+						System.err.println("ERROR (In getListOfPossibleActions): apparently current user can\'t follow suit and must follow suit.");
+						System.exit(1);
+					}
+					
+					if(curNumChoices == 1) {
+						System.err.println("ERROR: (In getListOfPossibleActions): user can only play 1 card... this shouldn\'t be a hard decision...");
+						System.exit(1);
+					}
+					
+					String ret[] = new String[curNumChoices];
+					
+					curNumChoices = 0;
+					for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+						if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][leadSuitIndex][rank] == CERTAINTY) {
+							ret[curNumChoices] = getCardString(rank, leadSuitIndex);
+							curNumChoices++;
+						}
+					}
+					
+					return ret;
+				} else {
+
+					//Play anything because you don't have to follow suit:
+					return cardsHeld;
+					
+				}
+				
+			}
+		}
+	}
+	
+	public String[] getCurrentPlayerHandRemaining() {
+		int curNumCardsInHand = 0;
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			for(int j=0; j<Constants.NUM_RANKS; j++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][j] == CERTAINTY) {
+					curNumCardsInHand++;
+				}
+			}
+		}
+		
+		String ret[] = new String[curNumCardsInHand];
+		
+		curNumCardsInHand = 0;
+		for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+			for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suit][rank] == CERTAINTY) {
+					ret[curNumCardsInHand] = getCardString(rank, suit);
+					curNumCardsInHand++;
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+
+	private boolean stillInBiddingPhase() {
+		return bidsMadeThisRound < Constants.NUM_PLAYERS;
+	}
+	
 	
 }

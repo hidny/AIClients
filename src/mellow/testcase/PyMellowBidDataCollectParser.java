@@ -7,8 +7,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 import mellow.Constants;
-import mellow.ai.MellowAIDeciderFactory;
-import mellow.ai.MellowAIDeciderInterface;
+import mellow.ai.aiDecider.MellowAIDeciderFactory;
+import mellow.ai.aiDecider.MellowAIDeciderInterface;
 
 public class PyMellowBidDataCollectParser {
 

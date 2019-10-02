@@ -1,6 +1,6 @@
 package clientPlayers;
 
-import mellow.ai.MellowAIListener;
+import mellow.ai.listener.MellowAIListener;
 import connect4ai.Connect4Listener;
 import euchre.ai.EuchreAIListener;
 import frustration.aiSTUB.FrustrationListener;

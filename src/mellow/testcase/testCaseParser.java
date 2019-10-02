@@ -4,11 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.OutputStream;
-
 import java.util.Scanner;
 
-import mellow.ai.MellowAIDeciderFactory;
-import mellow.ai.MellowAIDeciderInterface;
+import mellow.ai.aiDecider.MellowAIDeciderFactory;
+import mellow.ai.aiDecider.MellowAIDeciderInterface;
 
 public class testCaseParser {
 

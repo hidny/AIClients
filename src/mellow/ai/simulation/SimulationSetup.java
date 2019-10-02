@@ -4,7 +4,7 @@ import java.util.Random;
 
 import mellow.Constants;
 import mellow.cardUtils.CardStringFunctions;
-import mellow.ai.simulation.SelectedPartitionAndIndex;
+import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 
 public class SimulationSetup {
 
@@ -58,7 +58,7 @@ public class SimulationSetup {
 	}
 
 	
-	public static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], int depth) {
+	private static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], int depth) {
 
 		//Setup basic vars:
 		boolean voidSuit[] = getVoidSuitArrayForPlayer(numUnknownCardsPerSuit, originalIsVoidList, depth);
@@ -132,7 +132,7 @@ public class SimulationSetup {
 	}
 	
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
-	public static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int depth, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn) {
+	private static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int depth, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn) {
 		//Setup basic vars:
 		boolean voidSuit[] = getVoidSuitArrayForPlayer(numUnknownCardsPerSuit, originalIsVoidList, depth);
 		int numVoids = getSumOfElementsInArray(voidSuit);
@@ -245,7 +245,7 @@ public class SimulationSetup {
 	}
 	
 	
-	public static int getSumOfElementsInArray(int array[]) {
+	private static int getSumOfElementsInArray(int array[]) {
 		int ret = 0;
 		for(int i=0; i<array.length; i++) {
 			ret += array[i];
@@ -253,7 +253,7 @@ public class SimulationSetup {
 		return ret;
 	}
 	
-	public static int getSumOfElementsInArray(boolean array[]) {
+	private static int getSumOfElementsInArray(boolean array[]) {
 		int ret = 0;
 		for(int i=0; i<array.length; i++) {
 			if(array[i]) {
@@ -263,17 +263,7 @@ public class SimulationSetup {
 		return ret;
 	}
 	
-	public static boolean allRemainingCardsCouldBePickedUp(boolean voidSuit[], int numUnknownCardsPerSuit[]) {
-		for(int i=0; i<Constants.NUM_SUITS; i++) {
-			if(voidSuit[i] == true && numUnknownCardsPerSuit[i] > 0) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	public static boolean[] getVoidSuitArrayForPlayer(int numUnknownCardsPerSuit[], boolean originalIsVoidList[][], int depth) {
+	private static boolean[] getVoidSuitArrayForPlayer(int numUnknownCardsPerSuit[], boolean originalIsVoidList[][], int depth) {
 		boolean voidSuit[] = new boolean[Constants.NUM_SUITS];
 		for(int i=0; i<voidSuit.length; i++) {
 			if(originalIsVoidList[depth][i] || numUnknownCardsPerSuit[i] == 0) {
@@ -283,7 +273,7 @@ public class SimulationSetup {
 		return voidSuit;
 	}
 	
-	public static boolean playerCouldFillTheirHandWithRemainingCardsConsideringVoidConstraints(int numSpaceAvailable, int numUnknownCardsPerSuit[], boolean voidSuit[]) {
+	private static boolean playerCouldFillTheirHandWithRemainingCardsConsideringVoidConstraints(int numSpaceAvailable, int numUnknownCardsPerSuit[], boolean voidSuit[]) {
 		int numCouldPickUp = 0;
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			if(voidSuit[i] == false) {
@@ -294,19 +284,7 @@ public class SimulationSetup {
 		return numCouldPickUp >= numSpaceAvailable;
 	}
 	
-	public static boolean[] setupComboIterator(int numTrueValues, int numFalseValue) {
-		boolean combo[] = new boolean[numTrueValues + numFalseValue];
-		for(int i=0; i<combo.length; i++) {
-			if(i < numTrueValues) {
-				combo[i] = true;
-			} else {
-				combo[i] = false;
-			}
-		}
-		return combo;
-	}
-	
-	public static boolean suitPartitionImpossibleToTake(int numCardsPerSuitAfterTake[], int suitsTakenByPlayer[], int numUnknownCardsPerSuit[]) {
+	private static boolean suitPartitionImpossibleToTake(int numCardsPerSuitAfterTake[], int suitsTakenByPlayer[], int numUnknownCardsPerSuit[]) {
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			if(numCardsPerSuitAfterTake[i] < 0 || suitsTakenByPlayer[i] > numUnknownCardsPerSuit[i]) {
 				return true;
@@ -315,7 +293,7 @@ public class SimulationSetup {
 		return false;
 	}
 	
-	public static int[] getNumCardsOfEachSuitTakenByPlayer(boolean voidSuit[], int suitArrayForEachNonVoidSuit[]) {
+	private static int[] getNumCardsOfEachSuitTakenByPlayer(boolean voidSuit[], int suitArrayForEachNonVoidSuit[]) {
 		int ret[] = new int[Constants.NUM_SUITS];
 		
 		for(int i=0, j=0; i<Constants.NUM_SUITS; i++) {
@@ -331,7 +309,7 @@ public class SimulationSetup {
 	
 	}
 	
-	public static int[] getCardsPerSuitRemainingAfterTake(int numUnknownCardsPerSuit[], int suitsTakenByPlayer[]) {
+	private static int[] getCardsPerSuitRemainingAfterTake(int numUnknownCardsPerSuit[], int suitsTakenByPlayer[]) {
 		int numCardsPerSuitAfterTake[] = new int[Constants.NUM_SUITS];
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
@@ -341,28 +319,19 @@ public class SimulationSetup {
 		return numCardsPerSuitAfterTake;
 	}
 	
-	public static int[] convertComboToArray(boolean combo[], int size) {
-		int ret[] = new int[size];
-		
-		if(size == 0) {
-			return ret;
-		}
-		
-		int currentIndex = 0;
-		int currentSize = 0;
+	
+	
+
+	public static boolean[] setupComboIterator(int numTrueValues, int numFalseValue) {
+		boolean combo[] = new boolean[numTrueValues + numFalseValue];
 		for(int i=0; i<combo.length; i++) {
-			if(combo[i]) {
-				ret[currentIndex] = currentSize;
-				currentIndex++;
-				currentSize = 0;
+			if(i < numTrueValues) {
+				combo[i] = true;
 			} else {
-				currentSize++;
+				combo[i] = false;
 			}
 		}
-		
-		ret[currentIndex] = currentSize;
-		
-		return ret;
+		return combo;
 	}
 	
 	//Copied from the euler project:
@@ -434,6 +403,30 @@ public class SimulationSetup {
 		}
 		
 		return current;
+	}
+
+	public static int[] convertComboToArray(boolean combo[], int size) {
+		int ret[] = new int[size];
+		
+		if(size == 0) {
+			return ret;
+		}
+		
+		int currentIndex = 0;
+		int currentSize = 0;
+		for(int i=0; i<combo.length; i++) {
+			if(combo[i]) {
+				ret[currentIndex] = currentSize;
+				currentIndex++;
+				currentSize = 0;
+			} else {
+				currentSize++;
+			}
+		}
+		
+		ret[currentIndex] = currentSize;
+		
+		return ret;
 	}
 
 	private static long triangle[][] = null;
@@ -535,7 +528,7 @@ public class SimulationSetup {
 
 	private static String CARD_TAKEN = null;
 	
-	public static void playerTakeCardsFromSuitAccordingToCombination(String unknownCardsForSuit[], boolean combo[], String playerHandToPopulate[], int curCardsTakenByPlayer) {
+	private static void playerTakeCardsFromSuitAccordingToCombination(String unknownCardsForSuit[], boolean combo[], String playerHandToPopulate[], int curCardsTakenByPlayer) {
 		
 		//Note about java array primitives:
 		//The arrays are passed by value, so I could only change the values of the elements of the arrays... which I do
@@ -554,7 +547,7 @@ public class SimulationSetup {
 		
 	}
 
-	public static String[][] getUnknownCardsPerSuit(int curNumUnknownCardsPerSuit[], String unknownCards[]) {
+	private static String[][] getUnknownCardsPerSuit(int curNumUnknownCardsPerSuit[], String unknownCards[]) {
 		
 		String unknownCardsPerSuit[][] = new String[Constants.NUM_SUITS][];
 		

@@ -8,16 +8,8 @@ import java.util.ArrayList;
 //After some calculations, I realized there are hundreds of unique mellow situations that I'd have to make rules for
 //to force it to play like me.
 
-
-//Because I'm lazy, I'm going to not create hundreds of rules and try to program it where it
+//In complicated cases, I'm going to just make run it a monte-carlo simulation so the AI
 //can make up it's own mind.
-
-//Because there are so many rules to go through
-
-//“The fact that we live at the bottom of a deep gravity well, on the surface of a gas covered planet going
-//around a nuclear fireball 90 million miles away and think this to be normal is obviously some indication
-//of how skewed our perspective tends to be.”
-//-Douglas Adams
 
 public class EuchreBasicDecider implements EuchreAIDeciderInterface {
 	int tempAScore;

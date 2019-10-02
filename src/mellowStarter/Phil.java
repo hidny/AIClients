@@ -1,6 +1,6 @@
 package mellowStarter;
 
-import mellow.ai.MellowAIDeciderFactory;
+import mellow.ai.aiDecider.MellowAIDeciderFactory;
 import clientPlayers.ClientJoinerStarter;
 import clientPlayers.ClientStarter;
 
