@@ -116,8 +116,20 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	@Override
 	public String getCardToPlay() {
+	
+		String cardToPlay = getCardToPlay2();
 		
-
+		//Make sure card is legal for simulation:
+		if(dataModel.isCardLegalToPlay(cardToPlay)) {
+			return cardToPlay;
+		} else {
+			
+			System.out.println("WARNING: calling getFirstLegalCardThatCouldBeThrown in basic mellow decider");
+			return dataModel.getFirstLegalCardThatCouldBeThrown();
+		}
+	}
+	
+	private String getCardToPlay2() {
 		for(int i=0; i<4; i++) {
 			if(dataModel.burntMellow(i)) {
 				System.out.println("TEST BURNT MELLOW index: " + i);
@@ -165,12 +177,10 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 			
 		} else {
-			System.err.println("Really???");
+			System.err.println("Really??? There's either more than 2 or less than 0 mellows.");
 			System.exit(1);
 			return "";
 		}
-		
-		
 		
 	}
 

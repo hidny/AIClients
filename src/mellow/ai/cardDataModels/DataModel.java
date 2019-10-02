@@ -118,11 +118,9 @@ public class DataModel {
 	//Makes a data model representing a possible view from another player's perspective
 	public DataModel getDataModelFromPerspectiveOfPlayerI(int playerIndex, String simulatedUnknownCardDist[][]) {
 		
-		//TODO: TEST comment this part out for a basic test of getDataModelFromPerspectiveOfPlayerI
 		if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
 			return createHardCopy();
 		}
-		//END TODO
 		
 		DataModel playerDM = new DataModel();
 
@@ -153,7 +151,7 @@ public class DataModel {
 			}
 		}
 		
-		//Give player the unknown cards that we are guessing it has:
+	//Give player the unknown cards that we are guessing it has:
 		for(int i=0; curNumCardsGiven < Constants.NUM_STARTING_CARDS_IN_HAND; i++, curNumCardsGiven++) {
 			cardsHeld[curNumCardsGiven] = simulatedUnknownCardDist[playerIndex][i];
 		}
@@ -165,14 +163,14 @@ public class DataModel {
 		
 		cardsHeld = CardStringFunctions.sort(cardsHeld);
 
-		//Get player up-to-date with what happened during the round:
+	//Get player up-to-date with what happened during the round:
 		
 		//Set Cards-in-hand and reset knowledge of round....
 		playerDM.setupCardsInHandForNewRound(cardsHeld);
 		
 		playerDM.dealerIndexAtStartOfRound = translateIndexToOtherPlayerPerspective(playerIndex, dealerIndexAtStartOfRound);
 		
-		//Set bids:
+	//Set bids:
 		for(int i=0; i<bidsMadeThisRound; i++) {
 			int bidIndexDataModel = (dealerIndexAtStartOfRound + 1 + i ) % Constants.NUM_PLAYERS;
 			int bidIndexPers = translateIndexToOtherPlayerPerspective(playerIndex, bidIndexDataModel);
@@ -181,10 +179,8 @@ public class DataModel {
 		}
 		playerDM.bidsMadeThisRound = bidsMadeThisRound;
 		
-		//Set cards played:
+	//Set cards played:
 		for(int i=0; i<cardsPlayedThisRound; i++) {
-			//System.out.println("In " + players[0] + "'s create player from perpective of " + playerDM.players[0] + ": " + players[ playerWhoPlayedCard[i]] + " played " + cardStringsPlayed[i]);
-			
 			playerDM.updateDataModelWithPlayedCard(players[ playerWhoPlayedCard[i] ], cardStringsPlayed[i]);
 		}
 		
@@ -344,8 +340,6 @@ public class DataModel {
 		cardStringsPlayed[cardsPlayedThisRound] = card;
 		playerWhoPlayedCard[cardsPlayedThisRound] = indexPlayer;
 		cardsPlayedThisRound++;
-		
-		//System.out.println("Cards played this round: " + cardsPlayedThisRound);
 		
 
 		//Check if non-leading player didn't follow suit (and is void in suit)
@@ -1183,6 +1177,67 @@ public class DataModel {
 		
 	}
 	
+	//pre: input is a card
+	public boolean isCardLegalToPlay(String card) {
+		if(card == null || card.length() != 2) {
+			return false;
+		}
+		
+		int throwerIndex = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+
+		int rank = getRankIndex(card);
+		int suit = CardStringFunctions.getIndexOfSuit(card);
+		
+		//Does player have card?
+		if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][suit][rank] == CERTAINTY) {
+			
+			//Could player play any card in hand?
+			if(throwerIndex == 0 || throwerMustFollowSuit() == false) {
+				return true;
+
+			} else {
+				//Could player follow suit with card
+				int leadSuit = getSuitOfLeaderThrow();
+				
+				if(suit == leadSuit) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			
+			return false;
+		}
+	}
+	
+	public String getFirstLegalCardThatCouldBeThrown() {
+		int throwerIndex = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+
+		if(throwerIndex == 0 || throwerMustFollowSuit() == false) {
+			for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+				for(int rank=TWO; rank<=ACE; rank++) {
+					if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][suit][rank] == CERTAINTY) {
+						return getCardString(rank, suit);
+					}
+				}
+			}
+		}
+	
+		int leadSuit = getSuitOfLeaderThrow();
+		
+		for(int rank=TWO; rank<=ACE; rank++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][leadSuit][rank] == CERTAINTY) {
+				return getCardString(rank, leadSuit);
+			}
+		}
+		
+		System.err.println("ERROR: Not supposed to reach this point in getFirstLegalCardThatCouldBeThrown");
+		System.exit(1);
+	
+		return "";
+	}
+	
 	public int getNumCardsInCurrentPlayerHand() {
 		int throwerIndex = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
@@ -1458,9 +1513,6 @@ public class DataModel {
 		return "";
 	}
 	
-	
-//TODO: suspicious function
-	//TODO: Might delete or make private and only accept Strings from other classes (Nah!)
 	public boolean currentAgentHasSuit(int suitIndex) {
 		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}
@@ -1651,6 +1703,7 @@ public class DataModel {
 			String ret[] = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"};
 			return ret;
 		} else {
+
 			String cardsHeld[] = getCurrentPlayerHandRemaining();
 			if(currentThrowIsLeading()) {
 				return cardsHeld;
@@ -1700,6 +1753,7 @@ public class DataModel {
 	}
 	
 	public String[] getCurrentPlayerHandRemaining() {
+
 		int curNumCardsInHand = 0;
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			for(int j=0; j<Constants.NUM_RANKS; j++) {

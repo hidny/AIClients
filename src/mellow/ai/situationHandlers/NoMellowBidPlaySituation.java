@@ -22,7 +22,7 @@ public class NoMellowBidPlaySituation {
 			
 			//TEST SIMULATION: Hope that Input player doesn't lead 2nd last round,s o simulation could start:
 			if(dataModel.getCardsPlayedThisRound() == 44) {
-				MonteCarloMain.runSimulation(dataModel);
+				MonteCarloMain.runMonteCarloMethod(dataModel);
 				
 			}
 		}
