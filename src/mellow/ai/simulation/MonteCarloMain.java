@@ -5,14 +5,20 @@ import java.util.Scanner;
 import mellow.Constants;
 import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.StatsBetweenRounds;
 
 public class MonteCarloMain {
 
+	//Guess at reason number of simulations to try
+	//TODO: (There numbers might be way too high... 10 simulations seems to have honed in on right answer)
+	//public static int LIMIT_THOROUGH_SEARCH = 2000;
+	//public static int NUM_SIMULATIONS_SAMPLE = 1000;
 	
-	public static int LIMIT_THOROUGH_SEARCH = 2000;
-	
-	public static int NUM_SIMULATIONS_SAMPLE = 1000;
-	
+	//TODO: set limits low for testing/debugging:
+	public static int LIMIT_THOROUGH_SEARCH = 20;
+	public static int NUM_SIMULATIONS_SAMPLE = 10;
+	//END TODO
+
 	//For testing:
 	public static Scanner in = new Scanner(System.in);
 	
@@ -23,7 +29,7 @@ public class MonteCarloMain {
 	public static String runMonteCarloMethod(DataModel dataModel) {
 		
 		System.out.println("RUN SIMULATION");
-		//in.nextLine();
+		in.nextLine();
 		
 		long numWaysOtherPlayersCouldHaveCards = dataModel.getCurrentNumWaysOtherPlayersCouldHaveCards();
 		
@@ -45,7 +51,7 @@ public class MonteCarloMain {
 		String actionString[] = dataModel.getListOfPossibleActions();
 		double actionUtil[] = new double[actionString.length];
 		for(int i=0; i<actionUtil.length; i++) {
-			actionUtil[i] = Double.MIN_VALUE;
+			actionUtil[i] = 0.0;
 		}
 		
 		for(int i=0; i<num_simulations; i++) {
@@ -59,7 +65,9 @@ public class MonteCarloMain {
 						SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards));
 			}
 			
-			//TODO: check how realistic the distribution of cards is compared to what the original bid was
+			//TODO: For better results, check how realistic the distribution of cards is compared to what the original bid was and try
+			//      to dampen the effect of unrealistic distributions of cards.
+
 			//TODO2: check how realistic the distribution of cards is compared to what has been played
 			//If it's unrealistic, make the simulation count for less.
 			
@@ -73,6 +81,9 @@ public class MonteCarloMain {
 				//Create a tmp data model for current player to keep track of everything:
 				dataModelTmp = dataModel.createHardCopy();
 				
+				//Tell the data model that it's in the next level of a simulation.
+				dataModelTmp.incrementSimulationLevel();
+				
 				//TODO: For now I'm assuming action is a throw (not a bid) (This should change)
 				dataModelTmp.updateDataModelWithPlayedCard(dataModel.getPlayers()[0], actionString[a]);
 							
@@ -80,9 +91,16 @@ public class MonteCarloMain {
 
 				playOutSimulationTilEndOfRound(dataModelTmp, playersInSimulation);
 			
-				//(5)Util is a function of scoreA, scoreB, isDealer
-				//(Maybe start with making it a point diff... then improve on it)
-				//Best would be an approx measure of the current player's winning chances.
+				StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmp);
+				
+				//Get Util at the end of the simulated round:
+					//Util is a function of scoreA, scoreB, isDealer
+					//TODO: this is just getting the point difference after the round and isn't the most useful measure of how well we're doing.
+					//A better strat would be an approx measure of the current player's winning chances... which is hard to calculate.
+				actionUtil[a] += getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats);
+				
+				System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
+				in.next();
 			}
 			
 			//TESTING DISTRIBUTION:
@@ -97,10 +115,19 @@ public class MonteCarloMain {
 				System.out.println("");
 			}
 			System.out.println("");
-			
-			in.next();
+			//in.next();
+			//END TESTING DISTRIBUTION:
+
 		}
 		
+		//TESTING:
+		System.out.println("Comparing utility of different cards to play:");
+		for(int a=0; a<actionString.length; a++) {
+			System.out.println("Average util (point diff) of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * num_simulations) );
+		}
+		in.next();
+		System.out.println("END OF SIMULATION");
+		//END TESTING
 		
 		return actionString[getMaxIndex(actionUtil)];
 	}
@@ -110,7 +137,7 @@ public class MonteCarloMain {
 		int bestIndex = 0;
 		for(int i=0; i<array.length; i++) {
 			if(array[i] > array[bestIndex]) {
-				i = bestIndex;
+				bestIndex = i;
 			}
 		}
 		
@@ -164,6 +191,74 @@ public class MonteCarloMain {
 		}
 		
 		return dataModelTmp;
+	}
+	
+	//Get stats at the end of the round:
+	//(i.e: Get scores and dealer index at the end of the round)
+	public static StatsBetweenRounds getStatsAfterSimulatedRound(DataModel dataModelTmp) {
+		int scoreUsAtStartOfRound = dataModelTmp.getAIScore();
+		int scoreThemAtStartOfRound = dataModelTmp.getOpponentScore();
+		
+		int curScoreUs = scoreUsAtStartOfRound;
+		int curScoreThem = scoreThemAtStartOfRound;
+		
+		int numBurnsUS = 0;
+		int numBurnsThem = 0;
+		//Handle mellows:
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			if(dataModelTmp.burntMellow(i)) {
+				if(i%2 == 0) {
+					curScoreUs -= 100;
+					numBurnsUS++;
+				} else {
+					curScoreThem -= 100;
+					numBurnsThem++;
+				}
+			}
+		}
+
+		if(numBurnsUS < 2){
+			curScoreUs += handleNormalBidScoreDiff(dataModelTmp, true);
+		}
+		
+		if(numBurnsThem < 2) {
+			curScoreThem += handleNormalBidScoreDiff(dataModelTmp, false);
+		}
+		
+		StatsBetweenRounds ret = new StatsBetweenRounds();
+		ret.setScores(curScoreUs, curScoreThem);
+		
+		int nextDealerIndex = (dataModelTmp.getDealerIndexAtStartOfRound() + 1) % Constants.NUM_PLAYERS;
+		ret.setDealerIndexAtStartOfRound(nextDealerIndex);
+		
+		return ret;
+	}
+	
+	public static int handleNormalBidScoreDiff(DataModel dataModelTmp, boolean teamIsUs) {
+		int adjustmentIndex = 0;
+		
+		if(teamIsUs == false) {
+			adjustmentIndex = 1;
+		}
+		
+		int scoreAdjustment = 0;
+		
+		int numBids = dataModelTmp.getBid(0 + adjustmentIndex) + dataModelTmp.getBid(2 + adjustmentIndex);
+		int numTricks = dataModelTmp.getTrick(0 + adjustmentIndex) + dataModelTmp.getTrick(2 + adjustmentIndex);
+		
+		if(numBids <= numTricks) {
+			scoreAdjustment = 10*numBids + 1 * (numTricks - numBids);
+		} else {
+			scoreAdjustment = -10*numBids;
+		}
+		
+		return scoreAdjustment;
+	}
+	
+	public static double getUtilOfStatsAtEndOfRoundSimulationBAD(StatsBetweenRounds endOfRoundStats) {
+		
+		//This is a bad approximation, but for now it will work:
+		return endOfRoundStats.getAIScore() - endOfRoundStats.getOpponentScore();
 	}
 	
 }

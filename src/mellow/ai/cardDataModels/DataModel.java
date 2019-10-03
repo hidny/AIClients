@@ -10,7 +10,6 @@ import mellow.cardUtils.*;
 //      AND current player has multiple choices.
 public class DataModel {
 
-
 	static final int IMPOSSIBLE =0;
 	static final int CERTAINTY = 1000;
 	static final int DONTKNOW = -1;
@@ -36,15 +35,41 @@ public class DataModel {
 	private static final int TWO = 0;
 	
 
-	//TODO: actually be able to set these variables:
-	//TODO: Make setter function for AIScore and opponent score and dealer
+	public int getAIScore() {
+		return AIScore;
+	}
+
+	public int getOpponentScore() {
+		return OpponentScore;
+	}
+
+	public int getDealerIndexAtStartOfRound() {
+		return dealerIndexAtStartOfRound;
+	}
+
+	public void setDealerIndexAtStartOfRound(int dealerIndexAtStartOfRound) {
+		this.dealerIndexAtStartOfRound = dealerIndexAtStartOfRound;
+	}
+
+	public void setNewScores(int AIScore, int OpponentScore) {
+		this.AIScore = AIScore;
+		this.OpponentScore = OpponentScore;
+	}
+
+	public void setDealer(String playerName) {
+		int index = convertPlayerNameToIndex(playerName);
+		if(index == -1) {
+			System.err.println("ERROR: unknown dealer in setDealer. (" + playerName + ")");
+		}
+		dealerIndexAtStartOfRound = convertPlayerNameToIndex(playerName);
+	}
+
+	//Beginning of Round info:
 	private int AIScore;
 	private int OpponentScore;
-	
-	//TODO: with setter function, just have a sanity check that the first bidder is the right player
 	private int dealerIndexAtStartOfRound;
-	//END TODO
-	
+	//End Beginning of Round info
+
 	private boolean cardsUsed[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
 	private int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
@@ -74,15 +99,14 @@ public class DataModel {
 	private String cardStringsPlayed[] = new String[Constants.NUM_CARDS];
 	private int playerWhoPlayedCard[] = new int[Constants.NUM_CARDS];
 	
-
+	private int simulation_level = 0;
+	
 	public DataModel createHardCopy() {
 		DataModel copy = new DataModel();
 		
-		//TODO: actually use follwing 3 variables:
 		copy.AIScore = AIScore;
 		copy.OpponentScore = OpponentScore;
 		copy.dealerIndexAtStartOfRound = dealerIndexAtStartOfRound;
-		//END TODO
 		
 		for(int i=0; i<cardsUsed.length; i++) {
 			for(int j=0; j<cardsUsed[0].length; j++) {
@@ -112,6 +136,8 @@ public class DataModel {
 			copy.cardStringsPlayed[i] = cardStringsPlayed[i];
 			copy.playerWhoPlayedCard[i] = playerWhoPlayedCard[i];
 		}
+		
+		copy.simulation_level = simulation_level;
 		return copy;
 	}
 
@@ -184,6 +210,8 @@ public class DataModel {
 			playerDM.updateDataModelWithPlayedCard(players[ playerWhoPlayedCard[i] ], cardStringsPlayed[i]);
 		}
 		
+		playerDM.simulation_level = simulation_level;
+		
 		return playerDM;
 	}
 	
@@ -191,18 +219,32 @@ public class DataModel {
 		return (index  - playerIndex + Constants.NUM_PLAYERS) % Constants.NUM_PLAYERS;
 	}
 	
+	public int getSimulation_level() {
+		return simulation_level;
+	}
+	
+	public void incrementSimulationLevel() {
+		simulation_level++;
+	}
 
 	public int getCardsPlayedThisRound() {
 		return cardsPlayedThisRound;
 	}
 	
 	public void setBid(String playerName, int bid) {
-		
-		//TODO: make dealer index a requirement before 1st bid is made and make this a sanity check later...
+
+		//Sanity check:
+		//The player on the left of the playerName is dealer if playerName made the first bid:
 		if(bidsMadeThisRound == 0) {
-			//Set player on the left of the playerName as dealer if playerName made the first bid:
-			dealerIndexAtStartOfRound = (convertPlayerNameToIndex(playerName) + Constants.NUM_PLAYERS - 1) % Constants.NUM_PLAYERS;
+			
+			int dealerIndexAtStartOfRoundSanityCheck = (convertPlayerNameToIndex(playerName) + Constants.NUM_PLAYERS - 1) % Constants.NUM_PLAYERS;
+			if(dealerIndexAtStartOfRound != dealerIndexAtStartOfRoundSanityCheck) {
+				System.err.println("ERROR: (setBid) dealer Index at start of round isn't consistent with player who bid first");
+				System.exit(1);
+			}
 		}
+		//END Sanity check
+
 		bids[convertPlayerNameToIndex(playerName)] = bid;
 		
 		bidsMadeThisRound++;
@@ -1475,8 +1517,7 @@ public class DataModel {
 		}
 		return ret;
 	}
-	
-	//TODO: suit strings param please (nah!)
+
 	public int getNumberOfCardsOneSuit(int suit) {
 		int ret = 0;
 		for(int i=0; i<13; i++) {
@@ -1777,11 +1818,9 @@ public class DataModel {
 		
 		return ret;
 	}
-	
 
 	private boolean stillInBiddingPhase() {
 		return bidsMadeThisRound < Constants.NUM_PLAYERS;
 	}
-	
 	
 }

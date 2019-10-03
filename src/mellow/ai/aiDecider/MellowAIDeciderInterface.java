@@ -19,7 +19,7 @@ public interface MellowAIDeciderInterface{
 	
 	public void setCardsForNewRound(String cards[]);
 	
-	public void setNewScores(int teamAScore, int teanBScore);
+	public void setNewScores(int AIScore, int OpponentScore);
 
 	//TODO: only have the two below functions and make another interface for the rest of them.
 	public String getCardToPlay();

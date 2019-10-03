@@ -63,19 +63,15 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 	}
 
-
 	@Override
 	public void receiveUnParsedMessageFromServer(String msg) {
 		// TODO: use if you want...
-		
 	}
 	
-
 	public String toString() {
 		return "MellowBasicDeciderAI";
 	}
 	
-
 	@Override
 	public void setNameOfPlayers(String players[]) {
 		if(dataModel == null) {
@@ -94,8 +90,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	@Override
 	public void setDealer(String playerName) {
-		// TODO: Actually set the dealer you lazy bones!
-		
+		dataModel.setDealer(playerName);
 	}
 
 	@Override
@@ -109,8 +104,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	}
 
 	@Override
-	public void setNewScores(int teamAScore, int teanBScore) {
-		// TODO: Actually set the score lazy bones!
+	public void setNewScores(int AIScore, int OpponentScore) {
+		dataModel.setNewScores(AIScore, OpponentScore);
 		
 	}
 
@@ -121,6 +116,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		//Make sure card is legal for simulation:
 		if(dataModel.isCardLegalToPlay(cardToPlay)) {
+			System.out.println("TEST: " + dataModel.getPlayers()[0] + " plays the " + cardToPlay);
 			return cardToPlay;
 		} else {
 			

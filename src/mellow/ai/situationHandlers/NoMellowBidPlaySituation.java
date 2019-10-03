@@ -10,8 +10,8 @@ public class NoMellowBidPlaySituation {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		//TODO TESTING:
-		if( dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS - 2 * Constants.NUM_PLAYERS) {
+		//TODO TESTING Simulation:
+		if( dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS - 3 * Constants.NUM_PLAYERS  && dataModel.getSimulation_level() < 1) {
 			//TODO: check with dataModel to make sure we're not already in a simulation...
 			//Also add var in datamodel to keep track of how deep in simulation we're in...
 			
@@ -20,11 +20,7 @@ public class NoMellowBidPlaySituation {
 				System.exit(1);
 			}
 			
-			//TEST SIMULATION: Hope that Input player doesn't lead 2nd last round,s o simulation could start:
-			if(dataModel.getCardsPlayedThisRound() == 44) {
-				MonteCarloMain.runMonteCarloMethod(dataModel);
-				
-			}
+			return MonteCarloMain.runMonteCarloMethod(dataModel);
 		}
 		
 		//END TESTING
