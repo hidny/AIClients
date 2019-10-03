@@ -22,7 +22,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	
 	DataModel dataModel;
-	private boolean doMonteCarloSimuations;
+	private boolean doMonteCarloSimuations = false;
 	
 	//TODO: Consider where the dealer is when bidding (and consider previous bids)
 	
