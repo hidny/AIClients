@@ -137,7 +137,7 @@ public class testCaseParser {
 			} else if(cur.contains("Dealer is on your right")) {
 				dealerIndex = 3;
 			} else {
-				System.out.println("ERROR: unknown dealer" + "\n");
+				System.err.println("ERROR: unknown dealer" + "\n");
 				System.exit(1);
 			}
 			
@@ -427,7 +427,7 @@ public class testCaseParser {
 		} else if(cardNumber == 'A') {
 			return 14;
 		} else {
-			System.out.println("ERROR: unknown card number in getPowerOfCardNum! ( " + cardNumber + ")");
+			System.err.println("ERROR: unknown card number in getPowerOfCardNum! ( " + cardNumber + ")");
 			System.exit(1);
 			return -1;
 		}

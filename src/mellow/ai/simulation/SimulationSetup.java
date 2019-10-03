@@ -231,9 +231,9 @@ public class SimulationSetup {
 		//At this point, the combination index got too big...
 		
 		if(numCombosSkippedThru <= comboIndexNumber) {
-			System.out.println(numCombosSkippedThru + "  vs " + comboIndexNumber);
+			System.err.println(numCombosSkippedThru + "  vs " + comboIndexNumber);
 			System.err.println("ERROR: something went wrong in getSelectedPartitionAndIndex. comboIndexNumber is too big");
-			System.out.println("depth: " + depth);
+			System.err.println("depth: " + depth);
 			System.exit(1);
 		}
 
@@ -520,7 +520,7 @@ public class SimulationSetup {
 		}
 		
 		if(curCardsTakenByPlayer != playerHandToPopulate.length) {
-			System.out.println("ERROR: Distributing the cards messed up and player didn't end up with correct # of cards.");
+			System.err.println("ERROR: Distributing the cards messed up and player didn't end up with correct # of cards.");
 			System.exit(1);
 		}
 	}

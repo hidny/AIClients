@@ -18,7 +18,7 @@ public class CardStringFunctions {
 		} else if(suitString.equals("D")) {
 			index = 3;
 		} else {
-			System.out.println("ERROR: unknown suit.");
+			System.err.println("ERROR: unknown suit.");
 			System.exit(1);
 		}
 		return index;
@@ -92,7 +92,7 @@ public class CardStringFunctions {
 		} else if(cardString.charAt(0) == 'A') {
 			x = 12;
 		} else {
-			System.out.println("Number unknown! Uh oh!");
+			System.err.println("Number unknown! Uh oh!");
 			System.exit(1);
 		}
 		
@@ -105,7 +105,7 @@ public class CardStringFunctions {
 		} else if(cardString.charAt(1)=='D') {
 			y = 3;
 		} else {
-			System.out.println("Suit unknown! Uh oh!");
+			System.err.println("Suit unknown! Uh oh!");
 			System.exit(1);
 		}
 		

@@ -982,7 +982,7 @@ public class SimulationTests {
 			}
 
 			if(expected != actual) {
-				System.out.println("ERROR (in testServeCarsdsBasedOnPartitionAndIndexInfo7): number of ways players could have cards doesn't match what's predicted");
+				System.err.println("ERROR (in testServeCarsdsBasedOnPartitionAndIndexInfo7): number of ways players could have cards doesn't match what's predicted");
 				System.exit(1);
 			}
 		}

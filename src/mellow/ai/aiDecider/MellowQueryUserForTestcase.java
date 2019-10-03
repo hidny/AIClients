@@ -246,7 +246,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		} else if(dealerIndex == 3) {
 			ret += "Dealer is on your right" + "\n";
 		} else {
-			System.out.println("ERROR: unknown dealer");
+			System.err.println("ERROR: unknown dealer");
 			System.exit(1);
 		}
 

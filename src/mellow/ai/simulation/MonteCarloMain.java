@@ -1,5 +1,7 @@
 package mellow.ai.simulation;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 import mellow.Constants;
@@ -8,17 +10,22 @@ import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
 
 public class MonteCarloMain {
-
 	//Guess at reason number of simulations to try
-	//TODO: (There numbers might be way too high... 10 simulations seems to have honed in on right answer)
-	public static int LIMIT_THOROUGH_SEARCH = 2000;
-	public static int NUM_SIMULATIONS_SAMPLE = 1000;
+	//TODO: (There numbers might be way too high... 10 simulations seems to have honed in on right answer)	
+	//Slow setting:
+	//public static int LIMIT_THOROUGH_SEARCH = 2000;
+	//public static int NUM_SIMULATIONS_SAMPLE = 1000;
+	
+	//Fast enough:
+	public static int LIMIT_THOROUGH_SEARCH = 200;
+	public static int NUM_SIMULATIONS_SAMPLE = 100;
 	
 	//TODO: set limits low for testing/debugging:
 	//public static int LIMIT_THOROUGH_SEARCH = 20;
 	//public static int NUM_SIMULATIONS_SAMPLE = 10;
 	//END TODO
 
+	public static int MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT = 20;
 	//For testing:
 	//public static Scanner in = new Scanner(System.in);
 	
@@ -53,6 +60,12 @@ public class MonteCarloMain {
 		double actionUtil[] = new double[actionString.length];
 		for(int i=0; i<actionUtil.length; i++) {
 			actionUtil[i] = 0.0;
+		}
+		
+		//Reduce number of print statements called:
+		PrintStream originalStream = System.out;
+		if(num_simulations > MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT) {
+			System.setOut(dummyStream);
 		}
 		
 		for(int i=0; i<num_simulations; i++) {
@@ -108,12 +121,22 @@ public class MonteCarloMain {
 			//testPrintUnknownCardDistribution(in, distCards, i);
 		}
 		
+		//Allow print statements now that the simulation is over:
+		System.setOut(originalStream);
+
+		
 		testPrintAverageUtilityOfEachMove(actionString, actionUtil, num_simulations);
 		//in.next();
 		System.out.println("END OF SIMULATION");
 		
 		return actionString[getMaxIndex(actionUtil)];
 	}
+	
+	static PrintStream dummyStream = new PrintStream(new OutputStream(){
+	    public void write(int b) {
+	        // NO-OP
+	    }
+	});
 	
 	public static int getMaxIndex(double array[]) {
 

@@ -1144,7 +1144,6 @@ public class DataModel {
 		}
 		
 		System.err.println("ERROR in getJunkiestCardToFollowLead");
-		
 		System.exit(1);
 		
 		return null;
@@ -1537,7 +1536,8 @@ public class DataModel {
 				return getCardString(13*suitIndex + i);
 			}
 		}
-		System.out.println("AHH! Searching for highest in " + suitIndex + " when player has no card in that suit.");
+		System.out.println("DEBUG DELETE");
+		System.err.println("AHH! Searching for highest in card in suit when player has no card in that suit. (" + suitIndex +")");
 		System.exit(1);
 		return "";
 	}
@@ -1549,7 +1549,7 @@ public class DataModel {
 				return getCardString(13*suitIndex + i);
 			}
 		}
-		System.out.println("AHH! Searching for lowest in " + suitIndex + " when player has no card in that suit.");
+		System.err.println("AHH! Searching for lowest in card in suit when player has no card in that suit. (" + suitIndex +")");
 		System.exit(1);
 		return "";
 	}
@@ -1583,7 +1583,7 @@ public class DataModel {
 		} else if(cardString.charAt(0) == 'A') {
 			x = 12;
 		} else {
-			System.out.println("Number unknown! Uh oh!");
+			System.err.println("Number unknown! Uh oh!");
 			System.exit(1);
 		}
 		
@@ -1596,7 +1596,7 @@ public class DataModel {
 		} else if(cardString.charAt(1)=='D') {
 			y = 3;
 		} else {
-			System.out.println("Suit unknown! Uh oh!");
+			System.err.println("Suit unknown! Uh oh!");
 			System.exit(1);
 		}
 		
@@ -1622,7 +1622,7 @@ public class DataModel {
 		} else if(number == 12) {
 			ret += "A";
 		} else {
-			System.out.println("Error: could not get card string from mellow card Number." + cardIndex);
+			System.err.println("Error: could not get card string from mellow card Number." + cardIndex);
 			System.exit(1);
 		}
 		
@@ -1636,7 +1636,7 @@ public class DataModel {
 		} else if(suitIndex ==3) {
 			ret += "D";
 		} else {
-			System.out.println("Error: Unknown suit for card number. " + cardIndex);
+			System.err.println("Error: Unknown suit for card number. " + cardIndex);
 			System.exit(1);
 		}
 		
@@ -1680,7 +1680,7 @@ public class DataModel {
 		} else if(card.charAt(0) == 'A') {
 			x = 12;
 		} else {
-			System.out.println("Number unknown! Uh oh!");
+			System.err.println("Number unknown! Uh oh!");
 			System.exit(1);
 		}
 		return x;

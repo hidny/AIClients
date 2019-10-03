@@ -1,0 +1,28 @@
+In MonteCarloSimulationTest1Amazing:
+
+The constants were set high (just in case...)
+	public static int LIMIT_THOROUGH_SEARCH = 2000;
+	public static int NUM_SIMULATIONS_SAMPLE = 1000;
+	
+Without caring about bid history,
+Doris played the TD instead of the AD on the first time out in diamonds,
+and it worked out! I feel like I don't know this game anymore LOL.
+
+Bid history:
+Richard bid 2.
+Doris bid 1.
+garbageTestData bid 2.
+Phil bid 5.
+
+
+Play history:
+--new round--
+Richard played the 4D.
+Doris played the TD.
+garbageTestData played the 5D.
+Phil played the 2D.
+--new round--
+Doris played the AD.
+garbageTestData played the 6D.
+Phil played the JD.
+Richard played the 7D.

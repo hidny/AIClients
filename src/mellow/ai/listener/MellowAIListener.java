@@ -168,7 +168,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 				System.out.println("----------");
 				
 				if (isACard(card) == false) {
-					System.out.println("UH OH! Could not find card: " + card);
+					System.err.println("UH OH! Could not find card: " + card);
 					System.exit(1);
 				}
 				
@@ -353,7 +353,7 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 			} else if( players[3].equals(player)) {
 				return "east";
 			} else {
-				System.out.println("ERROR: unknown player plays card!");
+				System.err.println("ERROR: unknown player plays card!");
 				System.exit(1);
 				return "";
 			}

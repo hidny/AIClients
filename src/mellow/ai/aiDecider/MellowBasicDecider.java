@@ -214,12 +214,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	private String AIMellowLead() {
 		
-		String highestSpade = dataModel.getCardCurrentPlayerGetHighestInSuit(SPADE);
+		String ret = "";
+		if(dataModel.getNumberOfCardsOneSuit(SPADE) > 0) {
+			ret = dataModel.getCardCurrentPlayerGetHighestInSuit(SPADE);
+		} else {
+			
+		}
 		
 		//TODO: if highest Spade is Queen, maybe don't do this?
 		//TOO complicated... :(
 		
-		return highestSpade;
+		return ret;
 	}
 	
 	private String AIMellowFollow() {
