@@ -61,8 +61,8 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 
 	//End state variables
 	
-	public MellowAIListener(long aiLevel, boolean isFast) {
-		gameAIAgent = MellowAIDeciderFactory.getAI(aiLevel, isFast);
+	public MellowAIListener(long aiLevel) {
+		gameAIAgent = MellowAIDeciderFactory.getAI(aiLevel);
 	}
 	
 	public void resetName(String name) {

@@ -14,7 +14,7 @@ public class PyMellowBidDataCollectParser {
 
 	public static void main(String[] args) {
 		
-		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(0, false);
+		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(0);
 		
 		File testCaseFile = new File("..\\TestCaseAndReplayData\\outputBidData1st.txt");
 		

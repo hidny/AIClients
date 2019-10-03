@@ -10,6 +10,7 @@ public class NoMellowBidPlaySituation {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
+		/*
 		//TODO TESTING Simulation:
 		if( dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS - 3 * Constants.NUM_PLAYERS  && dataModel.getSimulation_level() < 1) {
 			//TODO: check with dataModel to make sure we're not already in a simulation...
@@ -24,6 +25,7 @@ public class NoMellowBidPlaySituation {
 		}
 		
 		//END TESTING
+		 */
 		
 		//leader:
 		String cardToPlay = null;

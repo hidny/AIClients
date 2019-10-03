@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.NoMellowBidPlaySituation;
 import mellow.cardUtils.CardStringFunctions;
 
@@ -21,24 +22,24 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	
 	DataModel dataModel;
+	private boolean doMonteCarloSimuations;
 	
-	
-	//TODO: know where the dealer is for bidding.
+	//TODO: Consider where the dealer is when bidding (and consider previous bids)
 	
 	//TODO: handle case where there's a mellow and then double mellow...
 	// :(
 	
-
-	//TODO: take away isFast option and put it in the listener?
 	
-	public MellowBasicDecider(boolean isFast) {
-		this.dataModel = new DataModel();
-	}
-	
-	//Initialize data model:
+	 
 	public MellowBasicDecider() {
-		this.dataModel = new DataModel();
+		this(false);
 	}
+	
+	public MellowBasicDecider(boolean doSimuations) {
+		this.dataModel = new DataModel();
+		this.doMonteCarloSimuations = doSimuations;
+	}
+	
 	
 	//Use datamodel that already exists:
 	//(this helps with creating a decider that enters in the middle of the game.)
@@ -60,7 +61,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	public void resetStateForNewRound() {
 		dataModel.resetStateForNewRound();
-		
 	}
 
 	@Override
@@ -74,9 +74,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	@Override
 	public void setNameOfPlayers(String players[]) {
-		if(dataModel == null) {
-			System.out.println("BOO!");
-		}
 		dataModel.setNameOfPlayers(players);
 	}
 	
@@ -126,17 +123,25 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	}
 	
 	private String getCardToPlay2() {
-		for(int i=0; i<4; i++) {
-			if(dataModel.burntMellow(i)) {
-				System.out.println("TEST BURNT MELLOW index: " + i);
-			}
-		}
+		
 		
 		if(dataModel.throwerCanOnlyPlayOneCard()) {
 			System.out.println("**Forced to play card");
 			return dataModel.getOnlyCardCurrentPlayerCouldPlay();
 		}
 
+		for(int i=0; i<4; i++) {
+			if(dataModel.burntMellow(i)) {
+				System.out.println("TEST BURNT MELLOW index: " + i);
+			}
+		}
+		
+		//Run montecarlo simulations if config set to monte carlo 
+		//AND decider is not currently in a simulation: (Running a simulation in a simulation is expensive)
+		if(this.doMonteCarloSimuations && dataModel.getSimulation_level() == 0) {
+			return MonteCarloMain.runMonteCarloMethod(dataModel);
+		}
+		
 		int numActiveMellows = 0;
 		for(int i=0; i<4; i++) {
 			if(dataModel.getBid(i) ==0 && dataModel.burntMellow(i) == false) {

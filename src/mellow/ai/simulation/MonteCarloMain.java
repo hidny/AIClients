@@ -11,16 +11,16 @@ public class MonteCarloMain {
 
 	//Guess at reason number of simulations to try
 	//TODO: (There numbers might be way too high... 10 simulations seems to have honed in on right answer)
-	//public static int LIMIT_THOROUGH_SEARCH = 2000;
-	//public static int NUM_SIMULATIONS_SAMPLE = 1000;
+	public static int LIMIT_THOROUGH_SEARCH = 2000;
+	public static int NUM_SIMULATIONS_SAMPLE = 1000;
 	
 	//TODO: set limits low for testing/debugging:
-	public static int LIMIT_THOROUGH_SEARCH = 20;
-	public static int NUM_SIMULATIONS_SAMPLE = 10;
+	//public static int LIMIT_THOROUGH_SEARCH = 20;
+	//public static int NUM_SIMULATIONS_SAMPLE = 10;
 	//END TODO
 
 	//For testing:
-	public static Scanner in = new Scanner(System.in);
+	//public static Scanner in = new Scanner(System.in);
 	
 	//pre: it's the current dataModel's Turn...
 
@@ -29,8 +29,9 @@ public class MonteCarloMain {
 	public static String runMonteCarloMethod(DataModel dataModel) {
 		
 		System.out.println("RUN SIMULATION");
-		in.nextLine();
+		//in.nextLine();
 		
+
 		long numWaysOtherPlayersCouldHaveCards = dataModel.getCurrentNumWaysOtherPlayersCouldHaveCards();
 		
 		boolean isThorough = false;
@@ -86,7 +87,7 @@ public class MonteCarloMain {
 				
 				//TODO: For now I'm assuming action is a throw (not a bid) (This should change)
 				dataModelTmp.updateDataModelWithPlayedCard(dataModel.getPlayers()[0], actionString[a]);
-							
+				
 				playersInSimulation = setupAIsForSimulation(dataModelTmp, distCards);
 
 				playOutSimulationTilEndOfRound(dataModelTmp, playersInSimulation);
@@ -99,35 +100,17 @@ public class MonteCarloMain {
 					//A better strat would be an approx measure of the current player's winning chances... which is hard to calculate.
 				actionUtil[a] += getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats);
 				
-				System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
-				in.next();
+				/*System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
+				in.next();*/
 			}
 			
 			//TESTING DISTRIBUTION:
-			System.out.println("Unknown card distribution for simulation #" + i);
-			
-			for(int i1=0; i1<distCards.length; i1++) {
-				System.out.print("player " + i1 + ":  ");
-				for(int j=0; j<distCards[i1].length; j++) {
-					System.out.print(distCards[i1][j] + " ");
-					
-				}
-				System.out.println("");
-			}
-			System.out.println("");
-			//in.next();
-			//END TESTING DISTRIBUTION:
-
+			//testPrintUnknownCardDistribution(in, distCards, i);
 		}
 		
-		//TESTING:
-		System.out.println("Comparing utility of different cards to play:");
-		for(int a=0; a<actionString.length; a++) {
-			System.out.println("Average util (point diff) of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * num_simulations) );
-		}
-		in.next();
+		testPrintAverageUtilityOfEachMove(actionString, actionUtil, num_simulations);
+		//in.next();
 		System.out.println("END OF SIMULATION");
-		//END TESTING
 		
 		return actionString[getMaxIndex(actionUtil)];
 	}
@@ -259,6 +242,28 @@ public class MonteCarloMain {
 		
 		//This is a bad approximation, but for now it will work:
 		return endOfRoundStats.getAIScore() - endOfRoundStats.getOpponentScore();
+	}
+	
+	public static void testPrintUnknownCardDistribution(Scanner in, String distCards[][], int simulationNumber) {
+		System.out.println("Unknown card distribution for simulation #" + simulationNumber);
+		
+		for(int i=0; i<distCards.length; i++) {
+			System.out.print("player " + i + ":  ");
+			for(int j=0; j<distCards[i].length; j++) {
+				System.out.print(distCards[i][j] + " ");
+				
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+		in.next();
+	}
+	
+	public static void testPrintAverageUtilityOfEachMove(String actionString[], double actionUtil[], long num_simulations) {
+		System.out.println("Comparing utility of different cards to play:");
+		for(int a=0; a<actionString.length; a++) {
+			System.out.println("Average util (point diff) of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * num_simulations) );
+		}
 	}
 	
 }

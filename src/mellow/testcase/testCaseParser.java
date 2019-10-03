@@ -14,7 +14,11 @@ public class testCaseParser {
 	public static void main(String[] args) {
 		File list[]  = getTestCaseFiles();
 		
-		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(0, false);
+		//Option 1: Follow ruls AI:
+		//MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.FOLLOW_HARD_CODED_RULES_AI);
+		
+		//Option 2: Monte Carlo AI:
+		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI);
 		
 		int numPasses = 0;
 		int numTrials = list.length;
@@ -103,7 +107,7 @@ public class testCaseParser {
 			
 			String players[] = new String[4];
 			for(int i =0; i<players.length; i++) {
-				players[i] = "";
+				players[i] = "test" + i;
 			}
 			
 			
@@ -137,7 +141,7 @@ public class testCaseParser {
 				System.exit(1);
 			}
 			
-			//System.out.println("DEBUG dealer index: " + dealerIndex);
+			decider.setDealer(players[dealerIndex]);
 			
 			do {
 				cur = in.nextLine();
@@ -164,6 +168,8 @@ public class testCaseParser {
 				
 				if(cur.contains(" bid ") && cur.split(" ")[1].equals("bid")) {
 					players[actionIndex] = cur.split(" ")[0];
+					
+					//Rename player from testI to the actual name:
 					decider.setNameOfPlayers(players);
 					
 					int bid = -1;

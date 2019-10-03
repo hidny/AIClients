@@ -63,7 +63,7 @@ public class DataModel {
 		}
 		dealerIndexAtStartOfRound = convertPlayerNameToIndex(playerName);
 	}
-
+	
 	//Beginning of Round info:
 	private int AIScore;
 	private int OpponentScore;
