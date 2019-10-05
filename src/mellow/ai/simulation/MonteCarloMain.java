@@ -95,8 +95,8 @@ public class MonteCarloMain {
 			
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
 			//      to dampen the effect of unrealistic distributions of cards:
-			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
-			//double decisionImpact = 1.0;
+			//double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
+			double decisionImpact = 1.0;
 			
 			/*if(isThorough == false && decisionImpact < 0.001 && sum_impact_to_avg > 0.099) {
 				i--;
