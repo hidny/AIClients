@@ -8,7 +8,7 @@ public class GreenTestButton {
 		try {
 			//Michael is host and must go first.
 			//phil is next on the left, rich is on left of phil and so on.
-			Michael.main(args);
+			Monty.main(args);
 			Thread.sleep(1000);
 			Phil.main(args);
 			Thread.sleep(100);

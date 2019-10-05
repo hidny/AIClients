@@ -27,9 +27,25 @@ public class MonteCarloMain {
 	//public static int LIMIT_THOROUGH_SEARCH = 2000;
 	//public static int NUM_SIMULATIONS_SAMPLE = 1000;
 	
-	//Fast enough:
+	//Slow but good (100 limit is too prone to random swings and there's no clear signal)
 	public static int LIMIT_THOROUGH_SEARCH = 2000;
 	public static int NUM_SIMULATIONS_SAMPLE = 1000;
+	
+	//Test case stats as of oct 5th, 2019:
+	//Consistency between parallel runs:
+	//100:    74%
+	//1000:   81.4%
+	//10000:  89%
+	//(It's not too consistent, but at least it's not off by much points on avg when it's wrong...)
+	
+	//Accuracy compared to what I would do:
+	//100:   67.4%
+	//1000:  70.2%
+	//10000: 71.8%
+	//End test case stats.
+	
+	//Experience stats:
+	//Monte carlo AI 1000 is slow, but it's not that bad...
 	
 	//TODO: set limits low for testing/debugging:
 	//public static int LIMIT_THOROUGH_SEARCH = 20;
@@ -95,8 +111,8 @@ public class MonteCarloMain {
 			
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
 			//      to dampen the effect of unrealistic distributions of cards:
-			//double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
-			double decisionImpact = 1.0;
+			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
+			//double decisionImpact = 1.0;
 			
 			/*if(isThorough == false && decisionImpact < 0.001 && sum_impact_to_avg > 0.099) {
 				i--;
