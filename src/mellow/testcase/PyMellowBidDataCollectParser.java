@@ -14,7 +14,7 @@ public class PyMellowBidDataCollectParser {
 
 	public static void main(String[] args) {
 		
-		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(0);
+		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.FOLLOW_HARD_CODED_RULES_AI);
 		
 		File testCaseFile = new File("..\\TestCaseAndReplayData\\outputBidData1st.txt");
 		
@@ -51,6 +51,8 @@ public class PyMellowBidDataCollectParser {
 		int num_fail = 0;
 		int numTrials = 0;
 		
+		int num_fail_by_one = 0;
+		
 		try {
 			Scanner in = new Scanner(testCaseFile);
 			
@@ -69,6 +71,9 @@ public class PyMellowBidDataCollectParser {
 					} else if(result == ALT_PASS) {
 						num_pass_or_alt_pass++;
 					} else {
+						if(result == FAIL_BY_ONE) {
+							num_fail_by_one++;
+						}
 						num_fail++;
 					}
 					numTrials++;
@@ -90,14 +95,19 @@ public class PyMellowBidDataCollectParser {
 		System.out.println();
 		System.out.println("AI failures:" + num_fail + " out of " + numTrials);
 		System.out.println("That's a " + String.format("%.2f", ((100.0*num_fail) /(1.0*numTrials))) + "% fail rate.");
+		System.out.println();
+		System.out.println("AI failures by one:" + num_fail_by_one + " out of " + numTrials);
+		System.out.println("That's a " + String.format("%.2f", ((100.0*num_fail_by_one) /(1.0*numTrials))) + "% fail rate.");
 		
 		
 		
 	}
 
+	public static final int FAIL = 0;
 	public static final int PASS = 1;
 	public static final int ALT_PASS = 2;
-	public static final int FAIL = 0;
+	
+	public static final int FAIL_BY_ONE = 3;
 	
 	public static int testFirstBid(MellowAIDeciderInterface decider, String hand, String userResponse, String altUserResponses) {
 
@@ -112,7 +122,8 @@ public class PyMellowBidDataCollectParser {
 		decider.setNameOfPlayers(players);
 		decider.setCardsForNewRound(hand.split(" "));
 		
-		
+		//Set dealer to be the player of the right of the Hero:
+		decider.setDealer("Villain2");
 
 		String response = decider.getBidToMake();
 		
@@ -129,7 +140,17 @@ public class PyMellowBidDataCollectParser {
 		} else if(altUserResponses.contains(response.trim())) {
 			outcome = ALT_PASS;
 		} else {
-			outcome = FAIL;
+			
+			int aiResponseINT = Integer.parseInt(response);
+			String offByOneOptions1 = (aiResponseINT - 1) + "";
+			String offByOneOptions2 = (aiResponseINT + 1) + "";
+			if(userResponse.contains(offByOneOptions1) || altUserResponses.contains(offByOneOptions1)
+					|| userResponse.contains(offByOneOptions2) || altUserResponses.contains(offByOneOptions2)) {
+				outcome = FAIL_BY_ONE;
+			} else {
+			
+				outcome = FAIL;
+			}
 		}
 		
 

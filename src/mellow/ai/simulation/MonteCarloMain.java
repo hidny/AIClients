@@ -5,20 +5,31 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 import mellow.Constants;
+import mellow.ai.aiDecider.MellowAIDeciderFactory;
+import mellow.ai.aiDecider.MellowAIDeciderInterface;
 import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
 
+//TODO: maybe compliment this with a decision tree?
+//https://softwareengineering.stackexchange.com/questions/157324/decision-trees-vs-neural-networks
+
+//Vote for decision tree over random forests:
+//https://stats.stackexchange.com/questions/285834/difference-between-random-forests-and-decision-tree
+
 public class MonteCarloMain {
 	//Guess at reason number of simulations to try
+	
+	//TODO: make # of simulation configurable...
+
 	//TODO: (There numbers might be way too high... 10 simulations seems to have honed in on right answer)	
 	//Slow setting:
 	//public static int LIMIT_THOROUGH_SEARCH = 2000;
 	//public static int NUM_SIMULATIONS_SAMPLE = 1000;
 	
 	//Fast enough:
-	public static int LIMIT_THOROUGH_SEARCH = 200;
-	public static int NUM_SIMULATIONS_SAMPLE = 100;
+	public static int LIMIT_THOROUGH_SEARCH = 2000;
+	public static int NUM_SIMULATIONS_SAMPLE = 1000;
 	
 	//TODO: set limits low for testing/debugging:
 	//public static int LIMIT_THOROUGH_SEARCH = 20;
@@ -68,6 +79,9 @@ public class MonteCarloMain {
 			System.setOut(dummyStream);
 		}
 		
+		
+		double sum_impact_to_avg = 0.0;
+		
 		for(int i=0; i<num_simulations; i++) {
 			
 			//Distribute unknown cards for simulation:
@@ -79,14 +93,25 @@ public class MonteCarloMain {
 						SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards));
 			}
 			
-			//TODO: For better results, check how realistic the distribution of cards is compared to what the original bid was and try
-			//      to dampen the effect of unrealistic distributions of cards.
+			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
+			//      to dampen the effect of unrealistic distributions of cards:
+			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
+			//double decisionImpact = 1.0;
+			
+			/*if(isThorough == false && decisionImpact < 0.001 && sum_impact_to_avg > 0.099) {
+				i--;
+				continue;
+			}*/
 
-			//TODO2: check how realistic the distribution of cards is compared to what has been played
+			//TODO: check how realistic the distribution of cards is compared to what has been played
 			//If it's unrealistic, make the simulation count for less.
 			
-			MellowBasicDecider playersInSimulation[];
+			sum_impact_to_avg +=  decisionImpact;
+			
+
 			DataModel dataModelTmp;
+			MellowBasicDecider playersInSimulation[];
+			
 			
 			for(int a=0; a<actionString.length; a++) {
 
@@ -111,7 +136,7 @@ public class MonteCarloMain {
 					//Util is a function of scoreA, scoreB, isDealer
 					//TODO: this is just getting the point difference after the round and isn't the most useful measure of how well we're doing.
 					//A better strat would be an approx measure of the current player's winning chances... which is hard to calculate.
-				actionUtil[a] += getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats);
+				actionUtil[a] += decisionImpact * getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats);
 				
 				/*System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
 				in.next();*/
@@ -125,9 +150,10 @@ public class MonteCarloMain {
 		System.setOut(originalStream);
 
 		
-		testPrintAverageUtilityOfEachMove(actionString, actionUtil, num_simulations);
+		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, num_simulations);
+
 		//in.next();
-		System.out.println("END OF SIMULATION");
+		System.out.print("END OF SIMULATION  PLAY: ");
 		
 		return actionString[getMaxIndex(actionUtil)];
 	}
@@ -137,6 +163,57 @@ public class MonteCarloMain {
 	        // NO-OP
 	    }
 	});
+	
+	public static double getRelativeImpactOfSimulatedDistCards(DataModel dataModel, String distCards[][]) {
+		DataModel dataModelTmp = dataModel.createHardCopy();
+		
+		String players[] = new String[Constants.NUM_PLAYERS];
+		players[0] = "Hero";
+		players[1] = "Villain1";
+		players[2] = "Partner";
+		players[3] = "Villain2";
+		
+		
+		double impact = 1.0;
+		for(int playerI=0; playerI<Constants.NUM_PLAYERS; playerI++) {
+			if(playerI == Constants.CURRENT_AGENT_INDEX) {
+				//We know the current player's bid is what's expected, so skip that check:
+				continue;
+			}
+			String hand[] = dataModelTmp.getGuessAtOriginalCardsHeld(playerI, distCards[playerI]);
+			
+			MellowBasicDecider tempDecider = new MellowBasicDecider();
+			tempDecider.resetStateForNewRound();
+			
+			tempDecider.setNameOfPlayers(players);
+			tempDecider.setCardsForNewRound(hand);
+			
+			//Set dealer to be the player of the right of the Hero:
+			tempDecider.setDealer("Villain2");
+
+			int expectedResponse = dataModelTmp.getBid(playerI);
+			int response = 0;
+			try {
+				response = Integer.parseInt(tempDecider.getBidToMake());
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("ERROR: could not parse bid in monte carlo simulation");
+				System.exit(1);
+			}
+			
+			//For now, only tolarate an off-by-one error:
+			
+			if(Math.abs(expectedResponse - response) >= 2) {
+				impact /= 1.5;
+
+			} else if(Math.abs(expectedResponse - response) >= 1) {
+				impact /= 1.2;
+			}
+		}
+		
+		return impact;
+		
+	}
 	
 	public static int getMaxIndex(double array[]) {
 
@@ -282,11 +359,12 @@ public class MonteCarloMain {
 		in.next();
 	}
 	
-	public static void testPrintAverageUtilityOfEachMove(String actionString[], double actionUtil[], long num_simulations) {
+	public static void testPrintAverageUtilityOfEachMove(String actionString[], double actionUtil[], double sum_impact_to_avg, int numSimulations) {
 		System.out.println("Comparing utility of different cards to play:");
 		for(int a=0; a<actionString.length; a++) {
-			System.out.println("Average util (point diff) of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * num_simulations) );
+			System.out.println("Average util (point diff) of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * sum_impact_to_avg) );
 		}
+		System.out.println("Sum of impact of simulation: " + sum_impact_to_avg + " out of a possible " + numSimulations + " (" + String.format("%.2f", (100*sum_impact_to_avg)/(1.0*numSimulations)) + "%)");
 	}
 	
 }

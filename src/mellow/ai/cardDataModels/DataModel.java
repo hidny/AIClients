@@ -164,30 +164,7 @@ public class DataModel {
 			playerDM.players[translateIndexToOtherPlayerPerspective(playerIndex, i)] = players[i];
 		}
 		
-		int curNumCardsGiven = 0;
-		String cardsHeld[] = new String[Constants.NUM_STARTING_CARDS_IN_HAND];
-		
-		//get player the cards the data model already knows about
-		for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
-			for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
-				if(cardsUsedByPlayer[playerIndex][suit][rank] || cardsCurrentlyHeldByPlayer[playerIndex][suit][rank] == CERTAINTY) {
-					cardsHeld[curNumCardsGiven] = getCardString(rank, suit);
-					curNumCardsGiven++;
-				}
-			}
-		}
-		
-	//Give player the unknown cards that we are guessing it has:
-		for(int i=0; curNumCardsGiven < Constants.NUM_STARTING_CARDS_IN_HAND; i++, curNumCardsGiven++) {
-			cardsHeld[curNumCardsGiven] = simulatedUnknownCardDist[playerIndex][i];
-		}
-		
-		if(curNumCardsGiven != Constants.NUM_STARTING_CARDS_IN_HAND) {
-			System.err.println("ERROR: something went wrong in getDataModelFromPerspectiveOfPlayerI. Number of cards given: " + curNumCardsGiven + "(Expected: " + Constants.NUM_STARTING_CARDS_IN_HAND + ")");
-			System.exit(1);
-		}
-		
-		cardsHeld = CardStringFunctions.sort(cardsHeld);
+		String cardsHeld[] = getGuessAtOriginalCardsHeld(playerIndex, simulatedUnknownCardDist[playerIndex]);
 
 	//Get player up-to-date with what happened during the round:
 		
@@ -213,6 +190,36 @@ public class DataModel {
 		playerDM.simulation_level = simulation_level;
 		
 		return playerDM;
+	}
+	
+	public String[] getGuessAtOriginalCardsHeld(int playerIndex, String simulatedUnknownCardsGivenToPlayer[]) {
+
+		String cardsHeld[] = new String[Constants.NUM_STARTING_CARDS_IN_HAND];
+		int curNumCardsGiven = 0;
+		
+		//get player the cards the data model already knows about
+		for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+			for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+				if(cardsUsedByPlayer[playerIndex][suit][rank] || cardsCurrentlyHeldByPlayer[playerIndex][suit][rank] == CERTAINTY) {
+					cardsHeld[curNumCardsGiven] = getCardString(rank, suit);
+					curNumCardsGiven++;
+				}
+			}
+		}
+
+		//Give player the unknown cards that we are guessing it has:
+		for(int i=0; curNumCardsGiven < Constants.NUM_STARTING_CARDS_IN_HAND; i++, curNumCardsGiven++) {
+			cardsHeld[curNumCardsGiven] = simulatedUnknownCardsGivenToPlayer[i];
+		}
+		
+		if(curNumCardsGiven != Constants.NUM_STARTING_CARDS_IN_HAND) {
+			System.err.println("ERROR: something went wrong in getDataModelFromPerspectiveOfPlayerI. Number of cards given: " + curNumCardsGiven + "(Expected: " + Constants.NUM_STARTING_CARDS_IN_HAND + ")");
+			System.exit(1);
+		}
+		
+		cardsHeld = CardStringFunctions.sort(cardsHeld);
+		
+		return cardsHeld;
 	}
 	
 	public static int translateIndexToOtherPlayerPerspective(int playerIndex, int index) {

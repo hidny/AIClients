@@ -45,6 +45,10 @@ public class testCaseParser {
 		System.out.println("AI passes " + numPasses + " out of " + numTrials);
 		System.out.println("That's a " + String.format("%.2f", ((100.0*numPasses) /(1.0*numTrials))) + "% pass rate.");
 		
+		System.out.println("AI is consistent " + agreement + " out of " + (num_plays_for_constancy_test));
+		System.out.println("That's a " + String.format("%.2f", ((100.0*agreement) /(1.0*(num_plays_for_constancy_test)))) + "% consistent rate.");
+
+		
 	}
 	
 	public static File[] getTestCaseFiles() {
@@ -76,6 +80,9 @@ public class testCaseParser {
 	static final int NUM_PLAYERS = 4;
 	static final String TRUMP = "S";
 	
+	
+	public static int agreement = 0;
+	public static int num_plays_for_constancy_test = 0;
 	
 	static PrintStream dummyStream = new PrintStream(new OutputStream(){
 	    public void write(int b) {
@@ -251,6 +258,13 @@ public class testCaseParser {
 				
 				response = play;
 				
+				//Constancy test: (Monty carlo doesn't always give the same answers...)
+				//TODO: do this in a less hacky hack:
+				String response2 = decider.getCardToPlay();
+				if(response.equals(response2)) {
+					agreement++;
+				}
+				num_plays_for_constancy_test++;
 			}
 			
 			if(response == null || response.trim().equals("")) {
