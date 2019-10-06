@@ -23,6 +23,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	DataModel dataModel;
 	private boolean doMonteCarloSimuations = false;
+	private int num_simulations_for_monte_carlo = MonteCarloMain.NUM_SIMULATIONS_DEFAULT;
 	
 	//TODO: Consider where the dealer is when bidding (and consider previous bids)
 	
@@ -32,12 +33,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	 
 	public MellowBasicDecider() {
-		this(false);
+		this(false, MonteCarloMain.NUM_SIMULATIONS_DEFAULT);
 	}
 	
 	public MellowBasicDecider(boolean doSimuations) {
+		this(doSimuations, MonteCarloMain.NUM_SIMULATIONS_DEFAULT);
+	}
+	
+	public MellowBasicDecider(boolean doSimuations, int num_simulations) {
 		this.dataModel = new DataModel();
 		this.doMonteCarloSimuations = doSimuations;
+		this.num_simulations_for_monte_carlo = num_simulations;
 	}
 	
 	
@@ -139,7 +145,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		//Run montecarlo simulations if config set to monte carlo 
 		//AND decider is not currently in a simulation: (Running a simulation in a simulation is expensive)
 		if(this.doMonteCarloSimuations && dataModel.getSimulation_level() == 0) {
-			return MonteCarloMain.runMonteCarloMethod(dataModel);
+			return MonteCarloMain.runMonteCarloMethod(dataModel, this.num_simulations_for_monte_carlo);
 		}
 		
 		int numActiveMellows = 0;

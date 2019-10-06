@@ -29,19 +29,23 @@ public class MonteCarloMain {
 	
 	//Slow but good (100 limit is too prone to random swings and there's no clear signal)
 	public static int LIMIT_THOROUGH_SEARCH = 2000;
-	public static int NUM_SIMULATIONS_SAMPLE = 1000;
+
+	public static int NUM_SIMULATIONS_DEFAULT = 1000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
 	//100:    74%
 	//1000:   81.4%
 	//10000:  89%
+	//20000:  91.36%
 	//(It's not too consistent, but at least it's not off by much points on avg when it's wrong...)
 	
 	//Accuracy compared to what I would do:
 	//100:   67.4%
 	//1000:  70.2%
 	//10000: 71.8%
+	//20000: 71.43%
 	//End test case stats.
 	
 	//Experience stats:
@@ -60,7 +64,7 @@ public class MonteCarloMain {
 
 	//Return number string for bid
 	//Return card for action
-	public static String runMonteCarloMethod(DataModel dataModel) {
+	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations) {
 		
 		System.out.println("RUN SIMULATION");
 		//in.nextLine();
@@ -73,7 +77,6 @@ public class MonteCarloMain {
 			isThorough = true;
 		}
 		
-		int num_simulations = NUM_SIMULATIONS_SAMPLE;
 		if(isThorough) {
 			num_simulations = (int)numWaysOtherPlayersCouldHaveCards;
 		}

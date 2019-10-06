@@ -10,23 +10,6 @@ public class NoMellowBidPlaySituation {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		/*
-		//TODO TESTING Simulation:
-		if( dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS - 3 * Constants.NUM_PLAYERS  && dataModel.getSimulation_level() < 1) {
-			//TODO: check with dataModel to make sure we're not already in a simulation...
-			//Also add var in datamodel to keep track of how deep in simulation we're in...
-			
-			if(dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS -  Constants.NUM_PLAYERS) {
-				System.err.println("ERROR: In handleNormalThrow where there's only one card to decide on.");
-				System.exit(1);
-			}
-			
-			return MonteCarloMain.runMonteCarloMethod(dataModel);
-		}
-		
-		//END TESTING
-		 */
-		
 		//leader:
 		String cardToPlay = null;
 		System.out.println("**Inside get card to play");
