@@ -159,7 +159,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 			
 		} else if(numActiveMellows == 1) {
-			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0) {
+			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
 				System.out.println("MELLOW TEST");
 				return handleThrowAsSingleActiveMellowBidder();
 				
@@ -200,7 +200,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		System.out.println("**Inside get card to play");
 		
 		if(dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX)) {
-			System.out.println("BURNT MELLOW");
+			System.err.println("ERROR: BURNT MELLOW, but entering mellow bidder logic");
+			System.exit(1);
 		}
 		
 		if(throwIndex == 0) {
@@ -222,13 +223,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		String ret = "";
 		if(dataModel.getNumberOfCardsOneSuit(SPADE) > 0) {
+			
+
+			//TODO: if highest Spade is Queen, maybe don't do this?
+			//TOO complicated... :(
 			ret = dataModel.getCardCurrentPlayerGetHighestInSuit(SPADE);
 		} else {
-			
+			ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 		}
-		
-		//TODO: if highest Spade is Queen, maybe don't do this?
-		//TOO complicated... :(
 		
 		return ret;
 	}
@@ -247,6 +249,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == leaderSuitIndex) {
 				
 				if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
+
+					//TODO: check for the case where you'd rather play your 5 over the 4 even if you have a 2.
 
 					//Play just below winning card if possible
 					cardToPlay = dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner);
@@ -274,7 +278,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			
 			String currentFightWinner = dataModel.getCurrentFightWinningCard();
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == SPADE) {
-				//Play spade under trump (this isn't always a good idea, but...
+				//Play spade under trump (this isn't always a good idea, but...)
 				
 				if(dataModel.currentAgentHasSuit(SPADE)) {
 					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
