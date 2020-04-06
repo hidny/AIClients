@@ -14,7 +14,7 @@ public class testCaseParser {
 	public static void main(String[] args) {
 		File list[]  = getTestCaseFiles();
 		
-		//Option 1: Follow ruls AI:
+		//Option 1: Follow hard-coded rules AI:
 		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.FOLLOW_HARD_CODED_RULES_AI);
 		
 		//Option 2: Monte Carlo AI:

@@ -1,4 +1,4 @@
-package mellowStarter;
+package mellowGenTestcaseStarter;
 
 import mellow.ai.aiDecider.MellowAIDeciderFactory;
 import clientPlayers.ClientJoinerStarter;

@@ -2,6 +2,9 @@ package clientPlayers;
 
 import java.net.*;
 
+//Summary:
+//Creates a thread that does the AI that creates a game
+//It makes a new thread so the main program could start more than 1 AI
 
 public class ClientStarter  extends Thread {
 	
@@ -26,22 +29,22 @@ public class ClientStarter  extends Thread {
     	String desiredName = "mellowAI2";
     	String roomName = "aigame";
     	
-    	if(args.length >= 0) {
+    	if(args.length > 0) {
     		gameName = args[0].toLowerCase();
     	}
     	
-    	if(args.length >= 3) {
+    	if(args.length > 2) {
     		desiredName = args[1];
     		roomName = args[2];
     	}
     	
     	int aiLevel = 0;
-    	if(args.length >= 4) {
+    	if(args.length > 3) {
     		aiLevel = Integer.parseInt(args[3]);
     	}
     	
     	boolean isFast = false;
-    	if(args.length >= 5) {
+    	if(args.length > 4) {
     		if(args[4].equals("fast")) {
     			isFast = true;
     		}
@@ -50,18 +53,24 @@ public class ClientStarter  extends Thread {
     	int startRed = 0;
     	int startBlue = 0;
     	int dealerIndex = -1;
+    	String riggedFirstDeck = null;
     	
-    	if(args.length >= 6) {
+    	if(args.length > 6) {
     		startRed = Integer.parseInt(args[5]);
     		startBlue = Integer.parseInt(args[6]);
     	}
     	
-    	if(args.length >=7) {
+    	if(args.length > 7) {
     		dealerIndex = Integer.parseInt(args[7]);
     	}
     	
+    	if(args.length > 8) {
+    		riggedFirstDeck = args[8];
+    	} else {
+    		riggedFirstDeck = null;
+    	}
     	
-    	ClientStarter starter = new ClientStarter(gameName, desiredName, roomName, aiLevel, isFast, startRed, startBlue, dealerIndex);
+    	ClientStarter starter = new ClientStarter(gameName, desiredName, roomName, aiLevel, isFast, startRed, startBlue, dealerIndex, riggedFirstDeck);
 		
     	starter.start();
     }
@@ -76,8 +85,9 @@ public class ClientStarter  extends Thread {
     private int startRed = 0;
     private int startBlue = 0;
     private int dealerIndex = -1;
+    private String riggedFirstDeck = "";
     
-    public ClientStarter(String gameName, String desiredName, String roomName, int aiLevel, boolean isFast, int startRed, int startBlue, int dealerIndex) {
+    public ClientStarter(String gameName, String desiredName, String roomName, int aiLevel, boolean isFast, int startRed, int startBlue, int dealerIndex, String riggedFirstDeck) {
     	this.gameName = gameName.toLowerCase();
     	this.desiredName = desiredName;
     	this.roomName = roomName;
@@ -86,6 +96,7 @@ public class ClientStarter  extends Thread {
     	this.startRed = startRed;
     	this.startBlue = startBlue;
     	this.dealerIndex = dealerIndex;
+    	this.riggedFirstDeck = riggedFirstDeck;
     }
     
     public void run() {
@@ -96,8 +107,7 @@ public class ClientStarter  extends Thread {
 		try {
 			Socket clientSocket = new Socket("localhost", 6789);
 			
-			//For now, the host is player 1 and the joiner is player 2... and there's no way to change it. :(
-			serverListener = new ServerRequestHandler(clientSocket, desiredName, this.gameName, roomName, true, aiLevel, isFast, this.startRed, this.startBlue, this.dealerIndex);
+			serverListener = new ServerRequestHandler(clientSocket, desiredName, this.gameName, roomName, true, aiLevel, isFast, this.startRed, this.startBlue, this.dealerIndex, this.riggedFirstDeck);
 			
 			serverListener.listenAndRespond();
 			

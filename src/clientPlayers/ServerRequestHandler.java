@@ -14,8 +14,10 @@ public class ServerRequestHandler {
 	public static final String EOC = "Goodbye.";
 
 	
-	public static int INITIALSTATE = 0;
-	public static int ERRORSTATE = -1;
+	public static final int INITIALSTATE = 0;
+	public static final int ERRORSTATE = -1;
+	
+	public static final int RANDOM_DEALER_INDEX = -1;
 	
     private Socket socket = null;
    
@@ -43,15 +45,19 @@ public class ServerRequestHandler {
     
     private int team1Score = 0;
     private int team2Score = 0;
-    private int dealerIndex = -1;
+    private int dealerIndex = RANDOM_DEALER_INDEX;
+    private String riggedFirstDeck = null;
     
     
     public ServerRequestHandler(Socket socket, String desiredName, String gameName, String roomName, boolean create, int aiLevel, boolean isFast) {
-    	this(socket, desiredName, gameName, roomName, create, aiLevel, isFast, 0, 0, -1);
+    	this(socket, desiredName, gameName, roomName, create, aiLevel, isFast, 0, 0, RANDOM_DEALER_INDEX, null);
     }
     
     public ServerRequestHandler(Socket socket, String desiredName, String gameName, String roomName, boolean create, int aiLevel, boolean isFast, int team1Score, int team2Score, int dealerIndex) {
-    		   
+    	this(socket, desiredName, gameName, roomName, create, aiLevel, isFast, team1Score, team2Score, dealerIndex, null);
+    }
+
+    public ServerRequestHandler(Socket socket, String desiredName, String gameName, String roomName, boolean create, int aiLevel, boolean isFast, int team1Score, int team2Score, int dealerIndex, String riggedFirstDeck) {   	
         this.socket = socket;
         this.clientState = 0;
         this.desiredName = desiredName;
@@ -66,6 +72,7 @@ public class ServerRequestHandler {
         this.team1Score = team1Score;
         this.team2Score = team2Score;
         this.dealerIndex = dealerIndex;
+        this.riggedFirstDeck = riggedFirstDeck;
         
         this.gamePlayer =AIFactory.getAIPlayer(this.gameName, this.aiLevel, this.isFast);
     }
@@ -156,7 +163,9 @@ public class ServerRequestHandler {
 			}
 			
     		if(create) {
-    			if(dealerIndex !=0 ) {
+    			if(riggedFirstDeck != null) {
+    				GameServerCommands.createGameWithScoreAndDealerAndRigged1stDeck(outToServer, this.gameName, roomName, "", team1Score, team2Score, dealerIndex, riggedFirstDeck);
+    			} else if(dealerIndex != RANDOM_DEALER_INDEX ) {
     				GameServerCommands.createGameWithScoreAndDealer(outToServer, this.gameName, roomName, "", team1Score, team2Score, dealerIndex);
     			} else if(team1Score != 0 || team2Score !=0 ) {
     				GameServerCommands.createGameWithScore(outToServer, this.gameName, roomName, "", team1Score, team2Score);

@@ -2,6 +2,9 @@ package clientPlayers;
 
 import java.net.*;
 
+//Summary:
+//Creates a thread that does the AI that joins a game
+//It makes a new thread so the main program could start more than 1 AI
 
 public class ClientJoinerStarter  extends Thread {
 	
