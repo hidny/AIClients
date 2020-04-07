@@ -7,7 +7,7 @@ public class GameServerCommands {
 	
 	public static void createGameWithScoreAndDealerAndRigged1stDeck(DataOutputStream outToServer, String game, String gameName, String pass, int team1Score, int team2Score, int dealerIndex, String riggedFirstDeck) throws IOException  {
 		String riggedDeckParam = "-fulldeckrig";
-		if(isCustomizeHands(riggedFirstDeck)) {
+		if(isCustomizedHands(riggedFirstDeck)) {
 			riggedDeckParam = "-handrig";
 		} else {
 			riggedDeckParam = "-fulldeckrig";
@@ -92,7 +92,7 @@ public class GameServerCommands {
     //I want to make my deck rigging implied because it's less annoying to change.
     //It's probably more annoying to understand, but ¯\_(ツ)_/¯
 	    
-    private static boolean isCustomizeHands(String riggedFirstDeck) {
+    private static boolean isCustomizedHands(String riggedFirstDeck) {
     	System.out.println(riggedFirstDeck.replaceAll("[^\\[]", ""));
     	if(riggedFirstDeck.replaceAll("[^\\[]", "").length() > 2 ) {
     		//At least 2 hands, so it's customized hands...
@@ -105,7 +105,6 @@ public class GameServerCommands {
 
     	//Check if there's 52 cards or STANDARD_DECK_SIZE:
 		if(cards.length() != CARD_ASCII_LENGTH * STANDARD_DECK_SIZE) {
-			System.out.println("ERROR: didn't get the right number of cards to rig (got deckPart.length() cards)");
 			return true;
 		} else {
 			return false;

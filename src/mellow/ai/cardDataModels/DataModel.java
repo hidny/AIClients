@@ -19,7 +19,6 @@ public class DataModel {
 	static final int INDEX_SUCH_THAT_CURRENT_PLAYER_BIDS_FIRST = Constants.NUM_PLAYERS - 1;
 	
 	//This is dumb: Think about changing it later.
-	//Higher number means higher power
 	private static final int ACE = 12;
 	private static final int KING = 11;
 	private static final int QUEEN = 10;
@@ -294,6 +293,18 @@ public class DataModel {
 			}
 		}
 		return true;
+	}
+	
+
+	public int getNumCardsOfSuitInCurrentPlayerHand(int suitIndex) { 
+		int ret = 0;
+		for(int i=TWO; i<=ACE; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				ret++;
+			}
+		}
+		
+		return ret;
 	}
 
 

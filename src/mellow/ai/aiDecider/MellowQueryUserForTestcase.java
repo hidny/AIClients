@@ -314,6 +314,8 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 		PrintWriter testCaseFile = null;
 		try {
+			
+			
 			testCaseFile = new PrintWriter(new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt"));
 			
 		} catch( Exception e) {
@@ -323,11 +325,19 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 	}
 	
+	public void makeDirectoryIfNotExists() {
+
+		File directory = new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0]);
+	    if (! directory.exists()){
+	        directory.mkdir();
+	    }
+	}
 
 	public void printTestCase(String bid, String alternative) {
 		try {
 			
-			
+			makeDirectoryIfNotExists();
+		    
 			PrintWriter newTestCase = getTestCaseWriter();
 			newTestCase.println(getGamePlayerStateString());
 			newTestCase.flush();

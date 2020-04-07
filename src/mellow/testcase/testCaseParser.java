@@ -11,6 +11,10 @@ import mellow.ai.aiDecider.MellowAIDeciderInterface;
 
 public class testCaseParser {
 
+	public static String TEST_FOLDER = "Michael";
+	//public static String TEST_FOLDER = "MichaelApril2020";
+	//public static String TEST_FOLDER = "doubleMellowTests";
+	
 	public static void main(String[] args) {
 		File list[]  = getTestCaseFiles();
 		
@@ -56,7 +60,8 @@ public class testCaseParser {
 		//https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
 		
 		//TODO: standardize this and add constant file
-		File folder = new File("..\\TestCaseAndReplayData\\testcases\\Michael");
+		//File folder = new File("..\\TestCaseAndReplayData\\testcases\\Michael");
+		File folder = new File("..\\TestCaseAndReplayData\\testcases\\" + TEST_FOLDER);
 		
 		File[] listOfFiles = folder.listFiles();
 

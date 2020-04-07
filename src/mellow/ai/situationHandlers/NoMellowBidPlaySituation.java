@@ -41,6 +41,16 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 		String cardToPlay = null;
+		
+		cardToPlay = leadCardToHelpPartnerTrumpOtherwiseNull(dataModel);
+		
+		if(cardToPlay != null) {
+			return cardToPlay;
+		}
+	
+		//isVoid(int playerIndex, int suitIndex)
+		//if(partnerisVoid)
+		
 		if(dataModel.getMasterCard() != null) {
 			//play a master card:
 			cardToPlay = dataModel.getMasterCard();
@@ -53,7 +63,51 @@ public class NoMellowBidPlaySituation {
 			System.out.println("***********");
 			cardToPlay = dataModel.getLowOffSuitCardToLead();
 		}
+		
 		return cardToPlay;
+	}
+
+
+	public static String leadCardToHelpPartnerTrumpOtherwiseNull(DataModel dataModel) {
+		String cardToPlay = null;
+		
+		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
+			
+			if(suitIndex != Constants.SPADE) {
+				
+				
+				if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+					&&  dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
+					&&  dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false) {
+				
+					int numCardsOfSuitOpponentsHave = Constants.NUM_RANKS -
+							- dataModel.getNumCardsPlayedForSuit(suitIndex) 
+							- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+					
+					if(numCardsOfSuitOpponentsHave >= 2
+								
+							//If player on left is also void, that's great!
+							|| (numCardsOfSuitOpponentsHave >= 1
+								&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
+							) {
+
+						if(dataModel.hasMasterInSuit(suitIndex)) {
+							cardToPlay = dataModel.getMasterInSuit(suitIndex);
+						} else {
+							cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(suitIndex);
+						}
+
+						return cardToPlay;
+
+					} else {
+						continue;
+					}
+				}
+				
+			}
+		}
+		
+		return null;
 	}
 	
 	public static String AISecondThrow(DataModel dataModel) {
