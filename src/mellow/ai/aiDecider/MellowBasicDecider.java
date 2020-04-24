@@ -292,8 +292,9 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					
 				}
 			}
-			
+
 			//Algo that tries to throw off least desirable offsuit for mellow player
+			//NOTE: this is BARELY, better than dataModel.getHighestOffSuitCardToLead(). LOL
 			cardToPlay = getBestOffSuitCardToThrowOffAsMellowPlayer();
 		}
 		
@@ -344,6 +345,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 								- dataModel.getNumCardsPlayedForSuit(suit)
 								- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
 		
+		
 		String cardToConsider = "";
 		
 		if(numCardsInPlayNotInHand > 6 && dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit) >= 3) {
@@ -358,13 +360,21 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		}
 		
 		int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
+		int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider);
 		
-		double partnerCantCoverFactor = Math.pow(2.0/3.0, numOver);
+		//Check if suit is "safe":
+		if(numUnder == 0) {
+			return 0.0;
+			
+		} else {
+			//Suit is not safe:
+			double partnerCantCoverFactor = Math.pow(2.0/3.0, numOver);
 		
 		
-		double giveUpOnSuitFactor = Math.pow(1.0/2.0, Math.max(0, dataModel.getNumCardsCurrentUserStartedWithInSuit(suit)));
+			double giveUpOnSuitFactor = Math.pow(1.0/2.0, Math.max(0, dataModel.getNumCardsCurrentUserStartedWithInSuit(suit)));
 		
-		return partnerCantCoverFactor * giveUpOnSuitFactor;
+			return partnerCantCoverFactor * giveUpOnSuitFactor;
+		}
 	}
 	
 	//TODO: will need to test/improve get BidToMake.
