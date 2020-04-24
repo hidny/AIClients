@@ -304,8 +304,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 	//Find the suit the mellow player wants to throw-off most:
 	public String getBestOffSuitCardToThrowOffAsMellowPlayer() {
-		
-		int chosenSuit = -1;
+		int NO_SUIT_FOUND = -1;
+		int chosenSuit = NO_SUIT_FOUND;
 		double bestScore = Double.MIN_VALUE;
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
@@ -328,11 +328,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			
 		}
 		
-		if(chosenSuit == -1) {
-			System.out.println("ERROR: choosen suit is -1 for getBestSuitOffSuitCardToThrowOff. This should be impossible");
-			System.exit(1);
+		if(chosenSuit == NO_SUIT_FOUND) {
+			//If mellow player has to play spade, go low
+			//TODO: add logic about this.
+			String cardTemp = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			if(cardTemp.contains("S") == false) {
+				System.err.println("WARN in getBestOffSuitCardToThrowOffAsMellowPlayer: " + cardTemp);
+			}
+			
+			return cardTemp;
 		}
-		
+
 		return dataModel.getCardCurrentPlayerGetHighestInSuit(chosenSuit);
 	}
 	

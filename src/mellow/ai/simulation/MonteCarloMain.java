@@ -30,7 +30,7 @@ public class MonteCarloMain {
 	//Slow but good (100 limit is too prone to random swings and there's no clear signal)
 	public static int LIMIT_THOROUGH_SEARCH = 2000;
 
-	public static int NUM_SIMULATIONS_DEFAULT = 1000;
+	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//Test case stats as of oct 5th, 2019:
