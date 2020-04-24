@@ -272,13 +272,12 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		} else {
 			//Can't follow suit:
 			
-			//TODO: throw off card that gets rid of the most risk...
-			// Because this is probably the hardest decision to make in mellow, I'm going to simplify it... :(
-			
+			//TODO: throw off card that gets rid of the most risk... not necessarily the spade.
 			
 			String currentFightWinner = dataModel.getCurrentFightWinningCard();
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == SPADE) {
 				//Play spade under trump (this isn't always a good idea, but...)
+				//TODO: maybe consider not throwing off spade?
 				
 				if(dataModel.currentAgentHasSuit(SPADE)) {
 					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
@@ -294,17 +293,81 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				}
 			}
 			
-			
-			//TODO: this is a terrible approximation... this is not how I play the game.
-			cardToPlay = dataModel.getHighestOffSuitCardToLead();
+			//Algo that tries to throw off least desirable offsuit for mellow player
+			cardToPlay = getBestOffSuitCardToThrowOffAsMellowPlayer();
 		}
 		
 		return cardToPlay;
 	
 	}
+
+	//Find the suit the mellow player wants to throw-off most:
+	public String getBestOffSuitCardToThrowOffAsMellowPlayer() {
+		
+		int chosenSuit = -1;
+		double bestScore = Double.MIN_VALUE;
+		
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			if(i == Constants.SPADE) {
+				continue;
+
+			} else if(dataModel.currentAgentHasSuit(i) == false) {
+				continue;
+			}
+			if(chosenSuit == -1) {
+				chosenSuit = i;
+			}
+			
+			double tmpScore = getWillingnessToThrowOffSuitAsMellowPlayer(i);
+			
+			if(tmpScore > bestScore) {
+				chosenSuit = i;
+				bestScore = tmpScore;
+			}
+			
+		}
+		
+		if(chosenSuit == -1) {
+			System.out.println("ERROR: choosen suit is -1 for getBestSuitOffSuitCardToThrowOff. This should be impossible");
+			System.exit(1);
+		}
+		
+		return dataModel.getCardCurrentPlayerGetHighestInSuit(chosenSuit);
+	}
 	
 	
-	//TODO: will need to test/improve.
+	//The higher the number return, the more will the AI is to throw off the suit
+	//For now, the numbers returned are between 0 and 1
+	//pre condition: player has at least 1 card in suit input
+	public double getWillingnessToThrowOffSuitAsMellowPlayer(int suit) {
+		int numCardsInPlayNotInHand = Constants.NUM_RANKS 
+								- dataModel.getNumCardsPlayedForSuit(suit)
+								- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
+		
+		String cardToConsider = "";
+		
+		if(numCardsInPlayNotInHand > 6 && dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit) >= 3) {
+			cardToConsider = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suit);
+
+		} else if(numCardsInPlayNotInHand > 3 && dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit) >= 2) {
+			cardToConsider = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suit);
+			
+		} else {
+			cardToConsider = dataModel.getCardCurrentPlayergetLowestInSuit(suit);
+
+		}
+		
+		int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
+		
+		double partnerCantCoverFactor = Math.pow(2.0/3.0, numOver);
+		
+		
+		double giveUpOnSuitFactor = Math.pow(1.0/2.0, Math.max(0, dataModel.getNumCardsCurrentUserStartedWithInSuit(suit)));
+		
+		return partnerCantCoverFactor * giveUpOnSuitFactor;
+	}
+	
+	//TODO: will need to test/improve get BidToMake.
 	
 	@Override
 	public String getBidToMake() {

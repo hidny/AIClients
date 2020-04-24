@@ -43,7 +43,7 @@ public class NoMellowBidPlaySituation {
 		String cardToPlay = null;
 		
 		cardToPlay = leadCardToHelpPartnerTrumpOtherwiseNull(dataModel);
-		
+
 		if(cardToPlay != null) {
 			return cardToPlay;
 		}

@@ -21,7 +21,10 @@ public class testCaseParser {
 		//Option 1: Follow hard-coded rules AI:
 		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.FOLLOW_HARD_CODED_RULES_AI);
 		
-		//Option 2: Monte Carlo AI:
+		//Option 2: Quick Mont Carlo AI
+		//MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI);
+		
+		//Option 3: Slow and thorougk Monte Carlo AI:
 		//MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
 		
 		int numPasses = 0;

@@ -296,18 +296,6 @@ public class DataModel {
 	}
 	
 
-	public int getNumCardsOfSuitInCurrentPlayerHand(int suitIndex) { 
-		int ret = 0;
-		for(int i=TWO; i<=ACE; i++) {
-			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
-				ret++;
-			}
-		}
-		
-		return ret;
-	}
-
-
 	//Resets everything except for the scores and the deal indexes.
 	public void resetStateForNewRound() {
 		
@@ -998,6 +986,23 @@ public class DataModel {
 		return ret;
 	}
 	
+	public int getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(String card) {
+
+		int rankStart = getRankIndex(card) + 1;
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		
+		int ret = 0;
+		
+		for(int i=rankStart; i<Constants.NUM_RANKS; i++) {
+			if(cardsUsed[suitIndex][i] ||
+				cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				//Doesn't count
+			} else {
+				ret++;
+			}
+		}
+		return ret;
+	}
 	
 	
 	public boolean throwerHasCardToBeatCurrentWinner() {
@@ -1572,6 +1577,36 @@ public class DataModel {
 		return "";
 	}
 	
+	//pre: player has 2 cards of suit
+	public String getCardCurrentPlayergetSecondLowestInSuit(int suitIndex) {
+		
+		int lowestRankCurPlayerHasInSuit = getRankIndex(getCardCurrentPlayergetLowestInSuit(suitIndex));
+		
+		for(int i=lowestRankCurPlayerHasInSuit + 1; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+		System.err.println("AHH! Searching for second lowest in card in suit when player doesn't have 2 cards in that suit. (" + suitIndex +")");
+		System.exit(1);
+		return "";
+	}
+
+	//pre: player has 3 cards of suit
+	public String getCardCurrentPlayergetThirdLowestInSuit(int suitIndex) {
+		
+		int secondlowestRankCurPlayerHasInSuit = getRankIndex(getCardCurrentPlayergetSecondLowestInSuit(suitIndex));
+		
+		for(int i=secondlowestRankCurPlayerHasInSuit + 1; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+		System.err.println("AHH! Searching for third lowest in card in suit when player doesn't have 3 cards in that suit. (" + suitIndex +")");
+		System.exit(1);
+		return "";
+	}
+	
 	public boolean currentAgentHasSuit(int suitIndex) {
 		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}
@@ -1725,16 +1760,31 @@ public class DataModel {
 		}
 	}
 	
-	public int getNumCardsCurrentUserStartedWithInSuit(int suit) {
+	public int getNumCardsCurrentUserStartedWithInSuit(int suitIndex) {
 		int ret = 0;
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
-			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suit][i] == CERTAINTY) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				ret++;
+
+			} else if(cardsUsedByPlayer[0][suitIndex][i]) {
 				ret++;
 			}
 		}
 		return ret;
 	}
 	
+
+	public int getNumCardsOfSuitInCurrentPlayerHand(int suitIndex) { 
+		int ret = 0;
+		for(int i=TWO; i<=ACE; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				ret++;
+			}
+		}
+		
+		return ret;
+	}
+
 	public int getNumCardsPlayedForSuit(int suit) {
 		int ret = 0;
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
