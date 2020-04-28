@@ -10,6 +10,10 @@ import mellow.cardUtils.*;
 //      AND current player has multiple choices.
 public class DataModel {
 
+	
+	//TODO: MELLOW_PLAYER_SIGNALED_NO is just a rudimentary signal, feel free to develop it.
+	static final int MELLOW_PLAYER_SIGNALED_NO = 300;
+	
 	static final int IMPOSSIBLE =0;
 	static final int CERTAINTY = 1000;
 	static final int DONTKNOW = -1;
@@ -405,7 +409,116 @@ public class DataModel {
 			logicallyDeduceWhoHasCardsByProcessOfElimination();
 		} while(logicallyDeduceEntireOpponentHandFoundSomething());
 		
+		//TODO:
 		
+		if(indexPlayer != Constants.CURRENT_AGENT_INDEX) {
+			updateDataModelSignalsWithPlayedCard(playerName, card);
+		}
+		
+	}
+	
+	//THIS IS JUST A SIMPLE 1st attempt!
+	public void updateDataModelSignalsWithPlayedCard(String playerName, String card) {
+		
+		int playerIndex = convertPlayerNameToIndex(playerName);
+
+		if(bids[playerIndex] == 0 && burntMellow(playerIndex) == false) {
+			//Deal with mellow signals
+			int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+			int cardNum = getMellowCardIndex(card);
+
+			
+			if(throwNumber == 1) {
+				//If throwNumber 1, it's playing the first card,
+				//and the first card lead by a mellow player is usually weird... ignore leading
+				
+			} else {
+				
+				int suitLeadIndex = getSuitOfLeaderThrow();
+				
+				if(CardStringFunctions.getIndexOfSuit(card) == suitLeadIndex) {
+					//Mellow following lead
+					
+					
+					if(getCurrentFightWinningCard().equals(card)) {
+						
+						//Mellow follows suit over, probably has nothing under.
+						//Mellow player probably doesn't have cards under card mellow player threw.
+						
+						// TODO: There's an exception if it's 2nd or 3rd thrower and knows last player must play
+						// above, but whatever...
+						
+						for(int rankIndex=getRankIndex(card) - 1 ; rankIndex >= TWO; rankIndex--) {
+							//TODO: if there's another state, we will need to make a complicate state transition table
+							//MELLOW IND -> LEAD_SUGGESTION ...
+							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+						}
+						
+					} else {
+						
+						//Mellow follows suit under
+						//Mellow player probabliy doesn't have cards between curFightWinner and card mellow player threw.
+						
+						String curWinningCard = getCurrentFightWinningCard();
+						
+						int suitCurrentWinning = CardStringFunctions.getIndexOfSuit(curWinningCard);
+						
+						int maxRankIndex = getRankIndex(getCurrentFightWinningCard());
+						
+						if(suitCurrentWinning == Constants.SPADE && suitLeadIndex != Constants.SPADE) {
+							maxRankIndex = ACE;
+						}
+						
+						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= maxRankIndex; rankIndex++) {
+
+							//TODO: if there's another state, we will need to make a complicate state transition table
+							//MELLOW IND -> LEAD_SUGGESTION ...
+							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+						}
+					}
+					
+				} else {
+					///Mellow not following suit (Mellow is throwing off)
+					
+					int mellowSuitPlayed = CardStringFunctions.getIndexOfSuit(card);
+					
+					//If mellow player played spade and the partner can't bail them out,
+					// they probably don't have a choice:
+					if(mellowSuitPlayed == Constants.SPADE && throwNumber > 1) {
+						for(int cardIndex=0; cardIndex < Constants.NUM_CARDS; cardIndex++) {
+
+							int suitIndex = cardIndex / Constants.NUM_RANKS;
+							int rankIndex = cardIndex % Constants.NUM_RANKS;
+							
+							if(suitIndex == Constants.SPADE) {
+								continue;
+							} else {
+								setCardMellowSignalIfUncertain(playerIndex, suitIndex, rankIndex);
+							}
+							
+						}
+					} else {
+						
+						//If Mellow player plays plays off,
+						//Mellow player prob doesn't have anything over that offsuit
+						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= ACE; rankIndex++) {
+							setCardMellowSignalIfUncertain(playerIndex, mellowSuitPlayed, rankIndex);
+						}
+					}
+					
+				}
+				
+				
+			}
+		
+		}
+	}
+	
+	public void setCardMellowSignalIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
+		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY
+				&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
+					cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
+				}
 	}
 	
 	
@@ -752,7 +865,7 @@ public class DataModel {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
 		if(throwNumber == 0) {
-			System.err.println("ERRO: calling get Current Fight Winning Card on 1st throw.");
+			System.err.println("ERROR: calling get Current Fight Winning Card before 1st throw.");
 			System.exit(1);
 		}
 
@@ -809,7 +922,7 @@ public class DataModel {
 		
 		int fourthThrowerIndex = 3 - throwNumber;
 		
-		//TODO: reduce # of loops by 2 by creating only 1 loop to go thru the cards
+		//TODO: reduce # of loops by 2 by creating only 1 loop to go thru the cards (This will just make the code look cleaner)
 		
 		//For every card in current players hand, check if it can possible reduce the number of ways 4th thrower can win:
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
