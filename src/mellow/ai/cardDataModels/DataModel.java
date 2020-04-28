@@ -482,21 +482,38 @@ public class DataModel {
 					
 					int mellowSuitPlayed = CardStringFunctions.getIndexOfSuit(card);
 					
-					//If mellow player played spade and the partner can't bail them out,
-					// they probably don't have a choice:
+					//If mellow player played spade and the partner can't bail them out:
 					if(mellowSuitPlayed == Constants.SPADE && throwNumber > 1) {
-						for(int cardIndex=0; cardIndex < Constants.NUM_CARDS; cardIndex++) {
+						
+						if(getCurrentFightWinningCard().equals(card)) {
 
-							int suitIndex = cardIndex / Constants.NUM_RANKS;
-							int rankIndex = cardIndex % Constants.NUM_RANKS;
-							
-							if(suitIndex == Constants.SPADE) {
-								continue;
-							} else {
-								setCardMellowSignalIfUncertain(playerIndex, suitIndex, rankIndex);
+							//If their card is winning, they probably don't have a choice:
+							for(int cardIndex=0; cardIndex < Constants.NUM_CARDS; cardIndex++) {
+
+								int suitIndex = cardIndex / Constants.NUM_RANKS;
+								int rankIndex = cardIndex % Constants.NUM_RANKS;
+								
+								if(suitIndex == Constants.SPADE) {
+									continue;
+								} else {
+									setCardMellowSignalIfUncertain(playerIndex, suitIndex, rankIndex);
+								}
+								
 							}
+						} else {
+							//Mellow is just trumping under previous trump
 							
+							//Mellow prob doesn't have spade between Mellow card played,
+							//and the fight winner card played
+							int rankCurrentFightWinner = getRankIndex(getCurrentFightWinningCard());
+							
+							for(int rankIndex = getRankIndex(card) + 1; rankIndex < rankCurrentFightWinner; rankIndex++) {
+								//TODO: if there's another state, we will need to make a complicate state transition table
+								//MELLOW IND -> LEAD_SUGGESTION ...
+								setCardMellowSignalIfUncertain(playerIndex, Constants.SPADE, rankIndex);
+							}
 						}
+						
 					} else {
 						
 						//If Mellow player plays plays off,
