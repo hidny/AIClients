@@ -91,7 +91,7 @@ public class NoMellowBidPlaySituation {
 								&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
 							) {
 
-						if(dataModel.hasMasterInSuit(suitIndex)) {
+						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 							cardToPlay = dataModel.getMasterInSuit(suitIndex);
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(suitIndex);
@@ -145,7 +145,7 @@ public class NoMellowBidPlaySituation {
 					
 				} else if(thirdVoid == false && fourthVoid == false){
 					
-					if(dataModel.hasMasterInSuit(leaderSuitIndex)) {
+					if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 					} else {
 						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);

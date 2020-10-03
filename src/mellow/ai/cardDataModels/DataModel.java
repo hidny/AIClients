@@ -5,6 +5,8 @@ import mellow.ai.simulation.SimulationSetup;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 import mellow.cardUtils.*;
 
+//TODO: randomize suit choice with pseudo random # generator of adding up card indexes.... (plus a seed?)
+//It's fast and effective compared to using Math.random() and I want fast so I could do simulations!
 
 //PRE: The DataModel expects queries from current player only when it's the current player's turn
 //      AND current player has multiple choices.
@@ -428,9 +430,10 @@ public class DataModel {
 			int cardNum = getMellowCardIndex(card);
 
 			
-			if(throwNumber == 1) {
-				//If throwNumber 1, it's playing the first card,
+			if(throwNumber == 0) {
+				//If throwNumber 0, it's playing the first card,
 				//and the first card lead by a mellow player is usually weird... ignore leading
+				//TODO: don't ignore in future!
 				
 			} else {
 				
@@ -439,7 +442,9 @@ public class DataModel {
 				if(CardStringFunctions.getIndexOfSuit(card) == suitLeadIndex) {
 					//Mellow following lead
 					
-					
+					//TODO: Assumes mellow play doesn't know if it could be protected....
+					// Did this to keep it simple.
+
 					if(getCurrentFightWinningCard().equals(card)) {
 						
 						//Mellow follows suit over, probably has nothing under.
@@ -457,7 +462,7 @@ public class DataModel {
 					} else {
 						
 						//Mellow follows suit under
-						//Mellow player probabliy doesn't have cards between curFightWinner and card mellow player threw.
+						//Mellow player probability doesn't have cards between curFightWinner and card mellow player threw.
 						
 						String curWinningCard = getCurrentFightWinningCard();
 						
@@ -483,10 +488,12 @@ public class DataModel {
 					int mellowSuitPlayed = CardStringFunctions.getIndexOfSuit(card);
 					
 					//If mellow player played spade and the partner can't bail them out:
-					if(mellowSuitPlayed == Constants.SPADE && throwNumber > 1) {
+					if(mellowSuitPlayed == Constants.SPADE && throwNumber >= 1) {
 						
 						if(getCurrentFightWinningCard().equals(card)) {
 
+							//TODO: if it's unrealistic (EX: it would mean mel has 6 spades, then reconsider signal)\
+							
 							//If their card is winning, they probably don't have a choice:
 							for(int cardIndex=0; cardIndex < Constants.NUM_CARDS; cardIndex++) {
 
@@ -508,6 +515,7 @@ public class DataModel {
 							int rankCurrentFightWinner = getRankIndex(getCurrentFightWinningCard());
 							
 							for(int rankIndex = getRankIndex(card) + 1; rankIndex < rankCurrentFightWinner; rankIndex++) {
+								
 								//TODO: if there's another state, we will need to make a complicate state transition table
 								//MELLOW IND -> LEAD_SUGGESTION ...
 								setCardMellowSignalIfUncertain(playerIndex, Constants.SPADE, rankIndex);
@@ -531,6 +539,28 @@ public class DataModel {
 		}
 	}
 	
+	
+	public boolean mellowPlayerSignalNoCardsOfSuit(int playerIndex, int suitIndex) {
+		if( getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(playerIndex, suitIndex) == null ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int playerIndex, int suitIndex) {
+		for(int rank=ACE; rank>=TWO; rank--) {
+			if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank] != IMPOSSIBLE
+					&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
+				return getCardString(rank, suitIndex);
+			}
+			
+		}
+		
+		return null;
+	}
+	
+	//TODO: if mellow has card even though the player signal he/she doesn't: note that down!
 	public void setCardMellowSignalIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY
 				&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
@@ -1539,7 +1569,7 @@ public class DataModel {
 		 return numberOfMasters;
 	}
 	
-	public boolean hasMasterInSuit(int suitIndex) {
+	public boolean currentPlayerHasMasterInSuit(int suitIndex) {
 		return getMasterInSuit(suitIndex) != null;
 	}
 	

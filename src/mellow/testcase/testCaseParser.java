@@ -11,9 +11,9 @@ import mellow.ai.aiDecider.MellowAIDeciderInterface;
 
 public class testCaseParser {
 
-	//public static String TEST_FOLDER = "Michael";
+	public static String TEST_FOLDER = "Michael";
 	//public static String TEST_FOLDER = "MichaelApril2020";
-	public static String TEST_FOLDER = "doubleMellowTests";
+	//public static String TEST_FOLDER = "doubleMellowTests";
 	
 	public static void main(String[] args) {
 		File list[]  = getTestCaseFiles();

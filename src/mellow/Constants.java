@@ -23,7 +23,9 @@ public class Constants {
 	//Partner is 2
 	//Right guy index is 3
 	public static final int CURRENT_PLAYER_INDEX = 0;
-	public static final int LEFT_PLAYER_INDEX = 0;
+	
+	//TODO: this was wrong and set to 0 before! Does this affect anything? Research!
+	public static final int LEFT_PLAYER_INDEX = 1;
 	
 	public static final int CURRENT_PARTNER_INDEX = 2;
 	public static final int RIGHT_PLAYER_INDEX = 3;
