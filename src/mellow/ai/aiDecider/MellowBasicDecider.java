@@ -9,13 +9,21 @@ import mellow.ai.situationHandlers.NoMellowBidPlaySituation;
 import mellow.cardUtils.CardStringFunctions;
 
 //_______________________
-//This is a basic AI that handles non-mellow rounds for someone who is leading, 2nd, and 3rd.
+//This is a basic AI that handles mellow rounds for someone who is leading, 2nd, and 3rd and 4th
 //_____________________________
 //After some calculations, I realized there are hundreds of unique mellow situations that I'd have to make rules for
 //to force it to play like me.
 
 //In complicated cases, I'm going to just make run it a monte-carlo simulation so the AI
 //can make up it's own mind.
+
+//Update: i'm just going to start simple and play against it and notice where it lacks.
+// At that point, I'll improve it based on need
+
+//Same idea goes for monte-carlo which depends on a good and fast decider and a good filter/weigher to work
+
+//When it's good enough, I'll think about doing a decision tree that learned based on the features
+//and/or using deep learning.... but that's not anytime soon.
 
 
 public class MellowBasicDecider implements MellowAIDeciderInterface {
@@ -184,8 +192,10 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 			} else {
 
-				//TODO: not quite right: (Need to protect mellow or attack mellow...)
-				return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+				//TODO: not quite right:
+				//This should be the most complicated logic of the game,
+				//but let's start simple!
+				return playMoveToProtectPartnerMellow(dataModel);
 				
 			}
 			
@@ -338,9 +348,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			//If mellow player has to play spade, go low
 			//TODO: add logic about this.
 			String cardTemp = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-			if(cardTemp.contains("S") == false) {
-				System.err.println("WARN in getBestOffSuitCardToThrowOffAsMellowPlayer: " + cardTemp);
-			}
 			
 			return cardTemp;
 		}
@@ -687,6 +694,11 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			//TODO: do this later:
 			//For now, just test mellow lead
 			
+			//TODO: throw index should be a dataModel functionL
+			int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+			
+			if(throwIndex == 1) {
+			
 			//if 2nd thrower:
 				//if void and lead suit is off-suit
 					//if could trump:
@@ -702,22 +714,101 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					
 					//Exception: if mellow player is not vulnerable this round and made more vulnerable next round... maybe don't!)
 					//(Example: lead K and playing A is questionable if you have a 2 or 3 to backup the A)
-			
-			//else if 3rd or 4th thrower: (3rd because mellow player leads the first round)
-			
-				//if mellow in danger:
-					//if 3rd and want to lead again: play master
-					
-					//else
+			} else if(throwIndex == 2) {
+				
+				//Note: this could only happen on the 1st round where mellow player leads.
+				System.out.println("TESTING PROTECTOR 3rd throw");
+				
+				int leadSuit = dataModel.getSuitOfLeaderThrow();
+				
+				String currentFightWinnerCard = dataModel.getCurrentFightWinningCard();
+				
+				if(currentFightWinnerCard == dataModel.getCardLeaderThrow()) {
+		
+					if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+						//if mellow in danger:
+						
+						//TODO: if 3rd and want to lead again: play master
+						
 						//play just above to protect
-				//else
-					//if 3rd: play low (unless you want to lead next... do this later)
+						return dataModel.getCardClosestOverCurrentWinner();
+						
+					} else {
+						
+						//Mellow might be lost, just play low :(
+						if(dataModel.currentAgentHasSuit(leadSuit)) {
+							return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+						} else {
+							return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+						}
+						
+					}
+					
+					
+					
+				} else {
+
+					//Just play low: bad logic, but whatever!
+					if(dataModel.currentAgentHasSuit(leadSuit)) {
+						return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+					} else {
+						return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+					}
+					
+					//TODO later: complex logic (Maybe start with stealing from 4th throw logic)
+					
+				}
+				
+			} else if(throwIndex == 3) {
+
+				System.out.println("TESTING PROTECTOR 4th throw");
 			
-					//if 4th: play to take if it doesn't endanger mellow in next round of same suit
-					//play to take if could lead nice high value card next round
+				int leadSuit = dataModel.getSuitOfLeaderThrow();
+				
+				String currentFightWinnerCard = dataModel.getCurrentFightWinningCard();
+				
+				if(currentFightWinnerCard == dataModel.getCardSecondThrow()) {
+
+					//if mellow in danger:
+					//play just above to protect
+					if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+						return dataModel.getCardClosestOverCurrentWinner();
+						
+					} else {
+						
+						//Mellow is lost, just play low :(
+						if(dataModel.currentAgentHasSuit(leadSuit)) {
+							return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+						} else {
+							return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+						}
+						
+					}
+					
+				} else {
+					
+					//Just play low: bad logic, but whatever!
+					if(dataModel.currentAgentHasSuit(leadSuit)) {
+						return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+					} else {
+						return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+					}
+					
+				
+					//TODO later: complex logic (This is a complex situation!)
+					//play to take if it doesn't endanger mellow in next round of same suit
+					//or play to take if could lead nice high value card next round
+					//or play to take if you need the trick...
 			
 					//play low if playing high endangers mellow card in next round of same suit
-			
+				}
+
+					
+					
+			} else {
+				System.out.println("ERROR: unexpected branching in playMoveToProtectPartnerMellow");
+				System.exit(1);
+			}
 			
 			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 		}
