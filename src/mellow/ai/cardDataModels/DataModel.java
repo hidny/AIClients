@@ -1275,6 +1275,35 @@ public class DataModel {
 		return false;
 	}
 	
+	public boolean isPrevThrowWinningFight() {
+
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		if(throwNumber <= 0) {
+			System.err.println("ERROR: calling get isPrevThrowWinningFight on 1st throw. (throw index: " + throwNumber + ")");
+			System.exit(1);
+		}
+		
+		if(throwNumber == 1) {
+			return true;
+
+		} else if(throwNumber == 2) {
+			if(getCardLeaderThrow().equals(getCurrentFightWinningCard())) {
+				return true;
+			}
+
+		} else if(throwNumber == 3) {
+			if(getCardSecondThrow().equals(getCurrentFightWinningCard())) {
+				return true;
+			}
+
+		} else {
+			System.err.println("ERROR: calling get isPrevThrowWinningFight and got impossible throw number. (throw index: " + throwNumber + ")");
+			System.exit(1);
+		}
+		
+		return false;
+	}
+	
 	public boolean isPartnerWinningFight() {
 
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
@@ -1591,7 +1620,7 @@ public class DataModel {
 	}
 	//END of MASTER FUNCTIONS
 
-	public String getHighestOffSuitCardToLead() {
+	public String getHighestOffSuitCardAnySuit() {
 		String cardToPlay = "";
 		
 		FOUNDCARD:
@@ -1974,6 +2003,10 @@ public class DataModel {
 			}
 		}
 		return ret;
+	}
+	
+	public boolean currentPlayerOnlyHasSpade() {
+		return currentPlayerMustTrump();
 	}
 	
 	public boolean currentPlayerMustTrump() {

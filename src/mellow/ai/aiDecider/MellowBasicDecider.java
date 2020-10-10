@@ -178,8 +178,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					return playMoveToProtectPartnerMellow(dataModel);
 
 				} else {
-					//TODO: not quite right: (Need to protect mellow or attack mellow...)
-					return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+					
+					if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
+						//TODO: not quite right: (Need to protect mellow or attack mellow...)
+						return playMoveSeatedLeftOfOpponentMellow(dataModel);
+						//return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+					} else {
+						
+						//TODO: figure out how to play before a mellow (this is a hard position...)
+						//Knowing when to trump is complicated...
+						return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+					}
 				}
 			}
 			
@@ -686,7 +695,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 			} else {
 				//play random highest card
-				return dataModel.getHighestOffSuitCardToLead();
+				return dataModel.getHighestOffSuitCardAnySuit();
 			}
 			
 			
@@ -812,6 +821,73 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			
 			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 		}
+	}
+	
+	
+	
+	//TODO
+	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
+		
+		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		
+		//Rule number one:
+		//TODO: break this up later!
+		//go under mellow if possible!
+		if(dataModel.currentThrowIsLeading() == false && 
+				dataModel.isPrevThrowWinningFight() ) {
+			
+			String mellowWinningCard = dataModel.getCurrentFightWinningCard();
+			
+			if(CardStringFunctions.getIndexOfSuit(mellowWinningCard) 
+					!= dataModel.getSuitOfLeaderThrow()) {
+				//Mellow player is trumping:
+				
+				if(dataModel.throwerMustFollowSuit()) {
+					//Mellow player is trumping, but current player is not trumping:
+					return dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+					
+				} else {
+					if(dataModel.currentPlayerOnlyHasSpade() 
+							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(mellowWinningCard)) {
+						
+						//If you have to trump over, go big! (Over simplified, but whatever)
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					
+					} else {
+						
+						//TODO: this might need work, but I'm lazy
+						return dataModel.getHighestOffSuitCardAnySuit();
+					}
+				}
+			} else {
+				
+				if(dataModel.throwerMustFollowSuit()) {
+					//Both follow suit
+					
+					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(mellowWinningCard)) {
+						return dataModel.getCardInHandClosestUnderSameSuit(mellowWinningCard);
+					
+					} else {
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+					}
+					
+				} else {
+					
+					//If can't follow suit:
+					if(dataModel.currentPlayerOnlyHasSpade()) {
+						//Trump big if you must:
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					} else {
+						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
+						return dataModel.getHighestOffSuitCardAnySuit();
+					}
+				}
+			}
+				
+		}
+		
+		//TODO: don't be lazy in future (i.e. fill this up!)
+		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 	}
 
 }
