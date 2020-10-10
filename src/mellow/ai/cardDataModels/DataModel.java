@@ -40,7 +40,7 @@ public class DataModel {
 	private static final int TWO = 0;
 	
 
-	public int getAIScore() {
+	public int getOurScore() {
 		return AIScore;
 	}
 
@@ -285,6 +285,10 @@ public class DataModel {
 			}
 		}
 		return false;
+	}
+
+	public boolean saidMellow(int playerIndex) {
+		return bids[playerIndex] == 0;
 	}
 	
 	public boolean burntMellow(int playerIndex) {

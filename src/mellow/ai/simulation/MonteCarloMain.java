@@ -298,32 +298,39 @@ public class MonteCarloMain {
 	//Get stats at the end of the round:
 	//(i.e: Get scores and dealer index at the end of the round)
 	public static StatsBetweenRounds getStatsAfterSimulatedRound(DataModel dataModelTmp) {
-		int scoreUsAtStartOfRound = dataModelTmp.getAIScore();
+		int scoreUsAtStartOfRound = dataModelTmp.getOurScore();
 		int scoreThemAtStartOfRound = dataModelTmp.getOpponentScore();
 		
 		int curScoreUs = scoreUsAtStartOfRound;
 		int curScoreThem = scoreThemAtStartOfRound;
 		
-		int numBurnsUS = 0;
-		int numBurnsThem = 0;
+		int numMellowUS = 0;
+		int numMellowThem = 0;
+		
 		//Handle mellows:
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
-			if(dataModelTmp.burntMellow(i)) {
+			if(dataModelTmp.saidMellow(i)) {
+				int MULTIPLIER = 1;
+				
+				if(dataModelTmp.burntMellow(i)) {
+					MULTIPLIER = -1;
+				}
+				
 				if(i%2 == 0) {
-					curScoreUs -= 100;
-					numBurnsUS++;
+					curScoreUs += MULTIPLIER * 100;
+					numMellowUS++;
 				} else {
-					curScoreThem -= 100;
-					numBurnsThem++;
+					curScoreThem += MULTIPLIER * 100;
+					numMellowThem++;
 				}
 			}
 		}
 
-		if(numBurnsUS < 2){
+		if(numMellowUS < 2){
 			curScoreUs += handleNormalBidScoreDiff(dataModelTmp, true);
 		}
 		
-		if(numBurnsThem < 2) {
+		if(numMellowThem < 2) {
 			curScoreThem += handleNormalBidScoreDiff(dataModelTmp, false);
 		}
 		
