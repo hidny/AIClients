@@ -837,8 +837,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		//Rule number one:
 		//TODO: break this up later!
 		
+		if(throwIndex == 0) {
+
+			//TODO:
+			//handle lead
+			
+			//TODO: insert complicated lead logic here...
+			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			
+			
 		//go under mellow if possible! (Maybe put into anther function?
-		if(throwIndex > 0 && 
+		} else if(throwIndex > 0 && 
 				dataModel.isPrevThrowWinningFight() ) {
 			
 			String mellowWinningCard = dataModel.getCurrentFightWinningCard();
@@ -888,28 +897,58 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					}
 				}
 			}
+
+			//End go under mellow if possible logic
+			
+			
+		} else if(throwIndex > 0 && 
+				dataModel.isPrevThrowWinningFight() == false) {
+
+			//handle case where mellow is already safe:
+			
+			if(dataModel.throwerMustFollowSuit()) {
+				dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 				
+			} else {
+				if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+					dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+
+				} else {
+					
+					//TODO: This might be too much, but whatever...
+					return dataModel.getHighestOffSuitCardAnySuit();
+				}
+			}
+			
+			//end handle case where mellow is already safe:
+			
 		}
-		//End go under mellow if possible logic
 		
-		//TODO:
-		//handle case where mellow is already safe
-		
-		
-		//TODO:
-		//handle lead
 		
 		//TODO: don't be lazy in future (i.e. fill this up!)
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 	}
 
-	//TODO
 	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		//Burn a mellow lead throw: (Very important to not mess this up)
-		if(throwIndex == 3 && 
+		
+		if(throwIndex == 0) {
+			//handle lead
+			
+			//TODO: insert complicated lead logic here... (for example: make sure mellow player has card in suit)
+			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+		
+		} else if(throwIndex == 1) {
+			
+			//TODO
+			
+		} else if(throwIndex == 2) {
+			//TODO
+			
+		//Burn a mellow lead throw: (Very important to not mess this up!)
+		} else if(throwIndex == 3 && 
 				dataModel.getCardLeaderThrow().equals(dataModel.getCurrentFightWinningCard()) ) {
 				//Mellow lead and losing (Like when grand-papa used to play)
 
