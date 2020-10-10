@@ -181,13 +181,17 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 					
 					if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
 						//TODO: not quite right: (Need to protect mellow or attack mellow...)
+						
+						//TODO: find out which testcases got fixed (and which broken after change)
 						return playMoveSeatedLeftOfOpponentMellow(dataModel);
 						//return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 					} else {
 						
 						//TODO: figure out how to play before a mellow (this is a hard position...)
 						//Knowing when to trump is complicated...
-						return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+						
+						//return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+						return playMoveSeatedRightOfOpponentMellow(dataModel);
 					}
 				}
 			}
@@ -832,8 +836,9 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		
 		//Rule number one:
 		//TODO: break this up later!
-		//go under mellow if possible!
-		if(dataModel.currentThrowIsLeading() == false && 
+		
+		//go under mellow if possible! (Maybe put into anther function?
+		if(throwIndex > 0 && 
 				dataModel.isPrevThrowWinningFight() ) {
 			
 			String mellowWinningCard = dataModel.getCurrentFightWinningCard();
@@ -885,9 +890,45 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 				
 		}
+		//End go under mellow if possible logic
+		
+		//TODO:
+		//handle case where mellow is already safe
+		
+		
+		//TODO:
+		//handle lead
 		
 		//TODO: don't be lazy in future (i.e. fill this up!)
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 	}
 
+	//TODO
+	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
+		
+		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		
+		//Burn a mellow lead throw: (Very important to not mess this up)
+		if(throwIndex == 3 && 
+				dataModel.getCardLeaderThrow().equals(dataModel.getCurrentFightWinningCard()) ) {
+				//Mellow lead and losing (Like when grand-papa used to play)
+
+			
+			if(dataModel.throwerMustFollowSuit()
+					&& dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCardLeaderThrow())) {
+				
+				return dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+			
+			} else if(dataModel.currentPlayerOnlyHasSpade() == false) {
+				
+				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			}
+			
+		}
+		//End burn a mellow lead throw
+		
+		
+		//TODO: this is wrong, but whatever...
+		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+	}
 }
