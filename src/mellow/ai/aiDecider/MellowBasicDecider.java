@@ -888,13 +888,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				} else {
 					
 					//If can't follow suit:
-					if(dataModel.currentPlayerOnlyHasSpade()) {
-						//Trump big if you must:
+					if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+						//play biggest spade if you can... over-simplified
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
 						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
 						return dataModel.getHighestOffSuitCardAnySuit();
 					}
+				
 				}
 			}
 
