@@ -117,8 +117,10 @@ public class testCaseParser {
 		
 		decider.resetStateForNewRound();
 		
+		Scanner in = null;
+		
 		try {
-			Scanner in = new Scanner(testCaseFile);
+			in = new Scanner(testCaseFile);
 			
 			String players[] = new String[4];
 			for(int i =0; i<players.length; i++) {
@@ -318,8 +320,11 @@ public class testCaseParser {
 			System.out.println();
 			
 
+			in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} finally {
+			in.close();
 		}
 		
 		//Allow for System.out.println just in case that was taken away:

@@ -148,7 +148,16 @@ public class NoMellowBidPlaySituation {
 					if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 					} else {
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+						
+						
+						if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2) {
+							System.out.println("Get Second Highest in suit");
+							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+											
+						} else {
+							cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+							
+						}
 					}
 					
 				} else {

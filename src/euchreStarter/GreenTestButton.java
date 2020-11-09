@@ -12,7 +12,9 @@ public class GreenTestButton {
 			Thread.sleep(1000);
 			Phil.main(args);
 			Thread.sleep(100);
+			
 			Richard.main(args);
+			
 			Thread.sleep(100);
 			Doris.main(args);
 		

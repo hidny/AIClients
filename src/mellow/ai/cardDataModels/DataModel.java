@@ -1775,6 +1775,23 @@ public class DataModel {
 		return "";
 	}
 	
+	//pre: player has 2 cards of suit
+	public String getCardCurrentPlayerGetSecondHighestInSuit(int suitIndex) {
+		
+		String tmpHighestCardInSuit = getCardCurrentPlayerGetHighestInSuit(suitIndex);
+		int highestRankCurPlayerHasInSuit = getRankIndex(tmpHighestCardInSuit);
+		
+		for(int i=highestRankCurPlayerHasInSuit - 1; i>=0; i--) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+
+		System.err.println("AHH! Searching for second highest in card in suit when player doesn't have 2 cards in that suit. (" + suitIndex +")");
+		System.exit(1);
+		return "";
+	}
+	
 	//pre: current player has a card in suit Index.
 	public String getCardCurrentPlayergetLowestInSuit(int suitIndex) {
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
