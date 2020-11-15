@@ -57,6 +57,79 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
 				}
 				
+			} else if(dataModel.throwerMustFollowSuit() == false 
+					&& leadSuit != Constants.SPADE
+					&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				
+
+				//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
+				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
+						&& dataModel.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+					System.out.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
+					System.exit(1);
+				}
+				//END RANDOM TEST
+
+				//System.out.println("DEBUG TEST player with mellow on left tempted to trump:");
+				
+				if(dataModel.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+					
+					if(dataModel.mellowPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+
+						System.out.println("TESTING nov 15");
+						
+						int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
+						//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
+							
+						if(       (numCardsInOtherPeoplesHandsForSuit >= 7)
+								|| numCardsInOtherPeoplesHandsForSuit >= 3 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+								)
+						{
+							//Probably safe to trump high:
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							
+						} else {
+
+								
+							//Mellow could be able to trump under: don't trump!
+							
+							//TODO: make sure we have offsuit!
+							//TODO: maybe think about what player is throwing off a little bit more??
+
+							//(unless there's no choice but to trump)
+							if(dataModel.currentPlayerOnlyHasSpade() == false) {
+								return dataModel.getHighestOffSuitCardAnySuit();
+							} else {
+								//??
+								return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							}
+						}
+							
+							
+					} else {
+						//Mellow could be in danger: don't trump (unless there's no choice)
+						if(dataModel.currentPlayerOnlyHasSpade() == false) {
+							return dataModel.getHighestOffSuitCardAnySuit();
+						} else {
+							//??
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						}
+					}
+					
+				} else {
+
+					// Mellow player signaled no cards of suit don't trump!
+					
+					
+					//TODO: make sure we have offsuit! (unless there's no choice but to trump)
+					if(dataModel.currentPlayerOnlyHasSpade() == false) {
+						return dataModel.getHighestOffSuitCardAnySuit();
+					} else {
+						//??
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					}
+				}
+				
 			}
 			
 			

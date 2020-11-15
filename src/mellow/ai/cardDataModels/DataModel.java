@@ -544,18 +544,48 @@ public class DataModel {
 	}
 	
 	
-	public boolean mellowPlayerSignalNoCardsOfSuit(int playerIndex, int suitIndex) {
-		if( getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(playerIndex, suitIndex) == null ) {
+	public boolean mellowPlayerSignalNoCardsOfSuit(int mellowPlayerIndex, int suitIndex) {
+		if( getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex) == null ) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int playerIndex, int suitIndex) {
+	
+	public boolean mellowPlayerMayBeInDangerInSuit(int mellowPlayerIndex, int suitIndex) {
+		
+		String maxCardMellowSignalledCouldHave = getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex);
+		
+		if(maxCardMellowSignalledCouldHave == null) {
+			return false;
+		}
+		
+		String currentlyWinningCard = this.getCurrentFightWinningCard();
+		
+		if(CardStringFunctions.getIndexOfSuit(currentlyWinningCard) != suitIndex) {
+			
+			if(suitIndex == Constants.SPADE) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		int rankPossibleMellowCard = this.getRankIndex(maxCardMellowSignalledCouldHave);
+		int rankCurrentlyWinningCard = this.getRankIndex(currentlyWinningCard);
+		
+		if(rankPossibleMellowCard > rankCurrentlyWinningCard) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
 		for(int rank=ACE; rank>=TWO; rank--) {
-			if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank] != IMPOSSIBLE
-					&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
+			if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][rank] != IMPOSSIBLE
+					&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
 				return getCardString(rank, suitIndex);
 			}
 			
@@ -2037,10 +2067,21 @@ public class DataModel {
 		return ret;
 	}
 
-	public int getNumCardsPlayedForSuit(int suit) {
+	public int getNumCardsPlayedForSuit(int suitIndex) {
 		int ret = 0;
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
-			if(cardsUsed[suit][i]) {
+			if(cardsUsed[suitIndex][i]) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
+	public int getNumCardsHiddenInOtherPlayersHandsForSuit(int suitIndex) {
+		int ret = 0;
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
+			if(cardsUsed[suitIndex][i] == false 
+					&& cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == IMPOSSIBLE) {
 				ret++;
 			}
 		}
