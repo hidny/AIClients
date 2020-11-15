@@ -564,6 +564,31 @@ public class DataModel {
 		return null;
 	}
 	
+	public boolean mellowSignalledNoCardBetweenTwoCards(String currentlyWinningCard, String cardInHand, int mellowPlayerIndex) {
+		
+		boolean cardsOverWinning[][] = this.getCardsStrictlyMorePowerfulThanCard(currentlyWinningCard);
+		boolean cardsUnderConsideredCard[][] = this.getCardsStrictlyLessPowerfulThanCard(cardInHand);
+		
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			for(int j=0; j<Constants.NUM_RANKS; j++) {
+				
+				if(cardsOverWinning[i][j] && cardsUnderConsideredCard[i][j]) {
+
+					if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != IMPOSSIBLE
+							&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != MELLOW_PLAYER_SIGNALED_NO) {
+						
+						//At this point, the mellow player signalled that they could have a card in between
+						//And you should feel nervous about playing over the currently winning card...
+						return false;
+					}
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	//TODO: if mellow has card even though the player signal he/she doesn't: note that down!
 	public void setCardMellowSignalIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY

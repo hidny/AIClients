@@ -9,6 +9,8 @@ public class SeatedRightOfOpponentMellow {
 	//TODO: figure out how to play before a mellow (this is a hard position...)
 	//Knowing when to trump is complicated...
 	
+	public static int MELLOW_PLAYER_INDEX = 1;
+	
 	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
@@ -22,7 +24,42 @@ public class SeatedRightOfOpponentMellow {
 		
 		} else if(throwIndex == 1) {
 			
-			//TODO
+			int leadSuit = dataModel.getSuitOfLeaderThrow();
+			String leaderThrow = dataModel.getCardLeaderThrow();
+			
+			if(dataModel.throwerMustFollowSuit()) {
+			
+				//Handle being the second thrower and following suit...
+				if(dataModel.couldPlayCardInHandOverCardInSameSuit(leaderThrow)) {
+					
+					String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(leaderThrow);
+					
+					if(dataModel.mellowSignalledNoCardBetweenTwoCards(leaderThrow, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
+						
+						//TODO: We may not want to lead every single time we can...
+						//HANDLE this complication LATER!
+						return cardInHandClosestOver;
+						
+					} else {
+						
+						if(dataModel.couldPlayCardInHandUnderCardInSameSuit(leaderThrow)) {
+							return dataModel.getCardInHandClosestUnderSameSuit(leaderThrow);
+						} else {
+							
+							return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+						}
+					}
+				} else {
+					
+					//Just throw away the highest card you got under the protector's lead.... it's a safe play
+					//TODO: later: make a more nuanced play...
+					//Example: If you have 4+ cards, maybe 2nd best is ok...
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+				}
+				
+			}
+			
+			
 			
 		} else if(throwIndex == 2) {
 			//TODO
