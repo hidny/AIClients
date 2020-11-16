@@ -1848,7 +1848,7 @@ public class DataModel {
 	}
 	
 	//pre: current player has a card in suit Index.
-	public String getCardCurrentPlayergetLowestInSuit(int suitIndex) {
+	public String getCardCurrentPlayerGetLowestInSuit(int suitIndex) {
 		for(int i=0; i<Constants.NUM_RANKS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				return getCardString(13*suitIndex + i);
@@ -1862,7 +1862,7 @@ public class DataModel {
 	//pre: player has 2 cards of suit
 	public String getCardCurrentPlayergetSecondLowestInSuit(int suitIndex) {
 		
-		int lowestRankCurPlayerHasInSuit = getRankIndex(getCardCurrentPlayergetLowestInSuit(suitIndex));
+		int lowestRankCurPlayerHasInSuit = getRankIndex(getCardCurrentPlayerGetLowestInSuit(suitIndex));
 		
 		for(int i=lowestRankCurPlayerHasInSuit + 1; i<Constants.NUM_RANKS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {

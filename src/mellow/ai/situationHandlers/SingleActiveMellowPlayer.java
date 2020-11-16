@@ -172,7 +172,7 @@ public class SingleActiveMellowPlayer {
 			cardToConsider = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suit);
 			
 		} else {
-			cardToConsider = dataModel.getCardCurrentPlayergetLowestInSuit(suit);
+			cardToConsider = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
 
 		}
 		

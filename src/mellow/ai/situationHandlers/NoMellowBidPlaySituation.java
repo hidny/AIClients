@@ -94,7 +94,7 @@ public class NoMellowBidPlaySituation {
 						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 							cardToPlay = dataModel.getMasterInSuit(suitIndex);
 						} else {
-							cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(suitIndex);
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
 
 						return cardToPlay;
@@ -155,7 +155,7 @@ public class NoMellowBidPlaySituation {
 							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
 											
 						} else {
-							cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 							
 						}
 					}
@@ -166,7 +166,7 @@ public class NoMellowBidPlaySituation {
 				}
 
 			} else {
-				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 			}
 			
 			
@@ -179,19 +179,19 @@ public class NoMellowBidPlaySituation {
 				
 				//Must play trump:
 			} else if(dataModel.currentPlayerMustTrump()) {
-				cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(Constants.SPADE);
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 				
 				//Option to trump:
 			} else {
 				if(dataModel.isMasterCard(leaderCard) && dataModel.getNumCardsPlayedForSuit(Constants.SPADE) < 2 * Constants.NUM_PLAYERS) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(Constants.SPADE);
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
 				} else if(dataModel.isMasterCard(leaderCard) && (dataModel.isVoid(2, Constants.SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false)) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(Constants.SPADE);
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
 				//I guess we should trump if we don't have much spade?
 				} else if((dataModel.isVoid(2, Constants.SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false) && (13 - dataModel.getNumCardsPlayedForSuit(Constants.SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(Constants.SPADE);
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
 					
 					if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
@@ -242,7 +242,7 @@ public class NoMellowBidPlaySituation {
 						
 						//TODO: what if leader(partner) plays a higher card than 2nd throw that isn't master, but 4th could trump too... 
 						//... I don't even know. That gets into weird logic
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(Constants.SPADE);
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					}
 				}
 				
@@ -256,7 +256,7 @@ public class NoMellowBidPlaySituation {
 			
 			//If leader got TRUMPED by 2nd player:
 			if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE && dataModel.getSuitOfSecondThrow() == Constants.SPADE) {
-					cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(leaderSuitIndex);
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 			
 			//FIGHT WITHIN SUIT:
 			} else {
@@ -268,7 +268,7 @@ public class NoMellowBidPlaySituation {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 						
 					} else {
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					}
 				
 				//If 2nd thrower is winning:
@@ -295,7 +295,7 @@ public class NoMellowBidPlaySituation {
 						}
 					} else {
 						
-						cardToPlay = dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					}
 				}
 			}

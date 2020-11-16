@@ -38,7 +38,7 @@ public class SeatedLeftOfOpponentMellow {
 				
 				if(dataModel.throwerMustFollowSuit()) {
 					//Mellow player is trumping, but current player is not trumping:
-					return dataModel.getCardCurrentPlayergetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					
 				} else {
 					if(dataModel.currentPlayerOnlyHasSpade() 

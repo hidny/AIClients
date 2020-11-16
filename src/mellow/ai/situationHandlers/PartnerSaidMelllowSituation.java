@@ -80,7 +80,7 @@ public class PartnerSaidMelllowSituation {
 				if(dataModel.currentPlayerHasMasterInSuit( bestSuitIndexToPlay)) {
 					return dataModel.getMasterInSuit( bestSuitIndexToPlay);
 				} else {
-					return dataModel.getCardCurrentPlayergetLowestInSuit( bestSuitIndexToPlay);
+					return dataModel.getCardCurrentPlayerGetLowestInSuit( bestSuitIndexToPlay);
 				}
 				
 			}
@@ -204,7 +204,7 @@ public class PartnerSaidMelllowSituation {
 						
 						//Mellow might be lost, just play low :(
 						if(dataModel.currentAgentHasSuit(leadSuit)) {
-							return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 						} else {
 							return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 						}
@@ -217,7 +217,7 @@ public class PartnerSaidMelllowSituation {
 
 					//Just play low: bad logic, but whatever!
 					if(dataModel.currentAgentHasSuit(leadSuit)) {
-						return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+						return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 					} else {
 						return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 					}
@@ -245,7 +245,7 @@ public class PartnerSaidMelllowSituation {
 						
 						//Mellow is lost, just play low :(
 						if(dataModel.currentAgentHasSuit(leadSuit)) {
-							return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 						} else {
 							return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 						}
@@ -256,7 +256,7 @@ public class PartnerSaidMelllowSituation {
 					
 					//Just play low: bad logic, but whatever!
 					if(dataModel.currentAgentHasSuit(leadSuit)) {
-						return dataModel.getCardCurrentPlayergetLowestInSuit(leadSuit);
+						return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 					} else {
 						return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 					}
