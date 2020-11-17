@@ -100,7 +100,8 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 				}
 			}
-			
+		
+		//Handle being tempted to trump:
 		} else if(dataModel.throwerMustFollowSuit() == false 
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
@@ -174,6 +175,12 @@ public class SeatedRightOfOpponentMellow {
 			}
 			
 			
+		} else if(dataModel.throwerMustFollowSuit() == false 
+				&& dataModel.currentAgentHasSuit(Constants.SPADE) == false) {
+		
+			//TODO: do we need the tricks.
+			//TODO: can we try to think about which suit to throw off?
+			return dataModel.getHighestOffSuitCardAnySuit();
 		}
 		
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
@@ -249,7 +256,10 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 
+			
 			if(CardStringFunctions.getIndexOfSuit(curStrongestCard) != leadSuit) {
+				
+				
 				int indexSuitStrongestCard = CardStringFunctions.getIndexOfSuit(curStrongestCard);
 				
 				if(indexSuitStrongestCard != Constants.SPADE) {
@@ -375,6 +385,8 @@ public class SeatedRightOfOpponentMellow {
 			
 			//TODO: make sure we don't need the tricks
 			//TODO: make sure the throw might possibly help the mellow
+			
+			//TODO: make it same logic as 2nd thrower?
 			return dataModel.getHighestOffSuitCardAnySuit();
 		}
 
