@@ -594,6 +594,30 @@ public class DataModel {
 		return null;
 	}
 	
+public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
+		
+		boolean cardsOverInputCard[][] = this.getCardsStrictlyMorePowerfulThanCard(inputCard);
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
+		
+		for(int j=0; j<Constants.NUM_RANKS; j++) {
+			
+			if(cardsOverInputCard[suitIndex][j]) {
+
+				if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][j] != IMPOSSIBLE
+						&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
+					
+					//At this point, the mellow player signalled that they could have a card in between
+					//And you should feel nervous about playing over the currently winning card...
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+
 	public boolean mellowSignalledNoCardBetweenTwoCards(String currentlyWinningCard, String cardInHand, int mellowPlayerIndex) {
 		
 		boolean cardsOverWinning[][] = this.getCardsStrictlyMorePowerfulThanCard(currentlyWinningCard);
@@ -1165,7 +1189,13 @@ public class DataModel {
 			}
 		}
 		
-		int leadSuit = this.getSuitOfLeaderThrow();
+		int leadSuit = -1;
+		
+		if(this.currentThrowIsLeading() == false) {
+			leadSuit = this.getSuitOfLeaderThrow();
+		} else {
+			leadSuit = CardStringFunctions.getIndexOfSuit(card);
+		}
 		
 		int lowerLimitDealerSuit;
 		

@@ -21,6 +21,31 @@ public class SeatedRightOfOpponentMellow {
 		if(throwIndex == 0) {
 			//handle lead
 			
+			for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
+				if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
+					continue;
+				}
+				
+				if(suit != Constants.SPADE) {
+					String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
+			
+					if(dataModel.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX)) {
+						
+						//TODO: instead of just returning, try grading the options!
+						//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
+						//(Save 2C for the end)
+						return tempLowest;
+					}
+				} else {
+					String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
+					
+					if(dataModel.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX)) {
+						//TODO: instead of just returning, try grading the options!
+						return tempLowest;
+					}
+				}
+			
+			}
 			//TODO: insert complicated lead logic here... (for example: make sure mellow player has card in suit)
 			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 		
@@ -32,21 +57,9 @@ public class SeatedRightOfOpponentMellow {
 			return AIThirdThrow(dataModel);
 			
 		//Burn a mellow lead throw: (Very important to not mess this up!)
-		} else if(throwIndex == 3 && 
-				dataModel.getCardLeaderThrow().equals(dataModel.getCurrentFightWinningCard()) ) {
-				//Mellow lead and losing (Like when grand-papa used to play)
-
+		} else if(throwIndex == 3 ) {
 			
-			if(dataModel.throwerMustFollowSuit()
-					&& dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCardLeaderThrow())) {
-				
-				return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
-			
-			} else if(dataModel.currentPlayerOnlyHasSpade() == false) {
-				
-				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-			}
-			
+			return AIFourthThrow(dataModel);
 		}
 		//End burn a mellow lead throw
 		
@@ -395,8 +408,46 @@ public class SeatedRightOfOpponentMellow {
 	
 	public static String AIFourthThrow(DataModel dataModel) {
 		
-		//Copy/paste burn logic
-		//plus play high...
-		return "";
+		//Burn a mellow lead throw: (Very important to not mess this up!)
+		if(	dataModel.getCardLeaderThrow().equals(dataModel.getCurrentFightWinningCard()) ) {
+				//Mellow lead and losing (Like when grand-papa used to play)
+
+			
+			if(dataModel.throwerMustFollowSuit()
+					&& dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCardLeaderThrow())) {
+				
+				return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+			
+			} else if(dataModel.currentPlayerOnlyHasSpade() == false) {
+				
+				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			} else {
+				
+				//System.out.println("WARNING: this condition means player has 13 spades!!!");
+				//System.exit(1);
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			}
+			
+		} else {
+			
+			if(dataModel.throwerMustFollowSuit()) {
+				
+				//TODO: don't always throw highest...
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+				
+				
+			} else {
+				
+				if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, Constants.SPADE) == false) {
+					//TODO: what if highest spade is 5S??
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				} else {
+					//TODO: what if you have A,K,Q,J C and only QD??
+					return dataModel.getHighestOffSuitCardAnySuit();
+				}
+			}
+			
+		}
+				
 	}
 }
