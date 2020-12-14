@@ -30,9 +30,9 @@ public class SeatedLeftOfOpponentMellow {
 		} else if(throwIndex > 0 && 
 				dataModel.isPrevThrowWinningFight() ) {
 			
-			String mellowWinningCard = dataModel.getCurrentFightWinningCard();
+			String curWinningCard = dataModel.getCurrentFightWinningCard();
 			
-			if(CardStringFunctions.getIndexOfSuit(mellowWinningCard) 
+			if(CardStringFunctions.getIndexOfSuit(curWinningCard) 
 					!= dataModel.getSuitOfLeaderThrow()) {
 				//Mellow player is trumping:
 				
@@ -42,7 +42,7 @@ public class SeatedLeftOfOpponentMellow {
 					
 				} else {
 					if(dataModel.currentPlayerOnlyHasSpade() 
-							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(mellowWinningCard)) {
+							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard)) {
 						
 						//If you have to trump over, go big! (Over simplified, but whatever)
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -58,8 +58,8 @@ public class SeatedLeftOfOpponentMellow {
 				if(dataModel.throwerMustFollowSuit()) {
 					//Both follow suit
 					
-					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(mellowWinningCard)) {
-						return dataModel.getCardInHandClosestUnderSameSuit(mellowWinningCard);
+					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard)) {
+						return dataModel.getCardInHandClosestUnderSameSuit(curWinningCard);
 					
 					} else {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
