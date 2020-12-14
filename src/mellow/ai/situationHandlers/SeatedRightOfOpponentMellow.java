@@ -11,7 +11,7 @@ public class SeatedRightOfOpponentMellow {
 	//Knowing when to trump is complicated...
 	
 	public static int MELLOW_PLAYER_INDEX = 1;
-	public static int PROTECTOR_PLAYER_INDEX = 1;
+	public static int PROTECTOR_PLAYER_INDEX = 3;
 	
 	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
 		

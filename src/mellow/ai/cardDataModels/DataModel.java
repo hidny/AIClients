@@ -1372,12 +1372,12 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			return true;
 
 		} else if(throwNumber == 2) {
-			if(getCardLeaderThrow().equals(getCurrentFightWinningCard())) {
+			if(getCardSecondThrow().equals(getCurrentFightWinningCard())) {
 				return true;
 			}
 
 		} else if(throwNumber == 3) {
-			if(getCardSecondThrow().equals(getCurrentFightWinningCard())) {
+			if(getCardThirdThrow().equals(getCurrentFightWinningCard())) {
 				return true;
 			}
 

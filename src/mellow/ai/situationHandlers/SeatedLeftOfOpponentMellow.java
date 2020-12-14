@@ -8,11 +8,14 @@ public class SeatedLeftOfOpponentMellow {
 
 	
 
+	public static int MELLOW_PLAYER_INDEX = 3;
+	public static int PROTECTOR_PLAYER_INDEX = 1;
 	
 	//TODO
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		
 		
 		//Rule number one:
 		//TODO: break this up later!
@@ -26,7 +29,7 @@ public class SeatedLeftOfOpponentMellow {
 			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			
 			
-		//go under mellow if possible! (Maybe put into anther function?
+		//Mellow vulnerable: go under mellow if possible! (Maybe put into anther function?)
 		} else if(throwIndex > 0 && 
 				dataModel.isPrevThrowWinningFight() ) {
 			
@@ -34,19 +37,24 @@ public class SeatedLeftOfOpponentMellow {
 			
 			if(CardStringFunctions.getIndexOfSuit(curWinningCard) 
 					!= dataModel.getSuitOfLeaderThrow()) {
-				//Mellow player is trumping:
+				//Mellow player winning and is trumping:
 				
 				if(dataModel.throwerMustFollowSuit()) {
 					//Mellow player is trumping, but current player is not trumping:
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					
 				} else {
-					if(dataModel.currentPlayerOnlyHasSpade() 
-							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard)) {
+					//Mellow player is trumping, and current player can't follow suit:
+					if(dataModel.currentPlayerOnlyHasSpade()) {
 						
-						//If you have to trump over, go big! (Over simplified, but whatever)
-						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-					
+						if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard)) {
+							return dataModel.getCardInHandClosestUnderSameSuit(curWinningCard);
+						
+						} else {
+							//lazy approx play highest spade if can't burn trumping mellow
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						}
 					} else {
 						
 						//TODO: this might need work, but I'm lazy
@@ -54,6 +62,7 @@ public class SeatedLeftOfOpponentMellow {
 					}
 				}
 			} else {
+				//Mellow player winning and is following suit:
 				
 				if(dataModel.throwerMustFollowSuit()) {
 					//Both follow suit
@@ -86,13 +95,21 @@ public class SeatedLeftOfOpponentMellow {
 				dataModel.isPrevThrowWinningFight() == false) {
 
 			//handle case where mellow is already safe:
-			
+		
 			if(dataModel.throwerMustFollowSuit()) {
-				dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+				
+				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
+					
+					//lazy approx:
+					return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+					
+				} else {
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+				}
 				
 			} else {
 				if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
-					dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 
 				} else {
 					
@@ -103,11 +120,12 @@ public class SeatedLeftOfOpponentMellow {
 			
 			//end handle case where mellow is already safe:
 			
+		} else {
+		
+		
+			//TODO: don't be lazy in future (i.e. fill this up!)
+			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 		}
-		
-		
-		//TODO: don't be lazy in future (i.e. fill this up!)
-		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 	}
 	
 	
