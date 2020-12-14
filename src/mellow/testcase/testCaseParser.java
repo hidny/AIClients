@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
+import mellow.Constants;
 import mellow.ai.aiDecider.MellowAIDeciderFactory;
 import mellow.ai.aiDecider.MellowAIDeciderInterface;
 
@@ -177,6 +178,8 @@ public class testCaseParser {
 			
 			int actionIndex = dealerIndex;
 			
+			int numBidsMade = 0;
+			
 			do {
 				actionIndex = (actionIndex + 1) % NUM_PLAYERS;
 				
@@ -196,16 +199,16 @@ public class testCaseParser {
 						bid = Integer.parseInt(cur.split(" ")[2].replace(".", ""));
 					}
 					decider.receiveBid(players[actionIndex], bid);
-					//System.out.println(players[actionIndex] + " " +  bid);
+					numBidsMade++;
 				}
 				
-			} while (actionIndex != dealerIndex && cur.equals("") == false);
+			} while (numBidsMade < Constants.NUM_PLAYERS && cur.equals("") == false);
 			
 			
 			String response = "-1";
 			
 			//TODO: create helper functions:
-			if(actionIndex != dealerIndex) {
+			if(numBidsMade < Constants.NUM_PLAYERS) {
 				//Only handle bid
 				System.out.println("AI handle bid print statements --------");
 				response = decider.getBidToMake();
