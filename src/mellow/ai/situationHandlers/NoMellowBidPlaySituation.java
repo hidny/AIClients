@@ -173,6 +173,8 @@ public class NoMellowBidPlaySituation {
 			//No following suit:
 		} else {
 			
+			System.out.println("NOT FOLLOWING SUIT IN NORMAL CIRCUMSTANCE TEST");
+			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(0, Constants.SPADE)) {
 				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
@@ -183,14 +185,18 @@ public class NoMellowBidPlaySituation {
 				
 				//Option to trump:
 			} else {
-				if(dataModel.isMasterCard(leaderCard) && dataModel.getNumCardsPlayedForSuit(Constants.SPADE) < 2 * Constants.NUM_PLAYERS) {
-					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
-
-				} else if(dataModel.isMasterCard(leaderCard) && (dataModel.isVoid(2, Constants.SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false)) {
+				if(dataModel.isMasterCard(leaderCard) && (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false)) {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
 				//I guess we should trump if we don't have much spade?
-				} else if((dataModel.isVoid(2, Constants.SPADE) || dataModel.isVoid(2, leaderSuitIndex) == false) && (13 - dataModel.getNumCardsPlayedForSuit(Constants.SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
+					
+				} else if((dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false) 
+						&& 
+						//Not much spade:
+						((Constants.NUM_RANKS - dataModel.getNumCardsPlayedForSuit(Constants.SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(Constants.SPADE))
+						//OR only 1 non-master spade:
+						   || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)) {		
+
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
 					
