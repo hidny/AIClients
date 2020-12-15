@@ -150,14 +150,21 @@ public class NoMellowBidPlaySituation {
 					} else {
 						
 						
-						if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2) {
-							System.out.println("Get Second Highest in suit");
+						if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+							return dataModel.getCardClosestOverCurrentWinner();
+						} else {
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+						}
+						/*
+						if(leaderSuitIndex != Constants.SPADE
+								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2) {
+							System.out.println("2nd throw: Get Second Highest in 0ff-suit to be slightly agro");
 							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
 											
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 							
-						}
+						}*/
 					}
 					
 				} else {
@@ -173,7 +180,6 @@ public class NoMellowBidPlaySituation {
 			//No following suit:
 		} else {
 			
-			System.out.println("NOT FOLLOWING SUIT IN NORMAL CIRCUMSTANCE TEST");
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(0, Constants.SPADE)) {
