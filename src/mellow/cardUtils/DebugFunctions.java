@@ -4,6 +4,17 @@ import mellow.ai.cardDataModels.DataModel;
 
 public class DebugFunctions {
 
+	/*
+	 *Example use:
+	 *Let's say the hand is:
+	  9S 5S QH 8H 7H AC TC 6C 2C
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5S QH 8H 7H AC TC 6C 2C")) {
+			System.out.println("DEBUG! ahh");
+		}
+		
+	 */
+	
 	public static boolean currentPlayerHoldsHandDebug(DataModel dataModel, String hand) {
 		
 		String tokens[] = hand.trim().split(" ");

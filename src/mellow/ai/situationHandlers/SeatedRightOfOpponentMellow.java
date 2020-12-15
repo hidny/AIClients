@@ -15,11 +15,6 @@ public class SeatedRightOfOpponentMellow {
 	public static int PROTECTOR_PLAYER_INDEX = 3;
 	
 	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
-		//9S 5S QH 8H 7H AC TC 6C 2C
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5S QH 8H 7H AC TC 6C 2C")) {
-			System.out.println("DEBUG!");
-		}
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
