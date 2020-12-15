@@ -149,22 +149,32 @@ public class NoMellowBidPlaySituation {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 					} else {
 						
+						String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 						
-						if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+						if(dataModel.getRankIndex(curPlayerTopCardInSuit) == dataModel.KING
+								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2) {
+							
+							//2nd throw: Play the King's wing-person card if it's higher than the lead card...
+							
+							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+							
+							if(dataModel.getCardPower(cardToPlay, leaderSuitIndex) >
+								dataModel.getCardPower(leaderCard, leaderSuitIndex)) {
+								
+								return cardToPlay;
+							} else {
+								//Play the king while the Ace is still out!
+								return curPlayerTopCardInSuit;
+							}
+								
+											
+						} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
 							return dataModel.getCardClosestOverCurrentWinner();
 						} else {
 							return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 						}
-						/*
-						if(leaderSuitIndex != Constants.SPADE
-								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2) {
-							System.out.println("2nd throw: Get Second Highest in 0ff-suit to be slightly agro");
-							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
-											
-						} else {
-							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
-							
-						}*/
+						
+						
 					}
 					
 				} else {

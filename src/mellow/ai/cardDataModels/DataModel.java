@@ -26,7 +26,7 @@ public class DataModel {
 	
 	//This is dumb: Think about changing it later.
 	private static final int ACE = 12;
-	private static final int KING = 11;
+	public static final int KING = 11;
 	private static final int QUEEN = 10;
 	private static final int JACK = 9;
 	private static final int RANK_TEN = 8;
