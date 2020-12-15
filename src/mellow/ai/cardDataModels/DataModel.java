@@ -29,15 +29,15 @@ public class DataModel {
 	private static final int KING = 11;
 	private static final int QUEEN = 10;
 	private static final int JACK = 9;
-	private static final int TEN = 8;
-	private static final int NINE = 7;
-	private static final int EIGHT = 6;
-	private static final int SEVEN = 5;
-	private static final int SIX = 4;
-	private static final int FIVE = 3;
-	private static final int FOUR = 2;
-	private static final int THREE = 1;
-	private static final int TWO = 0;
+	private static final int RANK_TEN = 8;
+	private static final int RANK_NINE = 7;
+	private static final int RANK_EIGHT = 6;
+	private static final int RANK_SEVEN = 5;
+	public static final int RANK_SIX = 4;
+	public static final int RANK_FIVE = 3;
+	public static final int RANK_FOUR = 2;
+	private static final int RANK_THREE = 1;
+	private static final int RANK_TWO = 0;
 	
 
 	public int getOurScore() {
@@ -297,7 +297,7 @@ public class DataModel {
 	
 	public boolean isVoid(int playerIndex, int suitIndex) {
 		
-		for(int i=TWO; i<=ACE; i++) {
+		for(int i=RANK_TWO; i<=ACE; i++) {
 			if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][i] != IMPOSSIBLE) {
 				return false;
 			}
@@ -403,7 +403,7 @@ public class DataModel {
 		//Check if non-leading player didn't follow suit (and is void in suit)
 		if(cardsPlayedThisRound % 4 != 0 ) {
 			if(CardStringFunctions.getIndexOfSuit(card) != getSuitOfLeaderThrow()) {
-				for(int i=TWO; i<=ACE; i++) {
+				for(int i=RANK_TWO; i<=ACE; i++) {
 					cardsCurrentlyHeldByPlayer[indexPlayer][getSuitOfLeaderThrow()][i] = IMPOSSIBLE;
 				}
 			}
@@ -457,7 +457,7 @@ public class DataModel {
 						// TODO: There's an exception if it's 2nd or 3rd thrower and knows last player must play
 						// above, but whatever...
 						
-						for(int rankIndex=getRankIndex(card) - 1 ; rankIndex >= TWO; rankIndex--) {
+						for(int rankIndex=getRankIndex(card) - 1 ; rankIndex >= RANK_TWO; rankIndex--) {
 							//TODO: if there's another state, we will need to make a complicate state transition table
 							//MELLOW IND -> LEAD_SUGGESTION ...
 							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
@@ -583,7 +583,7 @@ public class DataModel {
 	}
 	
 	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
-		for(int rank=ACE; rank>=TWO; rank--) {
+		for(int rank=ACE; rank>=RANK_TWO; rank--) {
 			if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][rank] != IMPOSSIBLE
 					&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
 				return getCardString(rank, suitIndex);
@@ -1153,7 +1153,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		}
 		
 		//Get list of cards under card in leadsuit:
-		for(int i=upperLimitDealerSuit; i>=TWO; i--) {
+		for(int i=upperLimitDealerSuit; i>=RANK_TWO; i--) {
 			ret[leadSuit][i] = true;
 		}
 		
@@ -1169,7 +1169,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		//Get spades under card
 		if(suitIndex == Constants.SPADE) {
 			int upperLimitSpadeSuit = rankIndex - 1;
-			for(int i=upperLimitSpadeSuit; i>=TWO; i--) {
+			for(int i=upperLimitSpadeSuit; i>=RANK_TWO; i--) {
 				ret[Constants.SPADE][i] = true;
 			}
 		}
@@ -1201,7 +1201,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 		//card is off-suit non trump
 		if(suitIndex != Constants.SPADE && leadSuit != suitIndex ) {
-			lowerLimitDealerSuit = TWO;
+			lowerLimitDealerSuit = RANK_TWO;
 		
 		//Card trumps lead suit
 		} else if(suitIndex == Constants.SPADE && leadSuit != Constants.SPADE) {
@@ -1223,7 +1223,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 		int lowerLimitSpadeSuit;
 		if(suitIndex != Constants.SPADE) {
-			lowerLimitSpadeSuit = TWO;
+			lowerLimitSpadeSuit = RANK_TWO;
 		} else {
 			lowerLimitSpadeSuit = rankIndex + 1;
 		}
@@ -1260,7 +1260,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 		int ret = 0;
 		
-		for(int i=TWO; i<=rankEnd; i++) {
+		for(int i=RANK_TWO; i<=rankEnd; i++) {
 			if(cardsUsed[suitIndex][i] ||
 				cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				//Doesn't count
@@ -1303,7 +1303,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 		//Check if spade can win
 		if(throwerCouldPlaySpade()) {
-			int startRankIndex = TWO;
+			int startRankIndex = RANK_TWO;
 			
 			if(winnerSuitIndex == Constants.SPADE) {
 				startRankIndex = winnerRankIndex + 1;
@@ -1427,7 +1427,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		//if must follow suit
 		if(throwerMustFollowSuit()) {
 			
-			for(int i=TWO; i <= ACE; i++) {
+			for(int i=RANK_TWO; i <= ACE; i++) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][leadSuitIndex][i] == CERTAINTY) {
 					return getCardString(i, leadSuitIndex);
 				}
@@ -1440,7 +1440,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			//TODO: make the logic more sophisticated...
 			
 			//Play smallest off-suit:
-			for(int i=TWO; i <= ACE; i++) {
+			for(int i=RANK_TWO; i <= ACE; i++) {
 				for(int j=1; j < Constants.NUM_SUITS; j++) {
 					if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
 						return getCardString(i, j);
@@ -1449,7 +1449,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			}
 			
 			//Play smallest spade:
-			for(int i=TWO; i <= ACE; i++) {
+			for(int i=RANK_TWO; i <= ACE; i++) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][Constants.SPADE][i] == CERTAINTY) {
 					return getCardString(i, Constants.SPADE);
 				}
@@ -1497,7 +1497,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		}
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
-			for(int j=TWO; j<=ACE; j++) {
+			for(int j=RANK_TWO; j<=ACE; j++) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][i][j] == CERTAINTY) {
 					return getCardString(j, i);
 				}
@@ -1519,7 +1519,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		int leadSuit = getSuitOfLeaderThrow();
 		int currentNumCards = 0;
 		
-		for(int i=TWO; i<=ACE; i++) {
+		for(int i=RANK_TWO; i<=ACE; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][leadSuit][i] == CERTAINTY) {
 				currentNumCards++;
 			}
@@ -1575,7 +1575,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 
 		if(throwerIndex == 0 || throwerMustFollowSuit() == false) {
 			for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
-				for(int rank=TWO; rank<=ACE; rank++) {
+				for(int rank=RANK_TWO; rank<=ACE; rank++) {
 					if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][suit][rank] == CERTAINTY) {
 						return getCardString(rank, suit);
 					}
@@ -1585,7 +1585,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	
 		int leadSuit = getSuitOfLeaderThrow();
 		
-		for(int rank=TWO; rank<=ACE; rank++) {
+		for(int rank=RANK_TWO; rank<=ACE; rank++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_PLAYER_INDEX][leadSuit][rank] == CERTAINTY) {
 				return getCardString(rank, leadSuit);
 			}
@@ -2087,7 +2087,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 
 	public int getNumCardsOfSuitInCurrentPlayerHand(int suitIndex) { 
 		int ret = 0;
-		for(int i=TWO; i<=ACE; i++) {
+		for(int i=RANK_TWO; i<=ACE; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				ret++;
 			}

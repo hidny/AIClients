@@ -81,7 +81,9 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(bestSuitIndex != -1) {
 			
-			return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndex);
+			return leadLowButAvoidWastingLowestCardInSuit(dataModel, bestSuitIndex);
+			
+			
 		} else {
 		
 			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
@@ -466,5 +468,53 @@ public class SeatedRightOfOpponentMellow {
 			
 		}
 				
+	}
+	
+
+	//Try not to waste the killer small cards 1st time out.
+	//This is a rough imitation of how I lead as a mellow attacker...
+	//Since other family members don't really do this, it's probably not too important.
+	
+	//TODO: If I'm seating before the protecter, I usually play higher.
+	//Myabe make another function to reflect this.
+	
+	public static String leadLowButAvoidWastingLowestCardInSuit(DataModel dataModel, int suitToPlay) {
+		int numCardsCurPlayerHasOfSuit = dataModel.getNumberOfCardsOneSuit(suitToPlay);
+		
+		String consideredCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitToPlay);
+		
+		//TODO: I should Play higher before protect than before mellow...
+		if(dataModel.getRankIndex(consideredCard) <= dataModel.RANK_FOUR
+				&& dataModel.getNumCardsPlayedForSuit(suitToPlay) <= 2
+				&& numCardsCurPlayerHasOfSuit >= 2) {
+			
+			String consideredCard2 = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitToPlay);
+			
+			if(dataModel.getRankIndex(consideredCard2) <= dataModel.RANK_FIVE) {
+				
+				if( numCardsCurPlayerHasOfSuit >= 3) {
+
+					String consideredCard3 = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suitToPlay);
+				
+					if(dataModel.getRankIndex(consideredCard3) <= dataModel.RANK_SIX) {
+						
+						return consideredCard3;
+					} else {
+						return consideredCard2;
+					}
+					
+				} else {
+					return consideredCard2;
+				}
+				
+
+			} else {
+				return consideredCard;
+			}
+			
+		} else {
+			return consideredCard;
+		}
+		
 	}
 }
