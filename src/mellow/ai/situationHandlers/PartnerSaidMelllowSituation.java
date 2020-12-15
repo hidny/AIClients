@@ -44,7 +44,7 @@ public class PartnerSaidMelllowSituation {
 				return AIFourthThrow(dataModel);
 					
 			} else {
-				System.out.println("ERROR: unexpected branching in playMoveToProtectPartnerMellow");
+				System.err.println("ERROR: unexpected branching in playMoveToProtectPartnerMellow");
 				System.exit(1);
 			}
 			
@@ -254,8 +254,11 @@ public class PartnerSaidMelllowSituation {
 			
 			
 			
-		} else if(leadSuit != Constants.SPADE
+		} else if(leadSuit == Constants.SPADE
 				&& dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, leadSuit)) {
+			
+			//There's no testcases covering this yet, so I don't want to work hard on this...
+			
 			//if void and lead suit is trump
 			//play garbage
 			
@@ -287,7 +290,7 @@ public class PartnerSaidMelllowSituation {
 			
 			
 		} else {
-			System.out.println("ERROR: this case in mellow protector shouldn't happen!");
+			System.err.println("ERROR: this case in mellow protector shouldn't happen!");
 			System.exit(1);
 			return "aah";
 		}

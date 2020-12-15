@@ -1854,7 +1854,6 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 				return getCardString(13*suitIndex + i);
 			}
 		}
-		System.out.println("DEBUG DELETE");
 		System.err.println("AHH! Searching for highest in card in suit when player has no card in that suit. (" + suitIndex +")");
 		System.exit(1);
 		return "";

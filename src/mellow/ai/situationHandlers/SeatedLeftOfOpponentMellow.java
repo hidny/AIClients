@@ -26,8 +26,9 @@ public class SeatedLeftOfOpponentMellow {
 			//handle lead
 			
 			//TODO: insert complicated lead logic here...
-			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			//return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			
+			return AIHandleLead(dataModel);
 			
 		//Mellow vulnerable: go under mellow if possible! (Maybe put into anther function?)
 		} else if(throwIndex > 0 && 
@@ -128,5 +129,11 @@ public class SeatedLeftOfOpponentMellow {
 		}
 	}
 	
+	
+	public static String AIHandleLead(DataModel dataModel) {
+		
+		//TODO: make it different later:
+		return SeatedRightOfOpponentMellow.AIHandleLead(dataModel);
+	}
 	
 }

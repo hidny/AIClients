@@ -20,34 +20,7 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(throwIndex == 0) {
 			//handle lead
-			
-			for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
-				if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
-					continue;
-				}
-				
-				if(suit != Constants.SPADE) {
-					String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
-			
-					if(dataModel.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX)) {
-						
-						//TODO: instead of just returning, try grading the options!
-						//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
-						//(Save 2C for the end)
-						return tempLowest;
-					}
-				} else {
-					String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
-					
-					if(dataModel.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX)) {
-						//TODO: instead of just returning, try grading the options!
-						return tempLowest;
-					}
-				}
-			
-			}
-			//TODO: insert complicated lead logic here... (for example: make sure mellow player has card in suit)
-			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			return AIHandleLead(dataModel);
 		
 		} else if(throwIndex == 1) {
 			return AISecondThrow(dataModel);
@@ -68,7 +41,52 @@ public class SeatedRightOfOpponentMellow {
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 	}
 	
+
+	public static String AIHandleLead(DataModel dataModel) {
+		
+		int bestSuitIndex = -1;
+		int lowestRankScore = Integer.MAX_VALUE;
+		
+		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
+			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
+				continue;
+			}
+			
+			//TODO: should I treat the other off-suits differently than spades?
+		
+			String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
 	
+			if(dataModel.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
+				
+				//TODO: instead of just returning, try grading the options!
+				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
+				//(Save 2C for the end)
+				
+				int curLowestRankSuitScore = dataModel.getRankIndex(tempLowest);
+				
+				// pretend lowest spades have a higher rank to discourage use of spades:
+				if(suit == Constants.SPADE) {
+					curLowestRankSuitScore += 3.5;
+				}
+				
+				if(curLowestRankSuitScore < lowestRankScore) {
+					bestSuitIndex = suit;
+					lowestRankScore = curLowestRankSuitScore;
+				}
+				
+			}
+		
+		
+		}
+		
+		if(bestSuitIndex != -1) {
+			
+			return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndex);
+		} else {
+		
+			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+		}
+	}
 
 	public static String AISecondThrow(DataModel dataModel) {
 
@@ -123,7 +141,7 @@ public class SeatedRightOfOpponentMellow {
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
 					&& dataModel.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
-				System.out.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
+				System.err.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
 				System.exit(1);
 			}
 			//END RANDOM TEST
@@ -276,8 +294,7 @@ public class SeatedRightOfOpponentMellow {
 				int indexSuitStrongestCard = CardStringFunctions.getIndexOfSuit(curStrongestCard);
 				
 				if(indexSuitStrongestCard != Constants.SPADE) {
-					System.out.println("ERROR: index strongest card should be spade at this point! 234234");
-					
+					System.err.println("ERROR: index strongest card should be spade at this point! 234234");
 					System.exit(1);
 				}
 				
@@ -324,7 +341,7 @@ public class SeatedRightOfOpponentMellow {
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
 					&& dataModel.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
-				System.out.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
+				System.err.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
 				System.exit(1);
 			}
 			//END RANDOM TEST
@@ -423,7 +440,7 @@ public class SeatedRightOfOpponentMellow {
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			} else {
 				
-				//System.out.println("WARNING: this condition means player has 13 spades!!!");
+				//System.err.println("WARNING: this condition means player has 13 spades!!!");
 				//System.exit(1);
 				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 			}
