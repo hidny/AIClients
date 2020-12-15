@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
 
 public class SeatedRightOfOpponentMellow {
 
@@ -14,6 +15,11 @@ public class SeatedRightOfOpponentMellow {
 	public static int PROTECTOR_PLAYER_INDEX = 3;
 	
 	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
+		//9S 5S QH 8H 7H AC TC 6C 2C
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5S QH 8H 7H AC TC 6C 2C")) {
+			System.out.println("DEBUG!");
+		}
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
@@ -260,7 +266,7 @@ public class SeatedRightOfOpponentMellow {
 						
 						if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCard)) {
 
-							return dataModel.getCardInHandClosestUnderSameSuit(leaderThrow);
+							return dataModel.getCardInHandClosestUnderSameSuit(curStrongestCard);
 						} else {
 
 							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
@@ -306,7 +312,6 @@ public class SeatedRightOfOpponentMellow {
 				
 				} else {
 					
-					//TODO: why not try playing highest spade if you could get away with it..?
 					
 					if(dataModel.couldPlayCardInHandOverCardInSameSuit(curStrongestCard)) {
 						String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(curStrongestCard);
