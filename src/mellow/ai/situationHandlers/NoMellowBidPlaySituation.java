@@ -158,12 +158,11 @@ public class NoMellowBidPlaySituation {
 							
 							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
 							
-							if(dataModel.getCardPower(cardToPlay, leaderSuitIndex) >
-								dataModel.getCardPower(leaderCard, leaderSuitIndex)) {
+							if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
 								
 								return cardToPlay;
 							} else {
-								//Play the king while the Ace is still out!
+								//Play the King while the Ace is still out!
 								return curPlayerTopCardInSuit;
 							}
 								

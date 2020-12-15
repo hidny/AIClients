@@ -182,6 +182,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				
 			} else {
 				System.out.println("MELLOW SOMEWHERE");
+				
+				if(!dataModel.isVoid(0, 0)
+						&& dataModel.getCardCurrentPlayerGetHighestInSuit(0).equals("7S")
+
+						&& dataModel.getNumCardsInCurrentPlayerHand() == 5) {
+					System.out.println("DEBUG weird case dec 14");
+				}
+				
 				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0) {
 					//TODO: Working on the october 3rd, 2020:
 					return PartnerSaidMelllowSituation.playMoveToProtectPartnerMellow(dataModel);

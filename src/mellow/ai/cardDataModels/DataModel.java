@@ -397,19 +397,22 @@ public class DataModel {
 		
 		cardStringsPlayed[cardsPlayedThisRound] = card;
 		playerWhoPlayedCard[cardsPlayedThisRound] = indexPlayer;
-		cardsPlayedThisRound++;
 		
-
 		//Check if non-leading player didn't follow suit (and is void in suit)
-		if(cardsPlayedThisRound % 4 != 0 ) {
-			if(CardStringFunctions.getIndexOfSuit(card) != getSuitOfLeaderThrow()) {
-				for(int i=RANK_TWO; i<=ACE; i++) {
-					cardsCurrentlyHeldByPlayer[indexPlayer][getSuitOfLeaderThrow()][i] = IMPOSSIBLE;
-				}
+		if(CardStringFunctions.getIndexOfSuit(card) != getSuitOfLeaderThrow()) {
+			for(int i=RANK_TWO; i<=ACE; i++) {
+				cardsCurrentlyHeldByPlayer[indexPlayer][getSuitOfLeaderThrow()][i] = IMPOSSIBLE;
 			}
 		}
 		//End check
 
+
+		if(indexPlayer != Constants.CURRENT_AGENT_INDEX) {
+			updateDataModelSignalsWithPlayedCard(playerName, card);
+		}
+		 
+		cardsPlayedThisRound++;
+		
 		numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
 		do {
 			logicallyDeduceWhoHasCardsByProcessOfElimination();
@@ -417,9 +420,6 @@ public class DataModel {
 		
 		//TODO:
 		
-		if(indexPlayer != Constants.CURRENT_AGENT_INDEX) {
-			updateDataModelSignalsWithPlayedCard(playerName, card);
-		}
 		
 	}
 	
@@ -435,7 +435,9 @@ public class DataModel {
 
 			
 			if(throwNumber == 0) {
-				//If throwNumber 0, it's playing the first card,
+				//If throwNumber 0, mellow player lead first card
+				// and now it's the second player's turn
+				
 				//and the first card lead by a mellow player is usually weird... ignore leading
 				//TODO: don't ignore in future!
 				
@@ -480,6 +482,7 @@ public class DataModel {
 						
 						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= maxRankIndex; rankIndex++) {
 
+							System.out.println("DEBUG: Set no card in mellow hand signal for rank " + rankIndex);
 							//TODO: if there's another state, we will need to make a complicate state transition table
 							//MELLOW IND -> LEAD_SUGGESTION ...
 							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
@@ -647,6 +650,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	public void setCardMellowSignalIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY
 				&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
+					System.out.println("TESTING: Something got done...");
 					cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
 				}
 	}

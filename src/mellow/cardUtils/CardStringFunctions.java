@@ -7,7 +7,7 @@ import mellow.Constants;
 public class CardStringFunctions {
 
 	public static int getIndexOfSuit(String card) {
-		String suitString = card.charAt(1) + "";;
+		String suitString = card.charAt(1) + "";
 		int index = -1;
 		if(suitString.equals("S")) {
 			index = 0;
