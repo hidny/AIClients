@@ -424,12 +424,16 @@ public class DataModel {
 	}
 	
 	//THIS IS JUST A SIMPLE 1st attempt!
+
+	//So far, it only deals with mellow signals
 	public void updateDataModelSignalsWithPlayedCard(String playerName, String card) {
 		
 		int playerIndex = convertPlayerNameToIndex(playerName);
 
+
+		//Deal with mellow signals
+		
 		if(bids[playerIndex] == 0 && burntMellow(playerIndex) == false) {
-			//Deal with mellow signals
 			int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 			int cardNum = getMellowCardIndex(card);
 
@@ -482,7 +486,6 @@ public class DataModel {
 						
 						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= maxRankIndex; rankIndex++) {
 
-							System.out.println("DEBUG: Set no card in mellow hand signal for rank " + rankIndex);
 							//TODO: if there's another state, we will need to make a complicate state transition table
 							//MELLOW IND -> LEAD_SUGGESTION ...
 							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
@@ -650,7 +653,6 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	public void setCardMellowSignalIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY
 				&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
-					System.out.println("TESTING: Something got done...");
 					cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
 				}
 	}
