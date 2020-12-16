@@ -207,7 +207,7 @@ public class NoMellowBidPlaySituation {
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(0, Constants.SPADE)) {
-				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				cardToPlay = getJunkiestCardToFollowLead(dataModel);
 				
 				//Must play trump:
 			} else if(dataModel.currentPlayerMustTrump()) {
@@ -231,11 +231,11 @@ public class NoMellowBidPlaySituation {
 
 					
 					if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
-						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+						cardToPlay = getJunkiestCardToFollowLead(dataModel);
 					}
 					
 				} else {
-					cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+					cardToPlay = getJunkiestCardToFollowLead(dataModel);
 				}
 			}
 		}
@@ -247,6 +247,7 @@ public class NoMellowBidPlaySituation {
 	public static String AIThirdThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
+		
 		
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
@@ -264,15 +265,14 @@ public class NoMellowBidPlaySituation {
 					
 					} else {
 						//If can't trump over
-						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-						
+						cardToPlay = getJunkiestCardToFollowLead(dataModel);
 					}
 				} else {
 					
 					//if your partner played master and 2nd thrower didn't trump over
 					if(dataModel.leaderPlayedMaster()) {
 						//PLAY OFF because leaderPlayedMaster
-						cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+						cardToPlay = getJunkiestCardToFollowLead(dataModel);
 					} else {
 						//TRUMP
 						
@@ -284,7 +284,7 @@ public class NoMellowBidPlaySituation {
 				
 				//No Spade, so play off:
 			} else {
-				cardToPlay = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				cardToPlay = getJunkiestCardToFollowLead(dataModel);
 			}
 		
 		//FOLLOW SUIT:
@@ -304,6 +304,8 @@ public class NoMellowBidPlaySituation {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 						
 					} else {
+						
+						
 						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					}
 				
@@ -320,7 +322,7 @@ public class NoMellowBidPlaySituation {
 						}
 						
 						//If we know 4th is void:
-						if(dataModel.isVoid(1, dataModel.getSuitOfLeaderThrow())) {
+						if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
 							
 							//Play highest to force 4th to play even higher... or stop 4th thrower from winning:
 							cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
@@ -362,7 +364,7 @@ public class NoMellowBidPlaySituation {
 				}
 			}
 
-			cardToPlay = dataModel.getJunkiestCardToFollowLead();
+			cardToPlay = getJunkiestCardToFollowLead(dataModel);
 			
 			return cardToPlay;
 			
@@ -370,7 +372,7 @@ public class NoMellowBidPlaySituation {
 			cardToPlay = dataModel.getCardClosestOverCurrentWinner();
 			
 		} else {
-			cardToPlay = dataModel.getJunkiestCardToFollowLead();
+			cardToPlay = getJunkiestCardToFollowLead(dataModel);
 			
 		}
 
@@ -379,6 +381,7 @@ public class NoMellowBidPlaySituation {
 	//END AIS for non-nellow bid games
 	
 	
+	//TRAM logic (not tested that much...)
 	public static boolean couldTRAM(DataModel dataModel) {
 		if(dataModel.playerCouldSweepSpades(Constants.CURRENT_AGENT_INDEX) == false) {
 			return false;
@@ -427,6 +430,121 @@ public class NoMellowBidPlaySituation {
 		}
 		return theRestAreMine;
 	}
+	//END OF TRAM LOGIC
 	
+	public static String getJunkiestCardToFollowLead(DataModel dataModel) {
+		
+		if(dataModel.throwerMustFollowSuit()) {
+			return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+		
+		} else if(dataModel.currentPlayerOnlyHasSpade()){
+			return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+			
+		} else if(dataModel.currentAgentHasSuit(Constants.SPADE)){
+			
+			return getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
+
+		} else {
+			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+		}
+		
+	}
+	
+	
+	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
+
+		
+		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
+		
+		int bestSuit = -1;
+		double valueOfBestSuit = 0;
+		
+		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			if(suitIndex == Constants.SPADE || dataModel.currentAgentHasSuit(suitIndex) == false) {
+				continue;
+			}
+			
+			int numberOfCardsInSuit = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			if(numberOfCardsInSuit == 0) {
+				continue;
+			}
+
+			
+			String bestCardPlayerHas = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			
+			double currentValue = 0.0;
+			if(numberOfCardsInSuit == 1 && dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				
+				//Don't throw off master cards unless you really need to...
+				currentValue -= 5.0;
+			} else if(numberOfCardsInSuit == 2 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 1) {
+				
+				currentValue -= 1.2;
+				
+				
+			} else if(numberOfCardsInSuit == 3 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 2) {
+				currentValue -= 1.1;
+				
+			} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) == 3 && 
+					dataModel.getRankIndex(bestCardPlayerHas) == dataModel.KING) {
+				
+				currentValue -= 0.8;
+			}
+			
+			
+			
+			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+			
+			
+			//boolean rhsVoid = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex);
+			boolean rhsTrumping = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE);
+			
+			//boolean lhsVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex);
+			boolean lhsTrumping = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE);
+			
+			if(lhsTrumping) {
+				currentValue -= 2.0;
+			}
+
+			//boolean partnerVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex);
+			//boolean partnerTrumping = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE);
+
+			
+			
+			//if(partnerTrumping || lhsTrumping) {
+				//currentValue = 0.0;
+			//} else 
+			if(numberOfCardsOthersHaveInSuit == 0) {
+				//only good if you could sweep spades and lead it...
+				currentValue += 0.2;
+			
+			} else if(rhsTrumping) {
+				
+				double numTimesToFollowSuitIfThrowOff = (1.0 *numberOfCardsInSuit - 1.0);
+				
+				double approxNumTrumpingRoundIdeal =  (1.0/ 2.0) * numberOfCardsOthersHaveInSuit - numTimesToFollowSuitIfThrowOff;
+				
+				double BONUS_VALUE = 0.5;
+				
+				currentValue += approxNumTrumpingRoundIdeal + BONUS_VALUE;
+			} else {
+				
+				double numTimesToFollowSuitIfThrowOff = (1.0 *numberOfCardsInSuit - 1.0);
+				
+				double approxNumTrumpingRoundIdeal =  (1.0/ 3.0) * numberOfCardsOthersHaveInSuit - numTimesToFollowSuitIfThrowOff;
+				currentValue += approxNumTrumpingRoundIdeal;
+				
+			}
+			
+			if(bestSuit == -1 || currentValue > valueOfBestSuit) {
+				valueOfBestSuit = currentValue;
+				bestSuit = suitIndex;
+			}
+			
+		}
+		
+		return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuit);
+	}
 	
 }
