@@ -52,6 +52,30 @@ public class NoMellowBidPlaySituation {
 		//if(partnerisVoid)
 		
 		if(dataModel.getMasterCard() != null) {
+			
+			if(dataModel.playerCouldSweepSpades(Constants.CURRENT_AGENT_INDEX)) {
+				
+				boolean theRestAreMine = true;
+				for(int suitIndex = 0; suitIndex < Constants.NUM_SUITS; suitIndex++) {
+					if(suitIndex != Constants.SPADE) {
+						if(dataModel.playerWillWinWithAllCardsInHandForSuitIfNotTrumped(
+										Constants.CURRENT_AGENT_INDEX,
+										suitIndex) == false) {
+							theRestAreMine = false;
+						}
+					}
+				}
+				
+				if(theRestAreMine) {
+					System.out.println("THE REST ARE MINE! (TRAM)");
+					if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					} else {
+						return dataModel.getMasterCard();
+					}
+				}
+			}
+			
 			//play a master card:
 			cardToPlay = dataModel.getMasterCard();
 			System.out.println("***********");

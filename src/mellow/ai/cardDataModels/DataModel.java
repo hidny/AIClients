@@ -257,7 +257,19 @@ public class DataModel {
 		}
 		//END Sanity check
 
-		bids[convertPlayerNameToIndex(playerName)] = bid;
+		int playerIndex = convertPlayerNameToIndex(playerName);
+		bids[playerIndex] = bid;
+		
+		//Handle signals
+		if(bid == 0) {
+
+			//TODO: One day, consider the Hail Mary mellow with AS play....
+			//I think that's viable as a strat to get opponent to also say mellow near the end of game...
+			
+			//For now, assume that if there's a mellow bid, player has no AS
+			setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, ACE);
+		}
+		//End Handle signals
 		
 		bidsMadeThisRound++;
 	}
@@ -466,7 +478,7 @@ public class DataModel {
 						for(int rankIndex=getRankIndex(card) - 1 ; rankIndex >= RANK_TWO; rankIndex--) {
 							//TODO: if there's another state, we will need to make a complicate state transition table
 							//MELLOW IND -> LEAD_SUGGESTION ...
-							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+							setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
 						}
 						
 					} else {
@@ -488,7 +500,7 @@ public class DataModel {
 
 							//TODO: if there's another state, we will need to make a complicate state transition table
 							//MELLOW IND -> LEAD_SUGGESTION ...
-							setCardMellowSignalIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+							setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
 						}
 					}
 					
@@ -513,7 +525,7 @@ public class DataModel {
 								if(suitIndex == Constants.SPADE) {
 									continue;
 								} else {
-									setCardMellowSignalIfUncertain(playerIndex, suitIndex, rankIndex);
+									setCardMellowSignalNoIfUncertain(playerIndex, suitIndex, rankIndex);
 								}
 								
 							}
@@ -528,7 +540,7 @@ public class DataModel {
 								
 								//TODO: if there's another state, we will need to make a complicate state transition table
 								//MELLOW IND -> LEAD_SUGGESTION ...
-								setCardMellowSignalIfUncertain(playerIndex, Constants.SPADE, rankIndex);
+								setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, rankIndex);
 							}
 						}
 						
@@ -537,7 +549,7 @@ public class DataModel {
 						//If Mellow player plays plays off,
 						//Mellow player prob doesn't have anything over that offsuit
 						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= ACE; rankIndex++) {
-							setCardMellowSignalIfUncertain(playerIndex, mellowSuitPlayed, rankIndex);
+							setCardMellowSignalNoIfUncertain(playerIndex, mellowSuitPlayed, rankIndex);
 						}
 					}
 					
@@ -650,7 +662,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	}
 	
 	//TODO: if mellow has card even though the player signal he/she doesn't: note that down!
-	public void setCardMellowSignalIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
+	public void setCardMellowSignalNoIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY
 				&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
 					cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
@@ -1075,15 +1087,15 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 					boolean[][] cardsUnderPotentialCard = getCardsStrictlyLessPowerfulThanCard(tempCard);
 					
 					//Fourth thrower index
-					for(int m=0; m<Constants.NUM_SUITS; m++) {
-						for(int n=0; n<Constants.NUM_RANKS; n++) {
+					for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+						for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
 							
-							if(cardsUnderPotentialCard[m][n]
-									&& cardsOverCurrentlyWinningCard[m][n]) {
-								String tempCard2 = getCardString(n, m);
+							if(cardsUnderPotentialCard[suit][rank]
+									&& cardsOverCurrentlyWinningCard[suit][rank]) {
+								String tempCard2 = getCardString(rank, suit);
 
 								if(nonLeadPlayerCouldMaybeThrowCard(fourthThrowerIndex, tempCard2) &&
-										cardsCurrentlyHeldByPlayer[fourthThrowerIndex][m][n] != IMPOSSIBLE
+										cardsCurrentlyHeldByPlayer[fourthThrowerIndex][suit][rank] != IMPOSSIBLE
 										) {
 									return tempCard;
 								}
@@ -2222,5 +2234,107 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	private boolean stillInBiddingPhase() {
 		return bidsMadeThisRound < Constants.NUM_PLAYERS;
 	}
+	
+	
+	//New functions....
+	//TODO: make them work before adding new ones
+	
+	public boolean playerCouldSweepSpades(int playerIndex) {
+		return playerCouldSweepSpadesAfterTrumpingSpade(playerIndex, "");
+	}
+	
+	public boolean currentPlayerCouldSweepSpadesAfterTrumpingHighestSpade() {
+		return playerCouldSweepSpadesAfterTrumpingSpade(
+				Constants.CURRENT_AGENT_INDEX,
+				this.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)
+				);
+	}
+	
+	public boolean currentPlayerCouldSweepSpadesAfterTrumpingLowestSpade() {
+		return playerCouldSweepSpadesAfterTrumpingSpade(
+				Constants.CURRENT_AGENT_INDEX,
+				this.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE)
+				);
+	}
+	
+	public boolean playerCouldSweepSpadesAfterTrumpingSpade(int playerIndex, String cardUsed) {
+		int playerOwnedCards = 0;
+		int otherPlayerOwnedCards = 0;
+		
+		for(int rank=ACE; rank >= RANK_TWO; rank--) {
+			
+			if(cardsUsed[Constants.SPADE][rank] == false) {
+				if(cardsCurrentlyHeldByPlayer[playerIndex][Constants.SPADE][rank] == CERTAINTY) {
+					
+					if(getCardString(rank, Constants.SPADE).equals(cardUsed)) {
+						//Ignore card because it's used
+					} else {
+						playerOwnedCards++;
+					}
+					
+				} else {
+					otherPlayerOwnedCards++;
+				}
+				
+				if(otherPlayerOwnedCards > playerOwnedCards) {
+					return false;
+				}
+			}
+		}
+		
+		//Whatever!
+		//if(playerOwnedCards + otherPlayerOwnedCards == 0) {
+		//	System.err.println("Warning: this is getting philosophical in playerCouldSweepSpades...");
+		//	System.exit(1);
+		//}
+		
+		return true;
+	}
+	
+	//This is true if player has ACE alone...
+	public boolean playerWillWinWithAllCardsInHandForSuitIfNotTrumped(int playerIndex, int suitIndex) {
+		
+		int playerOwnedCards = 0;
+		int otherPlayerOwnedCards = 0;
+		
+		for(int rank=ACE; rank >= RANK_TWO; rank--) {
+			
+			if(cardsUsed[suitIndex][rank] == false) {
+				if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank] == CERTAINTY) {
+					playerOwnedCards++;
+
+					if(otherPlayerOwnedCards > playerOwnedCards) {
+						return false;
+					}
+				} else {
+					otherPlayerOwnedCards++;
+				}
+				
+			}
+		}
+		
+		//Whatever!
+		//if(playerOwnedCards == 0) {
+		//	System.err.println("ERROR: this is getting philosophical in playerCouldWinWithAllCardsInHandForSuit...");
+		//	System.exit(1);
+		//}
+		
+		return true;
+	}
+	
+	//public boolean playerCouldSweepSuit
+	
+	//TODO: later
+	//public int getNumTricksPlayerCouldForceWithoutBeingTrumped(int playerIndex, int suitIndex) {
+		
+	//	return -1;
+	//}
+	
+	//Too easy
+	//public boolean OpponentsVoid(int playerIndex, int suitIndex) {
+	//	return isVoid((playerIndex + 1)%Constants.NUM_PLAYERS, suitIndex)
+	//			&& isVoid((playerIndex + 3)%Constants.NUM_PLAYERS, suitIndex);
+	//}
+	
 	
 }
