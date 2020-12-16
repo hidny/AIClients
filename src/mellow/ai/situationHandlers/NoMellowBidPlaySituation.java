@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.MonteCarloMain;
+import mellow.cardUtils.DebugFunctions;
 
 public class NoMellowBidPlaySituation {
 
@@ -55,18 +56,7 @@ public class NoMellowBidPlaySituation {
 			
 			if(dataModel.playerCouldSweepSpades(Constants.CURRENT_AGENT_INDEX)) {
 				
-				boolean theRestAreMine = true;
-				for(int suitIndex = 0; suitIndex < Constants.NUM_SUITS; suitIndex++) {
-					if(suitIndex != Constants.SPADE) {
-						if(dataModel.playerWillWinWithAllCardsInHandForSuitIfNotTrumped(
-										Constants.CURRENT_AGENT_INDEX,
-										suitIndex) == false) {
-							theRestAreMine = false;
-						}
-					}
-				}
-				
-				if(theRestAreMine) {
+				if(couldTRAM(dataModel)) {
 					System.out.println("THE REST ARE MINE! (TRAM)");
 					if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -94,6 +84,7 @@ public class NoMellowBidPlaySituation {
 
 	public static String leadCardToHelpPartnerTrumpOtherwiseNull(DataModel dataModel) {
 		String cardToPlay = null;
+		
 		
 		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
 			
@@ -352,10 +343,29 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AIFourthThrow(DataModel dataModel) {
 		String cardToPlay = null;
-		
-		if(dataModel.isPartnerWinningFight()) {
-			cardToPlay = dataModel.getJunkiestCardToFollowLead();
 
+		if(dataModel.isPartnerWinningFight()) {
+			
+			
+			//Could we take for a tram?
+			if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+				
+				
+				//TODO: don't steal if you have trump left and there's less than 3 cards... 
+				//if(dataModel.isVoid)
+				
+				String tramTrickTakingCard = dataModel.getCardClosestOverCurrentWinner();
+				if(couldTRAMAfterPlayingCard(dataModel, tramTrickTakingCard)) {
+					
+					System.out.println("4th thrower taking from partner to TRAM!");
+					return tramTrickTakingCard;
+				}
+			}
+
+			cardToPlay = dataModel.getJunkiestCardToFollowLead();
+			
+			return cardToPlay;
+			
 		} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
 			cardToPlay = dataModel.getCardClosestOverCurrentWinner();
 			
@@ -367,5 +377,56 @@ public class NoMellowBidPlaySituation {
 		return cardToPlay;
 	}
 	//END AIS for non-nellow bid games
+	
+	
+	public static boolean couldTRAM(DataModel dataModel) {
+		if(dataModel.playerCouldSweepSpades(Constants.CURRENT_AGENT_INDEX) == false) {
+			return false;
+		}
+		
+		boolean theRestAreMine = true;
+		for(int suitIndex = 0; suitIndex < Constants.NUM_SUITS; suitIndex++) {
+			if(suitIndex != Constants.SPADE) {
+				if(dataModel.playerWillWinWithAllCardsInHandForSuitIfNotTrumped(
+								Constants.CURRENT_AGENT_INDEX,
+								suitIndex) == false) {
+					
+					theRestAreMine = false;
+					break;
+				}
+			}
+		}
+		return theRestAreMine;
+	}
+	
+	public static boolean couldTRAMAfterPlayingCard(DataModel dataModel, String cardPlayedForTrick) {
+		
+		if(dataModel.playerCouldSweepSpadesMinusCardToTakeTrick(
+				Constants.CURRENT_AGENT_INDEX,
+				cardPlayedForTrick) 
+			== false) {
+			
+			return false;
+		}
+		
+		boolean theRestAreMine = true;
+		for(int suitIndex = 0; suitIndex < Constants.NUM_SUITS; suitIndex++) {
+
+			if(suitIndex != Constants.SPADE) {
+				if(dataModel.playerWillWinWithAllCardsInHandForSuitIfNotTrumpedMinusCardToTakeTrick(
+						Constants.CURRENT_AGENT_INDEX,
+						suitIndex,
+						cardPlayedForTrick)
+					== false
+						) {
+
+					theRestAreMine = false;
+					break;
+				}
+			}
+		}
+		return theRestAreMine;
+	}
+	
 	
 }

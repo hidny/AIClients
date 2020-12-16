@@ -2240,46 +2240,36 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	//TODO: make them work before adding new ones
 	
 	public boolean playerCouldSweepSpades(int playerIndex) {
-		return playerCouldSweepSpadesAfterTrumpingSpade(playerIndex, "");
+		return playerCouldSweepSpadesMinusCardToTakeTrick(playerIndex, "");
 	}
 	
-	public boolean currentPlayerCouldSweepSpadesAfterTrumpingHighestSpade() {
-		return playerCouldSweepSpadesAfterTrumpingSpade(
-				Constants.CURRENT_AGENT_INDEX,
-				this.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)
-				);
-	}
 	
-	public boolean currentPlayerCouldSweepSpadesAfterTrumpingLowestSpade() {
-		return playerCouldSweepSpadesAfterTrumpingSpade(
-				Constants.CURRENT_AGENT_INDEX,
-				this.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE)
-				);
-	}
+	public boolean playerCouldSweepSpadesMinusCardToTakeTrick(int playerIndex, String cardUsed) {
 	
-	public boolean playerCouldSweepSpadesAfterTrumpingSpade(int playerIndex, String cardUsed) {
+		if(playerWillWinWithAllCardsInHandForSuitIfNotTrumpedMinusCardToTakeTrick(playerIndex, Constants.SPADE, cardUsed)
+			==false) {
+				return false;
+		}
+		
 		int playerOwnedCards = 0;
 		int otherPlayerOwnedCards = 0;
 		
 		for(int rank=ACE; rank >= RANK_TWO; rank--) {
-			
 			if(cardsUsed[Constants.SPADE][rank] == false) {
 				if(cardsCurrentlyHeldByPlayer[playerIndex][Constants.SPADE][rank] == CERTAINTY) {
-					
 					if(getCardString(rank, Constants.SPADE).equals(cardUsed)) {
-						//Ignore card because it's used
+						//ignore card used to make trick...
 					} else {
 						playerOwnedCards++;
 					}
-					
 				} else {
 					otherPlayerOwnedCards++;
 				}
-				
-				if(otherPlayerOwnedCards > playerOwnedCards) {
-					return false;
-				}
 			}
+		}
+		
+		if(otherPlayerOwnedCards > playerOwnedCards) {
+			return false;
 		}
 		
 		//Whatever!
@@ -2293,6 +2283,11 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	
 	//This is true if player has ACE alone...
 	public boolean playerWillWinWithAllCardsInHandForSuitIfNotTrumped(int playerIndex, int suitIndex) {
+		return playerWillWinWithAllCardsInHandForSuitIfNotTrumpedMinusCardToTakeTrick(playerIndex, suitIndex, "");
+	}
+	
+	//This is true if player has ACE alone...
+	public boolean playerWillWinWithAllCardsInHandForSuitIfNotTrumpedMinusCardToTakeTrick(int playerIndex, int suitIndex, String cardUsed) {
 		
 		int playerOwnedCards = 0;
 		int otherPlayerOwnedCards = 0;
@@ -2301,12 +2296,43 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			
 			if(cardsUsed[suitIndex][rank] == false) {
 				if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank] == CERTAINTY) {
-					playerOwnedCards++;
+					
+					if(getCardString(rank, suitIndex).equals(cardUsed)) {
+						//Ignore card because it's used
+					} else {
+						
+						if(otherPlayerOwnedCards > 0) {
+							
+							int numCardsInSuitPlayerHasOverCurCard = playerOwnedCards;
+							int numCardsInSuitOtherHaveOver = otherPlayerOwnedCards;
+							int numCardsInSuitOtherHaveUnder = 0;
+							
+							for(int rank2=rank-1; rank2 >= RANK_TWO; rank2--) {
+								if(cardsUsed[suitIndex][rank2] == false) {
+									if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rank2] != CERTAINTY) {
+										numCardsInSuitOtherHaveUnder++;
+									}
+								}
+							}
+							
+							if(numCardsInSuitPlayerHasOverCurCard 
+									< numCardsInSuitOtherHaveOver + numCardsInSuitOtherHaveUnder ) {
+								return false;
+							}
+							
+						}
 
-					if(otherPlayerOwnedCards > playerOwnedCards) {
-						return false;
+						playerOwnedCards++;
 					}
+
 				} else {
+					
+					if(getCardString(rank, suitIndex).equals(cardUsed)) {
+						System.err.println("ERROR playerWillWinWithAllCardsInHandForSuitIfNotTrumpedMinusCardToTakeTrick");
+						System.err.println("ERROR: cardUsed isn't even in the player's hand! What's going on?");
+						System.exit(1);
+					}
+					
 					otherPlayerOwnedCards++;
 				}
 				
