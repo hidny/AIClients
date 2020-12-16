@@ -69,6 +69,37 @@ public class testCaseParser {
 		
 		File[] listOfFiles = folder.listFiles();
 
+
+		int values[] = new int[listOfFiles.length];
+		
+		for(int i=0; i<listOfFiles.length; i++) {
+			values[i] = getFileNumber(listOfFiles[i].getName());
+		}
+		
+		//Sort the test cases
+		for(int i=0; i<listOfFiles.length; i++) {
+			
+			int bestIndex = i;
+			
+			
+			for(int j=i+1; j<listOfFiles.length; j++) {
+				
+				if(values[j] < values[bestIndex]) {
+					bestIndex = j;
+				}
+			}
+			
+			//swap
+			int tmp = values[i];
+			values[i] = values[bestIndex];
+			values[bestIndex] = tmp;
+			
+			File tmpFile = listOfFiles[i];
+			listOfFiles[i] = listOfFiles[bestIndex];
+			listOfFiles[bestIndex] = tmpFile;
+		}
+		
+
 		for (int i = 0; i < listOfFiles.length; i++) {
 		  if (listOfFiles[i].isFile()) {
 		    System.out.println("File " + listOfFiles[i].getName());
@@ -77,10 +108,20 @@ public class testCaseParser {
 		    System.out.println("Directory " + listOfFiles[i].getName());
 		  }
 		}
+		
+		
 		System.out.println();
 		System.out.println();
 		
 		return listOfFiles;
+	}
+	
+	public static int getFileNumber(String fileName) {
+		
+		int res = new Scanner(fileName).useDelimiter("\\D+").nextInt();
+		
+		return res;
+		
 	}
 	
 	static final boolean TESTCASE_PASS = true;
