@@ -18,9 +18,6 @@ public class SeatedLeftOfOpponentMellow {
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		
-		//Rule number one:
-		//TODO: break this up later!
-		
 		if(throwIndex == 0) {
 
 			//TODO:
@@ -79,8 +76,9 @@ public class SeatedLeftOfOpponentMellow {
 				} else {
 					
 					//If can't follow suit:
-					if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
-						//play biggest spade if you can... over-simplified
+					if(dataModel.currentPlayerOnlyHasSpade()) {
+						//play biggest spade if have no choice:
+						//over simplified, but whatever...
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
 						//play big off suit to mess-up mellow play (Over-simplified, but whatever)

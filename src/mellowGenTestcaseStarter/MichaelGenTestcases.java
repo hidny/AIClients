@@ -10,7 +10,7 @@ public class MichaelGenTestcases {
 	public static void main(String[] args) {
 		
 		//Create testcases in Michael folder:
-		String autoArgs[] = {"mellow", "Michael", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "201", "214", "1"};
+		String autoArgs[] = {"mellow", "Michael", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "3"};
 		
 		//Put testcases in garbage folder
 		//String autoArgs[] = {"mellow", "garbageTestData", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "13", "37", "1"};
@@ -27,7 +27,7 @@ public class MichaelGenTestcases {
 			
 		
 		//TODO: Put testcases in double mellow folder (and rig a double mellow!)
-		//String autoArgs[] = {"mellow", "doubleMellowTests", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "3", "[JS 4S][TS 5S 2S][AS QS 9S 7S 3S AD AH][AC KS 8S 6S]"};
+		//String autoArgs[] = {"mellow", "doubleMellowTests", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "1", "[JS 4S][TS 5S 2S][AS QS 9S 7S 3S AD AH][AC KS 8S 6S]"};
 				
 		try {
 			ClientStarter.main(autoArgs);
