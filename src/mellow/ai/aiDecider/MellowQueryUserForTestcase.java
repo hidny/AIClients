@@ -28,9 +28,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	private String playerNames[] = new String[4];
 	
-	String scoreAtStartOfRound = "";
-	String savedBidHistory = "";
-	String savedPlayHistory = "";
+	private String scoreAtStartOfRound;
+	private String savedBidHistory = "";
+	private String savedPlayHistory = "";
 	int numCardsPlayedInRound = 0;
 	
 	int dealerIndex = -1;
@@ -40,6 +40,11 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	public String toString() {
 		return "MellowQueryUserForTestcase PLAYER";
+	}
+	
+	public MellowQueryUserForTestcase() {
+		//Set default start scores:
+		this.setNewScores(0, 0);
 	}
 	
 	@Override
@@ -62,7 +67,6 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		numCardsPlayedInRound = 0;
 		savedPlayHistory = "";
 		savedBidHistory = "";
-		scoreAtStartOfRound = "";
 	}
 	
 	@Override
@@ -142,7 +146,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	@Override
 	public void setNewScores(int teamAScore, int teanBScore) {
-		scoreAtStartOfRound += "Your Score      Their Score\n";
+		scoreAtStartOfRound = "Your Score      Their Score\n";
 		scoreAtStartOfRound += " " + teamAScore + ("       ").substring( (teamAScore +"").length() ) + "         " + teanBScore + "\n";
 	}
 
