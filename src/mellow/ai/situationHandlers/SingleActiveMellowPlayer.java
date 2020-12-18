@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
 
 public class SingleActiveMellowPlayer {
 
@@ -118,6 +119,7 @@ public class SingleActiveMellowPlayer {
 
 	//Find the suit the mellow player wants to throw-off most:
 	public static String getBestOffSuitCardToThrowOffAsMellowPlayer(DataModel dataModel) {
+
 		int NO_SUIT_FOUND = -1;
 		int chosenSuit = NO_SUIT_FOUND;
 		double bestScore = Double.MIN_VALUE;

@@ -401,8 +401,6 @@ public class SeatedRightOfOpponentMellow {
 
 				// Mellow player signaled no cards of suit don't trump!
 				
-				
-				
 				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
 				if(dataModel.currentPlayerOnlyHasSpade() == false) {
 
@@ -413,7 +411,13 @@ public class SeatedRightOfOpponentMellow {
 					//DEC 18th:
 					//TODO: why not play lower trump just in case mellow in danger
 					
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					if(dataModel.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE) == false) {
+						
+						return dataModel.getHighestOffSuitCardAnySuitButSpade();
+						
+					} else {
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					}
 				}
 			}
 			
