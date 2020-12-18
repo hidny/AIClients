@@ -18,6 +18,9 @@ public class SeatedRightOfOpponentMellow {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S TH 9H 7H 5H TD 8D 3D 2D")) {
+			System.out.println("Debug!");
+		}
 		
 		if(throwIndex == 0) {
 			//handle lead
@@ -176,7 +179,7 @@ public class SeatedRightOfOpponentMellow {
 
 						//(unless there's no choice but to trump)
 						if(dataModel.currentPlayerOnlyHasSpade() == false) {
-							return dataModel.getHighestOffSuitCardAnySuit();
+							return dataModel.getHighestOffSuitCardAnySuitButSpade();
 						} else {
 							//??
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -187,7 +190,7 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Mellow could be in danger: don't trump (unless there's no choice)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
-						return dataModel.getHighestOffSuitCardAnySuit();
+						return dataModel.getHighestOffSuitCardAnySuitButSpade();
 					} else {
 						//??
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -201,7 +204,7 @@ public class SeatedRightOfOpponentMellow {
 				
 				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
 				if(dataModel.currentPlayerOnlyHasSpade() == false) {
-					return dataModel.getHighestOffSuitCardAnySuit();
+					return dataModel.getHighestOffSuitCardAnySuitButSpade();
 				} else {
 					//??
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -214,7 +217,7 @@ public class SeatedRightOfOpponentMellow {
 		
 			//TODO: do we need the tricks.
 			//TODO: can we try to think about which suit to throw off?
-			return dataModel.getHighestOffSuitCardAnySuit();
+			return dataModel.getHighestOffSuitCardAnySuitButSpade();
 		}
 		
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
@@ -377,7 +380,7 @@ public class SeatedRightOfOpponentMellow {
 
 						//(unless there's no choice but to trump)
 						if(dataModel.currentPlayerOnlyHasSpade() == false) {
-							return dataModel.getHighestOffSuitCardAnySuit();
+							return dataModel.getHighestOffSuitCardAnySuitButSpade();
 						} else {
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						}
@@ -387,7 +390,7 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Mellow could be in danger: don't trump (unless there's no choice)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
-						return dataModel.getHighestOffSuitCardAnySuit();
+						return dataModel.getHighestOffSuitCardAnySuitButSpade();
 					} else {
 
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -399,12 +402,17 @@ public class SeatedRightOfOpponentMellow {
 				// Mellow player signaled no cards of suit don't trump!
 				
 				
+				
 				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
 				if(dataModel.currentPlayerOnlyHasSpade() == false) {
 
-					return dataModel.getHighestOffSuitCardAnySuit();
+					//TODO: why not play lower trump and dare mellow player to go under?
+					return dataModel.getHighestOffSuitCardAnySuitButSpade();
 				} else {
 
+					//DEC 18th:
+					//TODO: why not play lower trump just in case mellow in danger
+					
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				}
 			}
@@ -419,7 +427,7 @@ public class SeatedRightOfOpponentMellow {
 			//TODO: make sure the throw might possibly help the mellow
 			
 			//TODO: make it same logic as 2nd thrower?
-			return dataModel.getHighestOffSuitCardAnySuit();
+			return dataModel.getHighestOffSuitCardAnySuitButSpade();
 		}
 
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
@@ -462,7 +470,7 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				} else {
 					//TODO: what if you have A,K,Q,J C and only QD??
-					return dataModel.getHighestOffSuitCardAnySuit();
+					return dataModel.getHighestOffSuitCardAnySuitButSpade();
 				}
 			}
 			

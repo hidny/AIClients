@@ -1723,13 +1723,34 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	}
 	//END of MASTER FUNCTIONS
 
-	public String getHighestOffSuitCardAnySuit() {
+	public String getHighestOffSuitCardAnySuitButSpade() {
 		String cardToPlay = "";
+		
 		
 		FOUNDCARD:
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
 			//TODO: have no preference between the off suits... or have a smart preference.
-			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
+			for(int j=0; j<Constants.NUM_SUITS; j++) {
+				if(j == Constants.SPADE) {
+					continue;
+				}
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
+					cardToPlay = getCardString(13 * j + i);
+					break FOUNDCARD;
+				}
+			}
+		}
+		return cardToPlay;
+	}
+	
+	public String getHighestOffSuitCardAnySuit() {
+		String cardToPlay = "";
+		
+		
+		FOUNDCARD:
+		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
+			//TODO: have no preference between the off suits... or have a smart preference.
+			for(int j=0; j<Constants.NUM_SUITS; j++) {
 				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY) {
 					cardToPlay = getCardString(13 * j + i);
 					break FOUNDCARD;

@@ -57,7 +57,7 @@ public class SeatedLeftOfOpponentMellow {
 					} else {
 						
 						//TODO: this might need work, but I'm lazy
-						return dataModel.getHighestOffSuitCardAnySuit();
+						return dataModel.getHighestOffSuitCardAnySuitButSpade();
 					}
 				}
 			} else {
@@ -82,7 +82,7 @@ public class SeatedLeftOfOpponentMellow {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
 						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
-						return dataModel.getHighestOffSuitCardAnySuit();
+						return dataModel.getHighestOffSuitCardAnySuitButSpade();
 					}
 				
 				}
@@ -170,7 +170,7 @@ public class SeatedLeftOfOpponentMellow {
 			} else {
 				
 				//TODO: This might be throwing away too many tricks, but whatever...
-				return dataModel.getHighestOffSuitCardAnySuit();
+				return dataModel.getHighestOffSuitCardAnySuitButSpade();
 			}
 		
 			
