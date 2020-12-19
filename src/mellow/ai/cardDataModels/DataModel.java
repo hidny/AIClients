@@ -1957,6 +1957,21 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		return "";
 	}
 	
+	//pre: player has 3 cards of suit
+	public String getCardCurrentPlayergetFourthLowestInSuit(int suitIndex) {
+		
+		int thirdlowestRankCurPlayerHasInSuit = getRankIndex(getCardCurrentPlayergetThirdLowestInSuit(suitIndex));
+		
+		for(int i=thirdlowestRankCurPlayerHasInSuit + 1; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+		System.err.println("AHH! Searching for third lowest in card in suit when player doesn't have 3 cards in that suit. (" + suitIndex +")");
+		System.exit(1);
+		return "";
+	}
+	
 	public boolean currentAgentHasSuit(int suitIndex) {
 		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}

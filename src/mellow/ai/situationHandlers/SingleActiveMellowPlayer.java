@@ -135,7 +135,9 @@ public class SingleActiveMellowPlayer {
 				chosenSuit = i;
 			}
 			
-			double tmpScore = getWillingnessToThrowOffSuitAsMellowPlayer(dataModel, i);
+			double tmpScore = getWillingnessToThrowOffSuitAsMellowPlayer3(dataModel, i);
+			
+			//System.out.println("Willingness: " + tmpScore);
 			
 			if(tmpScore > bestScore) {
 				chosenSuit = i;
@@ -143,6 +145,7 @@ public class SingleActiveMellowPlayer {
 			}
 			
 		}
+		
 		
 		if(chosenSuit == NO_SUIT_FOUND) {
 			//If mellow player has to play spade, go low
@@ -155,45 +158,201 @@ public class SingleActiveMellowPlayer {
 		return dataModel.getCardCurrentPlayerGetHighestInSuit(chosenSuit);
 	}
 	
-	
-	//The higher the number return, the more will the AI is to throw off the suit
-	//For now, the numbers returned are between 0 and 1
-	//pre condition: player has at least 1 card in suit input
-	public static double getWillingnessToThrowOffSuitAsMellowPlayer(DataModel dataModel, int suit) {
-		int numCardsInPlayNotInHand = Constants.NUM_RANKS 
-								- dataModel.getNumCardsPlayedForSuit(suit)
-								- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
 		
 		
-		String cardToConsider = "";
-		
-		if(numCardsInPlayNotInHand > 6 && dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit) >= 3) {
-			cardToConsider = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suit);
-
-		} else if(numCardsInPlayNotInHand > 3 && dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit) >= 2) {
-			cardToConsider = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suit);
+		//TODO: clean it up and make it look less like trial and error...
+		public static double getWillingnessToThrowOffSuitAsMellowPlayer3(DataModel dataModel, int suit) {
 			
-		} else {
+			return getRiskRating3(dataModel, suit, 0) - 0.90 * getRiskRating3(dataModel, suit, 1);
+		}
+
+		//TODO: clean it up and make it look less like trial and error...
+		// At least separate by value of i...
+		
+		public static double getRiskRating3(DataModel dataModel, int suit, int numTopCardsToIgnore) {
+			int numOfSuitPlayerHas = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
+			
+			numOfSuitPlayerHas -= numTopCardsToIgnore;
+			
+			if(numOfSuitPlayerHas <= 0) {
+				return 0.0;
+			}
+			
+			double ret =0.0;
+			
+			String cardToConsider = "";
+			
+			for(int i=0; i<numOfSuitPlayerHas && i<4; i++) {
+				
+				if(i==0) {
+					cardToConsider = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
+				} else if(i == 1) {
+					cardToConsider = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suit);
+				} else if(i == 2) {
+					cardToConsider = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suit);
+				} else if(i == 3) {
+					cardToConsider = dataModel.getCardCurrentPlayergetFourthLowestInSuit(suit);
+					
+					
+				} else {
+					break;
+				}
+				
+				
+				int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
+				int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider);
+				
+			//Lowest card logic:
+				if(i==0 && numUnder >=2) {
+					ret += numUnder - 1.5;
+					
+				//I made this up!
+				} else {
+					//I made up 7.0
+					ret += 7.0 * getChancesOfBurningInSuit1stRound(dataModel, suit, numTopCardsToIgnore);
+				}
+
+			//Second Lowest card logic:
+				if(i == 1 && numUnder >=3) {
+					ret += (1.0/3.0) * (numUnder - 2.5);
+					
+				}
+				
+				if(i == 1 && numUnder >=5) {
+					ret += (2.0/3.0) * numUnder - 4.5;
+				
+				//I made this up!
+				}
+				
+
+			//Third Lowest card logic:
+				if(i == 2 && numUnder >=3) {
+					ret += (1.0/6.0) * (numUnder - 2.5);
+					
+				}
+				
+				if(i == 2 && numUnder >=8) {
+					ret += (5.0/6.0) *numUnder - 7.5;
+					
+				}
+				
+				if(i == 2 && numOver  < 3 ) {
+					ret += (3.0 - numOver);
+				}
+				
+				
+			//Fourth lowest card logic:
+				if(i == 3 && numUnder >=5) {
+					ret += (1.0/9.0) * (numUnder - 4.5);
+					
+				}
+				
+				if(i == 3 && numUnder >= 10) {
+					ret += (8.0/9.0) * numUnder - 9.5;
+				}
+				
+			
+				//System.out.println("Test what offsuit to throw: " + cardToConsider + ": " + ret + ":" + i + ":" + numUnder);
+			}
+			
+			
+			
+			
+			return ret;
+		}
+		
+		
+		public static double getChancesOfBurningInSuit1stRound(DataModel dataModel, int suit, int numTopCardsToIgnore) {
+			
+			double oddsLosingFirstRound = 0.0;
+			String cardToConsider = "";
+			
+
+			int numOfSuitPlayerHas = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
+			
+			numOfSuitPlayerHas -= numTopCardsToIgnore;
+			
+			if(numOfSuitPlayerHas <= 0) {
+				return 0.0;
+			}
+			
 			cardToConsider = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
-
-		}
-		
-		int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
-		int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider);
-		
-		//Check if suit is "safe":
-		if(numUnder == 0) {
-			return 0.0;
 			
-		} else {
-			//Suit is not safe:
-			double partnerCantCoverFactor = Math.pow(2.0/3.0, numOver);
-		
-		
-			double giveUpOnSuitFactor = Math.pow(1.0/2.0, Math.max(0, dataModel.getNumCardsCurrentUserStartedWithInSuit(suit)));
-		
-			return partnerCantCoverFactor * giveUpOnSuitFactor;
-		}
-	}
+			int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
+			int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider);
+			
 
+			//I don't know man...
+			//All models are wrong, but some are useful...
+			
+			//This model makes a lot of bad assumptions like the 0.5
+			// and the fact that cards are just as likely to be in partner's hands as opponents...
+			
+			double oddsPartnerHasNoSpade = 0.5;
+			if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				oddsPartnerHasNoSpade = 1.0;
+			}
+			
+			if(numUnder == 0) {
+				oddsLosingFirstRound = 0.0;
+			} else if(numUnder == 1) {
+				
+				//rough approx... but whatever
+				//The real number should be less, but this is low enough...
+				
+				//Real:
+				//This answers question if partner doesn't have the suit:
+				
+				//Odds the opponent has all of 1 suit and partner can't trump...
+				double oddsNeedingToBeTrumped = Math.pow(1.0/3.0, numOver + numUnder);
+				oddsLosingFirstRound = oddsPartnerHasNoSpade * oddsNeedingToBeTrumped;
+				
+				
+			
+			} else if(numUnder == 2) {
+				
+				//case 1: partner and 1 opponent void:
+				double calc1 = Math.pow(1.0/3.0, numOver + numUnder);
+				
+				//case 2: partner void and both opponents not void:
+				double calc2 = Math.pow(2.0/3.0, numOver);
+				calc2 *= (2.0/3.0) * (1.0/3.0);
+				
+				//case 3: partner not void one opponent void and and other has rest
+				double calc3 = Math.pow(1.0/3.0, numOver);
+				calc3 *= (2.0/3.0) * (1.0/3.0);
+				
+				double total = calc1 + calc2 + calc3;
+				
+				oddsLosingFirstRound = total * oddsPartnerHasNoSpade;
+			
+			} else if(numUnder >= 3) {
+
+				//case 1: partner and 1 opponent void:
+				double calc1 = Math.pow(1.0/3.0, numOver + numUnder);
+
+				//case 2: partner void and both opponents not void:
+				double calc2 = Math.pow(2.0/3.0, numOver + numUnder);
+				calc2 *= (1.0 - Math.pow(1.0/2.0, numUnder - 1));
+				
+				//case 3: partner not void one opponent void and and other has rest
+				double calc3 = Math.pow(1.0/3.0, numOver);
+				calc3 *= Math.pow(2.0/3.0, numUnder) * (1.0 - Math.pow(1.0/2.0, numUnder-1));
+				
+				//case 4: no one void all could play under:
+				double calc4 = Math.pow(2.0/3.0, numOver);
+																	//Inclusion-exclusion principal:
+				calc4 *= (1.0 - 3 * Math.pow(2.0/3.0, numUnder)  + 3 * Math.pow(1.0/3.0, numUnder));
+				
+
+				double total = calc1 + calc2 + calc3 + calc4;
+				
+				oddsLosingFirstRound = total * oddsPartnerHasNoSpade;
+			
+				
+			}
+			
+			
+			return oddsLosingFirstRound;
+		}
 }
