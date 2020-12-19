@@ -636,20 +636,25 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 	}
 
-	public boolean mellowSignalledNoCardBetweenTwoCards(String currentlyWinningCard, String cardInHand, int mellowPlayerIndex) {
+	public boolean mellowSignalledNoCardBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
 		
-		boolean cardsOverWinning[][] = this.getCardsStrictlyMorePowerfulThanCard(currentlyWinningCard);
-		boolean cardsUnderConsideredCard[][] = this.getCardsStrictlyLessPowerfulThanCard(cardInHand);
+		if(this.cardAGreaterThanCardBGivenLeadCard(biggerCard, smallerCard) == false) {
+			System.err.println("ERROR in mellowSignalledNoCardBetweenTwoCards: biggerCard should be bigger then smallerCard");
+			System.exit(1);
+			
+		}
+		boolean cardsOverSmallerCard[][] = this.getCardsStrictlyMorePowerfulThanCard(smallerCard);
+		boolean cardsUnderBiggerCard[][] = this.getCardsStrictlyLessPowerfulThanCard(biggerCard);
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			for(int j=0; j<Constants.NUM_RANKS; j++) {
 				
-				if(cardsOverWinning[i][j] && cardsUnderConsideredCard[i][j]) {
+				if(cardsOverSmallerCard[i][j] && cardsUnderBiggerCard[i][j]) {
 
 					if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != IMPOSSIBLE
 							&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != MELLOW_PLAYER_SIGNALED_NO) {
 						
-						//At this point, the mellow player signalled that they could have a card in between
+						//At this point, the mellow player signaled that they could have a card in between
 						//And you should feel nervous about playing over the currently winning card...
 						return false;
 					}
@@ -658,6 +663,39 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		}
 		
 		return true;
+		
+	}
+
+	//TODO: use later... when there's more test cases
+	public int getNumCardsMellowSignalledBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
+		
+		if(this.cardAGreaterThanCardBGivenLeadCard(biggerCard, smallerCard) == false) {
+			System.err.println("ERROR in numCardsMellowSignalledBetweenTwoCards: biggerCard should be bigger then smallerCard");
+			System.exit(1);
+			
+		}
+		boolean cardsOverSmallerCard[][] = this.getCardsStrictlyMorePowerfulThanCard(smallerCard);
+		boolean cardsUnderBiggerCard[][] = this.getCardsStrictlyLessPowerfulThanCard(biggerCard);
+		
+		int ret = 0;
+		
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			for(int j=0; j<Constants.NUM_RANKS; j++) {
+				
+				if(cardsOverSmallerCard[i][j] && cardsUnderBiggerCard[i][j]) {
+
+					if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != IMPOSSIBLE
+							&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != MELLOW_PLAYER_SIGNALED_NO) {
+						
+						//At this point, the mellow player signaled that they could have a card in between
+						//And you should start to feel nervous about playing over the currently winning card...
+						ret++;
+					}
+				}
+			}
+		}
+		
+		return ret;
 		
 	}
 	

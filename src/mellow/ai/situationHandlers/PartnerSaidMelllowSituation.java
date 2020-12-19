@@ -127,7 +127,8 @@ public class PartnerSaidMelllowSituation {
 				//TODO: this is really dangerous if mellow protector doesn't have a high second card...
 				//Ex: A 3 2, and you lead the A leaving the 3 and 2.
 
-				return dataModel.getMasterInSuit(curSuit);
+
+				return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
 			}
 		}
 		
@@ -276,12 +277,43 @@ public class PartnerSaidMelllowSituation {
 			    //TODO: logic should be more sophisticated then just getting highest or lowest, but whatever...
 		
 				String highestProtector = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
-				if(dataModel.mellowSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
-					
+				
+				if(dataModel.cardAGreaterThanCardBGivenLeadCard(highestProtector, curStrongestCardPlayed) == false) {
+
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+					
 				} else {
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					
+					if(dataModel.mellowSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
+						
+						//TODO still want to take trick sometimes... 
+						
+						//TODO: dataModel.numCardsInHandGreaterThanCardSameSuit
+						
+						if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCardPlayed)) {
+							
+							
+							//TODO: needs more complex logic because maybe taking the trick isn't so bad...
+							
+							//Maybe we can take the trick anyways
+							
+							
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+							
+						} else {
+
+							if(dataModel.currentPlayerHasMasterInSuit(leadSuit)) {
+								return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+							} else {
+								return dataModel.getCardClosestOverCurrentWinner();
+							}
+						}
+						
+					} else {
+						return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+					}
 				}
+			
 		
 			
 				//Rule: if mellow player is not vulnerable this round and made more vulnerable next round... then don't!)
@@ -314,6 +346,9 @@ public class PartnerSaidMelllowSituation {
 				
 				//TODO: if 3rd and want to lead again: play master
 				
+				//TODO: maybe we could get away with playing master??
+				//Say Mellow leads 5C and you have AC KC QC 7C... maybe play AC?
+
 				//play just above to protect
 				return dataModel.getCardClosestOverCurrentWinner();
 				
@@ -334,8 +369,13 @@ public class PartnerSaidMelllowSituation {
 
 			//Just play low: bad logic, but whatever!
 			if(dataModel.currentAgentHasSuit(leadSuit)) {
+				
+				//Say Mellow leads 5C and next plays 6C and you have AC KC QC 7C... maybe play AC?
 				return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+				
 			} else {
+				
+				//TODO: maybe have a value system for this?
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
 			
@@ -389,5 +429,31 @@ public class PartnerSaidMelllowSituation {
 			//play low if playing high endangers mellow card in next round of same suit
 		}
 
+	}
+	
+	public static String getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(DataModel dataModel, String cardStart) {
+		
+		String cardToConsider= cardStart;
+		
+		do {
+			String nextCardToConsider = "";
+			if(dataModel.couldPlayCardInHandUnderCardInSameSuit(cardToConsider)) {
+				nextCardToConsider = dataModel.getCardInHandClosestUnderSameSuit(cardToConsider);
+			} else {
+				break;
+			}
+			
+			
+			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider)
+			== dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(nextCardToConsider) ) {
+				cardToConsider = nextCardToConsider;
+			
+			} else {
+				break;
+			}
+			
+		} while(true);
+		
+		return cardToConsider;
 	}
 }

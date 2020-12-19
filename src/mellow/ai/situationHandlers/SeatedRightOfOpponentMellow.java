@@ -18,9 +18,6 @@ public class SeatedRightOfOpponentMellow {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S TH 9H 7H 5H TD 8D 3D 2D")) {
-			System.out.println("Debug!");
-		}
 		
 		if(throwIndex == 0) {
 			//handle lead
@@ -192,6 +189,7 @@ public class SeatedRightOfOpponentMellow {
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
 						return dataModel.getHighestOffSuitCardAnySuitButSpade();
 					} else {
+
 						//??
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					}
@@ -217,9 +215,11 @@ public class SeatedRightOfOpponentMellow {
 		
 			//TODO: do we need the tricks.
 			//TODO: can we try to think about which suit to throw off?
+			
+
 			return dataModel.getHighestOffSuitCardAnySuitButSpade();
 		}
-		
+
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 	}
 		
@@ -529,4 +529,6 @@ public class SeatedRightOfOpponentMellow {
 		}
 		
 	}
+	
+	
 }
