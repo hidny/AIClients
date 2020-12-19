@@ -229,7 +229,16 @@ public class NoMellowBidPlaySituation {
 						
 						cardToPlay = getJunkiestCardToFollowLead(dataModel);
 					} else {
-						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						
+						String consideredHighTrump = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(consideredHighTrump)
+								>= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						} else {
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						}
 					}
 
 				//I guess we should trump if we don't have much spade?
