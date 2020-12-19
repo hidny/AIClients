@@ -1693,6 +1693,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		return isMasterCard(getCardLeaderThrow());
 	}
 	
+	//pre: card not currently losing in fight.
 	public boolean isMasterCard(String card) {
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
@@ -1704,6 +1705,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 				}
 			}
 		}
+		
 		
 		return true;
 		
@@ -1744,10 +1746,10 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	}
 	
 	public boolean currentPlayerHasMasterInSuit(int suitIndex) {
-		return getMasterInSuit(suitIndex) != null;
+		return getMasterInHandOfSuit(suitIndex) != null;
 	}
 	
-	public String getMasterInSuit(int suitIndex) {
+	public String getMasterInHandOfSuit(int suitIndex) {
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
 			if(cardsUsed[suitIndex][i] == true) {
 				continue;

@@ -107,7 +107,7 @@ public class NoMellowBidPlaySituation {
 							) {
 
 						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-							cardToPlay = dataModel.getMasterInSuit(suitIndex);
+							cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
@@ -269,8 +269,8 @@ public class NoMellowBidPlaySituation {
 					}
 				} else {
 					
-					//if your partner played master and 2nd thrower didn't trump over
-					if(dataModel.leaderPlayedMaster()) {
+					//if your partner played master and 2nd thrower didn't trump over:
+					if(dataModel.isPartnerWinningFight() && dataModel.leaderPlayedMaster()) {
 						//PLAY OFF because leaderPlayedMaster
 						cardToPlay = getJunkiestCardToFollowLead(dataModel);
 					} else {
@@ -278,7 +278,13 @@ public class NoMellowBidPlaySituation {
 						
 						//TODO: what if leader(partner) plays a higher card than 2nd throw that isn't master, but 4th could trump too... 
 						//... I don't even know. That gets into weird logic
-						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						
+						if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)) {
+							
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						} else {
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						}
 					}
 				}
 				
