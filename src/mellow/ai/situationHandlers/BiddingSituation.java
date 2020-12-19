@@ -20,11 +20,12 @@ public class BiddingSituation {
 		boolean trumpingIsSacrifice = false;
 		
 		
+		
 		//Add king of spades if 1 or 2 other spade
 		if (dataModel.hasCard("KS") && dataModel.getNumberOfCardsOneSuit(0) >= 2) {
 		
 			bid += 1.0;
-			if (dataModel.getNumberOfCardsOneSuit(0) == 2) {
+			if (dataModel.getNumberOfCardsOneSuit(0) == 2 && dataModel.hasCard("AS") == false) {
 				bid = bid - 0.2;
 				
 				trumpingIsSacrifice = true;
@@ -97,6 +98,24 @@ public class BiddingSituation {
 			}
 		}
 		
+		boolean AStrumpingBonus = false;
+		if(dataModel.hasCard("AS") ) {
+			
+			if(dataModel.getNumberOfCardsOneSuit(0) == 1) {
+				//No bonus
+			} else if(dataModel.hasCard("KS") && dataModel.getNumberOfCardsOneSuit(0) == 2) {
+				//No bonus
+			} else if(dataModel.hasCard("QS") && dataModel.getNumberOfCardsOneSuit(0) == 3) {
+				//No bonus
+			} else {
+
+				if(dataModel.getNumberOfCardsOneSuit(0) <= 4) {
+					AStrumpingBonus = true;
+					trumpResevoir += 0.2;
+				}
+			}
+		}
+		
 		//END offsuit king adjustment logic
 			
 		if(dataModel.getNumberOfCardsOneSuit(1) < 3 || dataModel.getNumberOfCardsOneSuit(2) < 3|| dataModel.getNumberOfCardsOneSuit(3) < 3) {
@@ -104,14 +123,16 @@ public class BiddingSituation {
 
 				bid += 0.3;
 				
+				
 				if( (dataModel.getNumberOfCardsOneSuit(1) < 3 && dataModel.getNumberOfCardsOneSuit(2) < 3) ||
 						(dataModel.getNumberOfCardsOneSuit(1) < 3 && dataModel.getNumberOfCardsOneSuit(3) < 3) ||
 						(dataModel.getNumberOfCardsOneSuit(2) < 3 && dataModel.getNumberOfCardsOneSuit(3) < 3) ) {
 					bid += 0.75; 
 				} else if(dataModel.getNumberOfCardsOneSuit(1) < 2 || dataModel.getNumberOfCardsOneSuit(2) < 2 || dataModel.getNumberOfCardsOneSuit(3) < 2) {
 					bid += 0.75;
+				} else if(AStrumpingBonus) {
+					bid += 0.60;
 				}
-
 			} else if(dataModel.getNumberOfCardsOneSuit(0) >= 4 && trumpResevoir > 0) {
 				if( (dataModel.getNumberOfCardsOneSuit(1) < 3 && dataModel.getNumberOfCardsOneSuit(2) < 3) ||
 						(dataModel.getNumberOfCardsOneSuit(1) < 3 && dataModel.getNumberOfCardsOneSuit(3) < 3) ||

@@ -215,8 +215,22 @@ public class NoMellowBidPlaySituation {
 				
 				//Option to trump:
 			} else {
-				if(dataModel.isMasterCard(leaderCard) && (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false)) {
-					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+				
+				
+				if(dataModel.isMasterCard(leaderCard)
+						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1) {
+						
+						//&& (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false)) {
+					
+					if((dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false 
+							&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+							&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE))
+						) {
+						
+						cardToPlay = getJunkiestCardToFollowLead(dataModel);
+					} else {
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					}
 
 				//I guess we should trump if we don't have much spade?
 					
