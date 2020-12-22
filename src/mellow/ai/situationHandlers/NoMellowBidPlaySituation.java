@@ -236,6 +236,16 @@ public class NoMellowBidPlaySituation {
 								>= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
 							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
+						} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 4) {
+							
+							//TODO: something more complicated...
+							//if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3) {
+							//	cardToPlay = dataModel.getCardCurrentPlayergetThirdLowestInSuit(Constants.SPADE);
+							//	
+							//} else {
+							//	cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+							//}
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 						}

@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import mellow.Constants;
+import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.listener.MellowAIListener;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.handUtilsQueryForTestcase;
@@ -17,34 +19,30 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	 * "go to Eclipse > Prefences > General > Appearance > Color and Fonts > Basic > Text Font
 		Font problem will resolved I guess. Dont need a any plugin for this."
 	 */
+
+	DataModel dataModel;
 	
 	private Scanner in = new Scanner(System.in);
 	
 	private ArrayList<String> cardList = null;
 	
-	int INDEX_CURRENT_PLAYER = 0;
-	static int NUM_PLAYERS = 4;
-	static int NUM_CARDS = 52;
-	
-	private String playerNames[] = new String[4];
-	
 	private String scoreAtStartOfRound;
 	private String savedBidHistory = "";
 	private String savedPlayHistory = "";
-	int numCardsPlayedInRound = 0;
 	
-	int dealerIndex = -1;
-	
-	//Card that was lead in a fight
-	String tempLeadingCard = "";
 	
 	public String toString() {
 		return "MellowQueryUserForTestcase PLAYER";
 	}
 	
 	public MellowQueryUserForTestcase() {
+		
+		//Reuse dataModel that AI uses:
+		this.dataModel = new DataModel();
+		
 		//Set default start scores:
 		this.setNewScores(0, 0);
+		
 	}
 	
 	@Override
@@ -54,6 +52,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	@Override
 	public void resetStateForNewRound() {
+		this.dataModel.resetStateForNewRound();
 		
 		if(savedPlayHistory.equals("") == false) {
 			//Print last hand for user to see
@@ -63,50 +62,54 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			in.nextLine();
 		}
 		
-		dealerIndex = -1;
-		numCardsPlayedInRound = 0;
 		savedPlayHistory = "";
 		savedBidHistory = "";
+		
 	}
 	
 	@Override
 	public void setDealer(String playerName) {
-		for(int i=0; i<NUM_PLAYERS; i++) {
-			if(playerName.equals(playerNames[i])) {
-				dealerIndex = i;
-			}
-		}
+		
+		this.dataModel.setDealer(playerName);
+		
 	}
 
 	@Override
 	public void receiveBid(String playerName, int bid) {
+
+		this.dataModel.setBid(playerName, bid);
+
 		if(bid > 0) {
 			savedBidHistory += playerName + " bid " + bid  + ".\n";
 		} else if(bid == 0){
 			savedBidHistory += playerName + " bid mellow.\n";
 		} else {
 			System.err.println("ERROR: bid below 0");
+			System.exit(1);
 		}
+		
 	}
 
 	public void receiveCardPlayed(String playerName, String card) {
+
 		
-		if(numCardsPlayedInRound % NUM_PLAYERS == 0) {
+		if(this.dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS == 0) {
 			savedPlayHistory += "--new round--\n";
-			tempLeadingCard = card;
 		}
 		
-		numCardsPlayedInRound++;
 		
 		//Update the cards the current player has:
-		if(playerName.equals(playerNames[INDEX_CURRENT_PLAYER])) {
+		if(playerName.equals(this.dataModel.getPlayers()[Constants.CURRENT_AGENT_INDEX])) {
 			cardList.remove(card);
 		}
 		
 		savedPlayHistory += playerName + " played the " + card  + ".\n";
 		
+
+		this.dataModel.updateDataModelWithPlayedCard(playerName, card);
+		
 		//Setup for a new round:
-		if(numCardsPlayedInRound >= NUM_CARDS) {
+		if(this.dataModel.getCardsPlayedThisRound() >= Constants.NUM_CARDS) {
 			
 			//Wait N seconds so the final state of the round will printed at the bottom of the console:
 			try {
@@ -126,13 +129,16 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	@Override
 	public void setCardsForNewRound(String[] cards) {
+		
+		this.dataModel.setupCardsInHandForNewRound(cards);
+		
 		cardList = new ArrayList<String>();
 		
 		for(int i=0; i<cards.length; i++) {
 			cardList.add(cards[i]+ "");
 		}
 		
-		if(cardList.size() == NUM_CARDS/NUM_PLAYERS) {
+		if(cardList.size() == Constants.NUM_CARDS/Constants.NUM_PLAYERS) {
 			//Sort the cards
 			cardList = CardStringFunctions.sort(cardList);
 			
@@ -146,6 +152,8 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	@Override
 	public void setNewScores(int teamAScore, int teanBScore) {
+		this.dataModel.setNewScores(teamAScore, teanBScore);
+		
 		scoreAtStartOfRound = "Your Score      Their Score\n";
 		scoreAtStartOfRound += " " + teamAScore + ("       ").substring( (teamAScore +"").length() ) + "         " + teanBScore + "\n";
 	}
@@ -159,7 +167,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		String play = "";
 		
 		//If it's the last case to play, you don't have any choices to make:
-		if(NUM_CARDS - numCardsPlayedInRound <= NUM_PLAYERS) {
+		if(Constants.NUM_CARDS - this.dataModel.getCardsPlayedThisRound() <= Constants.NUM_PLAYERS) {
 			
 			
 			printStr += "You are playing your last card: " + cardList.get(0).toUpperCase() + "\n";
@@ -170,9 +178,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			
 			play = cardList.get(0).toUpperCase() + " ";
 			
-		} else if(isNextCardLeading(numCardsPlayedInRound) == false && handUtilsQueryForTestcase.hasOnlyOneChoice(tempLeadingCard, cardList)) {
+		} else if(isNextCardLeading(this.dataModel.getCardsPlayedThisRound()) == false && handUtilsQueryForTestcase.hasOnlyOneChoice(this.dataModel.getCardLeaderThrow(), cardList)) {
 			
-			play = handUtilsQueryForTestcase.getOnlyCardToPlay(tempLeadingCard, cardList);
+			play = handUtilsQueryForTestcase.getOnlyCardToPlay(this.dataModel.getCardLeaderThrow(), cardList);
 			printStr += "You are playing the " + play + "\n(It's the only legal card to play)\n";
 			printStr += "Input anything to continue";
 			System.out.println(printStr);
@@ -228,9 +236,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 
 	@Override
 	public void setNameOfPlayers(String[] players) {
-		for(int i=0; i<players.length; i++) {
-			playerNames[i] = players[i] + "";
-		}
+		
+		this.dataModel.setNameOfPlayers(players);
+		
 		
 	}
 	
@@ -239,7 +247,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	private String getGamePlayerStateString() {
 		String ret = "";
 		
-		ret += "Your name: " + playerNames[0] + "\n";
+		ret += "Your name: " + this.dataModel.getPlayers()[0] + "\n";
+		
+		int dealerIndex = this.dataModel.getDealerIndexAtStartOfRound();
 		
 		if(dealerIndex ==0 ) { 
 			ret += "You are the dealer" + "\n";
@@ -283,7 +293,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	}
 	
 	public static boolean isNextCardLeading(int numCardsPlayedInRound) {
-		return numCardsPlayedInRound % NUM_PLAYERS == 0;
+		return numCardsPlayedInRound % Constants.NUM_PLAYERS == 0;
 	}
 
 	public PrintWriter getTestCaseWriter() {
@@ -301,7 +311,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			
 			do {
 				num++;
-				f = new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt");
+				f = new File("..\\TestCaseAndReplayData\\testcases\\" + this.dataModel.getPlayers()[0] + "\\testcase" +  num + ".txt");
 			} while(f.exists());
 			
 			
@@ -320,7 +330,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		try {
 			
 			
-			testCaseFile = new PrintWriter(new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0] + "\\testcase" +  num + ".txt"));
+			testCaseFile = new PrintWriter(new File("..\\TestCaseAndReplayData\\testcases\\" + this.dataModel.getPlayers()[0] + "\\testcase" +  num + ".txt"));
 			
 		} catch( Exception e) {
 			e.printStackTrace();
@@ -331,7 +341,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 	
 	public void makeDirectoryIfNotExists() {
 
-		File directory = new File("..\\TestCaseAndReplayData\\testcases\\" + this.playerNames[0]);
+		File directory = new File("..\\TestCaseAndReplayData\\testcases\\" + this.dataModel.getPlayers()[0]);
 	    if (! directory.exists()){
 	        directory.mkdir();
 	    }
@@ -352,12 +362,23 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			
 			newTestCase.println("Expert alternative response:");
 			newTestCase.println(alternative.toUpperCase());
+			
+			printHelpComments();
+			
 			newTestCase.flush();
 			newTestCase.close();
 			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void printHelpComments() {
+		//TODO:
+		//record how many tricks everyone got...
+		
+		// ex: # Richard 5/4
+		//TODO: if only choice, mention it.
 	}
 	
 }

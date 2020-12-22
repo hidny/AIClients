@@ -157,6 +157,11 @@ public class BiddingSituation {
 		if (intBid < 0) {
 			intBid = 0;
 		}
+		
+		//Don't double mellow:
+		if(intBid == 0 && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0) {
+			intBid = 1;
+		}
 	
 		System.out.println("Final bid " + intBid);
 
