@@ -178,7 +178,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			
 			play = cardList.get(0).toUpperCase() + " ";
 			
-		} else if(isNextCardLeading(this.dataModel.getCardsPlayedThisRound()) == false && handUtilsQueryForTestcase.hasOnlyOneChoice(this.dataModel.getCardLeaderThrow(), cardList)) {
+		} else if(only1Choice()) {
 			
 			play = handUtilsQueryForTestcase.getOnlyCardToPlay(this.dataModel.getCardLeaderThrow(), cardList);
 			printStr += "You are playing the " + play + "\n(It's the only legal card to play)\n";
@@ -280,6 +280,8 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			ret += savedPlayHistory + "\n";
 		}
 
+		
+		
 		//Sort the cards
 		cardList = CardStringFunctions.sort(cardList);
 		
@@ -288,6 +290,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			ret += cardList.get(i) + " ";
 		}
 		ret += "\n";
+		ret += "\n";
+		
+		ret += getHelpComments();
 		
 		return ret;
 	}
@@ -363,7 +368,6 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			newTestCase.println("Expert alternative response:");
 			newTestCase.println(alternative.toUpperCase());
 			
-			printHelpComments();
 			
 			newTestCase.flush();
 			newTestCase.close();
@@ -373,12 +377,27 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		}
 	}
 	
-	public static void printHelpComments() {
+	public boolean only1Choice() {
+		return isNextCardLeading(this.dataModel.getCardsPlayedThisRound()) == false
+			&& handUtilsQueryForTestcase.hasOnlyOneChoice(this.dataModel.getCardLeaderThrow(), cardList);
+		
+	}
+	
+	public String getHelpComments() {
+		
+		String ret = "";
+		if(only1Choice()) {
+			ret += "# Only option" + "\n";
+		} else {
+			
+		}
 		//TODO:
 		//record how many tricks everyone got...
 		
 		// ex: # Richard 5/4
 		//TODO: if only choice, mention it.
+		
+		return ret;
 	}
 	
 }
