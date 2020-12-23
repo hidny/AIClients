@@ -389,15 +389,31 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		if(only1Choice()) {
 			ret += "# Only option" + "\n";
 		} else {
+
+			
+			if(bidsAreDone()) {
+				//record how many tricks everyone got...
+				for(int i=0; i<dataModel.getPlayers().length; i++) {
+					ret += "# " + dataModel.getPlayers()[i] + ": "
+							+ dataModel.getTricks(dataModel.getPlayers()[i]) 
+							+ "/" + dataModel.getBid(dataModel.getPlayers()[i]) + "\n";
+				}
+			}
 			
 		}
-		//TODO:
-		//record how many tricks everyone got...
-		
-		// ex: # Richard 5/4
-		//TODO: if only choice, mention it.
 		
 		return ret;
+	}
+	
+	public boolean bidsAreDone() {
+		
+		for(int i=0; i<dataModel.getPlayers().length; i++) {
+			if(dataModel.getBid(i) == -1) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 }
