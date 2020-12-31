@@ -10,10 +10,10 @@ public class MichaelGenTestcases {
 	public static void main(String[] args) {
 		
 		//Create testcases in Michael folder:
-		//String autoArgs[] = {"mellow", "Michael", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "3"};
+		String autoArgs[] = {"mellow", "Michael", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "3"};
 		
 		//Put testcases in garbage folder
-		String autoArgs[] = {"mellow", "garbageTestData", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "13", "37", "1"};
+		//String autoArgs[] = {"mellow", "garbageTestData", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "13", "37", "1"};
 		
 		//TEST testcases in april 2020:
 		//String autoArgs[] = {"mellow", "MichaelApril2020", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "3"};

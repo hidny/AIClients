@@ -63,7 +63,7 @@ public class PartnerSaidMelllowSituation {
 		for(int curSuit=0; curSuit<Constants.NUM_SUITS; curSuit++) {
 			if(dataModel.currentAgentHasSuit(curSuit)) {
 
-				if(dataModel.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, curSuit)) {
+				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, curSuit)) {
 					//if mellow player signal no to suit
 					
 					//TODO: check if any test cas even reaches this point
@@ -152,7 +152,7 @@ public class PartnerSaidMelllowSituation {
 					dataModel.getNumCardsPlayedForSuit(curSuit)
 					 - dataModel.getNumCardsCurrentUserStartedWithInSuit(curSuit);
 			
-			String maxRankMellowPartnerCard = dataModel.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, curSuit);
+			String maxRankMellowPartnerCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, curSuit);
 
 			int currentValueOfSuitPlay = -1;
 			String currentCardToPlay = null;
@@ -226,7 +226,7 @@ public class PartnerSaidMelllowSituation {
 			if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE) == false) {
 				
 				
-				if(dataModel.mellowSignalledNoCardOverCardSameSuit(curStrongestCardPlayed, MELLOW_PLAYER_INDEX) == false) {
+				if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(curStrongestCardPlayed, MELLOW_PLAYER_INDEX) == false) {
 
 					//If mellow player partner seems vulnerable based on signals: trump if possible
 					//TODO: make it more sophisticated in future
@@ -284,7 +284,7 @@ public class PartnerSaidMelllowSituation {
 					
 				} else {
 					
-					if(dataModel.mellowSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
+					if(dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
 						
 						//TODO still want to take trick sometimes... 
 						

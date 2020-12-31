@@ -12,12 +12,8 @@ import mellow.cardUtils.*;
 //      AND current player has multiple choices.
 public class DataModel {
 
-	
-	//TODO: MELLOW_PLAYER_SIGNALED_NO is just a rudimentary signal, feel free to develop it.
-	static final int MELLOW_PLAYER_SIGNALED_NO = 300;
-	
 	static final int IMPOSSIBLE =0;
-	static final int CERTAINTY = 1000;
+	static final int CERTAINTY = 1;
 	static final int DONTKNOW = -1;
 	
 	static final int BID_NOT_SET = -1;
@@ -25,19 +21,19 @@ public class DataModel {
 	static final int INDEX_SUCH_THAT_CURRENT_PLAYER_BIDS_FIRST = Constants.NUM_PLAYERS - 1;
 	
 	//This is dumb: Think about changing it later.
-	private static final int ACE = 12;
+	public static final int ACE = 12;
 	public static final int KING = 11;
-	private static final int QUEEN = 10;
-	private static final int JACK = 9;
-	private static final int RANK_TEN = 8;
-	private static final int RANK_NINE = 7;
-	private static final int RANK_EIGHT = 6;
-	private static final int RANK_SEVEN = 5;
+	public static final int QUEEN = 10;
+	public static final int JACK = 9;
+	public static final int RANK_TEN = 8;
+	public static final int RANK_NINE = 7;
+	public static final int RANK_EIGHT = 6;
+	public static final int RANK_SEVEN = 5;
 	public static final int RANK_SIX = 4;
 	public static final int RANK_FIVE = 3;
 	public static final int RANK_FOUR = 2;
-	private static final int RANK_THREE = 1;
-	private static final int RANK_TWO = 0;
+	public static final int RANK_THREE = 1;
+	public static final int RANK_TWO = 0;
 	
 
 	public int getOurScore() {
@@ -77,8 +73,13 @@ public class DataModel {
 
 	private boolean cardsUsed[][] = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
-	private int cardsCurrentlyHeldByPlayer[][][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+	private byte cardsCurrentlyHeldByPlayer[][][] = new byte[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 	
+	
+	public byte[][][] getCardsCurrentlyHeldByPlayers() {
+		return cardsCurrentlyHeldByPlayer;
+	}
+
 	private boolean cardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 
 	//Map:
@@ -105,6 +106,9 @@ public class DataModel {
 	private int playerWhoPlayedCard[] = new int[Constants.NUM_CARDS];
 	
 	private int simulation_level = 0;
+	
+	//TODO: maybe put signal handler in constructors?
+	public PlayerSignalHandler signalHandler = new PlayerSignalHandler(this);
 	
 	public DataModel createHardCopy() {
 		DataModel copy = new DataModel();
@@ -267,7 +271,11 @@ public class DataModel {
 			//I think that's viable as a strat to get opponent to also say mellow near the end of game...
 			
 			//For now, assume that if there's a mellow bid, player has no AS
-			setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, ACE);
+			signalHandler.setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, ACE);
+			
+		} else {
+			//TODO!
+			
 		}
 		//End Handle signals
 		
@@ -326,7 +334,7 @@ public class DataModel {
 		dealerIndexAtStartOfRound = INDEX_SUCH_THAT_CURRENT_PLAYER_BIDS_FIRST;
 		
 		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
-		cardsCurrentlyHeldByPlayer = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		cardsCurrentlyHeldByPlayer = new byte[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsPlayedThisRound =0;
 		cardsPlayedThisRound = 0;
@@ -419,9 +427,9 @@ public class DataModel {
 		//End check
 
 
-		if(indexPlayer != Constants.CURRENT_AGENT_INDEX) {
-			updateDataModelSignalsWithPlayedCard(playerName, card);
-		}
+		//UPDATE SIGNALS:
+		signalHandler.updateDataModelSignalsWithPlayedCard(playerName, card);
+		//END UPDATE SIGNALS
 		 
 		cardsPlayedThisRound++;
 		
@@ -430,281 +438,6 @@ public class DataModel {
 			logicallyDeduceWhoHasCardsByProcessOfElimination();
 		} while(logicallyDeduceEntireOpponentHandFoundSomething());
 		
-		//TODO:
-		
-		
-	}
-	
-	//THIS IS JUST A SIMPLE 1st attempt!
-
-	//So far, it only deals with mellow signals
-	public void updateDataModelSignalsWithPlayedCard(String playerName, String card) {
-		
-		int playerIndex = convertPlayerNameToIndex(playerName);
-
-
-		//Deal with mellow signals
-		
-		if(bids[playerIndex] == 0 && burntMellow(playerIndex) == false) {
-			int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
-			int cardNum = getMellowCardIndex(card);
-
-			
-			if(throwNumber == 0) {
-				//If throwNumber 0, mellow player lead first card
-				// and now it's the second player's turn
-				
-				//and the first card lead by a mellow player is usually weird... ignore leading
-				//TODO: don't ignore in future!
-				
-			} else {
-				
-				int suitLeadIndex = getSuitOfLeaderThrow();
-				
-				if(CardStringFunctions.getIndexOfSuit(card) == suitLeadIndex) {
-					//Mellow following lead
-					
-					//TODO: Assumes mellow play doesn't know if it could be protected....
-					// Did this to keep it simple.
-
-					if(getCurrentFightWinningCard().equals(card)) {
-						
-						//Mellow follows suit over, probably has nothing under.
-						//Mellow player probably doesn't have cards under card mellow player threw.
-						
-						// TODO: There's an exception if it's 2nd or 3rd thrower and knows last player must play
-						// above, but whatever...
-						
-						for(int rankIndex=getRankIndex(card) - 1 ; rankIndex >= RANK_TWO; rankIndex--) {
-							//TODO: if there's another state, we will need to make a complicate state transition table
-							//MELLOW IND -> LEAD_SUGGESTION ...
-							setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
-						}
-						
-					} else {
-						
-						//Mellow follows suit under
-						//Mellow player probability doesn't have cards between curFightWinner and card mellow player threw.
-						
-						String curWinningCard = getCurrentFightWinningCard();
-						
-						int suitCurrentWinning = CardStringFunctions.getIndexOfSuit(curWinningCard);
-						
-						int maxRankIndex = getRankIndex(getCurrentFightWinningCard());
-						
-						if(suitCurrentWinning == Constants.SPADE && suitLeadIndex != Constants.SPADE) {
-							maxRankIndex = ACE;
-						}
-						
-						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= maxRankIndex; rankIndex++) {
-
-							//TODO: if there's another state, we will need to make a complicate state transition table
-							//MELLOW IND -> LEAD_SUGGESTION ...
-							setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
-						}
-					}
-					
-				} else {
-					///Mellow not following suit (Mellow is throwing off)
-					
-					int mellowSuitPlayed = CardStringFunctions.getIndexOfSuit(card);
-					
-					//If mellow player played spade and the partner can't bail them out:
-					if(mellowSuitPlayed == Constants.SPADE && throwNumber >= 1) {
-						
-						if(getCurrentFightWinningCard().equals(card)) {
-
-							//TODO: if it's unrealistic (EX: it would mean mel has 6 spades, then reconsider signal)\
-							
-							//If their card is winning, they probably don't have a choice:
-							for(int cardIndex=0; cardIndex < Constants.NUM_CARDS; cardIndex++) {
-
-								int suitIndex = cardIndex / Constants.NUM_RANKS;
-								int rankIndex = cardIndex % Constants.NUM_RANKS;
-								
-								if(suitIndex == Constants.SPADE) {
-									continue;
-								} else {
-									setCardMellowSignalNoIfUncertain(playerIndex, suitIndex, rankIndex);
-								}
-								
-							}
-						} else {
-							//Mellow is just trumping under previous trump
-							
-							//Mellow prob doesn't have spade between Mellow card played,
-							//and the fight winner card played
-							int rankCurrentFightWinner = getRankIndex(getCurrentFightWinningCard());
-							
-							for(int rankIndex = getRankIndex(card) + 1; rankIndex < rankCurrentFightWinner; rankIndex++) {
-								
-								//TODO: if there's another state, we will need to make a complicate state transition table
-								//MELLOW IND -> LEAD_SUGGESTION ...
-								setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, rankIndex);
-							}
-						}
-						
-					} else {
-						
-						//If Mellow player plays plays off,
-						//Mellow player prob doesn't have anything over that offsuit
-						for(int rankIndex=getRankIndex(card) + 1 ; rankIndex <= ACE; rankIndex++) {
-							setCardMellowSignalNoIfUncertain(playerIndex, mellowSuitPlayed, rankIndex);
-						}
-					}
-					
-				}
-				
-				
-			}
-		
-		}
-	}
-	
-	
-	public boolean mellowPlayerSignalNoCardsOfSuit(int mellowPlayerIndex, int suitIndex) {
-		if( getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex) == null ) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	
-	public boolean mellowPlayerMayBeInDangerInSuit(int mellowPlayerIndex, int suitIndex) {
-		
-		String maxCardMellowSignalledCouldHave = getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex);
-		
-		if(maxCardMellowSignalledCouldHave == null) {
-			return false;
-		}
-		
-		String currentlyWinningCard = this.getCurrentFightWinningCard();
-		
-		if(CardStringFunctions.getIndexOfSuit(currentlyWinningCard) != suitIndex) {
-			
-			if(suitIndex == Constants.SPADE) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		int rankPossibleMellowCard = this.getRankIndex(maxCardMellowSignalledCouldHave);
-		int rankCurrentlyWinningCard = this.getRankIndex(currentlyWinningCard);
-		
-		if(rankPossibleMellowCard > rankCurrentlyWinningCard) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
-		for(int rank=ACE; rank>=RANK_TWO; rank--) {
-			if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][rank] != IMPOSSIBLE
-					&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
-				return getCardString(rank, suitIndex);
-			}
-			
-		}
-		
-		return null;
-	}
-	
-public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
-		
-		boolean cardsOverInputCard[][] = this.getCardsStrictlyMorePowerfulThanCard(inputCard);
-		
-		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
-		
-		for(int j=0; j<Constants.NUM_RANKS; j++) {
-			
-			if(cardsOverInputCard[suitIndex][j]) {
-
-				if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][j] != IMPOSSIBLE
-						&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
-					
-					//At this point, the mellow player signalled that they could have a card in between
-					//And you should feel nervous about playing over the currently winning card...
-					return false;
-				}
-			}
-		}
-		
-		return true;
-		
-	}
-
-	public boolean mellowSignalledNoCardBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
-		
-		if(this.cardAGreaterThanCardBGivenLeadCard(biggerCard, smallerCard) == false) {
-			System.err.println("ERROR in mellowSignalledNoCardBetweenTwoCards: biggerCard should be bigger then smallerCard");
-			System.exit(1);
-			
-		}
-		boolean cardsOverSmallerCard[][] = this.getCardsStrictlyMorePowerfulThanCard(smallerCard);
-		boolean cardsUnderBiggerCard[][] = this.getCardsStrictlyLessPowerfulThanCard(biggerCard);
-		
-		for(int i=0; i<Constants.NUM_SUITS; i++) {
-			for(int j=0; j<Constants.NUM_RANKS; j++) {
-				
-				if(cardsOverSmallerCard[i][j] && cardsUnderBiggerCard[i][j]) {
-
-					if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != IMPOSSIBLE
-							&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != MELLOW_PLAYER_SIGNALED_NO) {
-						
-						//At this point, the mellow player signaled that they could have a card in between
-						//And you should feel nervous about playing over the currently winning card...
-						return false;
-					}
-				}
-			}
-		}
-		
-		return true;
-		
-	}
-
-	//TODO: use later... when there's more test cases
-	public int getNumCardsMellowSignalledBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
-		
-		if(this.cardAGreaterThanCardBGivenLeadCard(biggerCard, smallerCard) == false) {
-			System.err.println("ERROR in numCardsMellowSignalledBetweenTwoCards: biggerCard should be bigger then smallerCard");
-			System.exit(1);
-			
-		}
-		boolean cardsOverSmallerCard[][] = this.getCardsStrictlyMorePowerfulThanCard(smallerCard);
-		boolean cardsUnderBiggerCard[][] = this.getCardsStrictlyLessPowerfulThanCard(biggerCard);
-		
-		int ret = 0;
-		
-		for(int i=0; i<Constants.NUM_SUITS; i++) {
-			for(int j=0; j<Constants.NUM_RANKS; j++) {
-				
-				if(cardsOverSmallerCard[i][j] && cardsUnderBiggerCard[i][j]) {
-
-					if(cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != IMPOSSIBLE
-							&& cardsCurrentlyHeldByPlayer[mellowPlayerIndex][i][j] != MELLOW_PLAYER_SIGNALED_NO) {
-						
-						//At this point, the mellow player signaled that they could have a card in between
-						//And you should start to feel nervous about playing over the currently winning card...
-						ret++;
-					}
-				}
-			}
-		}
-		
-		return ret;
-		
-	}
-	
-	//TODO: if mellow has card even though the player signal he/she doesn't: note that down!
-	public void setCardMellowSignalNoIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
-		if(cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != CERTAINTY
-				&& cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] != IMPOSSIBLE) {
-					cardsCurrentlyHeldByPlayer[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
-				}
 	}
 	
 	
@@ -1728,23 +1461,6 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 	}
 	
-	private int getNumSuitsWithMastersInHand() {
-		 int numberOfMasters = 0;
-		 for(int i=0; i<cardsUsed.length; i++) {
-			for(int j=cardsUsed[0].length - 1; j>=0; j--) {
-				if(cardsUsed[i][j]) {
-					continue;
-				} else if(cardsCurrentlyHeldByPlayer[0][i][j] == CERTAINTY) {
-					numberOfMasters++;
-					break;
-				} else {
-					break;
-				}
-			}
-		}
-		 return numberOfMasters;
-	}
-	
 	public boolean currentPlayerHasMasterInSuit(int suitIndex) {
 		return getMasterInHandOfSuit(suitIndex) != null;
 	}
@@ -1765,7 +1481,6 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 
 	public String getHighestOffSuitCardAnySuitButSpade() {
 		String cardToPlay = "";
-		
 		
 		FOUNDCARD:
 		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
@@ -2066,7 +1781,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 	}
 	public static String getCardString(int cardIndex) {
 		String ret = "";
-		int number = cardIndex % 13;
+		int number = cardIndex % Constants.NUM_RANKS;
 		if(number < 8) {
 			ret += (char)(number + '2') + "";
 		} else if(number == 8) {
@@ -2084,7 +1799,7 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			System.exit(1);
 		}
 		
-		int suitIndex = cardIndex/13;
+		int suitIndex = cardIndex/Constants.NUM_RANKS;
 		if(suitIndex == 0) {
 			ret += "S";
 		} else if(suitIndex ==1) {

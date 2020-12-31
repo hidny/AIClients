@@ -108,7 +108,7 @@ public class SeatedLeftOfOpponentMellow {
 					//Play barely over max card mellow player signaled they have...
 					//This strategy might be exploitable, but it takes a lot of imagination on the mellow player's part.
 					
-					if(dataModel.mellowPlayerSignalNoCardsOfSuit
+					if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit
 							(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
 						
 						//lazy approx:
@@ -133,7 +133,7 @@ public class SeatedLeftOfOpponentMellow {
 							}
 
 							String minCardOverMaxMellowCard = null;
-							String maxMellowCard = dataModel.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals
+							String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals
 									(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow());
 							
 					
