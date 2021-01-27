@@ -65,6 +65,13 @@ public class MellowVoidSignalsNoActiveMellows {
 			
 			if(throwerIndex == 0) {
 				
+				//Weak attempt to handle meaning of leading a king:
+				//It didn't change a single test case... :(
+				if(dataModel.getRankIndex(card) == dataModel.KING) {
+					softMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+
+				}
+				
 			} else if(throwerIndex > 0 ) {
 				
 				//This is the obvious case:
@@ -129,6 +136,12 @@ public class MellowVoidSignalsNoActiveMellows {
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {
 
 		int curMinRank = hardMaxCardPlayed[playerIndex][suitIndex] + 1;
+		
+		if(hardMaxCardPlayed[playerIndex][suitIndex] == -1 
+				&& softMaxCardPlayed[playerIndex][suitIndex] != -1) {
+			curMinRank = softMaxCardPlayed[playerIndex][suitIndex];
+		}
+		
 		for(int rank=curMinRank; rank <= this.dataModel.ACE; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
 				return false;

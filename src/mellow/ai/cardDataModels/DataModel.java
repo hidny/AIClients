@@ -1439,15 +1439,23 @@ public class DataModel {
 				for(int j=Constants.NUM_RANKS - 1; j>=0; j--) {
 					if(cardsUsed[i][j]) {
 						continue;
-					} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][j] == CERTAINTY
-							&&
+					} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][j] == CERTAINTY) {
+						
+						//It's always safe to play spade:
+						if(i == Constants.SPADE) {
+							return getCardString(Constants.NUM_RANKS * i + j);
+						}
+						
+						else if(
 								(    this.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 								  || ! this.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, i)
 							      || this.isVoid(Constants.RIGHT_PLAYER_INDEX, i) == false
 								)
 							){
-						return getCardString(Constants.NUM_RANKS * i + j);
+							return getCardString(Constants.NUM_RANKS * i + j);
 						
+						}
+							
 
 					} else {
 						break;
