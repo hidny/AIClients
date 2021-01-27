@@ -48,7 +48,6 @@ public class PlayerSaidMellowSignals {
 						(card, dataModel.getCurrentFightWinningCardBeforeAIPlays())
 						) {
 					
-					System.out.println("TESTING FIX PlayerSaidMellow 1");
 					//Mellow follows suit over, probably has nothing under.
 					//Mellow player probably doesn't have cards under card mellow player threw.
 					
@@ -94,7 +93,6 @@ public class PlayerSaidMellowSignals {
 					
 					if(dataModel.cardAGreaterThanCardBGivenLeadCard
 							(card, dataModel.getCurrentFightWinningCardBeforeAIPlays())) {
-						System.out.println("TESTING FIX PlayerSaidMellow 2");
 						//TODO: if it's unrealistic (EX: it would mean mel has 6 spades, then reconsider signal)\
 						
 						//If their card is winning, they probably don't have a choice:

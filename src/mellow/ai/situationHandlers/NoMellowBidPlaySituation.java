@@ -52,7 +52,11 @@ public class NoMellowBidPlaySituation {
 		//isVoid(int playerIndex, int suitIndex)
 		//if(partnerisVoid)
 		
+		
 		//TODO: use signals to not play certain suits...
+		
+		//TODO: what if we want the opponents to trump???
+		
 		
 		//TODO: check if master card in SAFE SUIT!!!!
 		if(dataModel.getMasterCardInSafeSuit() != null) {

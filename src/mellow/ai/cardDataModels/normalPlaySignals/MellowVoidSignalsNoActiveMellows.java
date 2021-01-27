@@ -29,7 +29,6 @@ public class MellowVoidSignalsNoActiveMellows {
 		hardMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		softMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
-		System.out.println("INIT");
 		for(int i=0; i<hardMaxCardPlayed.length; i++) {
 			for(int j=0; j<hardMaxCardPlayed[0].length; j++) {
 				hardMaxCardPlayed[i][j] = -1;
@@ -72,10 +71,10 @@ public class MellowVoidSignalsNoActiveMellows {
 				if(dataModel.cardAGreaterThanCardBGivenLeadCard
 						(dataModel.getCurrentFightWinningCardBeforeAIPlays(), card)
 					) {
-					System.out.println("TEST: Signal: " + playerName + " probably doesn't have lower than " + card);
-					
-					System.out.println("Currently winning card: " + dataModel.getCurrentFightWinningCardBeforeAIPlays());
-					System.out.println();
+					//System.out.println("TEST: Signal: " + playerName + " probably doesn't have lower than " + card);
+					//System.out.println("Currently winning card: " + dataModel.getCurrentFightWinningCardBeforeAIPlays());
+					//System.out.println();
+	
 					//What if you don't want to go over partner?
 					
 					hardMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);

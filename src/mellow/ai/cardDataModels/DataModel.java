@@ -1581,8 +1581,11 @@ public class DataModel {
 						
 						//TODO: put in a function:
 						&&
+						
 						(  this.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 						|| ! this.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, j)
+						
+						//TODO: sanity check that this check is redundant because of the signal check
 						|| this.isVoid(Constants.RIGHT_PLAYER_INDEX, j) == false
 						)
 					)
