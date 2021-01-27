@@ -52,7 +52,10 @@ public class NoMellowBidPlaySituation {
 		//isVoid(int playerIndex, int suitIndex)
 		//if(partnerisVoid)
 		
-		if(dataModel.getMasterCard() != null) {
+		//TODO: use signals to not play certain suits...
+		
+		//TODO: check if master card in SAFE SUIT!!!!
+		if(dataModel.getMasterCardInSafeSuit() != null) {
 			
 			if(dataModel.playerCouldSweepSpades(Constants.CURRENT_AGENT_INDEX)) {
 				
@@ -66,8 +69,10 @@ public class NoMellowBidPlaySituation {
 				}
 			}
 			
+			//TODO: avoid playing certain suits based on signals...
 			//play a master card:
-			cardToPlay = dataModel.getMasterCard();
+			cardToPlay = dataModel.getMasterCardInSafeSuit();
+			
 			System.out.println("***********");
 			System.out.println("Playing master card: " + cardToPlay);
 			System.out.println("***********");
@@ -75,7 +80,13 @@ public class NoMellowBidPlaySituation {
 			System.out.println("***********");
 			System.out.println("Leading low:");
 			System.out.println("***********");
-			cardToPlay = dataModel.getLowOffSuitCardToLead();
+			
+			
+			cardToPlay = dataModel.getLowOffSuitCardToLeadInSafeSuit();
+			if(cardToPlay == null) {
+				cardToPlay = dataModel.getLowOffSuitCardToLead();
+			}
+			 
 		}
 		
 		return cardToPlay;

@@ -232,7 +232,7 @@ public class SeatedRightOfOpponentMellow {
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
 		
-		String curStrongestCard = dataModel.getCurrentFightWinningCard();
+		String curStrongestCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
 		
 		if(dataModel.throwerMustFollowSuit()) {
@@ -440,7 +440,7 @@ public class SeatedRightOfOpponentMellow {
 	public static String AIFourthThrow(DataModel dataModel) {
 		
 		//Burn a mellow lead throw: (Very important to not mess this up!)
-		if(	dataModel.getCardLeaderThrow().equals(dataModel.getCurrentFightWinningCard()) ) {
+		if(	dataModel.getCardLeaderThrow().equals(dataModel.getCurrentFightWinningCardBeforeAIPlays()) ) {
 				//Mellow lead and losing (Like when grand-papa used to play)
 
 			

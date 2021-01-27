@@ -32,7 +32,7 @@ public class SeatedLeftOfOpponentMellow {
 		} else if(throwIndex > 0 && 
 				dataModel.isPrevThrowWinningFight() ) {
 			
-			String curWinningCard = dataModel.getCurrentFightWinningCard();
+			String curWinningCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			
 			if(CardStringFunctions.getIndexOfSuit(curWinningCard) 
 					!= dataModel.getSuitOfLeaderThrow()) {
@@ -116,7 +116,7 @@ public class SeatedLeftOfOpponentMellow {
 
 					} else {
 
-							String currentFightWinner = dataModel.getCurrentFightWinningCard();
+							String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 							
 							String minCardToWin = null;
 							if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == dataModel.getSuitOfLeaderThrow()

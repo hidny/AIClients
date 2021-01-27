@@ -12,9 +12,9 @@ import mellow.cardUtils.*;
 //      AND current player has multiple choices.
 public class DataModel {
 
-	static final int IMPOSSIBLE =0;
-	static final int CERTAINTY = 1;
-	static final int DONTKNOW = -1;
+	public static final int IMPOSSIBLE =0;
+	public static final int CERTAINTY = 1;
+	public static final int DONTKNOW = -1;
 	
 	static final int BID_NOT_SET = -1;
 	static final int CARD_NOT_PLAYED_YET = -1;
@@ -306,6 +306,15 @@ public class DataModel {
 		}
 		return false;
 	}
+	
+	public boolean stillActiveMellow() {
+		for(int i=0; i<bids.length; i++) {
+			if(bids[i] == 0 && tricks[i] == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public boolean saidMellow(int playerIndex) {
 		return bids[playerIndex] == 0;
@@ -355,6 +364,8 @@ public class DataModel {
 		 }
 
 		resetCardKnowledgeTableForNewRound();
+		
+		this.signalHandler.resetCardSignalsForNewRound();
 		 
 	}
 	
@@ -667,10 +678,10 @@ public class DataModel {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
 		if(throwNumber == 3) {
-			if(cardAGreaterThanCardBGivenLeadCard(card, getCurrentFightWinningCard())) { 
+			if(cardAGreaterThanCardBGivenLeadCard(card, getCurrentFightWinningCardBeforeAIPlays())) { 
 				tricks[indexPlayer]++;
 			} else {
-				String winningCard = getCurrentFightWinningCard();
+				String winningCard = getCurrentFightWinningCardBeforeAIPlays();
 				
 				if(getCardLeaderThrow().equals(winningCard)) {
 					tricks[(indexPlayer + 1)%4]++;
@@ -779,7 +790,7 @@ public class DataModel {
 	
 	
 	//pre: function is called when AI is deciding the 2nd, 3rd or 4th throu
-	public String getCurrentFightWinningCard() {
+	public String getCurrentFightWinningCardBeforeAIPlays() {
 		
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
@@ -1076,7 +1087,7 @@ public class DataModel {
 			System.exit(1);
 		}
 		
-		String currentWinnerCard = getCurrentFightWinningCard();
+		String currentWinnerCard = getCurrentFightWinningCardBeforeAIPlays();
 		int winnerSuitIndex = CardStringFunctions.getIndexOfSuit(currentWinnerCard);
 		int winnerRankIndex = getRankIndex(currentWinnerCard);
 
@@ -1161,12 +1172,12 @@ public class DataModel {
 			return true;
 
 		} else if(throwNumber == 2) {
-			if(getCardSecondThrow().equals(getCurrentFightWinningCard())) {
+			if(getCardSecondThrow().equals(getCurrentFightWinningCardBeforeAIPlays())) {
 				return true;
 			}
 
 		} else if(throwNumber == 3) {
-			if(getCardThirdThrow().equals(getCurrentFightWinningCard())) {
+			if(getCardThirdThrow().equals(getCurrentFightWinningCardBeforeAIPlays())) {
 				return true;
 			}
 
@@ -1187,11 +1198,11 @@ public class DataModel {
 		}
 		
 		if(throwNumber == 2) {
-			if(getCardLeaderThrow().equals(getCurrentFightWinningCard())) {
+			if(getCardLeaderThrow().equals(getCurrentFightWinningCardBeforeAIPlays())) {
 				return true;
 			}
 		} else if(throwNumber == 3) {
-			if(getCardSecondThrow().equals(getCurrentFightWinningCard())) {
+			if(getCardSecondThrow().equals(getCurrentFightWinningCardBeforeAIPlays())) {
 				return true;
 			}
 		} else {
@@ -1421,6 +1432,31 @@ public class DataModel {
 		 return null;
 	}
 	
+	//Deterministic and bad:
+	public String getMasterCardInSafeSuit() {
+		//TODO: order the search for master randomly between the off-suits:
+		 for(int i=Constants.NUM_SUITS - 1; i>=0; i--) {
+				for(int j=Constants.NUM_RANKS - 1; j>=0; j--) {
+					if(cardsUsed[i][j]) {
+						continue;
+					} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][i][j] == CERTAINTY
+							&&
+								(    this.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+								  || ! this.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, i)
+							      || this.isVoid(Constants.RIGHT_PLAYER_INDEX, i) == false
+								)
+							){
+						return getCardString(Constants.NUM_RANKS * i + j);
+						
+
+					} else {
+						break;
+					}
+				}
+			}
+		 return null;
+	}
+		
 	
 	public boolean leaderPlayedMaster() {
 		return isMasterCard(getCardLeaderThrow());
@@ -1533,6 +1569,32 @@ public class DataModel {
 		return cardToPlay;
 	}
 	
+	//LOWEST CARD goodish suit
+	public String getLowOffSuitCardToLeadInSafeSuit() {
+		String cardToPlay = null;
+		
+		FOUNDCARD:
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
+			//TODO: have no preference between the off suits... or have a smart preference.
+			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY
+						
+						//TODO: put in a function:
+						&&
+						(  this.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						|| ! this.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, j)
+						|| this.isVoid(Constants.RIGHT_PLAYER_INDEX, j) == false
+						)
+					)
+						{
+						cardToPlay = getCardString(13 * j + i);
+						break FOUNDCARD;
+				}
+			}
+		}
+		return cardToPlay;
+	}
+		
 
 	public String getLowOffSuitCardToPlayElseLowestSpade() {
 		String  cardToPlay = null;

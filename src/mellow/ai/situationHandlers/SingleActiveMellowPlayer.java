@@ -59,7 +59,7 @@ public class SingleActiveMellowPlayer {
 			//Follow suit:
 			
 			//if no one has trump:
-			String currentFightWinner = dataModel.getCurrentFightWinningCard();
+			String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == leaderSuitIndex) {
 				
@@ -89,7 +89,7 @@ public class SingleActiveMellowPlayer {
 			
 			//TODO: throw off card that gets rid of the most risk... not necessarily the spade.
 			
-			String currentFightWinner = dataModel.getCurrentFightWinningCard();
+			String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == Constants.SPADE) {
 				//Play spade under trump (this isn't always a good idea, but...)
 				//TODO: maybe consider not throwing off spade?

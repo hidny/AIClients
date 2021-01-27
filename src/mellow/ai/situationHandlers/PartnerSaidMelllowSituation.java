@@ -213,7 +213,7 @@ public class PartnerSaidMelllowSituation {
 
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		
-		String curStrongestCardPlayed = dataModel.getCurrentFightWinningCard();
+		String curStrongestCardPlayed = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
 		if(leadSuit != Constants.SPADE
 				&& dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, leadSuit)) {
@@ -337,7 +337,7 @@ public class PartnerSaidMelllowSituation {
 
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		
-		String currentFightWinnerCard = dataModel.getCurrentFightWinningCard();
+		String currentFightWinnerCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
 		if(currentFightWinnerCard == dataModel.getCardLeaderThrow()) {
 
@@ -391,7 +391,7 @@ public class PartnerSaidMelllowSituation {
 		System.out.println("TESTING PROTECTOR 4th throw");
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		
-		String currentFightWinnerCard = dataModel.getCurrentFightWinningCard();
+		String currentFightWinnerCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
 		if(currentFightWinnerCard == dataModel.getCardSecondThrow()) {
 
