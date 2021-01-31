@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.MonteCarloMain;
+import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
 public class NoMellowBidPlaySituation {
@@ -43,6 +44,8 @@ public class NoMellowBidPlaySituation {
 	public static String AILeaderThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		
+		//TODO: this shouldn't be 1st priority
+		     // Weight the benefits of playing every card and then choose...
 		cardToPlay = leadCardToHelpPartnerTrumpOtherwiseNull(dataModel);
 
 		if(cardToPlay != null) {
@@ -98,46 +101,68 @@ public class NoMellowBidPlaySituation {
 
 
 	public static String leadCardToHelpPartnerTrumpOtherwiseNull(DataModel dataModel) {
-		String cardToPlay = null;
 		
+		
+		String bestCardToPlay = null;
+		double currentBestScore = 0.0;
 		
 		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
 			
 			if(suitIndex != Constants.SPADE) {
 				
+				//Check if leading suitIndex helps partner trump:
+				if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
+
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false) {
 				
-				if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-					&&  dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
-					&&  dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false) {
-				
-					int numCardsOfSuitOpponentsHave = Constants.NUM_RANKS -
+					int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
 							- dataModel.getNumCardsPlayedForSuit(suitIndex) 
 							- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 					
-					if(numCardsOfSuitOpponentsHave >= 2
+					if(numCardsOfSuitOtherPlayersHave >= 2
 								
 							//If player on left is also void, that's great!
-							|| (numCardsOfSuitOpponentsHave >= 1
+							|| (numCardsOfSuitOtherPlayersHave >= 1
 								&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
 							) {
 
+						
+						double curScore = numCardsOfSuitOtherPlayersHave;
+						String cardToPlay = null;
+						
+						
 						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 							cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+							
+							//Made up a number to say having the master card to lead in partner's void suit is cool:
+							//TODO: refine later
+							curScore += 5.0;
+							
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
 
-						return cardToPlay;
+						if(curScore > currentBestScore) {
+							currentBestScore = curScore;
+							bestCardToPlay = cardToPlay;
+						}
+						
 
 					} else {
 						continue;
 					}
 				}
 				
+				//TODO: Score leading other scenarios here!
+				
 			}
 		}
 		
-		return null;
+		return bestCardToPlay;
 	}
 	
 	public static String AISecondThrow(DataModel dataModel) {

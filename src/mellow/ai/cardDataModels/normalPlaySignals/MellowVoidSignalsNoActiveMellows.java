@@ -144,6 +144,15 @@ public class MellowVoidSignalsNoActiveMellows {
 		
 		for(int rank=curMinRank; rank <= this.dataModel.ACE; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
+				
+				//SANITY TEST (TO DELETE)
+				if(this.dataModel.isVoid(playerIndex, suitIndex)) {
+					System.out.println("AHH! Wrong signal!");
+					System.exit(1);
+				}
+				//END SANITY TEST
+				
+				
 				return false;
 			}
 		}
