@@ -1579,31 +1579,50 @@ public class DataModel {
 	
 	//LOWEST CARD goodish suit
 	public String getLowOffSuitCardToLeadInSafeSuit() {
-		String cardToPlay = null;
 		
-		FOUNDCARD:
-		for(int i=0; i<Constants.NUM_RANKS; i++) {
-			//TODO: have no preference between the off suits... or have a smart preference.
-			for(int j=Constants.NUM_SUITS - 1; j>=Constants.SPADE; j--) {
-				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][j][i] == CERTAINTY
-						
-						//TODO: put in a function:
-						&&
-						
-						(  this.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-						|| ! this.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, j)
+		if(DebugFunctions.currentPlayerHoldsHandDebug(this, "8S QH 8H 7H 4H QC TC 7C 6C 2C 4D ")) {
+			System.out.println("DEBUG");
+		}
+		
+		String bestSafeLowCardToPlay = null;
+		int bestRank = Integer.MAX_VALUE;
+
+		for(int suitIndex= 0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			
+			if(  this.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				|| ! this.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
 						
 						//TODO: sanity check that this check is redundant because of the signal check
-						|| this.isVoid(Constants.RIGHT_PLAYER_INDEX, j) == false
+				|| this.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
 						)
-					)
 						{
-						cardToPlay = getCardString(13 * j + i);
-						break FOUNDCARD;
+
+				for(int curRank=0; curRank < Constants.NUM_RANKS && curRank <= bestRank; curRank++) {
+			
+					//TODO: have no preference between the off suits... or have a smart preference.
+					if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == CERTAINTY) {
+							
+							
+							
+							String cardToPlay = getCardString(13 * suitIndex + curRank);
+							
+							
+							if(bestSafeLowCardToPlay == null 
+									|| curRank < bestRank ) {
+								bestSafeLowCardToPlay = cardToPlay;
+								bestRank = curRank;
+							}
+							
+							break;
+					} else if(curRank == bestRank) {
+						
+						break;
+					}
 				}
 			}
 		}
-		return cardToPlay;
+		
+		return bestSafeLowCardToPlay;
 	}
 		
 
