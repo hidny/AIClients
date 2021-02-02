@@ -65,9 +65,6 @@ public class PlayerSignalHandler {
 		
 	}
 	
-	public void resetCardSignalsForNewRound() {
-		this.mellowVoidSignalsNoActiveMellows.resetCardSignalsForNewRound();
-	}
 	
 	//Player said mellow signals:
 	//TODO: I'm thinking of just passing this.playerSaidMellowSignals to the situation handlers and

@@ -236,6 +236,12 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	public String getBidToMake() {
 		return BiddingSituation.getSimpleBidToMake(dataModel);
 	}
+	
+	
+	//TODO: ONLY USE FOR FINDING THE TYPE OF TEST
+	public DataModel getDataModel() {
+		return this.dataModel;//.createHardCopy();
+	}
 
 	
 	

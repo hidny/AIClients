@@ -11,7 +11,7 @@ public class MellowVoidSignalsNoActiveMellows {
 
 	}
 	
-	public static DataModel dataModel;
+	public DataModel dataModel;
 	
 	public MellowVoidSignalsNoActiveMellows(DataModel dataModel) {
 		this.dataModel = dataModel;
@@ -22,8 +22,8 @@ public class MellowVoidSignalsNoActiveMellows {
 		initSignalVars();
 	}
 
-	int hardMaxCardPlayed[][];
-	int softMaxCardPlayed[][];
+	public int hardMaxCardPlayed[][];
+	public int softMaxCardPlayed[][];
 	
 	public void initSignalVars() {
 		hardMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];

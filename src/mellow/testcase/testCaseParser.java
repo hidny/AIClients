@@ -9,6 +9,7 @@ import java.util.Scanner;
 import mellow.Constants;
 import mellow.ai.aiDecider.MellowAIDeciderFactory;
 import mellow.ai.aiDecider.MellowAIDeciderInterface;
+import mellow.ai.aiDecider.MellowBasicDecider;
 
 public class testCaseParser {
 
@@ -18,6 +19,13 @@ public class testCaseParser {
 	//public static String TEST_FOLDER = "MichaelDebugMadeUp";
 	
 	//public static String TEST_FOLDER = "garbageTestData";
+	
+
+	public static int numLeadingPass = 0;
+	public static int numLeading = 0;
+
+	public static int numBiddingPass = 0;
+	public static int numBidding = 0;
 	
 	public static void main(String[] args) {
 		File list[]  = getTestCaseFiles();
@@ -53,6 +61,19 @@ public class testCaseParser {
 		}
 		
 		System.out.println("Final report for " + decider + ":");
+		
+		if(numLeading > 0) {
+			System.out.println("Passes while leading: " + numLeadingPass + " out of " + numLeading);
+			System.out.println("That's a " + String.format("%.2f", ((100.0*numLeadingPass) /(1.0*numLeading))) + "% pass rate.");
+			System.out.println();
+		}
+
+		if(numBidding > 0) {
+			System.out.println("Passes while Bidding: " + numBiddingPass + " out of " + numBidding);
+			System.out.println("That's a " + String.format("%.2f", ((100.0*numBiddingPass) /(1.0*numBidding))) + "% pass rate.");
+			System.out.println();
+		}
+		
 		
 		System.out.println("AI passes " + numPasses + " out of " + numTrials);
 		System.out.println("That's a " + String.format("%.2f", ((100.0*numPasses) /(1.0*numTrials))) + "% pass rate.");
@@ -147,9 +168,7 @@ public class testCaseParser {
 	public static boolean runTestcase(MellowAIDeciderInterface decider, File testCaseFile) {
 		return runTestcase(decider, testCaseFile, true);
 	}
-	//0 is fail
-	//1 is pass
-	//2+ is whatever I want it to be
+
 	public static boolean runTestcase(MellowAIDeciderInterface decider, File testCaseFile, boolean verbose) {
 		//https://stackoverflow.com/questions/8363493/hiding-system-out-print-calls-of-a-class
 
@@ -367,6 +386,32 @@ public class testCaseParser {
 			System.out.println();
 			System.out.println();
 			
+			//Count type of test cases:
+			if(decider instanceof MellowBasicDecider) {
+				if(((MellowBasicDecider)decider).getDataModel().currentThrowIsLeading()
+						&& ((MellowBasicDecider)decider).getDataModel().stillInBiddingPhase() == false) {
+
+					numLeading++;
+					
+					if(ret == TESTCASE_PASS) {
+						numLeadingPass++;
+					}
+					
+				}
+			}
+
+			if(decider instanceof MellowBasicDecider) {
+				if(((MellowBasicDecider)decider).getDataModel().stillInBiddingPhase()) {
+
+					numBidding++;
+					
+					if(ret == TESTCASE_PASS) {
+						numBiddingPass++;
+					}
+					
+				}
+			}
+			//End count type of test case.
 
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -380,8 +425,7 @@ public class testCaseParser {
 		return ret;
 		
 	}
-	
-	
+
 	//Fight logic copy/pasted from the AIGameServer Mellow code
 	
 	public static int getCardNumber(String card) {

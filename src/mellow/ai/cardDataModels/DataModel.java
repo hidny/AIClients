@@ -147,6 +147,11 @@ public class DataModel {
 		}
 		
 		copy.simulation_level = simulation_level;
+		
+		copy.signalHandler = new PlayerSignalHandler(copy);
+		//TODO: HARD-COPY SIGNAL HANDLER!!!
+		
+		
 		return copy;
 	}
 
@@ -345,6 +350,7 @@ public class DataModel {
 		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsCurrentlyHeldByPlayer = new byte[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		bidsMadeThisRound =0;
 		cardsPlayedThisRound =0;
 		cardsPlayedThisRound = 0;
 		cardStringsPlayed = new String[Constants.NUM_CARDS];
@@ -363,9 +369,11 @@ public class DataModel {
 			 playerWhoPlayedCard[i] = CARD_NOT_PLAYED_YET;
 		 }
 
+
 		resetCardKnowledgeTableForNewRound();
 		
-		this.signalHandler.resetCardSignalsForNewRound();
+		//TODO:
+		//this.signalHandler = new PlayerSignalHandler(this);
 		 
 	}
 	
@@ -1580,9 +1588,6 @@ public class DataModel {
 	//LOWEST CARD goodish suit
 	public String getLowOffSuitCardToLeadInSafeSuit() {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(this, "8S QH 8H 7H 4H QC TC 7C 6C 2C 4D ")) {
-			System.out.println("DEBUG");
-		}
 		
 		String bestSafeLowCardToPlay = null;
 		int bestRank = Integer.MAX_VALUE;
@@ -2114,7 +2119,7 @@ public class DataModel {
 		return ret;
 	}
 
-	private boolean stillInBiddingPhase() {
+	public boolean stillInBiddingPhase() {
 		return bidsMadeThisRound < Constants.NUM_PLAYERS;
 	}
 	
