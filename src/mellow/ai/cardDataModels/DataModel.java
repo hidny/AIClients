@@ -372,8 +372,7 @@ public class DataModel {
 
 		resetCardKnowledgeTableForNewRound();
 		
-		//TODO:
-		//this.signalHandler = new PlayerSignalHandler(this);
+		this.signalHandler = new PlayerSignalHandler(this);
 		 
 	}
 	
