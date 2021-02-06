@@ -382,26 +382,24 @@ public class testCaseParser {
 				ret = TESTCASE_FAIL;
 			}
 			
-			System.out.println("END OF TESTCASE");
-			System.out.println();
-			System.out.println();
-			
 			//Count type of test cases:
 			if(decider instanceof MellowBasicDecider) {
-				if(((MellowBasicDecider)decider).getDataModel().currentThrowIsLeading()
-						&& ((MellowBasicDecider)decider).getDataModel().stillInBiddingPhase() == false) {
+				if(((MellowBasicDecider)decider).getCopyOfDataModel().currentThrowIsLeading()
+						&& ((MellowBasicDecider)decider).getCopyOfDataModel().stillInBiddingPhase() == false) {
 
 					numLeading++;
 					
 					if(ret == TESTCASE_PASS) {
 						numLeadingPass++;
+					} else {
+						System.out.println("(LEAD FAIL)");
 					}
 					
 				}
 			}
 
 			if(decider instanceof MellowBasicDecider) {
-				if(((MellowBasicDecider)decider).getDataModel().stillInBiddingPhase()) {
+				if(((MellowBasicDecider)decider).getCopyOfDataModel().stillInBiddingPhase()) {
 
 					numBidding++;
 					
@@ -413,6 +411,10 @@ public class testCaseParser {
 			}
 			//End count type of test case.
 
+			System.out.println("END OF TESTCASE");
+			System.out.println();
+			System.out.println();
+			
 			in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

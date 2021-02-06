@@ -239,8 +239,8 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	
 	//TODO: ONLY USE FOR FINDING THE TYPE OF TEST
-	public DataModel getDataModel() {
-		return this.dataModel;//.createHardCopy();
+	public DataModel getCopyOfDataModel() {
+		return this.dataModel.createHardCopy();
 	}
 
 	

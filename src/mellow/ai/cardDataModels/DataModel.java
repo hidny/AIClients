@@ -338,7 +338,10 @@ public class DataModel {
 		}
 		return true;
 	}
-	
+
+	public boolean isCardPlayedInRound(String card) {
+		return this.cardsUsed[CardStringFunctions.getIndexOfSuit(card)][this.getRankIndex(card)];
+	}
 
 	//Resets everything except for the scores and the deal indexes.
 	public void resetStateForNewRound() {
@@ -1494,6 +1497,7 @@ public class DataModel {
 		return true;
 		
 	}
+	
 	
 	//(Ignore the cards in playerIndex's hand)
 	public boolean isEffectivelyMasterCardForPlayer(int playerIndex, String card) {

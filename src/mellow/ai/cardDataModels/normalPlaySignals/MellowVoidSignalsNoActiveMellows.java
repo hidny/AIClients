@@ -65,9 +65,13 @@ public class MellowVoidSignalsNoActiveMellows {
 			
 			if(throwerIndex == 0) {
 				
-				//Weak attempt to handle meaning of leading a king:
+				//Weak attempt to handle meaning of leading a king while the ace is still out:
 				//It didn't change a single test case... :(
-				if(dataModel.getRankIndex(card) == dataModel.KING) {
+				
+				if(dataModel.getRankIndex(card) == dataModel.KING
+						&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
+						) {
+					
 					softMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
 
 				}

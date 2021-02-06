@@ -10,6 +10,10 @@ public class NoMellowBidPlaySituation {
 
 	public static String handleNormalThrow(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JD 9D ")) {
+			System.out.println("DEBUG!");
+		}
+		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		//leader:
@@ -54,6 +58,7 @@ public class NoMellowBidPlaySituation {
 	
 		//isVoid(int playerIndex, int suitIndex)
 		//if(partnerisVoid)
+		
 		
 		
 		//TODO: use signals to not play certain suits...
