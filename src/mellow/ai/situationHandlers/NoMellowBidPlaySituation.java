@@ -10,10 +10,6 @@ public class NoMellowBidPlaySituation {
 
 	public static String handleNormalThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JD 9D ")) {
-			System.out.println("DEBUG!");
-		}
-		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		//leader:
@@ -44,7 +40,7 @@ public class NoMellowBidPlaySituation {
 	
 	
 	//AIs for non-mellow bid games:
-	
+	/*
 	public static String AILeaderThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		
@@ -103,8 +99,205 @@ public class NoMellowBidPlaySituation {
 		
 		return cardToPlay;
 	}
+*/
+	public static String AILeaderThrow(DataModel dataModel) {
+		
 
+		if(couldTRAM(dataModel)) {
+			System.out.println("THE REST ARE MINE! (TRAM)");
+			if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			} else {
+				return dataModel.getMasterCard();
+			}
+		}
+		
+		String bestCardToPlay = null;
+		double currentBestScore = -1000000.0;
+		
+		
+		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
 
+			int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
+					- dataModel.getNumCardsPlayedForSuit(suitIndex) 
+					- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			//Can't play a suit you don't have:
+			if(numCardsOfSuitInHand == 0) {
+				continue;
+			}
+
+		
+			
+			//1454
+			//if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D ")) {
+			//	System.out.println("DEBUG2");
+			//}
+			
+			String cardToPlay = null;
+			
+			double curScore = 0.0;
+			
+			if(suitIndex != Constants.SPADE) {
+
+//TODO: DELETE
+				curScore = numCardsOfSuitOtherPlayersHave;
+				
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					//Made up a number to say having the master card to lead in partner's void suit is cool:
+					//TODO: refine later
+					curScore += 10.0;
+					
+				}
+				
+				//Check if leading suitIndex helps partner trump:
+				if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
+
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
+						
+					&& numCardsOfSuitOtherPlayersHave >= 1) {
+				
+						if(numCardsOfSuitOtherPlayersHave >= 2
+									
+								//If player on left is also void, that's great!
+								|| (numCardsOfSuitOtherPlayersHave >= 1
+									&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
+								) {
+	
+							curScore += 100;
+	
+						} else {
+							
+							curScore += 70;
+
+						}
+						
+						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+							
+							cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+						} else {
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+						}
+				} else if(numCardsOfSuitOtherPlayersHave == 0) {
+					//Might want to do this if right is out of spades...
+					
+					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+					
+					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
+						
+						//Jackpot!
+						curScore += 1000;
+					} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+							(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+							(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+						
+						//Pretty good. You're making this trick, but partner might trump
+						curScore +=300;
+						
+					} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+							(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+							
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false) {
+						
+						curScore += 50;
+					} else {
+						
+						curScore -= 50;
+					}
+					
+						
+				} else {
+					
+					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false) {
+						curScore += 25.0;
+					}
+					
+					if(numCardsOfSuitInHand > 1
+						&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == dataModel.KING) {
+						curScore += 5.0;
+						
+					}
+
+					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
+							&& numCardsOfSuitInHand > 1
+							&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) < dataModel.QUEEN
+							&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
+						
+						curScore -= 50.0;
+						
+					}
+					
+					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
+							&& numCardsOfSuitInHand == 1
+							&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
+						
+						curScore += 50.0;
+						
+					}
+					
+					//Consider becoming void if you don't have too many spades (TODO: be more subtle)
+					if(3.0 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) - numCardsOfSuitOtherPlayersHave  <= 1) {
+						
+						//Only consider becoming void if it's feasible:
+						int numCardsLessThanAvgOther = numCardsOfSuitOtherPlayersHave - 3 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+						
+						if(numCardsLessThanAvgOther > 0) {
+							curScore += 5.0 * numCardsLessThanAvgOther;
+						}
+					}
+					
+					
+					if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+						
+						cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+					} else {
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					}
+					
+				}
+			} else {
+				//TODO: consider leading spade here...
+				
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					
+					//TODO: if have AS, QS Maybe don't lead AS ....
+					//Prefer to lead other masters...
+					
+					if(dataModel.hasCard("AS") && dataModel.hasCard("QS") && dataModel.hasCard("KS") == false) {
+						curScore -= 15;
+					}
+					
+					curScore += 55.0;
+					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+				} else {
+					curScore += 5.0;
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				}
+			}
+			
+			
+			
+			
+
+			if(curScore > currentBestScore) {
+				currentBestScore = curScore;
+				bestCardToPlay = cardToPlay;
+			}
+			
+		}
+		
+		return bestCardToPlay;
+	}
+/*
 	public static String leadCardToHelpPartnerTrumpOtherwiseNull(DataModel dataModel) {
 		
 		
@@ -169,7 +362,7 @@ public class NoMellowBidPlaySituation {
 		
 		return bestCardToPlay;
 	}
-	
+	*/
 	public static String AISecondThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		//get suit to follow.
@@ -228,7 +421,7 @@ public class NoMellowBidPlaySituation {
 								
 											
 						} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
-							return dataModel.getCardClosestOverCurrentWinner();
+							return dataModel.getCardInHandClosestOverCurrentWinner();
 						} else {
 							return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 						}
@@ -440,7 +633,7 @@ public class NoMellowBidPlaySituation {
 				//TODO: don't steal if you have trump left and there's less than 3 cards... 
 				//if(dataModel.isVoid)
 				
-				String tramTrickTakingCard = dataModel.getCardClosestOverCurrentWinner();
+				String tramTrickTakingCard = dataModel.getCardInHandClosestOverCurrentWinner();
 				if(couldTRAMAfterPlayingCard(dataModel, tramTrickTakingCard)) {
 					
 					System.out.println("4th thrower taking from partner to TRAM!");
@@ -453,7 +646,7 @@ public class NoMellowBidPlaySituation {
 			return cardToPlay;
 			
 		} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
-			cardToPlay = dataModel.getCardClosestOverCurrentWinner();
+			cardToPlay = dataModel.getCardInHandClosestOverCurrentWinner();
 			
 		} else {
 			cardToPlay = getJunkiestCardToFollowLead(dataModel);

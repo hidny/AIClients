@@ -121,7 +121,7 @@ public class SeatedRightOfOpponentMellow {
 					}
 				} else {
 					//Play over protector if mellow is void:
-					return dataModel.getCardClosestOverCurrentWinner();
+					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
 				
@@ -273,7 +273,7 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Play over protector if mellow is void:
 
-					return dataModel.getCardClosestOverCurrentWinner();
+					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
 				

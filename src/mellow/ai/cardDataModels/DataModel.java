@@ -1082,14 +1082,14 @@ public class DataModel {
 	}
 	
 	public boolean throwerHasCardToBeatCurrentWinner() {
-		if(getCardClosestOverCurrentWinner() != null) {
+		if(getCardInHandClosestOverCurrentWinner() != null) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public String getCardClosestOverCurrentWinner() {
+	public String getCardInHandClosestOverCurrentWinner() {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		
 		if(throwNumber == 0) {

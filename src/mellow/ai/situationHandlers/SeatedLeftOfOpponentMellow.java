@@ -123,7 +123,7 @@ public class SeatedLeftOfOpponentMellow {
 									&& dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)) {
 								
 								if(throwIndex == 3) {
-									minCardToWin = dataModel.getCardClosestOverCurrentWinner();
+									minCardToWin = dataModel.getCardInHandClosestOverCurrentWinner();
 								} else if(throwIndex >= 1 && throwIndex <= 2) {
 									
 									//Just try to play over maxMellowCard if it's the 3rd throw

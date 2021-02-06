@@ -305,7 +305,7 @@ public class PartnerSaidMelllowSituation {
 							if(dataModel.currentPlayerHasMasterInSuit(leadSuit)) {
 								return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
 							} else {
-								return dataModel.getCardClosestOverCurrentWinner();
+								return dataModel.getCardInHandClosestOverCurrentWinner();
 							}
 						}
 						
@@ -350,7 +350,7 @@ public class PartnerSaidMelllowSituation {
 				//Say Mellow leads 5C and you have AC KC QC 7C... maybe play AC?
 
 				//play just above to protect
-				return dataModel.getCardClosestOverCurrentWinner();
+				return dataModel.getCardInHandClosestOverCurrentWinner();
 				
 			} else {
 				
@@ -398,7 +398,7 @@ public class PartnerSaidMelllowSituation {
 			//if mellow in danger:
 			//play just above to protect
 			if(dataModel.throwerHasCardToBeatCurrentWinner()) {
-				return dataModel.getCardClosestOverCurrentWinner();
+				return dataModel.getCardInHandClosestOverCurrentWinner();
 				
 			} else {
 				
