@@ -169,13 +169,14 @@ public class SeatedRightOfOpponentMellow {
 					} else {
 
 							
-						//Mellow could be able to trump under: don't trump!
+						//Mellow could be able to trump under: don't trump?
 						
 						//TODO: make sure we have offsuit!
 						//TODO: maybe think about what player is throwing off a little bit more??
 
 						//(unless there's no choice but to trump)
-						if(dataModel.currentPlayerOnlyHasSpade() == false) {
+						if(dataModel.currentPlayerOnlyHasSpade() == false
+								&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 							return dataModel.getHighestOffSuitCardAnySuitButSpade();
 						} else {
 							//??
@@ -197,11 +198,13 @@ public class SeatedRightOfOpponentMellow {
 				
 			} else {
 
-				// Mellow player signaled no cards of suit don't trump!
+				// Mellow player signaled no cards of suit don't trump?
 				
+				//I decided to make it isVoid instead of signal, because I feel like you need to be sure before trump in front of mellow...
 				
 				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
-				if(dataModel.currentPlayerOnlyHasSpade() == false) {
+				if(dataModel.currentPlayerOnlyHasSpade() == false
+						&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 					return dataModel.getHighestOffSuitCardAnySuitButSpade();
 				} else {
 					//??
@@ -373,13 +376,14 @@ public class SeatedRightOfOpponentMellow {
 					} else {
 
 							
-						//Mellow could be able to trump under: don't trump!
+						//Mellow could be able to trump under: don't trump?
 						
 						//TODO: make sure we have offsuit!
 						//TODO: maybe think about what player is throwing off a little bit more??
 
 						//(unless there's no choice but to trump)
-						if(dataModel.currentPlayerOnlyHasSpade() == false) {
+						if(dataModel.currentPlayerOnlyHasSpade() == false
+								&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 							return dataModel.getHighestOffSuitCardAnySuitButSpade();
 						} else {
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -401,8 +405,11 @@ public class SeatedRightOfOpponentMellow {
 
 				// Mellow player signaled no cards of suit don't trump!
 				
-				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
-				if(dataModel.currentPlayerOnlyHasSpade() == false) {
+				//TODO: make sure we have offsuit!
+				// and might as well trump if mellow player is void in spade...
+				if( ! dataModel.currentPlayerOnlyHasSpade()
+						//TODO: shouldn't make a diff...
+						&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 
 					//TODO: why not play lower trump and dare mellow player to go under?
 					return dataModel.getHighestOffSuitCardAnySuitButSpade();
@@ -411,13 +418,8 @@ public class SeatedRightOfOpponentMellow {
 					//DEC 18th:
 					//TODO: why not play lower trump just in case mellow in danger
 					
-					if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE) == false) {
-						
-						return dataModel.getHighestOffSuitCardAnySuitButSpade();
-						
-					} else {
-						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-					}
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					
 				}
 			}
 			

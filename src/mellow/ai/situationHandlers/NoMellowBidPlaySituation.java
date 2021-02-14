@@ -39,67 +39,6 @@ public class NoMellowBidPlaySituation {
 	}
 	
 	
-	//AIs for non-mellow bid games:
-	/*
-	public static String AILeaderThrow(DataModel dataModel) {
-		String cardToPlay = null;
-		
-		//TODO: this shouldn't be 1st priority
-		     // Weight the benefits of playing every card and then choose...
-		cardToPlay = leadCardToHelpPartnerTrumpOtherwiseNull(dataModel);
-
-		if(cardToPlay != null) {
-			return cardToPlay;
-		}
-	
-		//isVoid(int playerIndex, int suitIndex)
-		//if(partnerisVoid)
-		
-		
-		
-		//TODO: use signals to not play certain suits...
-		
-		//TODO: what if we want the opponents to trump???
-		
-		
-		//TODO: check if master card in SAFE SUIT!!!!
-		if(dataModel.getMasterCardInSafeSuit() != null) {
-			
-			if(dataModel.playerCouldSweepSpades(Constants.CURRENT_AGENT_INDEX)) {
-				
-				if(couldTRAM(dataModel)) {
-					System.out.println("THE REST ARE MINE! (TRAM)");
-					if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
-						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-					} else {
-						return dataModel.getMasterCard();
-					}
-				}
-			}
-			
-			//TODO: avoid playing certain suits based on signals...
-			//play a master card:
-			cardToPlay = dataModel.getMasterCardInSafeSuit();
-			
-			System.out.println("***********");
-			System.out.println("Playing master card: " + cardToPlay);
-			System.out.println("***********");
-		} else {
-			System.out.println("***********");
-			System.out.println("Leading low:");
-			System.out.println("***********");
-			
-			
-			cardToPlay = dataModel.getLowOffSuitCardToLeadInSafeSuit();
-			if(cardToPlay == null) {
-				cardToPlay = dataModel.getLowOffSuitCardToLead();
-			}
-			 
-		}
-		
-		return cardToPlay;
-	}
-*/
 	public static String AILeaderThrow(DataModel dataModel) {
 		
 
@@ -130,7 +69,7 @@ public class NoMellowBidPlaySituation {
 			}
 
 		
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 5S 6H 4H 3H 5C AD TD 8D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS TS 4S KC QC TC 5C JD 7D 5D 3D ")) {
 				System.out.println("DEBUG");
 			}
 			
@@ -380,72 +319,7 @@ public class NoMellowBidPlaySituation {
 		
 		return bestCardToPlay;
 	}
-/*
-	public static String leadCardToHelpPartnerTrumpOtherwiseNull(DataModel dataModel) {
-		
-		
-		String bestCardToPlay = null;
-		double currentBestScore = 0.0;
-		
-		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
-			
-			if(suitIndex != Constants.SPADE) {
-				
-				//Check if leading suitIndex helps partner trump:
-				if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
 
-					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-						
-					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false) {
-				
-					int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
-							- dataModel.getNumCardsPlayedForSuit(suitIndex) 
-							- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
-					
-					if(numCardsOfSuitOtherPlayersHave >= 2
-								
-							//If player on left is also void, that's great!
-							|| (numCardsOfSuitOtherPlayersHave >= 1
-								&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
-							) {
-
-						
-						double curScore = numCardsOfSuitOtherPlayersHave;
-						String cardToPlay = null;
-						
-						
-						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-							cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-							
-							//Made up a number to say having the master card to lead in partner's void suit is cool:
-							//TODO: refine later
-							curScore += 5.0;
-							
-						} else {
-							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-						}
-
-						if(curScore > currentBestScore) {
-							currentBestScore = curScore;
-							bestCardToPlay = cardToPlay;
-						}
-						
-
-					} else {
-						continue;
-					}
-				}
-				
-				//TODO: Score leading other scenarios here!
-				
-			}
-		}
-		
-		return bestCardToPlay;
-	}
-	*/
 	public static String AISecondThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		//get suit to follow.
@@ -813,7 +687,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		
+
 		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
 		
 		int bestSuit = -1;
@@ -838,12 +712,12 @@ public class NoMellowBidPlaySituation {
 				
 				//Don't throw off master cards unless you really need to...
 				currentValue -= 5.0;
-			} else if(numberOfCardsInSuit == 2 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 1) {
+			} else if(numberOfCardsInSuit >= 2 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 1) {
 				
 				currentValue -= 1.2;
 				
 				
-			} else if(numberOfCardsInSuit == 3 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 2) {
+			} else if(numberOfCardsInSuit >= 3 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 2) {
 				currentValue -= 1.1;
 				
 			} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) == 3 && 

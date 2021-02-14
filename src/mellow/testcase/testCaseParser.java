@@ -23,6 +23,18 @@ public class testCaseParser {
 
 	public static int numLeadingPass = 0;
 	public static int numLeading = 0;
+	
+
+	public static int numSecondPass = 0;
+	public static int numSecond = 0;
+	
+
+	public static int numThirdPass = 0;
+	public static int numThird = 0;
+	
+
+	public static int numFourthPass = 0;
+	public static int numFourth = 0;
 
 	public static int numBiddingPass = 0;
 	public static int numBidding = 0;
@@ -66,6 +78,19 @@ public class testCaseParser {
 			System.out.println("Passes while leading: " + numLeadingPass + " out of " + numLeading);
 			System.out.println("That's a " + String.format("%.2f", ((100.0*numLeadingPass) /(1.0*numLeading))) + "% pass rate.");
 			System.out.println();
+			
+			System.out.println("Passes while second: " + numSecondPass + " out of " + numSecond);
+			System.out.println("That's a " + String.format("%.2f", ((100.0*numSecondPass) /(1.0*numSecond))) + "% pass rate.");
+			System.out.println();
+			
+			System.out.println("Passes while third: " + numThirdPass + " out of " + numThird);
+			System.out.println("That's a " + String.format("%.2f", ((100.0*numThirdPass) /(1.0*numThird))) + "% pass rate.");
+			System.out.println();
+			
+			System.out.println("Passes while fourth: " + numFourthPass + " out of " + numFourth);
+			System.out.println("That's a " + String.format("%.2f", ((100.0*numFourthPass) /(1.0*numFourth))) + "% pass rate.");
+			System.out.println();
+			
 		}
 
 		if(numBidding > 0) {
@@ -384,17 +409,45 @@ public class testCaseParser {
 			
 			//Count type of test cases:
 			if(decider instanceof MellowBasicDecider) {
-				if(((MellowBasicDecider)decider).getCopyOfDataModel().currentThrowIsLeading()
-						&& ((MellowBasicDecider)decider).getCopyOfDataModel().stillInBiddingPhase() == false) {
+				if( ((MellowBasicDecider)decider).getCopyOfDataModel().stillInBiddingPhase() == false) {
+					if(((MellowBasicDecider)decider).getCopyOfDataModel().currentThrowIsLeading()) {
+	
+						numLeading++;
+						
+						if(ret == TESTCASE_PASS) {
+							numLeadingPass++;
+						} else {
+							System.out.println("(LEAD FAIL)");
+						}
+						
+					} else if(((MellowBasicDecider)decider).getCopyOfDataModel().getCardsPlayedThisRound( ) % 4 == 1) {
 
-					numLeading++;
-					
-					if(ret == TESTCASE_PASS) {
-						numLeadingPass++;
-					} else {
-						System.out.println("(LEAD FAIL)");
+						numSecond++;
+						
+						if(ret == TESTCASE_PASS) {
+							numSecondPass++;
+						} else {
+							System.out.println("(SECOND FAIL)");
+						}
+					} else if(((MellowBasicDecider)decider).getCopyOfDataModel().getCardsPlayedThisRound( ) % 4 == 2) {
+
+						numThird++;
+						
+						if(ret == TESTCASE_PASS) {
+							numThirdPass++;
+						} else {
+							System.out.println("(THIRD FAIL)");
+						}
+					} else if(((MellowBasicDecider)decider).getCopyOfDataModel().getCardsPlayedThisRound( ) % 4 == 3) {
+
+						numFourth++;
+						
+						if(ret == TESTCASE_PASS) {
+							numFourthPass++;
+						} else {
+							System.out.println("(FOURTH FAIL)");
+						}
 					}
-					
 				}
 			}
 
