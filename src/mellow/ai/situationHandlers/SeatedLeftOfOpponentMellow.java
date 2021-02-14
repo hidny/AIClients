@@ -17,6 +17,10 @@ public class SeatedLeftOfOpponentMellow {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S QH AC QC ")) {
+			System.out.println("DEBUG");
+		}
 		
 		if(throwIndex == 0) {
 
@@ -55,9 +59,7 @@ public class SeatedLeftOfOpponentMellow {
 						
 						}
 					} else {
-						
-						//TODO: this might need work, but I'm lazy
-						return dataModel.getHighestOffSuitCardAnySuitButSpade();
+						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel);
 					}
 				}
 			} else {
@@ -82,7 +84,7 @@ public class SeatedLeftOfOpponentMellow {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
 						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
-						return dataModel.getHighestOffSuitCardAnySuitButSpade();
+						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel);
 					}
 				
 				}
@@ -169,8 +171,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			} else {
 				
-				//TODO: This might be throwing away too many tricks, but whatever...
-				return dataModel.getHighestOffSuitCardAnySuitButSpade();
+				return throwOffHighCardThatMightAccidentallySaveMellow(dataModel);
 			}
 		
 			
@@ -189,6 +190,48 @@ public class SeatedLeftOfOpponentMellow {
 		
 		//TODO: make it different later:
 		return SeatedRightOfOpponentMellow.AIHandleLead(dataModel);
+	}
+	
+	
+	public static String throwOffHighCardThatMightAccidentallySaveMellow(DataModel dataModel) {
+		
+		double bestValue = 0.0;
+		String bestCard = null;
+		
+		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
+
+			if(curSuitIndex == Constants.SPADE
+			|| dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, curSuitIndex)) {
+				continue;
+			}
+			
+			double curValue = 0.0;
+			String curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex);
+			
+			
+			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, curSuitIndex)) {
+				curValue -= 100.0;
+
+			} else if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, curSuitIndex)) {
+				curValue -= 50.0;
+				
+			} else if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuit(curCard, MELLOW_PLAYER_INDEX)) {
+				curValue -= 48.0;
+
+			}
+			
+			curValue -= dataModel.getRankIndex(curCard);
+			
+			if(bestCard == null
+					|| curValue > bestValue) {
+				bestCard = curCard;
+				bestValue = curValue;
+			}
+			
+		}
+		//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+		
+		return bestCard;
 	}
 	
 }

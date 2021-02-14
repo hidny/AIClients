@@ -159,7 +159,7 @@ public class SeatedRightOfOpponentMellow {
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
-					if(       (numCardsInOtherPeoplesHandsForSuit >= 7)
+					if(       (numCardsInOtherPeoplesHandsForSuit >= 4)
 							|| numCardsInOtherPeoplesHandsForSuit >= 3 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit)
 							)
 					{
@@ -236,7 +236,6 @@ public class SeatedRightOfOpponentMellow {
 		String leaderThrow = dataModel.getCardLeaderThrow();
 		
 		String curStrongestCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
-		
 		
 		if(dataModel.throwerMustFollowSuit()) {
 
@@ -364,7 +363,7 @@ public class SeatedRightOfOpponentMellow {
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
-					if(       (numCardsInOtherPeoplesHandsForSuit >= 6)
+					if(       (numCardsInOtherPeoplesHandsForSuit >= 3)
 							|| numCardsInOtherPeoplesHandsForSuit >= 2 && dataModel.isVoid(PROTECTOR_PLAYER_INDEX, leadSuit)
 							)
 					{

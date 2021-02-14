@@ -187,6 +187,30 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 	}
 
+	public boolean mellowSignalledNoCardUnderCardSameSuit(String inputCard, int mellowPlayerIndex) {
+		
+		boolean cardsUnderInputCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(inputCard);
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
+		
+		for(int j=0; j<Constants.NUM_RANKS; j++) {
+			
+			if(cardsUnderInputCard[suitIndex][j]) {
+	
+				if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != dataModel.IMPOSSIBLE
+						&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
+					
+					//At this point, the mellow player signalled that they could have a card under inputCard
+					//And you should feel justified in throwing it off to help burn mellow...
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+
 	public boolean mellowSignalledNoCardBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
 		
 		if(dataModel.cardAGreaterThanCardBGivenLeadCard(biggerCard, smallerCard) == false) {

@@ -82,6 +82,10 @@ public class PlayerSignalHandler {
 		return this.playerSaidMellowSignals.mellowSignalledNoCardOverCardSameSuit(inputCard, mellowPlayerIndex);
 	}
 	
+	public boolean mellowSignalledNoCardUnderCardSameSuit(String inputCard, int mellowPlayerIndex) {
+		return this.playerSaidMellowSignals.mellowSignalledNoCardUnderCardSameSuit(inputCard, mellowPlayerIndex);
+	}
+	
 	public boolean mellowSignalledNoCardBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.mellowSignalledNoCardBetweenTwoCards(smallerCard, biggerCard, mellowPlayerIndex);
 	}
