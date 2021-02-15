@@ -3,6 +3,7 @@ package mellow.ai.cardDataModels.playerSaidMellowSignals;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
 
 public class PlayerSaidMellowSignals {
 
@@ -93,7 +94,8 @@ public class PlayerSaidMellowSignals {
 					
 					if(dataModel.cardAGreaterThanCardBGivenLeadCard
 							(card, dataModel.getCurrentFightWinningCardBeforeAIPlays())) {
-						//TODO: if it's unrealistic (EX: it would mean mel has 6 spades, then reconsider signal)\
+						//TODO: if it's unrealistic (EX: it would mean mel has 6 spades, then reconsider signal...
+						//TODO: maybe mellow is 2nd thrower and expects partner to cover the spade?
 						
 						//If their card is winning, they probably don't have a choice:
 						for(int cardIndex=0; cardIndex < Constants.NUM_CARDS; cardIndex++) {
@@ -145,8 +147,10 @@ public class PlayerSaidMellowSignals {
 	public void setCardMellowSignalNoIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != dataModel.CERTAINTY
 				&& dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != dataModel.IMPOSSIBLE) {
+			
+			//System.out.println("MELLOW HAS NO " + dataModel.getCardString(rankIndex, suitIndex) + ".");
 			dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
-				}
+		}
 	}
 	
 	
@@ -165,7 +169,7 @@ public class PlayerSaidMellowSignals {
 	
 public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
 		
-		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard);
+		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard, true);
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
 		
@@ -187,13 +191,14 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 	}
 
-	public boolean mellowSignalledNoCardUnderCardSameSuit(String inputCard, int mellowPlayerIndex) {
+	public boolean mellowSignalledNoCardUnderCardSameSuitExceptRank2(String inputCard, int mellowPlayerIndex) {
 		
-		boolean cardsUnderInputCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(inputCard);
+		
+		boolean cardsUnderInputCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(inputCard, false);
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
 		
-		for(int j=0; j<Constants.NUM_RANKS; j++) {
+		for(int j=dataModel.RANK_THREE; j<Constants.NUM_RANKS; j++) {
 			
 			if(cardsUnderInputCard[suitIndex][j]) {
 	
@@ -218,8 +223,8 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			System.exit(1);
 			
 		}
-		boolean cardsOverSmallerCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(smallerCard);
-		boolean cardsUnderBiggerCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(biggerCard);
+		boolean cardsOverSmallerCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(smallerCard, true);
+		boolean cardsUnderBiggerCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(biggerCard, true);
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			for(int j=0; j<Constants.NUM_RANKS; j++) {
@@ -289,8 +294,8 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 			System.exit(1);
 			
 		}
-		boolean cardsOverSmallerCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(smallerCard);
-		boolean cardsUnderBiggerCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(biggerCard);
+		boolean cardsOverSmallerCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(smallerCard, true);
+		boolean cardsUnderBiggerCard[][] = dataModel.getCardsStrictlyLessPowerfulThanCard(biggerCard, true);
 		
 		int ret = 0;
 		

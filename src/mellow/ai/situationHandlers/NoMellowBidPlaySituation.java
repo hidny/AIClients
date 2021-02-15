@@ -12,6 +12,10 @@ public class NoMellowBidPlaySituation {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KC TC 9D ")) {
+			System.out.println("DEBUG");
+		}
+		
 		//leader:
 		String cardToPlay = null;
 		System.out.println("**Inside get card to play");
@@ -69,15 +73,6 @@ public class NoMellowBidPlaySituation {
 			}
 
 		
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS TS 4S KC QC TC 5C JD 7D 5D 3D ")) {
-				System.out.println("DEBUG");
-			}
-			
-			//1454
-			//if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D ")) {
-			//	System.out.println("DEBUG2");
-			//}
-			
 			String cardToPlay = null;
 			
 			double curScore = 0.0;

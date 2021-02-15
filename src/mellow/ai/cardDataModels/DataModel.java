@@ -858,7 +858,7 @@ public class DataModel {
 			}	
 		}
 
-		boolean[][] cardsOverCurrentlyWinningCard = getCardsStrictlyMorePowerfulThanCard(currentlyWinningCard);
+		boolean[][] cardsOverCurrentlyWinningCard = getCardsStrictlyMorePowerfulThanCard(currentlyWinningCard, true);
 		
 		int fourthThrowerIndex = 3 - throwNumber;
 		
@@ -876,7 +876,7 @@ public class DataModel {
 					//At this point, we have a potential card that's playable, and stronger than the best card so far...
 					//We just need to check if it could reduce the # of ways the 4th thrower can win:
 					
-					boolean[][] cardsUnderPotentialCard = getCardsStrictlyLessPowerfulThanCard(tempCard);
+					boolean[][] cardsUnderPotentialCard = getCardsStrictlyLessPowerfulThanCard(tempCard, true);
 					
 					//Fourth thrower index
 					for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
@@ -927,7 +927,7 @@ public class DataModel {
 		return false;
 	}
 	
-	public boolean[][] getCardsStrictlyLessPowerfulThanCard(String card) {
+	public boolean[][] getCardsStrictlyLessPowerfulThanCard(String card, boolean useLeadSuitIndex) {
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
 		int rankIndex = getRankIndex(card);
@@ -940,7 +940,14 @@ public class DataModel {
 			}
 		}
 		
-		int leadSuit = this.getSuitOfLeaderThrow();
+		int leadSuit = -1;
+		
+		if(useLeadSuitIndex &&
+				this.currentThrowIsLeading() == false) {
+			leadSuit = this.getSuitOfLeaderThrow();
+		} else {
+			leadSuit = CardStringFunctions.getIndexOfSuit(card);
+		}
 		
 		int upperLimitDealerSuit;
 		
@@ -987,7 +994,7 @@ public class DataModel {
 		return ret;
 	}
 	
-	public boolean[][] getCardsStrictlyMorePowerfulThanCard(String card) {
+	public boolean[][] getCardsStrictlyMorePowerfulThanCard(String card, boolean useLeadSuitIndex) {
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
 		int rankIndex = getRankIndex(card);
 		
@@ -1001,7 +1008,8 @@ public class DataModel {
 		
 		int leadSuit = -1;
 		
-		if(this.currentThrowIsLeading() == false) {
+		if(useLeadSuitIndex &&
+				this.currentThrowIsLeading() == false) {
 			leadSuit = this.getSuitOfLeaderThrow();
 		} else {
 			leadSuit = CardStringFunctions.getIndexOfSuit(card);

@@ -177,7 +177,8 @@ public class SeatedRightOfOpponentMellow {
 						//(unless there's no choice but to trump)
 						if(dataModel.currentPlayerOnlyHasSpade() == false
 								&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
-							return dataModel.getHighestOffSuitCardAnySuitButSpade();
+							//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+							return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 						} else {
 							//??
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -188,7 +189,8 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Mellow could be in danger: don't trump (unless there's no choice)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
-						return dataModel.getHighestOffSuitCardAnySuitButSpade();
+						//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+						return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 					} else {
 
 						//??
@@ -205,7 +207,8 @@ public class SeatedRightOfOpponentMellow {
 				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
 				if(dataModel.currentPlayerOnlyHasSpade() == false
 						&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
-					return dataModel.getHighestOffSuitCardAnySuitButSpade();
+					//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+					return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 				} else {
 					//??
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -220,7 +223,8 @@ public class SeatedRightOfOpponentMellow {
 			//TODO: can we try to think about which suit to throw off?
 			
 
-			return dataModel.getHighestOffSuitCardAnySuitButSpade();
+			//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+			return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 		}
 
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
@@ -383,7 +387,8 @@ public class SeatedRightOfOpponentMellow {
 						//(unless there's no choice but to trump)
 						if(dataModel.currentPlayerOnlyHasSpade() == false
 								&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
-							return dataModel.getHighestOffSuitCardAnySuitButSpade();
+							//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+							return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 						} else {
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						}
@@ -393,7 +398,8 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Mellow could be in danger: don't trump (unless there's no choice)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
-						return dataModel.getHighestOffSuitCardAnySuitButSpade();
+						return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
+						//return dataModel.getHighestOffSuitCardAnySuitButSpade();
 					} else {
 
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -411,7 +417,8 @@ public class SeatedRightOfOpponentMellow {
 						&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 
 					//TODO: why not play lower trump and dare mellow player to go under?
-					return dataModel.getHighestOffSuitCardAnySuitButSpade();
+					//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+					return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 				} else {
 
 					//DEC 18th:
@@ -432,7 +439,8 @@ public class SeatedRightOfOpponentMellow {
 			//TODO: make sure the throw might possibly help the mellow
 			
 			//TODO: make it same logic as 2nd thrower?
-			return dataModel.getHighestOffSuitCardAnySuitButSpade();
+			//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+			return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 		}
 
 		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
@@ -475,7 +483,8 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				} else {
 					//TODO: what if you have A,K,Q,J C and only QD??
-					return dataModel.getHighestOffSuitCardAnySuitButSpade();
+					//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+					return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 				}
 			}
 			
@@ -530,6 +539,5 @@ public class SeatedRightOfOpponentMellow {
 		}
 		
 	}
-	
 	
 }

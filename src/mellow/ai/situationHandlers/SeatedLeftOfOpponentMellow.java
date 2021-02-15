@@ -18,10 +18,6 @@ public class SeatedLeftOfOpponentMellow {
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S QH AC QC ")) {
-			System.out.println("DEBUG");
-		}
-		
 		if(throwIndex == 0) {
 
 			//TODO:
@@ -59,7 +55,7 @@ public class SeatedLeftOfOpponentMellow {
 						
 						}
 					} else {
-						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel);
+						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 					}
 				}
 			} else {
@@ -84,7 +80,7 @@ public class SeatedLeftOfOpponentMellow {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
 						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
-						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel);
+						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 					}
 				
 				}
@@ -171,7 +167,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			} else {
 				
-				return throwOffHighCardThatMightAccidentallySaveMellow(dataModel);
+				return throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
 			}
 		
 			
@@ -192,8 +188,14 @@ public class SeatedLeftOfOpponentMellow {
 		return SeatedRightOfOpponentMellow.AIHandleLead(dataModel);
 	}
 	
-	
-	public static String throwOffHighCardThatMightAccidentallySaveMellow(DataModel dataModel) {
+	//TODO: play high if you got your tricks (HARD!)
+	//TODO: consider playing non-top card of suit... LATER
+	//TODO: put in another class because this handles the logic for both seated left and seated right...
+	public static String throwOffHighCardThatMightAccidentallySaveMellow(DataModel dataModel, int mellowPlayerIndex) {
+		
+		//if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S QH AC QC ")) {
+		//	System.out.println("DEBUG");
+		//}
 		
 		double bestValue = 0.0;
 		String bestCard = null;
@@ -209,18 +211,29 @@ public class SeatedLeftOfOpponentMellow {
 			String curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex);
 			
 			
-			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, curSuitIndex)) {
+			if(dataModel.isVoid(mellowPlayerIndex, curSuitIndex)) {
 				curValue -= 100.0;
 
-			} else if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, curSuitIndex)) {
+			} else if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex)) {
 				curValue -= 50.0;
 				
-			} else if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuit(curCard, MELLOW_PLAYER_INDEX)) {
+			} else if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
 				curValue -= 48.0;
 
 			}
 			
-			curValue -= dataModel.getRankIndex(curCard);
+			//Shouldn't like to throw off a high-card
+			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) < 3) {
+				curValue = -4 * (1.5) + 1.5 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
+			}
+			
+			//Lower rank cards are less fun to throw:
+			curValue += 0.9 * dataModel.getRankIndex(curCard);
+			
+			//2s and 3s don't really save a mellow:
+			if(dataModel.getRankIndex(curCard) <= DataModel.RANK_THREE) {
+				curValue -= 10.0;
+			}
 			
 			if(bestCard == null
 					|| curValue > bestValue) {
