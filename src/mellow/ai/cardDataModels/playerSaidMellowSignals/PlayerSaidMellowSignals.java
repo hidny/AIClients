@@ -7,7 +7,7 @@ import mellow.cardUtils.DebugFunctions;
 
 public class PlayerSaidMellowSignals {
 
-	static final byte MELLOW_PLAYER_SIGNALED_NO = 3;
+	static final int MELLOW_PLAYER_SIGNALED_NO = 3;
 	private DataModel dataModel;
 
 	public PlayerSaidMellowSignals(DataModel dataModel) {
@@ -149,6 +149,7 @@ public class PlayerSaidMellowSignals {
 				&& dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != dataModel.IMPOSSIBLE) {
 			
 			//System.out.println("MELLOW HAS NO " + dataModel.getCardString(rankIndex, suitIndex) + ".");
+			//System.out.println(playerIndex + ", " + suitIndex + ", " + rankIndex);
 			dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] = MELLOW_PLAYER_SIGNALED_NO;
 		}
 	}
@@ -201,7 +202,6 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		for(int j=dataModel.RANK_THREE; j<Constants.NUM_RANKS; j++) {
 			
 			if(cardsUnderInputCard[suitIndex][j]) {
-	
 				if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != dataModel.IMPOSSIBLE
 						&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
 					

@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.cardUtils.DebugFunctions;
 
 public class PartnerSaidMelllowSituation {
 
@@ -215,6 +216,7 @@ public class PartnerSaidMelllowSituation {
 		
 		String curStrongestCardPlayed = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
+		
 		if(leadSuit != Constants.SPADE
 				&& dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, leadSuit)) {
 
@@ -290,7 +292,13 @@ public class PartnerSaidMelllowSituation {
 						
 						//TODO: dataModel.numCardsInHandGreaterThanCardSameSuit
 						
-						if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCardPlayed)) {
+						if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuitExceptRank2(highestProtector, MELLOW_PLAYER_INDEX)) {
+							return highestProtector;
+						
+						//} else if
+							//it's fine to play high...
+							
+						} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCardPlayed)) {
 							
 							
 							//TODO: needs more complex logic because maybe taking the trick isn't so bad...
@@ -415,7 +423,30 @@ public class PartnerSaidMelllowSituation {
 			
 			//Just play low: bad logic, but whatever!
 			if(dataModel.currentAgentHasSuit(leadSuit)) {
-				return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+				
+				if(
+						dataModel.cardAGreaterThanCardBGivenLeadCard
+						(dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit), currentFightWinnerCard)) {
+
+						//TODO: logic is overly simplistic, but whatever...
+						String curCard = dataModel.getCardInHandClosestOverSameSuit(currentFightWinnerCard);
+						String lowestCard = dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+						
+						if(curCard.equals(lowestCard)
+								|| dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(lowestCard, curCard, leadSuit)
+								) {
+							
+							return curCard;
+						} else {
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+						}
+				} else {
+
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+				}
+				
+				//else:
+				
 			} else {
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}

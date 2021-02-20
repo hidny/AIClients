@@ -15,9 +15,12 @@ public class SeatedLeftOfOpponentMellow {
 	//TODO
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S 3H 8C 6C TD")) {
+			System.out.println("DEBUG");
+		}
+		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-
 		if(throwIndex == 0) {
 
 			//TODO:
@@ -65,7 +68,13 @@ public class SeatedLeftOfOpponentMellow {
 					//Both follow suit
 					
 					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard)) {
-						return dataModel.getCardInHandClosestUnderSameSuit(curWinningCard);
+						
+						if(throwIndex < 3) {
+							return dataModel.getCardInHandClosestUnderSameSuit(curWinningCard);
+						} else {
+							//If you are the last thrower, and mellow is burning: play low
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+						}
 					
 					} else {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
@@ -99,7 +108,7 @@ public class SeatedLeftOfOpponentMellow {
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
 					
 					//lazy approx:
-					return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+					return getHighestPartOfGroup(dataModel, NoMellowBidPlaySituation.handleNormalThrow(dataModel));
 					
 				} else {
 					
@@ -110,7 +119,7 @@ public class SeatedLeftOfOpponentMellow {
 							(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
 						
 						//lazy approx:
-						return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+						return getHighestPartOfGroup(dataModel, NoMellowBidPlaySituation.handleNormalThrow(dataModel));
 
 					} else {
 
@@ -142,16 +151,18 @@ public class SeatedLeftOfOpponentMellow {
 							if(minCardToWin != null && minCardOverMaxMellowCard != null) {
 
 								if( dataModel.cardAGreaterThanCardBGivenLeadCard(minCardToWin, minCardOverMaxMellowCard)) {
-									return minCardToWin;
+									return getHighestPartOfGroup(dataModel, minCardToWin);
 								} else {
-									return minCardOverMaxMellowCard;
+									return getHighestPartOfGroup(dataModel,
+											minCardOverMaxMellowCard);
 								}
 
 							} else if(minCardToWin != null && minCardOverMaxMellowCard == null) {
-								return minCardToWin;
+								return getHighestPartOfGroup(dataModel, minCardToWin);
 
 							} else if(minCardToWin == null && minCardOverMaxMellowCard != null) {
-								return minCardOverMaxMellowCard;
+								return getHighestPartOfGroup(dataModel, 
+										minCardOverMaxMellowCard);
 
 							} else {
 								return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
@@ -220,6 +231,36 @@ public class SeatedLeftOfOpponentMellow {
 			} else if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
 				curValue -= 48.0;
 
+			} else if(dataModel.isMasterCard(curCard) && wantTrick(dataModel)) {
+				//TODO: revisit...
+				/*
+				//Try not to part with a master card if you want a trick: (It's rough and untested)
+				if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) > 1) {
+
+					String secondCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex);
+					
+					boolean useSecondCard = false;
+					
+					//TODO: make an algo for it?
+					for(int rank=dataModel.getRankIndex(secondCard) + 1; rank<dataModel.getRankIndex(curCard); rank++) {
+						if(dataModel.isCardPlayedInRound(dataModel.getCardString(rank, curSuitIndex))) {
+							useSecondCard = true;
+							break;
+						}
+					}
+					//END TODO
+					
+					if(useSecondCard) {
+						curCard = secondCard;
+					} else {
+						//Do nothing...
+					}
+
+					//END: Try not to part with a master card if you want a trick:
+				} else {
+					curValue -= 20.0;
+				}
+				*/
 			}
 			
 			//Shouldn't like to throw off a high-card
@@ -247,4 +288,88 @@ public class SeatedLeftOfOpponentMellow {
 		return bestCard;
 	}
 	
+	//TODO: make it more precise, and then actually use it...
+	//Oversimplified...
+	public static boolean wantTrick(DataModel dataModel) {
+		
+		if(dataModel.getNumCardsInCurrentPlayerHand() < 6) {
+			//Calculation below is so rough, that I'm only going to allow the logic if there's less than 6 cards in hand... 
+			return false;
+		}
+		int numBid = dataModel.getBid(Constants.CURRENT_AGENT_INDEX);
+		int numTricks = dataModel.getTrick(Constants.CURRENT_AGENT_INDEX);
+		
+
+		int numBidPartner = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
+		int numTricksPartner = dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX);
+		
+		int partnerCover = Math.max(numTricksPartner - 1, 0);
+		
+		if(numTricks + partnerCover < numBid) {
+			
+			int numMasterExpectedTrick = 0;
+			
+			for(int s=0; s<Constants.NUM_SUITS; s++) {
+				if(dataModel.currentPlayerHasMasterInSuit(s)) {
+					numMasterExpectedTrick++;
+				}
+			}
+			
+			//TODO: what about kings, and what about partial trams...
+			//This is really rough...
+			
+			int numSpadesInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE);
+			int numSpadesInOtherHand = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
+			
+			int otherPlayersHandFactor = 0;
+			for(int playerIndex=0; playerIndex<Constants.NUM_PLAYERS; playerIndex++) {
+				if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
+					continue;
+				} else if(dataModel.isVoid(playerIndex, Constants.SPADE)) {
+					otherPlayersHandFactor++;
+				}
+			}
+			
+			int spadesTricksExpected = numSpadesInHand - otherPlayersHandFactor * numSpadesInOtherHand;
+			
+			int roughTricksExpected = numMasterExpectedTrick + spadesTricksExpected;
+			
+			if(numTricks + partnerCover + roughTricksExpected > numBid) {
+				return false;
+			} else {
+				return true;
+			}
+			
+		} else {
+			return false;
+		}
+		
+		
+	}
+	
+	
+	//TODO: make into dataModel functions?
+	//pre: card is in hand
+	public static String getHighestPartOfGroup(DataModel dataModel, String card) {
+		
+		String ret= card;
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int initRank = DataModel.getRankIndex(card);
+		
+		for(int rank = initRank; rank<=DataModel.ACE; rank++) {
+			
+			String tmpCard = DataModel.getCardString(rank, suitIndex);
+			
+			if(dataModel.isCardPlayedInRound(tmpCard)) {
+				continue;
+			} else if(dataModel.hasCard(tmpCard)) {
+				ret = tmpCard;
+			} else {
+				break;
+			}
+		}
+		
+		return ret;
+		
+	}
 }

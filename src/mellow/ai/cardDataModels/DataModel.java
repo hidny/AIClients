@@ -1945,7 +1945,7 @@ public class DataModel {
 		}
 	}
 	
-	public int getRankIndex(String card) {
+	public static int getRankIndex(String card) {
 		int x = 0;
 		
 		if(card.charAt(0) >= '2' && card.charAt(0) <= '9') {

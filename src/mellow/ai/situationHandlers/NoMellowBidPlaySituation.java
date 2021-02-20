@@ -12,10 +12,6 @@ public class NoMellowBidPlaySituation {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KC TC 9D ")) {
-			System.out.println("DEBUG");
-		}
-		
 		//leader:
 		String cardToPlay = null;
 		System.out.println("**Inside get card to play");
@@ -324,6 +320,10 @@ public class NoMellowBidPlaySituation {
 		//SEE NOTES FOR BETTER PLAN
 		//TODO: pseudo code for not following suit
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KC QC TC 8C ")) {
+			System.out.println("DEBUG");
+		}
+		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		String leaderCard = dataModel.getCardLeaderThrow();
@@ -356,8 +356,9 @@ public class NoMellowBidPlaySituation {
 						
 						String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 						
-						if(dataModel.getRankIndex(curPlayerTopCardInSuit) == dataModel.KING
-								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2) {
+						if((dataModel.getRankIndex(curPlayerTopCardInSuit) == dataModel.KING
+								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2)
+							) {
 							
 							//2nd throw: Play the King's wing-person card if it's higher than the lead card...
 							
@@ -370,6 +371,19 @@ public class NoMellowBidPlaySituation {
 								//Play the King while the Ace is still out!
 								return curPlayerTopCardInSuit;
 							}
+							
+						//Queen of spades logic:
+							//Maybe add more general logic for JS, TS... later
+						} else if(leaderSuitIndex == Constants.SPADE
+								&& dataModel.getRankIndex(curPlayerTopCardInSuit) == dataModel.QUEEN
+								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 
+								1 + dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit("QS")) {
+							
+								
+								//Wait it out...
+								//cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+								
+								cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 								
 											
 						} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
@@ -669,19 +683,25 @@ public class NoMellowBidPlaySituation {
 		} else if(dataModel.currentPlayerOnlyHasSpade()){
 			return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 			
-		} else if(dataModel.currentAgentHasSuit(Constants.SPADE)){
+		}/* else if(dataModel.currentAgentHasSuit(Constants.SPADE)){
 			
 			return getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
 
 		} else {
 			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-		}
+		}*/
+		return getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
 		
 	}
 	
+	//TODO: what if there's strategy around signalling?
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH TH 5H 2C TD ")) {
+			System.out.println("DEBUG");
+		}
+		
 
 		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
 		
@@ -699,20 +719,60 @@ public class NoMellowBidPlaySituation {
 				continue;
 			}
 
+			String curCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+			
+			
+			
+			int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curCard);
+			int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
+
+			double currentValue = 0.0;
+			
+			currentValue -= numUnder;
+			//currentValue += numOver;
 			
 			String bestCardPlayerHas = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 			
-			double currentValue = 0.0;
-			if(numberOfCardsInSuit == 1 && dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			boolean partnerVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex);
+			boolean partnerTrumping = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false;
+
+			//Easy for throwing off:
+			if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
+					&& numUnder == 0 
+					&& numOver >= 1
+					&& numberOfCardsInSuit == 1) {
+				
+				System.out.println("Nothing lower...");
+				
+				
+				if(numOver == 1) {
+					currentValue += 75;
+				} else {
+					currentValue += 100;
+				}
+				
+				//Logic doesn't really do anything yet.
+				if(partnerVoid && partnerTrumping) {
+					System.out.println("DEBUG WARNING");
+					currentValue -= 50;
+				}
+			}
+			
+			
+			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				//Don't throw off master cards unless you really need to...
-				currentValue -= 5.0;
-			} else if(numberOfCardsInSuit >= 2 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 1) {
+				currentValue -= 10.0;
+			} else if(numberOfCardsInSuit >= 2 
+					&& numberOfCardsInSuit <= 3 
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 1) {
 				
 				currentValue -= 1.2;
 				
 				
-			} else if(numberOfCardsInSuit >= 3 && dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 2) {
+			} else if(numberOfCardsInSuit >= 3 
+					&& numberOfCardsInSuit <= 4 
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 2) {
 				currentValue -= 1.1;
 				
 			} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) == 3 && 
@@ -727,18 +787,27 @@ public class NoMellowBidPlaySituation {
 			
 			
 			//boolean rhsVoid = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex);
-			boolean rhsTrumping = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE);
+			boolean rhsTrumping = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					  && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE);
 			
 			//boolean lhsVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex);
-			boolean lhsTrumping = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE);
+			boolean lhsTrumping = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					  && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE);
 			
-			if(lhsTrumping) {
-				currentValue -= 2.0;
+			if(rhsTrumping) {
+				currentValue += 2.0;
+			}
+			
+			if(numUnder == 0 && rhsTrumping) {
+				if(numberOfCardsOthersHaveInSuit == 0) {
+					currentValue -= 5.0;
+				} else {
+					System.out.println("BOOM");
+					currentValue -= 8.0;
+				}
 			}
 
-			//boolean partnerVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex);
-			//boolean partnerTrumping = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE);
-
+		
 			
 			
 			//if(partnerTrumping || lhsTrumping) {
@@ -746,24 +815,33 @@ public class NoMellowBidPlaySituation {
 			//} else 
 			if(numberOfCardsOthersHaveInSuit == 0) {
 				//only good if you could sweep spades and lead it...
-				currentValue += 0.2;
+				currentValue += 2.0;
 			
-			} else if(rhsTrumping) {
-				
-				double numTimesToFollowSuitIfThrowOff = (1.0 *numberOfCardsInSuit - 1.0);
-				
-				double approxNumTrumpingRoundIdeal =  (1.0/ 2.0) * numberOfCardsOthersHaveInSuit - numTimesToFollowSuitIfThrowOff;
-				
-				double BONUS_VALUE = 0.5;
-				
-				currentValue += approxNumTrumpingRoundIdeal + BONUS_VALUE;
+			}
+			
+			if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				if(rhsTrumping) {
+					
+					double numTimesToFollowSuitIfThrowOff = (1.0 *numberOfCardsInSuit - 1.0);
+					
+					double approxNumTrumpingRoundIdeal =  (1.0/ 2.0) * numberOfCardsOthersHaveInSuit - numTimesToFollowSuitIfThrowOff;
+					
+					double BONUS_VALUE = 0.5;
+					
+					currentValue += approxNumTrumpingRoundIdeal + BONUS_VALUE;
+				} else {
+					
+					double numTimesToFollowSuitIfThrowOff = (1.0 *numberOfCardsInSuit - 1.0);
+					
+					double approxNumTrumpingRoundIdeal =  (1.0/ 3.0) * numberOfCardsOthersHaveInSuit - numTimesToFollowSuitIfThrowOff;
+					currentValue += approxNumTrumpingRoundIdeal;
+					
+				}
 			} else {
 				
-				double numTimesToFollowSuitIfThrowOff = (1.0 *numberOfCardsInSuit - 1.0);
 				
-				double approxNumTrumpingRoundIdeal =  (1.0/ 3.0) * numberOfCardsOthersHaveInSuit - numTimesToFollowSuitIfThrowOff;
-				currentValue += approxNumTrumpingRoundIdeal;
 				
+				currentValue += numberOfCardsInSuit;
 			}
 			
 			if(bestSuit == -1 || currentValue > valueOfBestSuit) {
