@@ -204,10 +204,6 @@ public class SeatedLeftOfOpponentMellow {
 	//TODO: put in another class because this handles the logic for both seated left and seated right...
 	public static String throwOffHighCardThatMightAccidentallySaveMellow(DataModel dataModel, int mellowPlayerIndex) {
 		
-		//if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S QH AC QC ")) {
-		//	System.out.println("DEBUG");
-		//}
-		
 		double bestValue = 0.0;
 		String bestCard = null;
 		
@@ -275,6 +271,22 @@ public class SeatedLeftOfOpponentMellow {
 			if(dataModel.getRankIndex(curCard) <= DataModel.RANK_THREE) {
 				curValue -= 10.0;
 			}
+			
+			
+			//Count Amount of cards over top mellow signal...
+			//The more cards over, the less inclined you should be about throwing off...
+			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex) == false) {
+				
+				String topMellowSignalCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, curSuitIndex);
+				
+				int numCardsOver = dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(topMellowSignalCard);
+				
+				if(numCardsOver > 1) {
+					curValue -= 5.0 * (numCardsOver - 1);
+				}
+			}
+			//End count amount of cards over top mellow signal
+			
 			
 			if(bestCard == null
 					|| curValue > bestValue) {

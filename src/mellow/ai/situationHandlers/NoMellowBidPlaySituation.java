@@ -694,14 +694,14 @@ public class NoMellowBidPlaySituation {
 		
 	}
 	
+	
+	//TODO: maybe throw off low pretending you could trump...
+	//That means make signals about wether or not others knwo you're void in spades...
+	//That's hard... but doable.
+	
 	//TODO: what if there's strategy around signalling?
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH TH 5H 2C TD ")) {
-			System.out.println("DEBUG");
-		}
-		
 
 		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
 		
@@ -720,32 +720,28 @@ public class NoMellowBidPlaySituation {
 			}
 
 			String curCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+			String bestCardPlayerHas = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 			
-			
-			
-			int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curCard);
-			int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
+			int numUnderLowest = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curCard);
+			int numOverHighest = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas);
 
 			double currentValue = 0.0;
 			
-			currentValue -= numUnder;
-			//currentValue += numOver;
-			
-			String bestCardPlayerHas = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			currentValue -= numUnderLowest;
 			
 			boolean partnerVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex);
 			boolean partnerTrumping = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false;
 
 			//Easy for throwing off:
 			if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
-					&& numUnder == 0 
-					&& numOver >= 1
+					&& numUnderLowest == 0 
+					&& numOverHighest >= 1
 					&& numberOfCardsInSuit == 1) {
 				
 				System.out.println("Nothing lower...");
 				
 				
-				if(numOver == 1) {
+				if(numOverHighest == 1) {
 					currentValue += 75;
 				} else {
 					currentValue += 100;
@@ -756,23 +752,31 @@ public class NoMellowBidPlaySituation {
 					System.out.println("DEBUG WARNING");
 					currentValue -= 50;
 				}
+			} else if(
+					numberOfCardsInSuit < numOverHighest + 1) {
+				
+				//Reliable hammer for throwing off that I discovered:
+				
+				//TODO: what if throwing off a card signals that opponent could TRAM suit?
+				//Shouldn't we be careful about that?
+				currentValue += 5 * (numOverHighest - numberOfCardsInSuit);
 			}
-			
+			//End easy for throwing off
 			
 			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-				
 				//Don't throw off master cards unless you really need to...
 				currentValue -= 10.0;
+	
 			} else if(numberOfCardsInSuit >= 2 
 					&& numberOfCardsInSuit <= 3 
-					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 1) {
+					&& numOverHighest == 1) {
 				
 				currentValue -= 1.2;
 				
 				
 			} else if(numberOfCardsInSuit >= 3 
 					&& numberOfCardsInSuit <= 4 
-					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas) == 2) {
+					&& numOverHighest == 2) {
 				currentValue -= 1.1;
 				
 			} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) == 3 && 
@@ -798,11 +802,10 @@ public class NoMellowBidPlaySituation {
 				currentValue += 2.0;
 			}
 			
-			if(numUnder == 0 && rhsTrumping) {
+			if(numUnderLowest == 0 && rhsTrumping) {
 				if(numberOfCardsOthersHaveInSuit == 0) {
 					currentValue -= 5.0;
 				} else {
-					System.out.println("BOOM");
 					currentValue -= 8.0;
 				}
 			}
@@ -810,14 +813,13 @@ public class NoMellowBidPlaySituation {
 		
 			
 			
-			//if(partnerTrumping || lhsTrumping) {
-				//currentValue = 0.0;
-			//} else 
 			if(numberOfCardsOthersHaveInSuit == 0) {
+				
 				//only good if you could sweep spades and lead it...
 				currentValue += 2.0;
-			
+
 			}
+			
 			
 			if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
 				if(rhsTrumping) {
@@ -839,10 +841,10 @@ public class NoMellowBidPlaySituation {
 				}
 			} else {
 				
-				
-				
 				currentValue += numberOfCardsInSuit;
 			}
+			
+			
 			
 			if(bestSuit == -1 || currentValue > valueOfBestSuit) {
 				valueOfBestSuit = currentValue;

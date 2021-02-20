@@ -1089,6 +1089,22 @@ public class DataModel {
 		return ret;
 	}
 	
+	
+	public int getNumCardsInCurrentPlayersHandOverCardSameSuit(String card) {
+
+		int rankStart = getRankIndex(card) + 1;
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		
+		int ret = 0;
+		
+		for(int i=rankStart; i<Constants.NUM_RANKS; i++) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
 	public boolean throwerHasCardToBeatCurrentWinner() {
 		if(getCardInHandClosestOverCurrentWinner() != null) {
 			return true;
