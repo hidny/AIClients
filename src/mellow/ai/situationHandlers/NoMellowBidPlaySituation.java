@@ -40,7 +40,10 @@ public class NoMellowBidPlaySituation {
 	
 	
 	public static String AILeaderThrow(DataModel dataModel) {
-		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6C AD ")) {
+			System.out.println("DEBUG");
+		}
 
 		if(couldTRAM(dataModel)) {
 			System.out.println("THE REST ARE MINE! (TRAM)");
@@ -98,11 +101,14 @@ public class NoMellowBidPlaySituation {
 				//Check if leading suitIndex helps partner trump:
 				if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
 
-					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					&& (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 						(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-						
-					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+							&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false
+						)
+					&& (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
+							|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						)
 						
 					&& numCardsOfSuitOtherPlayersHave >= 1) {
 				
@@ -246,11 +252,11 @@ public class NoMellowBidPlaySituation {
 					//I like leading offsuit queens... if no one is void and I don't have a hope of winning with it.
 					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
 							&& 
-						! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+								! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 							(Constants.LEFT_PLAYER_INDEX, suitIndex)
 							&& 
-						! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-								(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
+								! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						) {
 						
 						if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) < 3
 								|| (dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 4
@@ -264,7 +270,6 @@ public class NoMellowBidPlaySituation {
 								curScore += 5.0;
 							}
 						}
-						
 						
 					}
 				}
@@ -298,9 +303,6 @@ public class NoMellowBidPlaySituation {
 			}
 			
 			
-			
-			
-
 			if(curScore > currentBestScore) {
 				currentBestScore = curScore;
 				bestCardToPlay = cardToPlay;

@@ -114,7 +114,7 @@ public class PartnerSaidMelllowSituation {
 			if(dataModel.currentPlayerHasMasterInSuit( bestSuitIndexToPlay)) {
 				return dataModel.getMasterInHandOfSuit( bestSuitIndexToPlay);
 			} else {
-				return dataModel.getCardCurrentPlayerGetLowestInSuit( bestSuitIndexToPlay);
+				return dataModel.getCardCurrentPlayerGetHighestInSuit( bestSuitIndexToPlay);
 			}
 			
 		}
