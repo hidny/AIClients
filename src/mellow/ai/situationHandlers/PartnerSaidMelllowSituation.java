@@ -84,14 +84,16 @@ public class PartnerSaidMelllowSituation {
 					
 					//if suit is trump, see if there's another suit
 					if(curSuit == Constants.SPADE) {
-						currentValueOfSuitPlay = 1;
+
+						currentValueOfSuitPlay = -1;
+						
 					}
 					
 					//If current player has master of suit:
 					//that's good! (I can't tell how good, but it's pretty.. pretty.. pretty good.)
 					if(dataModel.currentPlayerHasMasterInSuit(curSuit)) {
 						//Add 2 to value because why not?
-						currentValueOfSuitPlay += 2;
+						currentValueOfSuitPlay += 3;
 					}
 					
 					//Exceptions:
