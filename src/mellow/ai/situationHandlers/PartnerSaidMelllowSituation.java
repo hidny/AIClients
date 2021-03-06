@@ -59,15 +59,20 @@ public class PartnerSaidMelllowSituation {
 		int valueOfBestSuitPlay = -1;
 
 		System.out.println("DEBUG: reached mellow protection test. Test0!");
+
 		
 		//1st check that there's an offsuit current player has, but mellow signalled they don't have:
+		// OR if the protector can safely play spade:
 		for(int curSuit=0; curSuit<Constants.NUM_SUITS; curSuit++) {
 			if(dataModel.currentAgentHasSuit(curSuit)) {
 
-				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, curSuit)) {
+				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, curSuit)
+						|| curSuit == Constants.SPADE) {
+					//
 					//if mellow player signal no to suit
+					//Or if 
 					
-					//TODO: check if any test cas even reaches this point
+					//TODO: check if any test case even reaches this point
 					System.out.println("DEBUG: reached mellow protection test. Test1!");
 					
 					//value of suit: num cards opponents have of suit
@@ -76,6 +81,11 @@ public class PartnerSaidMelllowSituation {
 						 - dataModel.getNumCardsCurrentUserStartedWithInSuit(curSuit);
 					
 					int currentValueOfSuitPlay = numCardsOpponentsCurrentlyHaveOfSuit;
+					
+					//if suit is trump, see if there's another suit
+					if(curSuit == Constants.SPADE) {
+						currentValueOfSuitPlay = 1;
+					}
 					
 					//If current player has master of suit:
 					//that's good! (I can't tell how good, but it's pretty.. pretty.. pretty good.)
@@ -92,10 +102,7 @@ public class PartnerSaidMelllowSituation {
 						currentValueOfSuitPlay = 1;
 					}
 
-					//if suit is trump, see if there's another suit
-					if(curSuit == Constants.SPADE) {
-						currentValueOfSuitPlay = 1;
-					}
+					
 					//TODO: I don't know what I'd choose between leading trump and leading into opponent because it's context dependant
 					//Whatever!
 					
