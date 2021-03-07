@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 6S 3S QH 6H 3H JC TC 6C AD 3D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 7S 5S QH 5H TC 5C 4C KD JD 9D ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -185,8 +185,8 @@ public class NoMellowBidPlaySituation {
 						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
 						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 						) {
-						
-						curScore += 25.0;
+						//increased to 26.0 to fix testcase Michael2021 -> 290...
+						curScore += 26.0;
 						
 					} else {
 						curScore -= 10.0;
@@ -195,14 +195,12 @@ public class NoMellowBidPlaySituation {
 					if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 						//Don't lower it...
 
-					//TODO: has KQ equiv
 					} else if(hasKQEquiv(dataModel, suitIndex)) {
 						//Only lower it a little...
 						curScore -= 5.0;
 					
 					} else {
-						curScore -= 25.0;
-						//K and Q equiv
+						curScore -= 26.0;
 						
 						
 					}
@@ -250,10 +248,16 @@ public class NoMellowBidPlaySituation {
 						
 						cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
 					} else {
-						
-						if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) <= DataModel.RANK_TEN
-								|| hasKQEquiv(dataModel, suitIndex)) {
+						//TODO: fix
+						if(hasKQEquiv(dataModel, suitIndex)) {
 							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+							
+						} else if(hasKEquiv(dataModel, suitIndex)) {
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+							
+						} else if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) <= DataModel.RANK_TEN) {
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+							
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
@@ -327,6 +331,17 @@ public class NoMellowBidPlaySituation {
 				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
 					curScore -= 40.0;
+				}
+				
+				if(numCardsOfSuitOtherPlayersHave == 0) {
+					//TODO: this fixes testcase 220 of Michael2021, but
+					// maybe it's not always best
+					// I do think it's better than leading the offsuit masters though
+					if(dataModel.currentPlayerHasMasterInSuit(1)
+							|| dataModel.currentPlayerHasMasterInSuit(2)
+							|| dataModel.currentPlayerHasMasterInSuit(3)) {
+						curScore += 70.0;
+					}
 				}
 				
 				//Drain the spades... TODO: this is rough...
@@ -927,4 +942,33 @@ public class NoMellowBidPlaySituation {
 		return true;
 	}
 	
+public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+			return false;
+		}
+		
+		String cardA = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+		
+		int numOver = 0;
+		
+		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(cardA); curRank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				continue;
+
+			} else if(dataModel.isCardPlayedInRound(
+					dataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+
+			} else {
+				numOver++;
+				if(numOver > 1) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
 }

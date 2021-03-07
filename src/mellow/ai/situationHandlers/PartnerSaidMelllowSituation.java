@@ -60,7 +60,7 @@ public class PartnerSaidMelllowSituation {
 
 		System.out.println("DEBUG: reached mellow protection test. Test0!");
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 6S 5H 4H 6C AD 8D 4D 3D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S 6S KH 9H KC 9C 7C 3C 2C 8D ")) {
 			System.out.println("DEBUG");
 		}
 		
@@ -91,7 +91,7 @@ public class PartnerSaidMelllowSituation {
 						currentValueOfSuitPlay = -1;
 
 						if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit
-								(dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit), curSuit)) {
+								(dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit), Constants.CURRENT_PARTNER_INDEX)) {
 							currentValueOfSuitPlay += 2;
 						}
 						
