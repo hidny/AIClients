@@ -63,7 +63,7 @@ public class SeatedRightOfOpponentMellow {
 				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
 				//(Save 2C for the end)
 				
-				int curLowestRankSuitScore = dataModel.getRankIndex(tempLowest);
+				int curLowestRankSuitScore = DataModel.getRankIndex(tempLowest);
 				
 				// pretend lowest spades have a higher rank to discourage use of spades:
 				if(suit == Constants.SPADE) {

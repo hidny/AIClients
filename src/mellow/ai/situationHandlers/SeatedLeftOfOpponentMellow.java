@@ -192,13 +192,6 @@ public class SeatedLeftOfOpponentMellow {
 		}
 	}
 	
-	
-	public static String AIHandleLead(DataModel dataModel) {
-		
-		//TODO: make it different later:
-		return SeatedRightOfOpponentMellow.AIHandleLead(dataModel);
-	}
-	
 	//TODO: play high if you got your tricks (HARD!)
 	//TODO: consider playing non-top card of suit... LATER
 	//TODO: put in another class because this handles the logic for both seated left and seated right...
@@ -382,6 +375,121 @@ public class SeatedLeftOfOpponentMellow {
 		}
 		
 		return ret;
+		
+	}
+	
+	
+	public static String AIHandleLead(DataModel dataModel) {
+		
+		int bestSuitIndex = -1;
+		int lowestRankScore = Integer.MAX_VALUE;
+		
+
+		
+		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
+			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
+				continue;
+			}
+			
+			
+			//TODO: should I treat the other off-suits differently than spades?
+		
+			String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
+	
+			if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
+				
+				//TODO: instead of just returning, try grading the options!
+				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
+				//(Save 2C for the end)
+				
+				int curLowestRankSuitScore = DataModel.getRankIndex(tempLowest);
+				
+				// pretend lowest spades have a higher rank to discourage use of spades:
+				if(suit == Constants.SPADE) {
+					curLowestRankSuitScore += 9.5;
+				}
+				
+				//Don't want to lead low if you have master and are left of mellow.
+				if(dataModel.currentPlayerHasMasterInSuit(suit)
+						&& suit != Constants.SPADE) {
+					curLowestRankSuitScore += 3.0;
+				}
+				
+				//Encourage mellow protector to trump...
+				//TODO: This isn't good if mellow is void in some offsuit and we don't want the protector to lead it
+				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suit)
+					 && suit != Constants.SPADE) {
+						 curLowestRankSuitScore -= 3.0;
+				 }
+				
+				if(curLowestRankSuitScore < lowestRankScore) {
+					bestSuitIndex = suit;
+					lowestRankScore = curLowestRankSuitScore;
+				}
+				
+				
+			}
+		
+		
+		}
+		
+		if(bestSuitIndex != -1) {
+			
+			return leadLowButAvoidWastingLowestCardInSuit(dataModel, bestSuitIndex);
+			
+			
+		} else {
+		
+			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+		}
+	}
+	
+	
+
+	//Try not to waste the killer small cards 1st time out.
+	//This is a rough imitation of how I lead as a mellow attacker...
+	//Since other family members don't really do this, it's probably not too important.
+	
+	//TODO: If I'm seating before the protecter, I usually play higher.
+	//Myabe make another function to reflect this.
+	
+	public static String leadLowButAvoidWastingLowestCardInSuit(DataModel dataModel, int suitToPlay) {
+		int numCardsCurPlayerHasOfSuit = dataModel.getNumberOfCardsOneSuit(suitToPlay);
+		
+		String consideredCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitToPlay);
+		
+		//TODO: I should Play higher before protect than before mellow...
+		if(dataModel.getRankIndex(consideredCard) <= dataModel.RANK_FOUR
+				&& dataModel.getNumCardsPlayedForSuit(suitToPlay) <= 2
+				&& numCardsCurPlayerHasOfSuit >= 2) {
+			
+			String consideredCard2 = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitToPlay);
+			
+			if(dataModel.getRankIndex(consideredCard2) <= dataModel.RANK_FIVE) {
+				
+				if( numCardsCurPlayerHasOfSuit >= 3) {
+
+					String consideredCard3 = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suitToPlay);
+				
+					if(dataModel.getRankIndex(consideredCard3) <= dataModel.RANK_SIX) {
+						
+						return consideredCard3;
+					} else {
+						return consideredCard2;
+					}
+					
+				} else {
+					return consideredCard2;
+				}
+				
+
+			} else {
+				return consideredCard;
+			}
+			
+		} else {
+			return consideredCard;
+		}
 		
 	}
 }

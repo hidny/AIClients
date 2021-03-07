@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6C AD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 6S 3S QH 6H 3H JC TC 6C AD 3D ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -130,6 +130,11 @@ public class NoMellowBidPlaySituation {
 						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 							
 							cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+							
+						} else if(hasKQEquiv(dataModel, suitIndex)) {
+							//It's slightly controversial to not play lowest when partner is trumping, but I like the agro play...
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+						
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
@@ -174,22 +179,32 @@ public class NoMellowBidPlaySituation {
 								curScore -= 5.0 * (numCardsOfSuitOtherPlayersHave);
 					}
 					
+					
+					
 					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false) {
+						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
+						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						) {
 						
 						curScore += 25.0;
 						
-						//TODO: this is a sledge-hammer. Try to be more subtle than this:
-						//If you take it away, you get to testcase file #12
-						if( ! dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-
-							curScore -= 25.0;
-						}
-						
-						//END TODO
-						
-					} else if( ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+					} else {
 						curScore -= 10.0;
+					}
+					
+					if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+						//Don't lower it...
+
+					//TODO: has KQ equiv
+					} else if(hasKQEquiv(dataModel, suitIndex)) {
+						//Only lower it a little...
+						curScore -= 5.0;
+					
+					} else {
+						curScore -= 25.0;
+						//K and Q equiv
+						
+						
 					}
 					
 					//Play the ace so you back it up with a king:
@@ -198,7 +213,7 @@ public class NoMellowBidPlaySituation {
 						curScore += 5.0;
 						
 					}
-
+					//Don't play suit with King if you don't have the queen
 					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
 							&& numCardsOfSuitInHand > 1
 							&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) < dataModel.QUEEN
@@ -208,6 +223,7 @@ public class NoMellowBidPlaySituation {
 						
 					}
 					
+					//Play the king if it's alone
 					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
 							&& numCardsOfSuitInHand == 1
 							&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
@@ -235,18 +251,13 @@ public class NoMellowBidPlaySituation {
 						cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
 					} else {
 						
-						if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) <= DataModel.RANK_TEN) {
+						if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) <= DataModel.RANK_TEN
+								|| hasKQEquiv(dataModel, suitIndex)) {
 							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
 						
-						//TODO: terrible hack to fix
-						if(dataModel.hasCard(DataModel.getCardString(DataModel.KING, suitIndex))
-								&& dataModel.hasCard(DataModel.getCardString(DataModel.QUEEN, suitIndex))) {
-							cardToPlay = DataModel.getCardString(DataModel.KING, suitIndex);
-						}
-						//END TODO
 					}
 					
 					//I like leading offsuit queens... if no one is void and I don't have a hope of winning with it.
@@ -285,13 +296,18 @@ public class NoMellowBidPlaySituation {
 						curScore += 20.0;
 					}
 					
-					
-					for(int suitTemp=1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
-						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)
-								&& ! dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitTemp))
-								|| (dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitTemp))
-										&& dataModel.hasCard(DataModel.getCardString(DataModel.KING, suitTemp)))) {
-							curScore += 10.0;
+					if(numCardsOfSuitOtherPlayersHave > 0) {
+						for(int suitTemp=1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
+							if(dataModel.currentPlayerHasMasterInSuit(suitIndex)
+									&&
+									( ! dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitTemp))
+									|| (    dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitTemp))
+											&& dataModel.hasCard(DataModel.getCardString(DataModel.KING, suitTemp))
+										)
+									)
+								) {
+								curScore += 10.0;
+							}
 						}
 					}
 					
@@ -300,6 +316,28 @@ public class NoMellowBidPlaySituation {
 					curScore += 5.0;
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				}
+				
+
+				//TODO: this is a rough rule of thumb...
+				//Want to play spade if partner is void, but not when opponents are void:
+				if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					curScore += 40.0;
+				}
+				//Don't want to play spade when opponents are void: 
+				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+					curScore -= 40.0;
+				}
+				
+				//Drain the spades... TODO: this is rough...
+				if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
+						&& (dataModel.currentPlayerHasMasterInSuit(1)
+							|| dataModel.currentPlayerHasMasterInSuit(2)
+							|| dataModel.currentPlayerHasMasterInSuit(3))
+						&& numCardsOfSuitOtherPlayersHave > 0) {
+					curScore += 30.0;
+				}
+				
 			}
 			
 			
@@ -856,6 +894,37 @@ public class NoMellowBidPlaySituation {
 		}
 		
 		return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuit);
+	}
+	
+	public static boolean hasKQEquiv(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 2) {
+			return false;
+		}
+		
+		String cardA = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+		String cardB = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+		
+		int numOver = 0;
+		
+		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(cardB); curRank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				continue;
+
+			} else if(dataModel.isCardPlayedInRound(
+					dataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+
+			} else {
+				numOver++;
+				if(numOver > 1) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 }
