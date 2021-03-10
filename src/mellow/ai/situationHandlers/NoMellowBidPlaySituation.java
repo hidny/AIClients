@@ -41,9 +41,10 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 7S 5S QH 5H TC 5C 4C KD JD 9D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS TH 7H 4H 3H JC 9C 8C 6C 5C 3C ")) {
 			System.out.println("DEBUG");
 		}
+		System.out.println("DEBUG2");
 
 		if(couldTRAM(dataModel)) {
 			System.out.println("THE REST ARE MINE! (TRAM)");
@@ -319,7 +320,21 @@ public class NoMellowBidPlaySituation {
 				} else {
 					curScore += 5.0;
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					
+					//Don't lead small spade if you don't have much...
+					if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
+						curScore -= 30.0;
+					}
 				}
+				
+				/*
+				 * int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
+					- dataModel.getNumCardsPlayedForSuit(suitIndex) 
+					- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+				 */
 				
 
 				//TODO: this is a rough rule of thumb...
@@ -344,7 +359,7 @@ public class NoMellowBidPlaySituation {
 					}
 				}
 				
-				//Drain the spades... TODO: this is rough...
+				//Drain the spades... TODO: this is rough... and doesn't always work out...
 				if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
 						&& (dataModel.currentPlayerHasMasterInSuit(1)
 							|| dataModel.currentPlayerHasMasterInSuit(2)
@@ -352,6 +367,32 @@ public class NoMellowBidPlaySituation {
 						&& numCardsOfSuitOtherPlayersHave > 0) {
 					curScore += 30.0;
 				}
+				
+				//Basic awareness of when to play S based on bids:
+				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
+						&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+						- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) >= 2
+						&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					curScore += 40.0;
+					curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+							- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) - 2);
+				}
+				
+				if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
+						&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
+						- dataModel.getTrick(Constants.RIGHT_PLAYER_INDEX) >= 2
+					    && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+					curScore -= 40.0;
+				}
+				
+
+				if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
+						&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+						- dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) >= 2
+					    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+					curScore -= 40.0;
+				}
+				//End basic awareness...
 				
 			}
 			
@@ -418,6 +459,14 @@ public class NoMellowBidPlaySituation {
 							//2nd throw: Play the King's wing-person card if it's higher than the lead card...
 							
 							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+							
+							if(DataModel.getRankIndex(cardToPlay) == DataModel.QUEEN) {
+								//If you have the KQ, just play the K...
+								//Don't confuse your partner.
+								cardToPlay = curPlayerTopCardInSuit;
+								
+								//TODO: maybe play lower one (I don't know)
+							}
 							
 							if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
 								
@@ -512,12 +561,22 @@ public class NoMellowBidPlaySituation {
 
 				//I guess we should trump if we don't have much spade?
 					
-				} else if((dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false) 
+				} else if(
+						//Partner probably can't trump
+						(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false) 
 						&& 
-						//Not much spade:
+						//Not much spade: 
 						((Constants.NUM_RANKS - dataModel.getNumCardsPlayedForSuit(Constants.SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(Constants.SPADE))
-						//OR only 1 non-master spade:
-						   || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)) {		
+						                //OR only 1 non-master spade:
+						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 
+						         && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)
+						&& //No K to protect:
+						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
+						           && hasKEquiv(dataModel, Constants.SPADE))
+						 && //No Q to protect:
+						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3
+				                   && hasQEquiv(dataModel, Constants.SPADE))
+						) {		
 
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
@@ -939,7 +998,11 @@ public class NoMellowBidPlaySituation {
 			}
 		}
 		
-		return true;
+		if(numOver == 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
@@ -969,6 +1032,45 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 			}
 		}
 		
-		return true;
+		if(numOver == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
+     public static boolean hasQEquiv(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+			return false;
+		}
+		
+		String cardA = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+		
+		int numOver = 0;
+		
+		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(cardA); curRank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				continue;
+
+			} else if(dataModel.isCardPlayedInRound(
+					dataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+
+			} else {
+				numOver++;
+				if(numOver > 2) {
+					return false;
+				}
+			}
+		}
+
+		if(numOver == 2) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

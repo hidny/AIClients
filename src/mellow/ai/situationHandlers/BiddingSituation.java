@@ -162,6 +162,11 @@ public class BiddingSituation {
 		if(intBid == 0 && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0) {
 			intBid = 1;
 		}
+		
+		//Don't bid mellow with KS
+		if(intBid == 0 && dataModel.hasCard("KS")) {
+			intBid = 1;
+		}
 	
 		System.out.println("Final bid " + intBid);
 

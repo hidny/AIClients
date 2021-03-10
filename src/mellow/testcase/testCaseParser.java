@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
+import javax.sound.sampled.Line;
+
 import mellow.Constants;
 import mellow.ai.aiDecider.MellowAIDeciderFactory;
 import mellow.ai.aiDecider.MellowAIDeciderInterface;
@@ -464,7 +466,21 @@ public class testCaseParser {
 				}
 			}
 			//End count type of test case.
-
+			
+			//Add comments at the end of test case for more context:
+			boolean foundComments = false;
+			while(in.hasNextLine()) {
+				String tmp = in.nextLine();
+				
+				if(tmp.startsWith("#")) {
+					if(foundComments == false) {
+						System.out.println("#Comments:");
+						foundComments = true;
+					}
+					System.out.println(tmp);
+				}
+			}
+			
 			System.out.println("END OF TESTCASE");
 			System.out.println();
 			System.out.println();
