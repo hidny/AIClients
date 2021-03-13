@@ -436,7 +436,7 @@ public class NoMellowBidPlaySituation {
 		//SEE NOTES FOR BETTER PLAN
 		//TODO: pseudo code for not following suit
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KC QC TC 8C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 5S KH QH JH 3H 2H JC 7C 3C TD 6D 5D ")) {
 			System.out.println("DEBUG");
 		}
 		
@@ -511,7 +511,39 @@ public class NoMellowBidPlaySituation {
 								
 											
 						} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
-							return dataModel.getCardInHandClosestOverCurrentWinner();
+							
+							//Consider playing high second if there's no real chance of making the trick,
+							// but you want 3rd thrower to prove they can play higher than you:
+							if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit) >= 3
+								&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5
+								      ||  leaderSuitIndex == Constants.SPADE
+								      || 1 + dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit)
+								                  < dataModel.getNumberOfCardsOneSuit(leaderSuitIndex))
+								) {
+								
+								//Observation based on original test cases:
+								//This condition turns test cases from "AI matches expert alternative response! (PASS)"
+								// to "AI matches expert response! (PASS)"
+								//So basically, it plays more like me. But whether it's a good thing or not is
+								//still in the air.
+								
+								//I also tend to NOT play like this when it comes to spades...
+								//but whether it's a good thing or not is
+								//still in the air.
+								
+								if(leaderSuitIndex != Constants.SPADE) {
+									
+									return curPlayerTopCardInSuit;
+								} else {
+									//Just play low spade, so the AI can play like me...
+									return dataModel.getCardInHandClosestOverCurrentWinner();
+								}
+							} else {
+								
+								//Just play slightly over the person who lead:
+								return dataModel.getCardInHandClosestOverCurrentWinner();
+							}
+						
 						} else {
 							return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 						}
