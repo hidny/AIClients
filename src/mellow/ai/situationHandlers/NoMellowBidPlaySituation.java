@@ -41,10 +41,9 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS TH 7H 4H 3H JC 9C 8C 6C 5C 3C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H 9C 8C QD JD 3D 2D ")) {
 			System.out.println("DEBUG");
 		}
-		System.out.println("DEBUG2");
 
 		if(couldTRAM(dataModel)) {
 			System.out.println("THE REST ARE MINE! (TRAM)");
@@ -275,8 +274,9 @@ public class NoMellowBidPlaySituation {
 						) {
 						
 						if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) < 3
-								|| (dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 4
-										&& dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5)
+								|| (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5 
+										&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 4
+												|| dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))))
 								) {
 							curScore += 10.0;
 							
@@ -1040,6 +1040,7 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 	}
 
 
+//TODO: put into data model??
      public static boolean hasQEquiv(DataModel dataModel, int suitIndex) {
 		
 		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {

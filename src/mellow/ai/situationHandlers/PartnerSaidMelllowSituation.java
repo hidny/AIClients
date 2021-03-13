@@ -192,6 +192,20 @@ public class PartnerSaidMelllowSituation {
 				currentValueOfSuitPlay = Constants.NUM_RANKS - 
 						dataModel.getRankIndex(currentCardToPlay)
 						+ (numCardsOtherPlayersCurrentlyHaveOfSuit / 2);
+				
+				if(NoMellowBidPlaySituation.hasKQEquiv(dataModel, curSuit)) {
+					currentCardToPlay = 
+							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+									dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
+				
+				} else	if( ! NoMellowBidPlaySituation.hasKEquiv(dataModel, curSuit)
+						&& ! (NoMellowBidPlaySituation.hasQEquiv(dataModel, curSuit)
+								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuit) >= 3)
+						) {
+					currentCardToPlay = 
+							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+									dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
+				}
 			}
 			
 			
