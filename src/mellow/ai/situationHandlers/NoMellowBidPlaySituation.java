@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 3H 2H ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 3S AD KD JD 6D ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -373,6 +373,19 @@ public class NoMellowBidPlaySituation {
 							|| dataModel.currentPlayerHasMasterInSuit(3))
 						&& numCardsOfSuitOtherPlayersHave > 0) {
 					curScore += 30.0;
+					
+					//Check if we have aggressive spade lead options:
+					if(hasKQEquiv(dataModel, Constants.SPADE)) {
+						
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+						curScore += 25.0;
+						
+					} else if(hasKEquiv(dataModel, Constants.SPADE)
+							&& numCardsOfSuitInHand > 1) {
+						
+						cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+						curScore += 10.0;
+					}
 				}
 				
 				//Basic awareness of when to play S based on bids:
