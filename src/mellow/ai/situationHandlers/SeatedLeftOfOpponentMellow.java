@@ -15,7 +15,7 @@ public class SeatedLeftOfOpponentMellow {
 	//TODO
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S 3H 8C 6C TD")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 9S 3S 4H QD ")) {
 			System.out.println("DEBUG");
 		}
 		
@@ -125,17 +125,17 @@ public class SeatedLeftOfOpponentMellow {
 
 							String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 							
-							String minCardToWin = null;
+							String fourthThrowMinCardToWin = null;
 							if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == dataModel.getSuitOfLeaderThrow()
 									&& dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)) {
 								
-								if(throwIndex == 3) {
-									minCardToWin = dataModel.getCardInHandClosestOverCurrentWinner();
+								if(throwIndex >= 3) {
+									fourthThrowMinCardToWin = dataModel.getCardInHandClosestOverCurrentWinner();
 								} else if(throwIndex >= 1 && throwIndex <= 2) {
 									
 									//Just try to play over maxMellowCard if it's the 3rd throw
 									
-									minCardToWin = null;
+									fourthThrowMinCardToWin = null;
 								}
 							}
 
@@ -148,25 +148,60 @@ public class SeatedLeftOfOpponentMellow {
 								minCardOverMaxMellowCard = dataModel.getCardInHandClosestOverSameSuit(maxMellowCard);
 							}
 							
-							if(minCardToWin != null && minCardOverMaxMellowCard != null) {
+							if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard != null) {
 
-								if( dataModel.cardAGreaterThanCardBGivenLeadCard(minCardToWin, minCardOverMaxMellowCard)) {
-									return getHighestPartOfGroup(dataModel, minCardToWin);
+								if( dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardOverMaxMellowCard)) {
+									return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
 								} else {
 									return getHighestPartOfGroup(dataModel,
 											minCardOverMaxMellowCard);
 								}
 
-							} else if(minCardToWin != null && minCardOverMaxMellowCard == null) {
-								return getHighestPartOfGroup(dataModel, minCardToWin);
+							} else if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard == null) {
+								return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
 
-							} else if(minCardToWin == null && minCardOverMaxMellowCard != null) {
-								return getHighestPartOfGroup(dataModel, 
+							} else if(fourthThrowMinCardToWin == null && minCardOverMaxMellowCard != null) {
+								
+								String topCardInHand = getHighestPartOfGroup(dataModel, 
 										minCardOverMaxMellowCard);
-
+	
+								//Think about not wasting soon to be master cards:
+								if(dataModel.isMasterCard(topCardInHand)
+										&& ! dataModel.cardAGreaterThanCardBGivenLeadCard(topCardInHand, currentFightWinner)) {
+									
+									//Think about not throwing away master 1
+									if(3 * dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) 
+										> 
+										dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(dataModel.getSuitOfLeaderThrow())
+										&& dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) >= 2
+										) {
+										
+										String secondTopCardInHand = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
+										
+										if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(secondTopCardInHand)
+										        ==
+												  dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(topCardInHand)) {
+											
+											return topCardInHand;
+										
+										} else {
+											
+											return secondTopCardInHand;
+										}
+								
+									} else {
+										return topCardInHand;
+									}
+									
+								} else {
+								
+									return topCardInHand;
+								}
+								
 							} else {
 								return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
-							}	
+								
+							}
 					}
 					
 					

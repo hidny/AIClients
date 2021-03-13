@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H 9C 8C QD JD 3D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 3H 2H ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -344,9 +344,16 @@ public class NoMellowBidPlaySituation {
 				}
 				//Don't want to play spade when opponents are void: 
 				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
 					curScore -= 40.0;
+				
+					//If 1/2 opponents void, be less tempted to play spade:
+				} else if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+					curScore -= 10.0;
 				}
+				
+				
 				
 				if(numCardsOfSuitOtherPlayersHave == 0) {
 					//TODO: this fixes testcase 220 of Michael2021, but

@@ -15,8 +15,8 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 
 public class testCaseParser {
 
-	//public static String TEST_FOLDER = "Michael2021";
-	public static String TEST_FOLDER = "Michael";
+	public static String TEST_FOLDER = "Michael2021";
+	//public static String TEST_FOLDER = "Michael";
 	//public static String TEST_FOLDER = "MichaelApril2020";
 	//public static String TEST_FOLDER = "doubleMellowTests";
 	//public static String TEST_FOLDER = "MichaelDebugMadeUp";
