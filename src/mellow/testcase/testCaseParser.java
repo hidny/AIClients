@@ -16,10 +16,10 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 public class testCaseParser {
 
 	//public static String TEST_FOLDER = "Michael2021";
-	public static String TEST_FOLDER = "Michael";
+	//public static String TEST_FOLDER = "Michael";
 	//public static String TEST_FOLDER = "MichaelApril2020";
 	//public static String TEST_FOLDER = "doubleMellowTests";
-	//public static String TEST_FOLDER = "MichaelDebugMadeUp";
+	public static String TEST_FOLDER = "MichaelDebugMadeUp";
 	
 	//public static String TEST_FOLDER = "garbageTestData";
 	
@@ -233,18 +233,33 @@ public class testCaseParser {
 			
 			do {
 				cur = in.nextLine();
-			} while(cur.startsWith("Dealer") == false && cur.contains("You are the dealer") == false);
+			} while(cur.toLowerCase().contains("dealer") == false && cur.contains("You are the dealer") == false);
 			
 			
 			int dealerIndex = 0;
 			
-			if(cur.contains("You are the dealer")) {
+			//Added other possibilities just in case I enter the wrong prompt in manually created tests:
+			if(cur.contains("You are the dealer")
+					|| cur.toLowerCase().contains("you are the")
+					|| cur.toLowerCase().contains("you\'re the")) {
+				
 				dealerIndex = 0;
-			} else if(cur.contains("Dealer is on your left")) {
+			
+			} else if(cur.contains("Dealer is on your left") 
+					|| cur.toLowerCase().contains("left")) {
+				
 				dealerIndex = 1;
-			} else if(cur.contains("Dealer is your partner opposite you.")) {
+				
+			} else if(cur.contains("Dealer is your partner opposite you.")
+					|| cur.toLowerCase().contains("partner")
+					|| cur.toLowerCase().contains("opposite")
+					|| cur.toLowerCase().contains("accross")) {
+				
 				dealerIndex = 2;
-			} else if(cur.contains("Dealer is on your right")) {
+				
+			} else if(cur.contains("Dealer is on your right") 
+					|| cur.toLowerCase().contains("right")) {
+				
 				dealerIndex = 3;
 			} else {
 				System.err.println("ERROR: unknown dealer" + "\n");

@@ -436,9 +436,6 @@ public class NoMellowBidPlaySituation {
 		//SEE NOTES FOR BETTER PLAN
 		//TODO: pseudo code for not following suit
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 5S KH QH JH 3H 2H JC 7C 3C TD 6D 5D ")) {
-			System.out.println("DEBUG");
-		}
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
@@ -869,6 +866,10 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JC KD")) {
+			System.out.println("Debug");
+		}
+		
 		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
 		
 		int bestSuit = -1;
