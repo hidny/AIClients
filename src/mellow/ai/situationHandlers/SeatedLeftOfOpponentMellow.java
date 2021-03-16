@@ -433,6 +433,26 @@ public class SeatedLeftOfOpponentMellow {
 	
 			if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
 				
+
+				//TODO: FROM DEBUG TESTCASE:
+				// IF PARTNER AND PROTECTOR VOID:
+				//Figure out if you could get the mellow...
+				//If not, figure out if you could trick proctector into trumping
+					//If you can't figure out if you could trick protector into trumping and you can't get the mellow:
+						//play high and encourage your partner to trump
+				
+				//AAH!
+				//You know what? This is Pandora's box... I'm not going to touch this yet.
+				
+				
+				//TODO: FIRST STEP: Maybe value playing a suit mellow protector is void in and getting the protector to trump on the 2nd throw
+				// or lose an easy trick?
+				//END TODO....
+				
+				// AND PROTECTOR VOID IN SPADE:
+				//...
+				
+				
 				//TODO: instead of just returning, try grading the options!
 				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
 				//(Save 2C for the end)

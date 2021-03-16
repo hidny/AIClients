@@ -97,12 +97,11 @@ public class NoMellowBidPlaySituation {
 			if(suitIndex != Constants.SPADE) {
 
 				
-				
 				//Check if leading suitIndex helps partner trump:
-				if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false
-
-					&& (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				if(
+						(       (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+								|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+								                  (Constants.CURRENT_PARTNER_INDEX, suitIndex))
 							&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false
 						)
 					&& (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
@@ -859,14 +858,14 @@ public class NoMellowBidPlaySituation {
 	
 	
 	//TODO: maybe throw off low pretending you could trump...
-	//That means make signals about wether or not others knwo you're void in spades...
-	//That's hard... but doable.
+	//That means make signals about whether or not others know you're void in spades...
+	//That's hard... but do-able.
 	
 	//TODO: what if there's strategy around signalling?
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JC KD")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH JH KC 9C QD JD ")) {
 			System.out.println("Debug");
 		}
 		
@@ -919,8 +918,7 @@ public class NoMellowBidPlaySituation {
 					System.out.println("DEBUG WARNING");
 					currentValue -= 50;
 				}
-			} else if(
-					numberOfCardsInSuit < numOverHighest + 1) {
+			} else if(numberOfCardsInSuit < numOverHighest + 1) {
 				
 				//Reliable hammer for throwing off that I discovered:
 				
@@ -928,12 +926,52 @@ public class NoMellowBidPlaySituation {
 				//Shouldn't we be careful about that?
 				currentValue += 5 * (numOverHighest - numberOfCardsInSuit);
 			}
+
 			//End easy for throwing off
+
+			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+			
+			
 			
 			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				//Don't throw off master cards unless you really need to...
 				currentValue -= 10.0;
+				
+				//Maybe it's not bad if you're planing on trumping though...
+				
+			} else if( (numberOfCardsInSuit == 2 || numberOfCardsInSuit == 3)
+					&&  hasKEquiv(dataModel, suitIndex)
+					&& numberOfCardsOthersHaveInSuit >= 2) {
+				
+				//Don't throw off option to play low and save your Kequiv card for later
+				currentValue -= 3.0;
+				//System.out.println("MICHAEL HERE " + suitIndex);
+				
+				if(numberOfCardsInSuit == 2) {
+					currentValue -= 2.0;
+				}
 	
+			} else if(numberOfCardsInSuit == 2 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
+					&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+				
+				//Don't throw off option to play low and save your master card for later
+				currentValue -= 3.0;
+				//int numOverHighest = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(bestCardPlayerHas);
+				int numOverSecondHighest = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+												dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex));
+				
+				//Don't throw off secondary master card...
+				if(numOverSecondHighest == numOverHighest) {
+					currentValue -= 3.0;
+				}
+	
+			}   else if((numberOfCardsInSuit == 2 ||numberOfCardsInSuit == 3)
+					&&  dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				
+				//Don't throw off option to play low twice and save your master card for later
+				currentValue -= 2.5;
+				
+				
 			} else if(numberOfCardsInSuit >= 2 
 					&& numberOfCardsInSuit <= 3 
 					&& numOverHighest == 1) {
@@ -951,10 +989,6 @@ public class NoMellowBidPlaySituation {
 				
 				currentValue -= 0.8;
 			}
-			
-			
-			
-			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 			
 			
 			//boolean rhsVoid = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex);
@@ -982,7 +1016,7 @@ public class NoMellowBidPlaySituation {
 			
 			if(numberOfCardsOthersHaveInSuit == 0) {
 				
-				//only good if you could sweep spades and lead it...
+				//TODO only good if you could sweep spades and lead it...
 				currentValue += 2.0;
 
 			}
