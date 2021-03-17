@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S QH 7H 8C 7C 3C 8D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS TS JH TH 5H QC 5C 4C JD 6D 4D 2D")) {
 			System.out.println("DEBUG");
 		}
 
@@ -293,8 +293,6 @@ public class NoMellowBidPlaySituation {
 				
 				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 					
-					curScore += 10.0;
-			
 					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
 					
 					if(numCardsOfSuitInHand >= 2) {
@@ -368,7 +366,7 @@ public class NoMellowBidPlaySituation {
 				
 				//Don't lead small spade if you don't have much...
 				if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
-					curScore -= 30.0;
+					curScore -= 20.0;
 				} else {
 					double diff = numCardsOfSuitInHand - (1.0 *numCardsOfSuitOtherPlayersHave)/3.0;
 					
@@ -397,6 +395,7 @@ public class NoMellowBidPlaySituation {
 						if(dataModel.hasCard(dataModel.getCardString(DataModel.ACE, suitTemp))
 								&& dataModel.hasCard(dataModel.getCardString(DataModel.KING, suitTemp))) {
 							curScore += 30.0;
+							System.out.println("BOOM");
 							break;
 						}
 					}
@@ -456,7 +455,7 @@ public class NoMellowBidPlaySituation {
 				
 				if(bidDiff > 0) {
 					//Limit how much of a benefit this is because it's covered elsewheres:
-					curScore += 5.0 * Math.max(3, bidDiff);
+					curScore += 5.0 * Math.min(4, bidDiff);
 				} else {
 					curScore += 5.0 * bidDiff;
 				}
@@ -936,7 +935,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S QH TH 6H TC 8C 8D 5D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS TS JH TH 5H QC 5C 4C JD 6D 4D 2D ")) {
 			System.out.println("Debug");
 		}
 		
