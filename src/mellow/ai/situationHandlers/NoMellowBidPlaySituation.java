@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 3S AD KD JD 6D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S QH 7H 8C 7C 3C 8D ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -293,38 +293,30 @@ public class NoMellowBidPlaySituation {
 				
 				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 					
-					//TODO: if you have top 2 spade bonus:
-					//For now, just AS, KS
-					if(dataModel.hasCard("AS")
-							&&  dataModel.hasCard("KS")) {
-						curScore += 20.0;
-					}
-					
-					if(numCardsOfSuitOtherPlayersHave > 0) {
-						for(int suitTemp=1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
-							if(dataModel.currentPlayerHasMasterInSuit(suitIndex)
-									&&
-									( ! dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitTemp))
-									|| (    dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitTemp))
-											&& dataModel.hasCard(DataModel.getCardString(DataModel.KING, suitTemp))
-										)
-									)
-								) {
-								curScore += 10.0;
-							}
-						}
-					}
-					
+					curScore += 10.0;
+			
 					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+					
+					if(numCardsOfSuitInHand >= 2) {
+						String cardTmp = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+						
+						//If you have the AK equiv, don't be afraid to play A to see what's going on.
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardTmp)
+								== dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay)) {
+							curScore += 30.0;
+						}
+							
+					}
+					
 				} else {
 					curScore += 5.0;
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 					
-					//Don't lead small spade if you don't have much...
-					if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
-						curScore -= 30.0;
-					}
 				}
+
+				
+				
+				
 				
 				/*
 				 * int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
@@ -352,6 +344,15 @@ public class NoMellowBidPlaySituation {
 					curScore -= 10.0;
 				}
 				
+				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					//Maybe there's a case for draining your partner's spade when the opponents don't have spade...
+					// but I'd like to see it to believe it.
+					//It happened in the orig testcases... shoot.
+					curScore -=100.0;
+				}
+				
 				
 				
 				if(numCardsOfSuitOtherPlayersHave == 0) {
@@ -364,6 +365,43 @@ public class NoMellowBidPlaySituation {
 						curScore += 70.0;
 					}
 				}
+				
+				//Don't lead small spade if you don't have much...
+				if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
+					curScore -= 30.0;
+				} else {
+					double diff = numCardsOfSuitInHand - (1.0 *numCardsOfSuitOtherPlayersHave)/3.0;
+					
+					//Just play spade if you have them...
+					if(diff >= 2.3) {
+						curScore += 20.0;
+						if(diff >= 3.4) {
+							curScore += 10.0;
+							
+							if(diff > 4.5) {
+								curScore += 5.0;
+							}
+						}
+					}
+				}
+				
+				//Play spade in the hopes of making your offsuit masters relevant:
+				if((dataModel.currentPlayerHasMasterInSuit(1) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(1) < 6)
+						|| (dataModel.currentPlayerHasMasterInSuit(2) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(2) < 6)
+						|| (dataModel.currentPlayerHasMasterInSuit(3) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(3) < 6)) {
+					curScore += 30.0;
+				} else {
+					
+					//Check if you have AK combo because you might want to drain S if you have that.
+					for(int suitTemp = 1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
+						if(dataModel.hasCard(dataModel.getCardString(DataModel.ACE, suitTemp))
+								&& dataModel.hasCard(dataModel.getCardString(DataModel.KING, suitTemp))) {
+							curScore += 30.0;
+							break;
+						}
+					}
+				}
+				
 				
 				//Drain the spades... TODO: this is rough... and doesn't always work out...
 				if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
@@ -392,7 +430,7 @@ public class NoMellowBidPlaySituation {
 						&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 						- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) >= 2
 						&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-					curScore += 40.0;
+					curScore += 20.0;
 					curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 							- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) - 2);
 				}
@@ -411,6 +449,39 @@ public class NoMellowBidPlaySituation {
 					    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
 					curScore -= 40.0;
 				}
+				
+				int bidDiff = (dataModel.getBid(Constants.CURRENT_PLAYER_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX))
+				- (dataModel.getBid(Constants.LEFT_PLAYER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
+				//Rough way to look at the bids to decide whether or not to play spade
+				
+				if(bidDiff > 0) {
+					//Limit how much of a benefit this is because it's covered elsewheres:
+					curScore += 5.0 * Math.max(3, bidDiff);
+				} else {
+					curScore += 5.0 * bidDiff;
+				}
+				
+				//Check if we're wasting spades we can trump with:
+				if(numCardsOfSuitInHand <= 2 && 
+						dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1) {
+					for(int suitTemp = 1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
+						if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitTemp)
+								&& ! (dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitTemp)
+										&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))) {
+							if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitTemp) > 3) {
+								
+								if(numCardsOfSuitInHand == 1) {
+									curScore -= 20.0;
+								} else if(numCardsOfSuitInHand == 2) {
+									curScore -= 10.0;
+								}
+								
+							}
+						}
+					}
+				}
+				//END Check if we're wasting spades we can trump with:
+				
 				//End basic awareness...
 				
 			}
@@ -865,7 +936,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH JH KC 9C QD JD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S QH TH 6H TC 8C 8D 5D 4D ")) {
 			System.out.println("Debug");
 		}
 		
