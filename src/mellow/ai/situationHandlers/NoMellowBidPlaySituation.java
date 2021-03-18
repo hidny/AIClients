@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS TS JH TH 5H QC 5C 4C JD 6D 4D 2D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D")) {
 			System.out.println("DEBUG");
 		}
 
@@ -59,10 +59,6 @@ public class NoMellowBidPlaySituation {
 		
 		
 		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
-
-			int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
-					- dataModel.getNumCardsPlayedForSuit(suitIndex) 
-					- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 			
 			int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 			
@@ -70,11 +66,19 @@ public class NoMellowBidPlaySituation {
 			if(numCardsOfSuitInHand == 0) {
 				continue;
 			}
+			
+			int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
+					- dataModel.getNumCardsPlayedForSuit(suitIndex) 
+					- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			
 
 		
 			String cardToPlay = null;
 			
 			double curScore = 0.0;
+			
+			boolean partnerSignalledHighCardOfSuit = false;
 			
 
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
@@ -91,7 +95,19 @@ public class NoMellowBidPlaySituation {
 
 					curScore += 15.0;
 				}*/
-				
+
+				//Treat partner's possible master as your own...
+			} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+				curScore += 9.0;
+				partnerSignalledHighCardOfSuit = true;
+			}
+			
+			//Leading in a suit where RHS prob has master could be a good idea sometimes...
+			//Like when partner is trumping
+			//or partner has no spade.
+			if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					&& ! hasKQEquiv(dataModel, suitIndex)) {
+				curScore -= 20.0;
 			}
 			
 			if(suitIndex != Constants.SPADE) {
@@ -194,6 +210,9 @@ public class NoMellowBidPlaySituation {
 					if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 						//Don't lower it...
 
+					} else if(partnerSignalledHighCardOfSuit) {
+						//Don't lower it again
+
 					} else if(hasKQEquiv(dataModel, suitIndex)) {
 						//Only lower it a little...
 						curScore -= 5.0;
@@ -287,6 +306,12 @@ public class NoMellowBidPlaySituation {
 						}
 						
 					}
+					
+					if(partnerSignalledHighCardOfSuit) {
+						
+						//TODO: this might need more thought...
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					}
 				}
 			} else {
 				//TODO: consider leading spade here...
@@ -367,6 +392,9 @@ public class NoMellowBidPlaySituation {
 				//Don't lead small spade if you don't have much...
 				if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
 					curScore -= 20.0;
+					
+					
+					
 				} else {
 					double diff = numCardsOfSuitInHand - (1.0 *numCardsOfSuitOtherPlayersHave)/3.0;
 					
@@ -381,6 +409,15 @@ public class NoMellowBidPlaySituation {
 							}
 						}
 					}
+				}
+				
+
+				//Don't volunteer to play spade if you 1 less than master in spade
+				//and have few spades
+				if(hasKEquiv(dataModel, Constants.SPADE)
+						&& !hasKQEquiv(dataModel, Constants.SPADE)
+						&& 3 * (numCardsOfSuitInHand-1) < numCardsOfSuitOtherPlayersHave) {
+					curScore -= 20.0;
 				}
 				
 				//Play spade in the hopes of making your offsuit masters relevant:
@@ -416,13 +453,11 @@ public class NoMellowBidPlaySituation {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 						curScore += 25.0;
 						
-					} else if(hasKEquiv(dataModel, Constants.SPADE)
-							&& numCardsOfSuitInHand > 1) {
-						
-						cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
-						curScore += 10.0;
 					}
 				}
+				
+				
+				
 				
 				//Basic awareness of when to play S based on bids:
 				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5

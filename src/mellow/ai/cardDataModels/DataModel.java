@@ -1071,6 +1071,7 @@ public class DataModel {
 		return ret;
 	}
 
+	
 	public int getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(String card) {
 
 		int rankEnd = getRankIndex(card) -1;
@@ -1103,6 +1104,26 @@ public class DataModel {
 			}
 		}
 		return ret;
+	}
+	
+	public int getRankNotPlayedCardClosestOverCurrentWinnerSameSuit(String card) {
+
+		int rankStart = getRankIndex(card) + 1;
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		
+		int ret = 0;
+		
+		for(int i=rankStart; i<Constants.NUM_RANKS; i++) {
+			if(cardsUsed[suitIndex][i]) {
+				//Doesn't count
+			} else {
+				return i;
+			}
+		}
+		
+		System.err.println("ERROR: called getRankNotPlayedCardClosestOverCurrentWinnerSameSuit when there was no answer");
+		System.exit(1);
+		return -1;
 	}
 	
 	public boolean throwerHasCardToBeatCurrentWinner() {
@@ -1152,7 +1173,7 @@ public class DataModel {
 		
 		return null;
 	}
-
+	
 	public boolean throwerCouldPlaySpade() {
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 		

@@ -15,11 +15,14 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 
 public class testCaseParser {
 
+	//folders:
+	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael2021", "Michael"};
+	
 	//public static String TEST_FOLDER = "Michael2021";
-	//public static String TEST_FOLDER = "Michael";
+	public static String TEST_FOLDER = "Michael";
 	//public static String TEST_FOLDER = "MichaelApril2020";
 	//public static String TEST_FOLDER = "doubleMellowTests";
-	public static String TEST_FOLDER = "MichaelDebugMadeUp";
+	//public static String TEST_FOLDER = "MichaelDebugMadeUp";
 	
 	//public static String TEST_FOLDER = "garbageTestData";
 	
@@ -43,7 +46,9 @@ public class testCaseParser {
 	public static int numBidding = 0;
 	
 	public static void main(String[] args) {
-		File list[]  = getTestCaseFiles();
+		
+		File list[]  = getTestCaseFilesMultFolders(TEST_FOLDERS);
+		//File list[]  = getTestCaseFiles(TEST_FOLDER);
 		
 		//Option 1: Follow hard-coded rules AI:
 		MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.FOLLOW_HARD_CODED_RULES_AI);
@@ -112,13 +117,43 @@ public class testCaseParser {
 		
 	}
 	
-	public static File[] getTestCaseFiles() {
+	public static File[] getTestCaseFilesMultFolders(String folders[]) {
+		
+		//Get num Files:
+		int numFiles = 0;
+		File folder[] = new File[folders.length];
+		
+		for(int i=0; i<folders.length; i++) {
+			folder[i] = new File("..\\TestCaseAndReplayData\\testcases\\" + folders[i]);
+			numFiles += folder[i].listFiles().length;
+		}
+		
+		File ret[] = new File[numFiles];
+		
+		int numFilesInRet = 0;
+		
+		for(int i=0; i<folders.length; i++) {
+			
+			File list[] = getTestCaseFiles(folders[i]);
+			
+			for(int j=0; j<list.length; j++) {
+				ret[numFilesInRet] = list[j];
+				numFilesInRet++;
+			}
+			
+		}
+		
+		
+		return ret;
+	}
+	
+	public static File[] getTestCaseFiles(String testFolder) {
 		
 		//https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
 		
 		//TODO: standardize this and add constant file
 		//File folder = new File("..\\TestCaseAndReplayData\\testcases\\Michael");
-		File folder = new File("..\\TestCaseAndReplayData\\testcases\\" + TEST_FOLDER);
+		File folder = new File("..\\TestCaseAndReplayData\\testcases\\" + testFolder);
 		
 		File[] listOfFiles = folder.listFiles();
 

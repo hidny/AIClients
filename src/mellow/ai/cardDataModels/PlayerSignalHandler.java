@@ -1,6 +1,7 @@
 package mellow.ai.cardDataModels;
 
 import mellow.Constants;
+import mellow.ai.cardDataModels.normalPlaySignals.MellowLetPartnerWinSignals;
 import mellow.ai.cardDataModels.normalPlaySignals.MellowVoidSignalsNoActiveMellows;
 import mellow.ai.cardDataModels.playerSaidMellowSignals.PlayerSaidMellowSignals;
 import mellow.cardUtils.CardStringFunctions;
@@ -32,13 +33,14 @@ public class PlayerSignalHandler {
 	
 	private PlayerSaidMellowSignals playerSaidMellowSignals;
 	private MellowVoidSignalsNoActiveMellows mellowVoidSignalsNoActiveMellows;
+	private MellowLetPartnerWinSignals mellowLetPartnerWinSignals;
 	
 	public PlayerSignalHandler(DataModel dataModel) {
 		this.dataModel = dataModel;
 		
 		this.playerSaidMellowSignals = new PlayerSaidMellowSignals(dataModel);
 		this.mellowVoidSignalsNoActiveMellows = new MellowVoidSignalsNoActiveMellows(dataModel);
-		
+		this.mellowLetPartnerWinSignals = new MellowLetPartnerWinSignals(dataModel);
 	}
 	
 	
@@ -62,6 +64,7 @@ public class PlayerSignalHandler {
 		//Normally work under normal circumstances for Now
 		mellowVoidSignalsNoActiveMellows.updateDataModelSignalsWithPlayedCard(playerName, card);
 
+		mellowLetPartnerWinSignals.updateDataModelSignalsWithPlayedCard(playerName, card);
 		
 	}
 	
@@ -105,4 +108,7 @@ public class PlayerSignalHandler {
 		return this.mellowVoidSignalsNoActiveMellows.playerStrongSignaledNoCardsOfSuit(playerIndex, suitIndex);
 	}
 	
+	public boolean playerSignalledHighCardInSuit(int playerIndex, int suitIndex) {
+		return this.mellowLetPartnerWinSignals.playerSignalledHighCardInSuit(playerIndex, suitIndex);
+	}
 }
