@@ -114,6 +114,7 @@ public class testCaseParser {
 		System.out.println("AI is consistent " + agreement + " out of " + (num_plays_for_constancy_test));
 		System.out.println("That's a " + String.format("%.2f", ((100.0*agreement) /(1.0*(num_plays_for_constancy_test)))) + "% consistent rate.");
 
+		System.out.println("Num failed testcases: " + (numTrials-numPasses) + ".");
 		
 	}
 	

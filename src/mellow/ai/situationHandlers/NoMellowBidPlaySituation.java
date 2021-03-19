@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 3H 2H")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D")) {
 			System.out.println("DEBUG");
 		}
 
@@ -165,6 +165,8 @@ public class NoMellowBidPlaySituation {
 				} else if(numCardsOfSuitOtherPlayersHave == 0) {
 					//Might want to do this if right is out of spades...
 					
+					//Note this is a master card because other players don't have any cards to challenge it:
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 					
 					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
 						
