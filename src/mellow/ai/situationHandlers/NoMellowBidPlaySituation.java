@@ -41,7 +41,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 3H 2H")) {
 			System.out.println("DEBUG");
 		}
 
@@ -100,12 +100,21 @@ public class NoMellowBidPlaySituation {
 			} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
 				curScore += 9.0;
 				partnerSignalledHighCardOfSuit = true;
+				
+				//Don't want to setup our partner for failure:
+				if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
+						dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+		                  (Constants.CURRENT_PARTNER_INDEX, suitIndex) == false) {
+					curScore -= 100.0;
+				}
+						
 			}
 			
 			//Leading in a suit where RHS prob has master could be a good idea sometimes...
 			//Like when partner is trumping
 			//or partner has no spade.
-			if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+			if(      ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
+					&& dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
 					&& ! hasKQEquiv(dataModel, suitIndex)) {
 				curScore -= 20.0;
 			}
@@ -156,7 +165,6 @@ public class NoMellowBidPlaySituation {
 				} else if(numCardsOfSuitOtherPlayersHave == 0) {
 					//Might want to do this if right is out of spades...
 					
-					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
 					
 					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
 						
@@ -265,22 +273,18 @@ public class NoMellowBidPlaySituation {
 					if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 						
 						cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-					} else {
-						//TODO: fix
-						if(hasKQEquiv(dataModel, suitIndex)) {
-							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-							
-						} else if(hasKEquiv(dataModel, suitIndex)) {
-							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-							
-						} else if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) <= DataModel.RANK_TEN) {
-							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-							
-						} else {
-							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-						}
+					} else if(hasKQEquiv(dataModel, suitIndex)) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 						
+					} else if(hasKEquiv(dataModel, suitIndex)) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					
+					//TODO: special consideration for QEquiv??
+						
+					} else {
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 					}
+					
 					
 					//I like leading offsuit queens... if no one is void and I don't have a hope of winning with it.
 					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
