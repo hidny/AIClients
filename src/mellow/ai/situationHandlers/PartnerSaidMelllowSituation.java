@@ -519,4 +519,5 @@ public class PartnerSaidMelllowSituation {
 		
 		return cardToConsider;
 	}
+	
 }
