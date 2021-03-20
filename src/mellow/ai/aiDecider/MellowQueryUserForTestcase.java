@@ -306,8 +306,9 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		return getTestCaseWriter(num);
 	}
 	
+	//Start at 1000, so the file ordering looks good:
 	private synchronized int getTestCaseNumber() {
-		int num = 0;
+		int num = 1000;
 		File f;
 		try {
 			
