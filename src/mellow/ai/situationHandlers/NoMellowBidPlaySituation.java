@@ -556,8 +556,8 @@ public class NoMellowBidPlaySituation {
 			
 			if(dataModel.couldPlayCardInHandOverCardInSameSuit(leaderCard)) {
 				
-				boolean thirdVoid = dataModel.isVoid(1, leaderSuitIndex);
-				boolean fourthVoid = dataModel.isVoid(2, leaderSuitIndex);
+				boolean thirdVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex);
+				boolean fourthVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex);
 			
 			
 				if(thirdVoid && fourthVoid) {	
@@ -696,7 +696,7 @@ public class NoMellowBidPlaySituation {
 				//Option to trump:
 			} else {
 				
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S JC ")) {
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS 6S KH 7H 6H 5H ")) {
 					System.out.println("DEBUG");
 				}
 				
@@ -763,10 +763,13 @@ public class NoMellowBidPlaySituation {
 						(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false) 
 						&& 
 						//Not much spade: 
-						((Constants.NUM_RANKS - dataModel.getNumCardsPlayedForSuit(Constants.SPADE))/4 >= dataModel.getNumberOfCardsOneSuit(Constants.SPADE))
+						(//Constants.NUM_RANKS - dataModel.getNumCardsPlayedForSuit(Constants.SPADE) >= 4 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE)
+								3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <=
+					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 						                //OR only 1 non-master spade:
 						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 
 						         && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)
+						)
 						&& //No K to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
 						           && hasKEquiv(dataModel, Constants.SPADE))
@@ -1014,7 +1017,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS TS JH TH 5H QC 5C 4C JD 6D 4D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H 4H QC TC 6C 5C ")) {
 			System.out.println("Debug");
 		}
 		

@@ -18,6 +18,8 @@ public class testCaseParser {
 	//folders:
 	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael2021", "Michael"};
 	
+	//public static String TEST_FOLDERS[] = {"Michael2021"};
+	
 	//public static String TEST_FOLDER = "Michael2021";
 	public static String TEST_FOLDER = "Michael";
 	//public static String TEST_FOLDER = "MichaelApril2020";
