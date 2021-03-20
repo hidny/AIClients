@@ -696,15 +696,30 @@ public class NoMellowBidPlaySituation {
 				//Option to trump:
 			} else {
 				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S JC ")) {
+					System.out.println("DEBUG");
+				}
 				
 				if(dataModel.isMasterCard(leaderCard)
 						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1) {
 						
 						//&& (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false)) {
 					
-					if((dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false 
+					//Let partner trump for you:
+					if(     dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false 
 							&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
-							&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE))
+							
+							//If you have more spades than the avg player, let partner trump
+							&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
+					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+							
+						    //If you just have 1 small spade, play it...
+							&& (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1 
+									    || dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+							)
+							//Don't let partner trump for you if they bid higher
+							&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) <
+								dataModel.getBid(Constants.CURRENT_AGENT_INDEX) + 2
 						) {
 						
 						cardToPlay = getJunkiestCardToFollowLead(dataModel);
@@ -714,8 +729,18 @@ public class NoMellowBidPlaySituation {
 						
 						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(consideredHighTrump)
 								>= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
-							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-						
+							
+							if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 7
+									&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+									&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)) {
+								//Play low because you don't expect to be trumped over:
+								cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+								
+							} else {
+								//Play high because if you're trumped over, at least they needed to throw a high one
+								cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							}
+							
 						} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 4) {
 							
 							//TODO: something more complicated...

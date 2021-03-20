@@ -440,7 +440,11 @@ public class testCaseParser {
 				cur = in.nextLine();
 			} while(cur.startsWith("Expert alternative response:") == false);
 
-			cur = in.nextLine();
+			if(in.hasNextLine()) {
+				cur = in.nextLine();
+			} else {
+				cur = "";
+			}
 			String expertAltResponse = cur;
 
 
