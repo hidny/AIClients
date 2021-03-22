@@ -31,6 +31,15 @@ public class PartnerSaidMelllowSituation {
 			
 			int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 			
+
+			//Check TRAM:
+			if(NoMellowBidPlaySituation.couldLeadMasterSAndTram(dataModel) ) {
+				System.out.println("DEBUG: TRAM in MELLOW PROTECTOR!");
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			}
+			//END CHECK TRAM
+			
+			
 			if(throwIndex == 1) {
 			
 				return AISecondThrow(dataModel);

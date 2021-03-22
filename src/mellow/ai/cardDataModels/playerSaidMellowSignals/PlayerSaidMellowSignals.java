@@ -285,8 +285,17 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		}
 	}
 
+	public int getNumCardsMellowSignalledOverCardSameSuit(String card, int mellowPlayerIndex) {
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		
+		//This is a hack solution... that's depends on the rules of mellow:
+		if(suitIndex == Constants.SPADE) {
+			return getNumCardsMellowSignalledBetweenTwoCards(card, "AS", mellowPlayerIndex);
+		} else {
+			return getNumCardsMellowSignalledBetweenTwoCards(card, "2S", mellowPlayerIndex);
+		}
+	}
 
-	//TODO: use later... when there's more test cases
 	public int getNumCardsMellowSignalledBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
 		
 		if(dataModel.cardAGreaterThanCardBGivenLeadCard(biggerCard, smallerCard) == false) {
@@ -319,5 +328,37 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 	}
 	
+	
+	//No two cards signals: (For when you're playing before the mellow player)
+	
+	//TODO: TEST
+/*
+public boolean mellowSignalledNo2CardsOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
+	
+		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard, true);
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
+		
+		boolean firstFoundAlready = false;
+		
+		for(int j=0; j<Constants.NUM_RANKS; j++) {
+			
+			if(cardsOverInputCard[suitIndex][j]) {
+
+				if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != dataModel.IMPOSSIBLE
+						&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
+					
+					if(firstFoundAlready) {
+						return false;
+					}
+					firstFoundAlready = true;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+*/
 	
 }

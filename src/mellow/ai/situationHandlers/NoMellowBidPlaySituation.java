@@ -12,6 +12,14 @@ public class NoMellowBidPlaySituation {
 
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
+		//Check TRAM:
+		if(couldLeadMasterSAndTram(dataModel)) {
+			//TRAM!
+			System.out.println("DEBUG: TRAM!");
+			return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+		}
+		//END CHECK TRAM
+		
 		//leader:
 		String cardToPlay = null;
 		System.out.println("**Inside get card to play");
@@ -686,7 +694,7 @@ public class NoMellowBidPlaySituation {
 			
 			
 			//no trumping: play off:
-			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(0, Constants.SPADE)) {
+			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
 				cardToPlay = getJunkiestCardToFollowLead(dataModel);
 				
 				//Must play trump:
@@ -959,6 +967,21 @@ public class NoMellowBidPlaySituation {
 		return theRestAreMine;
 	}
 	
+	public static boolean couldLeadMasterSAndTram(DataModel dataModel) {
+		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		
+		if(throwIndex > 0
+				&& (dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, dataModel.getSuitOfLeaderThrow())
+						|| dataModel.getSuitOfLeaderThrow() == Constants.SPADE)
+				&& dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+				&& couldTRAMAfterPlayingCard(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))) {
+			
+			return true;
+		} else {
+			
+			return false;
+		}
+	}
 	public static boolean couldTRAMAfterPlayingCard(DataModel dataModel, String cardPlayedForTrick) {
 		
 		if(dataModel.playerCouldSweepSpadesMinusCardToTakeTrick(

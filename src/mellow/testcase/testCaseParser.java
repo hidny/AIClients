@@ -17,8 +17,9 @@ public class testCaseParser {
 
 	//folders:
 	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael2021", "Michael"};
-	
+
 	//public static String TEST_FOLDERS[] = {"Michael2021"};
+	//public static String TEST_FOLDERS[] = {"Michael2021-2"};
 	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
 	//public static String TEST_FOLDER = "Michael2021";
@@ -162,50 +163,35 @@ public class testCaseParser {
 		File[] listOfFiles = folder.listFiles();
 
 
-		int values[] = new int[listOfFiles.length];
+		
+		FileWithNumberComparable filesToSort[] = new FileWithNumberComparable[listOfFiles.length];
 		
 		for(int i=0; i<listOfFiles.length; i++) {
-			values[i] = getFileNumber(listOfFiles[i].getName());
+			filesToSort[i] = new FileWithNumberComparable(listOfFiles[i], getFileNumber(listOfFiles[i].getName()));
 		}
 		
-		//Sort the test cases
-		for(int i=0; i<listOfFiles.length; i++) {
-			
-			int bestIndex = i;
-			
-			
-			for(int j=i+1; j<listOfFiles.length; j++) {
-				
-				if(values[j] < values[bestIndex]) {
-					bestIndex = j;
-				}
-			}
-			
-			//swap
-			int tmp = values[i];
-			values[i] = values[bestIndex];
-			values[bestIndex] = tmp;
-			
-			File tmpFile = listOfFiles[i];
-			listOfFiles[i] = listOfFiles[bestIndex];
-			listOfFiles[bestIndex] = tmpFile;
-		}
+		filesToSort = (FileWithNumberComparable[])Sort.quickSort(filesToSort);
 		
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 		  if (listOfFiles[i].isFile()) {
-		    System.out.println("File " + listOfFiles[i].getName());
+		    System.out.println("File " + filesToSort[i].getFile().getName());
 		    
 		  } else if (listOfFiles[i].isDirectory()) {
-		    System.out.println("Directory " + listOfFiles[i].getName());
+		    System.out.println("Directory " + filesToSort[i].getFile().getName());
 		  }
 		}
 		
+		File[] listOfFilesOut = new File[listOfFiles.length];
+		
+		for(int i=0; i<listOfFiles.length; i++) {
+			listOfFilesOut[i] = filesToSort[i].getFile();
+		}
 		
 		System.out.println();
 		System.out.println();
 		
-		return listOfFiles;
+		return listOfFilesOut;
 	}
 	
 	public static int getFileNumber(String fileName) {

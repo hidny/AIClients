@@ -111,4 +111,23 @@ public class PlayerSignalHandler {
 	public boolean playerSignalledHighCardInSuit(int playerIndex, int suitIndex) {
 		return this.mellowLetPartnerWinSignals.playerSignalledHighCardInSuit(playerIndex, suitIndex);
 	}
+	
+	
+
+	public int getNumCardsMellowSignalledOverCardSameSuit(String card, int mellowPlayerIndex) {
+		return this.playerSaidMellowSignals.getNumCardsMellowSignalledOverCardSameSuit(card, mellowPlayerIndex);
+	}
+	
+	public int getNumCardsMellowSignalledBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
+		return this.playerSaidMellowSignals.getNumCardsMellowSignalledBetweenTwoCards(smallerCard, biggerCard, mellowPlayerIndex);
+	}
+
+
+/*
+	public boolean mellowSignalledNo2CardsOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
+		
+		return this.playerSaidMellowSignals.mellowSignalledNo2CardsOverCardSameSuit(inputCard, mellowPlayerIndex);
+		
+	}
+*/
 }

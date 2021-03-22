@@ -112,6 +112,9 @@ public class SeatedLeftOfOpponentMellow {
 					
 				} else {
 					
+					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S KH 3H 2H 8C 6C TD ")) {
+						System.out.println("DEBUG");
+					}
 					//Play barely over max card mellow player signaled they have...
 					//This strategy might be exploitable, but it takes a lot of imagination on the mellow player's part.
 					
@@ -150,15 +153,30 @@ public class SeatedLeftOfOpponentMellow {
 							
 							if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard != null) {
 
-								if( dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardOverMaxMellowCard)) {
+								if(  dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardOverMaxMellowCard)
+									&& ! dataModel.getCardSecondThrow().equals(currentFightWinner)) {
+									
 									return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
+									
 								} else {
-									return getHighestPartOfGroup(dataModel,
+									String tempCardToRet = getHighestPartOfGroup(dataModel,
 											minCardOverMaxMellowCard);
+									
+									String tempTestCard = getHighestPartOfGroup(dataModel,
+											fourthThrowMinCardToWin);
+									
+									if( ! minCardOverMaxMellowCard.equals(fourthThrowMinCardToWin)
+											&& tempCardToRet.equals(tempTestCard)) {
+										System.out.println("DEBUG: there's a fork in the road here.");
+										System.out.println("DEBUG: Do you take your partner's trick, or let win have it");
+									}
+
+									return tempCardToRet;
 								}
 
-							} else if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard == null) {
+							} else if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard == null) { 
 								return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
+								
 
 							} else if(fourthThrowMinCardToWin == null && minCardOverMaxMellowCard != null) {
 								

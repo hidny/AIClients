@@ -124,12 +124,59 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
-				
-				//Just throw away the highest card you got under the protector's lead.... it's a safe play
-				//TODO: later: make a more nuanced play...
+		
+		//COPY
+		//At this point, you have to play under the mellow protector:
+			//TODO: put in function
+
 				//Example: If you have 4+ cards, maybe 2nd best is ok...
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					
+					
+					//Find minimum card over highest card mellow signalled:
+					
+					String minCard = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					
+					for(int rank = DataModel.ACE; rank>=DataModel.RANK_TWO; rank--) { 
+						
+						String tempCard = DataModel.getCardString(rank, leadSuit);
+						
+						if(dataModel.hasCard(tempCard)) {
+							
+							
+							if(  dataModel.signalHandler.getNumCardsMellowSignalledBetweenTwoCards(tempCard, leaderThrow, MELLOW_PLAYER_INDEX)
+								    >= 2) {
+									break;
+							}
+
+							minCard = tempCard;
+						}
+					}
+					
+					if(minCard == null) {
+						System.err.println("ERROR: minCard ==null in SeatedRightOfOpponentMellow. This isn't supposed to happen");
+						System.exit(1);
+					}
+					
+					String cardToUse = minCard;
+					if(dataModel.isMasterCard(cardToUse)) {
+						
+						//int numOther = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
+						int numCardsInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(leadSuit);
+						
+						//Rough rule to avoid wasting highest card in hand
+						//I don't have enough test cases to know how to improve on this rule
+						if(numCardsInHand >= 4 ) {
+							cardToUse = dataModel.getCardCurrentPlayergetThirdLowestInSuit(leadSuit);
+						}
+						
+					}
+					
+					
+					return cardToUse;
+			//END COPY
+			//END TODO: put in function
+					
 				} else {
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 				}
@@ -282,13 +329,85 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
-				
-				//Just throw away the highest card you got under the protector's lead.... it's a safe play
-				//TODO: later: make a more nuanced play...
+		
+		//TODO: put in function!
+				//Just throw away the lowest card you won't need to help burn a mellow with.
+
 				//Example: If you have 4+ cards, maybe 2nd best is ok...
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					//Find minimum card over highest card mellow signalled:
+					
+					String minCard = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					
+					String topCardInLeadSuit = null;
+					String secondThrow = dataModel.getCardSecondThrow();
+					
+					if(dataModel.cardAGreaterThanCardBGivenLeadCard(dataModel.getCardSecondThrow(), leaderThrow)) {
+						
+						//Did 2nd thrower trump?
+						if(dataModel.getSuitOfSecondThrow() == Constants.SPADE
+								&& dataModel.getSuitOfLeaderThrow() != Constants.SPADE) {
+							topCardInLeadSuit = null;
+						} else {
+							topCardInLeadSuit = secondThrow;
+						}
+						
+					} else {
+						topCardInLeadSuit = leaderThrow;
+					}
+					
+					for(int rank = DataModel.ACE; rank>=DataModel.RANK_TWO; rank--) { 
+						
+						String tempCard = DataModel.getCardString(rank, leadSuit);
+						
+						if(dataModel.hasCard(tempCard)) {
+							
+							
+							if(topCardInLeadSuit != null) {
+								
+								if(dataModel.signalHandler.getNumCardsMellowSignalledBetweenTwoCards(tempCard, topCardInLeadSuit, MELLOW_PLAYER_INDEX)
+								    >= 2) {
+									break;
+								}
+								
+							} else {
+							
+								if(dataModel.signalHandler.getNumCardsMellowSignalledOverCardSameSuit(tempCard, MELLOW_PLAYER_INDEX)
+										>= 2) {
+									break;
+								}
+							
+							}
+							
+							minCard = tempCard;
+						}
+					}
+					
+					if(minCard == null) {
+						System.err.println("ERROR: minCard ==null in SeatedRightOfOpponentMellow. This isn't supposed to happen");
+						System.exit(1);
+					}
+					
+					String cardToUse = minCard;
+					if(dataModel.isMasterCard(cardToUse)) {
+						
+						//int numOther = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
+						int numCardsInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(leadSuit);
+						
+						//Rough rule to avoid wasting highest card in hand
+						//I don't have enough test cases to know how to improve on this rule
+						if(numCardsInHand >= 4 ) {
+							cardToUse = dataModel.getCardCurrentPlayergetThirdLowestInSuit(leadSuit);
+						}
+						
+					}
+					
+					
+					return cardToUse;
+						
+	//END COPY
+	//END TODO: put in function
 				} else {
 
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
