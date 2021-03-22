@@ -207,9 +207,14 @@ public class SeatedRightOfOpponentMellow {
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
 					if(       (numCardsInOtherPeoplesHandsForSuit >= 4)
-							|| numCardsInOtherPeoplesHandsForSuit >= 3 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+							|| (numCardsInOtherPeoplesHandsForSuit >= 3 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit))
+							|| (2 + dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE)
+									>= dataModel.getNumCardsInCurrentPlayerHand())
 							)
 					{
+						
+						//TODO: maybe save your highest trump and play a middle trump under certain conditions?
+						
 						//Probably safe to trump high:
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
@@ -477,7 +482,7 @@ public class SeatedRightOfOpponentMellow {
 			//END RANDOM TEST
 
 			//System.out.println("DEBUG TEST player with mellow on left tempted to trump:");
-			
+					
 			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 				
 				if(dataModel.signalHandler.mellowPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
@@ -487,10 +492,14 @@ public class SeatedRightOfOpponentMellow {
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
 					if(       (numCardsInOtherPeoplesHandsForSuit >= 3)
-							|| numCardsInOtherPeoplesHandsForSuit >= 2 && dataModel.isVoid(PROTECTOR_PLAYER_INDEX, leadSuit)
+							|| (numCardsInOtherPeoplesHandsForSuit >= 2 && dataModel.isVoid(PROTECTOR_PLAYER_INDEX, leadSuit))
+							|| (2 + dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE)
+							>= dataModel.getNumCardsInCurrentPlayerHand())
 							)
 					{
-
+						
+						//TODO: maybe save your highest trump and play a middle trump under certain conditions?
+						
 						//Probably safe to trump high:
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
