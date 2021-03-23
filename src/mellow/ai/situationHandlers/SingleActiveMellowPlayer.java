@@ -65,10 +65,31 @@ public class SingleActiveMellowPlayer {
 				
 				if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
 
-					//TODO: check for the case where you'd rather play your 5 over the 4 even if you have a 2.
-
+					
 					//Play just below winning card if possible
 					cardToPlay = dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner);
+					
+					//TODO: check for the case where you'd rather play your 5 over the 4 even if you have a 2.
+
+					int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+					
+					//Special case where mellow plays over lead
+					if(throwIndex == 1
+							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 6
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+									currentFightWinner)
+							     < 2
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+									dataModel.getCardInHandClosestOverSameSuit(currentFightWinner))
+								< 2
+							
+							&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+							) {
+
+						//TODO: if partner trumped twice, don't do this for spades
+						cardToPlay = dataModel.getCardInHandClosestOverSameSuit(currentFightWinner);
+					}
+					//END special case where mellows plays over lead
 				
 				} else {
 					//Play slightly above winning card and hope you'll get covered
