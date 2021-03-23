@@ -58,7 +58,7 @@ public class SeatedLeftOfOpponentMellow {
 						
 						}
 					} else {
-						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
+						return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 					}
 				}
 			} else {
@@ -89,7 +89,7 @@ public class SeatedLeftOfOpponentMellow {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
 						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
-						return throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
+						return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 					}
 				
 				}
@@ -231,7 +231,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			} else {
 				
-				return throwOffHighCardThatMightAccidentallySaveMellow(dataModel, MELLOW_PLAYER_INDEX);
+				return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 			}
 		
 			
@@ -245,10 +245,25 @@ public class SeatedLeftOfOpponentMellow {
 		}
 	}
 	
+	//OLD TODOS:
+
+	//TODO: FUNCTION 4
+	//Make it consider if the tricks were made and/or if protector could be burnt...
+	//And maybe throw off suit with less than 4 cards
+	//END TODO
+	
+	//TODO: figure out how to play before a mellow (this is a hard position...)
+	//Knowing when to trump is complicated...
+	//END OLD TODOS
+	
 	//TODO: play high if you got your tricks (HARD!)
 	//TODO: consider playing non-top card of suit... LATER
 	//TODO: put in another class because this handles the logic for both seated left and seated right...
-	public static String throwOffHighCardThatMightAccidentallySaveMellow(DataModel dataModel, int mellowPlayerIndex) {
+	
+	//TODO: being seated left of mellow compareed to being seated right of mellow should make you more comfortable
+	//about keeping high cards I think...
+		// It probably allows you to have a higher ratio of high-cards to low cards
+	public static String throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(DataModel dataModel, int mellowPlayerIndex) {
 		
 		double bestValue = 0.0;
 		String bestCard = null;
@@ -273,36 +288,11 @@ public class SeatedLeftOfOpponentMellow {
 			} else if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
 				curValue -= 48.0;
 
-			} else if(dataModel.isMasterCard(curCard) && wantTrick(dataModel)) {
-				//TODO: revisit...
-				/*
-				//Try not to part with a master card if you want a trick: (It's rough and untested)
-				if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) > 1) {
-
-					String secondCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex);
-					
-					boolean useSecondCard = false;
-					
-					//TODO: make an algo for it?
-					for(int rank=dataModel.getRankIndex(secondCard) + 1; rank<dataModel.getRankIndex(curCard); rank++) {
-						if(dataModel.isCardPlayedInRound(dataModel.getCardString(rank, curSuitIndex))) {
-							useSecondCard = true;
-							break;
-						}
-					}
-					//END TODO
-					
-					if(useSecondCard) {
-						curCard = secondCard;
-					} else {
-						//Do nothing...
-					}
-
-					//END: Try not to part with a master card if you want a trick:
-				} else {
-					curValue -= 20.0;
+			} else if(dataModel.isMasterCard(curCard)) {
+				//TODO: Maybe don't do this if you really don't want tricks...
+				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) >= 4) {
+					curCard = dataModel.getCardCurrentPlayergetThirdLowestInSuit(curSuitIndex);
 				}
-				*/
 			}
 			
 			//Shouldn't like to throw off a high-card
