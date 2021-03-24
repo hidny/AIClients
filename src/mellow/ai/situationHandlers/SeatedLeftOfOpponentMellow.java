@@ -33,7 +33,7 @@ public class SeatedLeftOfOpponentMellow {
 			
 		//Mellow vulnerable: go under mellow if possible! (Maybe put into anther function?)
 		} else if(throwIndex > 0 && 
-				dataModel.isPrevThrowWinningFight() ) {
+				dataModel.isPrevThrowWinningFight()) {
 			
 			String curWinningCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			
@@ -67,7 +67,8 @@ public class SeatedLeftOfOpponentMellow {
 				if(dataModel.throwerMustFollowSuit()) {
 					//Both follow suit
 					
-					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard)) {
+					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curWinningCard) 
+							&& mellowHasOver1PercChanceOfLose(dataModel)) {
 						
 						if(throwIndex < 3) {
 							return dataModel.getCardInHandClosestUnderSameSuit(curWinningCard);
@@ -552,6 +553,46 @@ public class SeatedLeftOfOpponentMellow {
 			
 		} else {
 			return consideredCard;
+		}
+		
+	}
+	
+	
+	// Copied logic from SingleActiveMellowPlayer
+	// "Special case where mellow plays over lead"
+	
+	public static boolean mellowHasOver1PercChanceOfLose(DataModel dataModel) {
+		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
+		
+		if(dataModel.isPrevThrowWinningFight() == false) {
+			return false;
+		}
+		
+		String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
+		
+		//Mellow is leading:
+		if(throwIndex == 1
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 6
+				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+						currentFightWinner)
+				     < 2
+				
+				&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+				) {
+			return false;
+
+		//Mellow is second throw:
+		} else if(throwIndex == 2
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 5
+				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+						currentFightWinner)
+				     < 1
+				&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)) {
+			return false;
+
+		} else {
+			return true;
 		}
 		
 	}

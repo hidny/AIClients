@@ -554,6 +554,9 @@ public class NoMellowBidPlaySituation {
 		//SEE NOTES FOR BETTER PLAN
 		//TODO: pseudo code for not following suit
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 7S 4S 2S KH TH 9H 7H 6H 2H ")) {
+			System.out.println("DEBUG");
+		}
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
