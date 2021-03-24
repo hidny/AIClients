@@ -603,9 +603,20 @@ public class NoMellowBidPlaySituation {
 								//TODO: maybe play lower one (I don't know)
 							}
 							
-							if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
+							if(leaderSuitIndex == Constants.SPADE
+									&& (    hasKEquiv(dataModel, Constants.SPADE)
+									    || (hasQEquiv(dataModel, Constants.SPADE)
+									    		&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3)
+									    || dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 4)) {
+								
+								//Play low for and don't challenge if you want to preserve highish spade:
+								//There might be some complicated exceptions, but whatever.
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+
+							} else if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
 								
 								return cardToPlay;
+								
 							} else {
 								//Play the King while the Ace is still out!
 								return curPlayerTopCardInSuit;
