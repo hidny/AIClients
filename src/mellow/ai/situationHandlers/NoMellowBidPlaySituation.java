@@ -880,7 +880,25 @@ public class NoMellowBidPlaySituation {
 				if(dataModel.cardAGreaterThanCardBGivenLeadCard(dataModel.getCardLeaderThrow(), dataModel.getCardSecondThrow())) {
 					
 					if(dataModel.hasNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning()) {
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						
+						String leadThrow = dataModel.getCardLeaderThrow();
+						String highestInHand = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						
+						//Don't be eager to play over partner in spade
+						if(dataModel.getSuitOfLeaderThrow() == Constants.SPADE
+								&& 3 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex)
+									> dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex)
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestInHand)
+								- dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(leadThrow) <= 2) {
+							
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+							
+						} else {
+
+							// But feel free to play over partner in off suits.
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+							
+						}
 						
 					} else {
 						
@@ -902,12 +920,12 @@ public class NoMellowBidPlaySituation {
 						
 						//If we know 4th is void:
 						if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
-							
-							//Play highest to force 4th to play even higher... or stop 4th thrower from winning:
+
+							//play barely over 2nd thrower to force 4th thrower to trump for the win:
 							cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
 						
 						} else {
-							//play barely over 2nd thrower to force 4th thrower to trump for the win:
+							//Play highest to force 4th to play even higher... or stop 4th thrower from winning:
 							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 						}
 					} else {
