@@ -294,6 +294,16 @@ public class SeatedLeftOfOpponentMellow {
 				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) >= 4) {
 					curCard = dataModel.getCardCurrentPlayergetThirdLowestInSuit(curSuitIndex);
 				}
+				
+			} else if(NoMellowBidPlaySituation.hasKEquiv(dataModel, curSuitIndex)
+					&& ! NoMellowBidPlaySituation.hasKQEquiv(dataModel, curSuitIndex)) {
+				
+				//Also save your king equiv...
+				//TODO: Maybe don't do this if you really don't want tricks...
+				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) >= 4) {
+					curCard = dataModel.getCardCurrentPlayergetThirdLowestInSuit(curSuitIndex);
+				}
+
 			}
 			
 			//Shouldn't like to throw off a high-card
