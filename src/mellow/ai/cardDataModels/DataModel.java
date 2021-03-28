@@ -1776,7 +1776,7 @@ public class DataModel {
 
 	public int getNumberOfCardsOneSuit(int suit) {
 		int ret = 0;
-		for(int i=0; i<13; i++) {
+		for(int i=0; i<Constants.NUM_RANKS; i++) {
 			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suit][i]  == CERTAINTY) {
 				ret++;
 			}
@@ -2076,14 +2076,8 @@ public class DataModel {
 	}
 	
 	public boolean currentPlayerMustTrump() {
-		for(int i =0; i<Constants.NUM_SUITS; i++) {
-			if(i != Constants.SPADE) {
-				if(isVoid(Constants.CURRENT_AGENT_INDEX, i) == false) {
-					return false;
-				}
-			}
-		}
-		return true;
+		return this.getNumberOfCardsOneSuit(Constants.SPADE)
+				== this.getNumCardsInCurrentPlayerHand();
 	}
 	
 	public String[] getListOfPossibleActions() {

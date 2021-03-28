@@ -110,25 +110,65 @@ public class SingleActiveMellowPlayer {
 			
 			//TODO: throw off card that gets rid of the most risk... not necessarily the spade.
 			
+			//TODO: make playing spade just another option for what to play
+			//      maybe the offsuit situation is worse than the spade situation 
 			String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == Constants.SPADE) {
 				//Play spade under trump (this isn't always a good idea, but...)
 				//TODO: maybe consider not throwing off spade?
 				
-				if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				if(dataModel.currentPlayerOnlyHasSpade()) {
 					if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
 						//Play spade under trump
 						return dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner);
-						 
-					} else if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == dataModel.getNumCardsInCurrentPlayerHand()) {
-						
-						//If mellow player only has spade over trump, play lower spade:
+					} else {
 						return dataModel.getCardInHandClosestOverSameSuit(currentFightWinner);
 					}
+				} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)){
+					
+					
+					String cardToPlay2 = dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner);
+					
+					if(3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < 
+							dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
+
+						return cardToPlay2;
+					
+					} else if(dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)) {
+						
+						String nextHighestSpade = dataModel.getCardInHandClosestOverSameSuit(cardToPlay2);
+						
+						String lowestSpade = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						
+						if(cardToPlay2.equals(lowestSpade)
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay2)
+								 - dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(nextHighestSpade)
+								 >= 2
+							//	&& 
+							//	dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay2)
+							//	- dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay2)
+							//	 <= 2
+								  ) {
+							//At this point, it's probably more useful to keep the spade...
+							
+							//
+						} else {
+							return cardToPlay2;
+						}
+						
+						//if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay2))
+						
+						
+					} else {
+						return cardToPlay2;
+					}
+							
 					
 				}
 			}
-
+			//END TODO
+			
+			
 			//Algo that tries to throw off least desirable offsuit for mellow player
 			//NOTE: this is BARELY, better than dataModel.getHighestOffSuitCardToLead(). LOL
 			cardToPlay = getBestOffSuitCardToThrowOffAsMellowPlayer(dataModel);
@@ -179,6 +219,10 @@ public class SingleActiveMellowPlayer {
 		return dataModel.getCardCurrentPlayerGetHighestInSuit(chosenSuit);
 	}
 	
+	//TODO
+	//public static double getWillingnessToThrowOffSpadeSuitAsMellow(DataModel dataModel) {
+		
+	//}
 		
 		
 		//TODO: clean it up and make it look less like trial and error...
@@ -186,7 +230,7 @@ public class SingleActiveMellowPlayer {
 			
 			return getRiskRating3(dataModel, suit, 0) - 0.90 * getRiskRating3(dataModel, suit, 1);
 		}
-
+	
 		//TODO: clean it up and make it look less like trial and error...
 		// At least separate by value of i...
 		
@@ -232,7 +276,7 @@ public class SingleActiveMellowPlayer {
 					//I made up 7.0
 					ret += 7.0 * getChancesOfBurningInSuit1stRound(dataModel, suit, numTopCardsToIgnore);
 				}
-
+	
 			//Second Lowest card logic:
 				if(i == 1 && numUnder >=3) {
 					ret += (1.0/3.0) * (numUnder - 2.5);
@@ -244,8 +288,12 @@ public class SingleActiveMellowPlayer {
 				
 				//I made this up!
 				}
+				if( i == 1) {
+					//I made this up too!
+					ret += 3.0 * getChancesOfBurningInSuit1stRound(dataModel, suit, numTopCardsToIgnore);
+				}
 				
-
+	
 			//Third Lowest card logic:
 				if(i == 2 && numUnder >=3) {
 					ret += (1.0/6.0) * (numUnder - 2.5);
@@ -268,9 +316,6 @@ public class SingleActiveMellowPlayer {
 					
 				}
 				
-				if(i == 3 && numUnder >= 10) {
-					ret += (8.0/9.0) * numUnder - 9.5;
-				}
 				
 			
 				//System.out.println("Test what offsuit to throw: " + cardToConsider + ": " + ret + ":" + i + ":" + numUnder);
@@ -288,7 +333,7 @@ public class SingleActiveMellowPlayer {
 			double oddsLosingFirstRound = 0.0;
 			String cardToConsider = "";
 			
-
+	
 			int numOfSuitPlayerHas = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
 			
 			numOfSuitPlayerHas -= numTopCardsToIgnore;
@@ -302,7 +347,7 @@ public class SingleActiveMellowPlayer {
 			int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
 			int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider);
 			
-
+	
 			//I don't know man...
 			//All models are wrong, but some are useful...
 			
@@ -348,10 +393,10 @@ public class SingleActiveMellowPlayer {
 				oddsLosingFirstRound = total * oddsPartnerHasNoSpade;
 			
 			} else if(numUnder >= 3) {
-
+	
 				//case 1: partner and 1 opponent void:
 				double calc1 = Math.pow(1.0/3.0, numOver + numUnder);
-
+	
 				//case 2: partner void and both opponents not void:
 				double calc2 = Math.pow(2.0/3.0, numOver + numUnder);
 				calc2 *= (1.0 - Math.pow(1.0/2.0, numUnder - 1));
@@ -365,7 +410,7 @@ public class SingleActiveMellowPlayer {
 																	//Inclusion-exclusion principal:
 				calc4 *= (1.0 - 3 * Math.pow(2.0/3.0, numUnder)  + 3 * Math.pow(1.0/3.0, numUnder));
 				
-
+	
 				double total = calc1 + calc2 + calc3 + calc4;
 				
 				oddsLosingFirstRound = total * oddsPartnerHasNoSpade;

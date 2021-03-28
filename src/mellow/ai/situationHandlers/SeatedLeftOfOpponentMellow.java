@@ -269,6 +269,10 @@ public class SeatedLeftOfOpponentMellow {
 		double bestValue = 0.0;
 		String bestCard = null;
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH 9H 5H KD 9D 8D 2D ")) {
+			System.out.println("Debug");
+		}
+		
 		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
 
 			if(curSuitIndex == Constants.SPADE

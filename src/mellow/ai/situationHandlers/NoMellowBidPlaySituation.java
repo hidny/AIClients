@@ -47,9 +47,10 @@ public class NoMellowBidPlaySituation {
 	}
 	
 	
+	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S KD")) {
 			System.out.println("DEBUG");
 		}
 
@@ -89,6 +90,8 @@ public class NoMellowBidPlaySituation {
 			boolean partnerSignalledHighCardOfSuit = false;
 			
 
+			
+			
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				//Made up a number to say having the master card to lead in partner's void suit is cool:
 				//TODO: refine later
@@ -117,6 +120,7 @@ public class NoMellowBidPlaySituation {
 				}
 						
 			}
+			
 			
 			//Leading in a suit where RHS prob has master could be a good idea sometimes...
 			//Like when partner is trumping
@@ -170,22 +174,41 @@ public class NoMellowBidPlaySituation {
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 						}
-				} else if(numCardsOfSuitOtherPlayersHave == 0) {
+						
+				} else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
+						&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
+						&& dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+					
+					//The in-between jackpot:
+					curScore += 1100;
+						
+				} else if(numCardsOfSuitOtherPlayersHave == 0
+						|| ( dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex)
+						     && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex))
+						) {
 					//Might want to do this if right is out of spades...
 					
-					//Note this is a master card because other players don't have any cards to challenge it:
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 					
 					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
 						
-						//Jackpot!
+						//Jackpot 1!
 						curScore += 1000;
+						
+						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+							//TODO: maybe it's good to let partnier win sometimes...
+							curScore += 200;
+						}
+						
+						
 					} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 							(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 							(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
 						
-						//Pretty good. You're making this trick, but partner might trump
+						//Pretty good. You're making this trick if your partner doesn't take it...
 						curScore +=300;
 						
 					} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
@@ -195,9 +218,12 @@ public class NoMellowBidPlaySituation {
 						(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false) {
 						
 						curScore += 50;
-					} else {
 						
-						curScore -= 50;
+					
+					} else {
+
+						
+						curScore -= 10;
 					}
 					
 						
@@ -1072,7 +1098,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H 4H QC TC 6C 5C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QC TC AD JD")) {
 			System.out.println("Debug");
 		}
 		
@@ -1142,7 +1168,7 @@ public class NoMellowBidPlaySituation {
 			
 			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				//Don't throw off master cards unless you really need to...
-				currentValue -= 10.0;
+				currentValue -= 20.0;
 				
 				//Maybe it's not bad if you're planing on trumping though...
 				
@@ -1151,11 +1177,11 @@ public class NoMellowBidPlaySituation {
 					&& numberOfCardsOthersHaveInSuit >= 2) {
 				
 				//Don't throw off option to play low and save your Kequiv card for later
-				currentValue -= 3.0;
+				currentValue -= 5.0;
 				//System.out.println("MICHAEL HERE " + suitIndex);
 				
 				if(numberOfCardsInSuit == 2) {
-					currentValue -= 2.0;
+					currentValue -= 10.0;
 				}
 	
 			} else if(numberOfCardsInSuit == 2 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
@@ -1169,10 +1195,12 @@ public class NoMellowBidPlaySituation {
 				
 				//Don't throw off secondary master card...
 				if(numOverSecondHighest == numOverHighest) {
-					currentValue -= 3.0;
+					currentValue -= 10.0;
+				} else if(numOverHighest - numOverSecondHighest == 1) {
+					currentValue -= 5.0;
 				}
 	
-			}   else if((numberOfCardsInSuit == 2 ||numberOfCardsInSuit == 3)
+			}   else if((numberOfCardsInSuit == 2 || numberOfCardsInSuit == 3)
 					&&  dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				//Don't throw off option to play low twice and save your master card for later

@@ -166,8 +166,11 @@ public class BiddingSituation {
 		//Don't bid mellow with KS
 		if(intBid == 0 && dataModel.hasCard("KS")) {
 			intBid = 1;
+		
+		// Just don't say mellow if 2 cards are over the 9S...
+		} else if(intBid == 0 && dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit("9S") >= 2) {
+			intBid = 1;
 		}
-	
 		System.out.println("Final bid " + intBid);
 
 		
