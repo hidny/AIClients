@@ -167,6 +167,16 @@ public class SeatedRightOfOpponentMellow {
 							cardToUse = dataModel.getCardCurrentPlayergetThirdLowestInSuit(leadSuit);
 						}
 						
+					//Save highest spade if you have 5+ of them... (The rule isn't sophisticated, but at least it covers the obvious case)
+					} else if(leadSuit == Constants.SPADE
+							&& dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5
+						    && dataModel.cardAGreaterThanCardBGivenLeadCard(cardToUse, 
+								 dataModel.getCardCurrentPlayergetFourthLowestInSuit(leadSuit))) {
+						
+						//TODO: Do a similar thing if you have 4 spades and the mellow played a spade?
+						
+						cardToUse= dataModel.getCardCurrentPlayergetFourthLowestInSuit(leadSuit);
+						
 					}
 					
 					
@@ -401,7 +411,19 @@ public class SeatedRightOfOpponentMellow {
 							cardToUse = dataModel.getCardCurrentPlayergetThirdLowestInSuit(leadSuit);
 						}
 						
+					//COPY PASTA
+					//Save highest spade if you have 5+ of them... (The rule isn't sophisticated, but at least it covers the obvious case)
+					} else if(leadSuit == Constants.SPADE
+							&& dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5
+						    && dataModel.cardAGreaterThanCardBGivenLeadCard(cardToUse, 
+								 dataModel.getCardCurrentPlayergetFourthLowestInSuit(leadSuit))) {
+						
+						//TODO: Do a similar thing if you have 4 spades and the mellow played a spade?
+						
+						cardToUse= dataModel.getCardCurrentPlayergetFourthLowestInSuit(leadSuit);
+						
 					}
+					//END COPY PASTA
 					
 					
 					return cardToUse;
