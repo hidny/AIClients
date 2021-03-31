@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -299,8 +300,8 @@ public class SeatedLeftOfOpponentMellow {
 					curCard = dataModel.getCardCurrentPlayergetThirdLowestInSuit(curSuitIndex);
 				}
 				
-			} else if(NoMellowBidPlaySituation.hasKEquiv(dataModel, curSuitIndex)
-					&& ! NoMellowBidPlaySituation.hasKQEquiv(dataModel, curSuitIndex)) {
+			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuitIndex)
+					&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, curSuitIndex)) {
 				
 				//Also save your king equiv...
 				//TODO: Maybe don't do this if you really don't want tricks...

@@ -1814,6 +1814,22 @@ public class DataModel {
 		System.exit(1);
 		return "";
 	}
+
+	public String getCardCurrentPlayerGetThirdHighestInSuit(int suitIndex) {
+
+		String tmpSecondHighestCardInSuit = getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+		int highestRankCurPlayerHasInSuit = getRankIndex(tmpSecondHighestCardInSuit);
+		
+		for(int i=highestRankCurPlayerHasInSuit - 1; i>=0; i--) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				return getCardString(13*suitIndex + i);
+			}
+		}
+
+		System.err.println("AHH! Searching for third highest in card in suit when player doesn't have 3 cards in that suit. (" + suitIndex +")");
+		System.exit(1);
+		return "";
+	}
 	
 	//pre: current player has a card in suit Index.
 	public String getCardCurrentPlayerGetLowestInSuit(int suitIndex) {
@@ -2277,6 +2293,7 @@ public class DataModel {
 		
 		return true;
 	}
+
 	
 	//public boolean playerCouldSweepSuit
 	

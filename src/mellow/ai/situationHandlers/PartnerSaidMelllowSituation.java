@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.cardUtils.DebugFunctions;
 
 public class PartnerSaidMelllowSituation {
@@ -202,13 +203,13 @@ public class PartnerSaidMelllowSituation {
 						dataModel.getRankIndex(currentCardToPlay)
 						+ (numCardsOtherPlayersCurrentlyHaveOfSuit / 2);
 				
-				if(NoMellowBidPlaySituation.hasKQEquiv(dataModel, curSuit)) {
+				if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, curSuit)) {
 					currentCardToPlay = 
 							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
 									dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
 				
-				} else	if( ! NoMellowBidPlaySituation.hasKEquiv(dataModel, curSuit)
-						&& ! (NoMellowBidPlaySituation.hasQEquiv(dataModel, curSuit)
+				} else	if( ! NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuit)
+						&& ! (NonMellowBidHandIndicators.hasQEquiv(dataModel, curSuit)
 								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuit) >= 3)
 						) {
 					currentCardToPlay = 
