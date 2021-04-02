@@ -2,21 +2,11 @@ package mellow.ai.cardDataModels.handIndicators;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.cardUtils.DebugFunctions;
 
 public class NonMellowBidHandIndicators {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
-	}
-
-	
-	
-	//2nd Priority:
-	//TODO: Make indicator for trumping a suit:
-	// couldMakeATrumpTrick
-	//Making a trumping trick is different...
-	
 	//3rd Priority
 	//TODO: Add indicator:
 	//Look for the potential to make several of the same suit...
@@ -32,17 +22,184 @@ public class NonMellowBidHandIndicators {
 	//    your opponents know you're weak in suit s, and that's bad.
 	
 	
-	//1st prio:
-	//TODO: test
 	
-	//TODO: implement function:
-	    //getCouldMakeAFollowTrickRatingMinusACard(DataModel dataModel, int suitIndex)
-	//AND:
-		//See diff in rating after throwing lowest...
+
 	
+	//2nd Priority:
+	//Make indicator for trumping a suit:
+	// couldMakeATrumpTrick
+	//Making a trumping trick is different...
+	
+	//For convenience, let's say this calculation comes up at the beginning of the round...
+	
+	// I have extra function so I can compare rating before/after throwing off lowest card of suit...
+	
+
+	public static double getCouldTrumpSuitAndWinRatingMinusLowSpade(DataModel dataModel, int suitIndex) {
+		return getCouldTrumpSuitAndWinRating( dataModel, suitIndex, true, false);
+	}
+	
+	public static double getCouldTrumpSuitAndWinRatingMinusLowOffsuit(DataModel dataModel, int suitIndex) {
+		return getCouldTrumpSuitAndWinRating( dataModel, suitIndex, false, true);
+	}
+	
+	public static double getCouldTrumpSuitAndWinRating(DataModel dataModel, int suitIndex) {
+		return getCouldTrumpSuitAndWinRating( dataModel, suitIndex, false, false);
+	}
+	
+	//TODO: LHS or RHS throwing off suit should have a high hit on the rating (-1 instead of -1/3)..
+	public static double getCouldTrumpSuitAndWinRating(DataModel dataModel, int suitIndex, boolean lowestSpadeThrown, boolean lowestCardOfSuitThrown) {
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS AH KH 6H 2H 5C ")) {
+			System.out.println("Debug");
+		}
+
+		int numSpadesInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE);
+		if(lowestSpadeThrown) {
+			numSpadesInHand = numSpadesInHand - 1;
+			if(numSpadesInHand <=0){
+				
+				if(numSpadesInHand < 0) {
+					System.out.println("ERROR: Calling getCouldTrumpSuitAndWinRatingMinusLowSpade when you already have 0 spades!");
+					//Let it slide for debug purposes...
+				}
+				
+				return 0.0;
+			}
+		}
+		
+		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+
+		if(lowestCardOfSuitThrown) {
+			numCardsOfSuitInHand = numCardsOfSuitInHand - 1;
+			if(numCardsOfSuitInHand < 0) {
+				System.out.println("ERROR: Calling getCouldTrumpSuitAndWinRatingMinusLowOffsuit when you already have 0 offuits!");
+				System.exit(1);
+			}
+		}
+
+		int numCardsOfSuitInOtherHands = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+		
+		if(numSpadesInHand == 0 
+				|| suitIndex == Constants.SPADE
+				|| numCardsOfSuitInOtherHands == 0) {
+			return 0.0;
+		}
+		
+		double spadeVulnerability = 0.0;
+		
+		//Rough estimate of "if player's spades are vulnerable, that should affect the ratings..."
+		if((numSpadesInHand == 1 && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))) {
+			//All good...
+		} else if(
+			   (numSpadesInHand == 2 && hasKEquiv(dataModel, Constants.SPADE))
+			|| (numSpadesInHand == 3 && hasQEquiv(dataModel, Constants.SPADE))) {
+			spadeVulnerability = 1.0;
+			
+		} else if(getCouldMakeAFollowTrickRating(dataModel, 0, lowestSpadeThrown) <= 5.0) {
+			//Get num Other playes not void.
+			int numOtherPlayersNotVoidSpade = 0;
+			if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+				numOtherPlayersNotVoidSpade++;
+			}
+			
+			if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+				numOtherPlayersNotVoidSpade++;
+			}
+			
+			if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				numOtherPlayersNotVoidSpade++;
+			}
+			//End get num other players not void
+			
+			spadeVulnerability = Math.max(0, 1 + dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					- 1.0 * numOtherPlayersNotVoidSpade * numSpadesInHand);
+		}
+		//End of rough estimate
+				
+		//TODO: RM isVoid (It should not make a diff)
+		boolean isLHSVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex);
+		
+		boolean isLHSVoidSpade = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE);
+		
+		if(isLHSVoidSpade) {
+			spadeVulnerability = 0.0;
+		} 
+		
+		if(numCardsOfSuitInHand == 0) {
+			
+			if(! isLHSVoidSpade
+					&& isLHSVoid) {
+				return 0.0 - spadeVulnerability;
+				
+			} else if(numCardsOfSuitInOtherHands == 1) {
+				return 0.0 - spadeVulnerability;
+				
+			} else if(numCardsOfSuitInOtherHands == 2) {
+				return 1.0 - spadeVulnerability;
+				
+			} else {
+				return Math.min(9.0, numCardsOfSuitInOtherHands - 1.0 - spadeVulnerability);
+			}
+		} else {
+			
+			//Get num Other playes not void.
+			int numOtherPlayersNotVoid = 0;
+			if(! isLHSVoid) {
+				numOtherPlayersNotVoid++;
+			}
+			
+			if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
+				numOtherPlayersNotVoid++;
+			}
+			
+			if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+				numOtherPlayersNotVoid++;
+			}
+			//End get num other players not void
+			
+			int numCardsOtherHaveInHandWhenVoid = numCardsOfSuitInOtherHands - numCardsOfSuitInHand * numOtherPlayersNotVoid;
+			
+
+			if(! isLHSVoidSpade
+					&& isLHSVoid) {
+				return 0.0 - spadeVulnerability;
+				
+			} else if(numCardsOtherHaveInHandWhenVoid <= 1) {
+				return 0.0 - spadeVulnerability;
+				
+			} else if(numCardsOtherHaveInHandWhenVoid == 2) {
+				return 1.0 - spadeVulnerability;
+				
+			} else {
+				return Math.min(9.0, numCardsOtherHaveInHandWhenVoid - spadeVulnerability);
+			}
+			
+		}
+	}
+	
+	
+
+	//1st Priority
+	//Get a rating for the possibility of making a a non-lead and non-trumping trick for each suit
 	public static double getCouldMakeAFollowTrickRating(DataModel dataModel, int suitIndex) {
+		
+		return getCouldMakeAFollowTrickRating(dataModel, suitIndex, false);
+	}
+	
+	//Make a function to see what happen to the followTrick rating after throwing off lowest card of suit:
+	public static double getCouldMakeAFollowTrickRatingMinusLowCard(DataModel dataModel, int suitIndex) {
+		
+		return getCouldMakeAFollowTrickRating(dataModel, suitIndex, true);
+	}
+	
+	private static double getCouldMakeAFollowTrickRating(DataModel dataModel, int suitIndex, boolean lowCardThrownOff) {
 
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+		
+		if(lowCardThrownOff) {
+			numCardsOfSuitInHand = numCardsOfSuitInHand - 1;
+		}
 		
 		if(numCardsOfSuitInHand ==0) {
 			return 0.0;
@@ -50,6 +207,14 @@ public class NonMellowBidHandIndicators {
 
 		int numCardsOfSuitInOtherHands = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
+		if(numCardsOfSuitInOtherHands == 0) {
+			return 0.0;
+		}
+		
+		if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+								dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == 0) {
+			return 0.0;
+		}
 		
 		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 			
@@ -61,6 +226,8 @@ public class NonMellowBidHandIndicators {
 				return 9.0 + otherCardFactor;
 			}
 		} else if(hasKEquiv(dataModel, suitIndex)) {
+			
+
 
 			//TODO: make this better than just a linear adjustment...
 			double otherCardFactor = 0.2 * (numCardsOfSuitInOtherHands - 1);
@@ -72,7 +239,7 @@ public class NonMellowBidHandIndicators {
 			
 			if(numCardsOfSuitInHand == 1) {
 				return 2.0;
-			} else if(numCardsOfSuitInHand >= 2 ) {
+			} else {
 				
 				int numInbetween = 
 						  dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
@@ -91,7 +258,7 @@ public class NonMellowBidHandIndicators {
 					return 7.0 + tripleFactor + otherCardFactor;
 				} else if(numInbetween == 2) {
 					return 6.0 + tripleFactor + otherCardFactor;
-				} else if(numInbetween >= 3) {
+				} else {
 					return 5.0 + tripleFactor + otherCardFactor;
 				}
 				
@@ -135,7 +302,7 @@ public class NonMellowBidHandIndicators {
 					return 6.0 + otherCardFactor;
 				} else if(numInbetween == 2) {
 					return 5.0 + otherCardFactor;
-				} else if(numInbetween >= 3) {
+				} else {
 					return 4.0 + otherCardFactor;
 				}
 			}
@@ -173,7 +340,6 @@ public class NonMellowBidHandIndicators {
 			
 			return 0.0;
 		}
-		return numCardsOfSuitInHand;
 		
 	}
 	

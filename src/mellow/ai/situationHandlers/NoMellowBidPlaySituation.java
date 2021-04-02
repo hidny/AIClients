@@ -1099,7 +1099,7 @@ public class NoMellowBidPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QC TC AD JD")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS AH KH 6H 2H 5C ")) {
 			System.out.println("Debug");
 		}
 		
@@ -1122,6 +1122,13 @@ public class NoMellowBidPlaySituation {
 			//DEBUG
 			String suitString = dataModel.getCardString(0, suitIndex).substring(1);
 			System.out.println("Could-Make-A-Follow-Trick-Rating for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldMakeAFollowTrickRating(dataModel, suitIndex));
+			System.out.println("Could-Make-A-Follow-Trick-Rating after throwing low card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldMakeAFollowTrickRatingMinusLowCard(dataModel, suitIndex));
+			System.out.println("");
+			System.out.println("Could-Trump-Suit-And-Win-Rating for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRating(dataModel, suitIndex));
+			System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowOffsuit(dataModel, suitIndex));
+			
+			System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low spade card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowSpade(dataModel, suitIndex));
+			
 			//END DEBUG
 
 			String curCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
