@@ -581,9 +581,11 @@ public class NoMellowBidPlaySituation {
 		//SEE NOTES FOR BETTER PLAN
 		//TODO: pseudo code for not following suit
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 7S 4S 2S KH TH 9H 7H 6H 2H ")) {
+		/*if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS TS 9S 7S 4S 5H AC JC 5C 4C ")) {
+			System.out.println(3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE));
+		    System.out.println(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE));
 			System.out.println("DEBUG");
-		}
+		}*/
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
@@ -595,21 +597,22 @@ public class NoMellowBidPlaySituation {
 			if(dataModel.couldPlayCardInHandOverCardInSameSuit(leaderCard)) {
 				
 				boolean thirdVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex);
-				boolean fourthVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex);
-			
-			
-				if(thirdVoid && fourthVoid) {	
+				//boolean fourthVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex);
+				//boolean thirdVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex);
+				boolean fourthProbVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex);
+				
+				if(thirdVoid && fourthProbVoid) {	
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
 
-				} else if(thirdVoid && fourthVoid == false) {
+				} else if(thirdVoid && fourthProbVoid == false) {
 					//Maybe play low? I don't know...
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
 				
-				} else if(thirdVoid == false && fourthVoid) {
+				} else if(thirdVoid == false && fourthProbVoid) {
 					//TODO This doesn't really work if trump is spade... 
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 					
-				} else if(thirdVoid == false && fourthVoid == false){
+				} else if(thirdVoid == false && fourthProbVoid == false){
 					
 					if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
@@ -745,7 +748,7 @@ public class NoMellowBidPlaySituation {
 				//Option to trump:
 			} else {
 				
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS 6S KH 7H 6H 5H ")) {
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS TS 9S 7S 4S 5H AC JC 5C 4C ")) {
 					System.out.println("DEBUG");
 				}
 				
@@ -755,14 +758,21 @@ public class NoMellowBidPlaySituation {
 						//&& (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false)) {
 					
 					//Let partner trump for you:
-					if(     dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false 
-							&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+					if(
+							//Partner could trump for you
+							! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) 
+							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+							
+							//If there's only 1 more spade available... so partner could probably trump:
+							// (//TODO: this is a Hack...) If there's 1 more spade available, you should be looking into forcing plays.
+							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1
+									
 							
 							//If you have more spades than the avg player, let partner trump
 							&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
 					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 							
-						    //If you just have 1 small spade, play it...
+						    //If you just have 1 small spade, just play it and don't let partner trump
 							&& (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1 
 									    || dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
 							)
@@ -809,15 +819,20 @@ public class NoMellowBidPlaySituation {
 					
 				} else if(
 						//Partner probably can't trump
-						(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false) 
+						(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						      || ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex))
 						&& 
-						//Not much spade: 
-						(//Constants.NUM_RANKS - dataModel.getNumCardsPlayedForSuit(Constants.SPADE) >= 4 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE)
-								3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <=
+						
+						(
+								//Not much spade:
+								//I adjusted it to 2.5 to make it slightly more willing to trump and take the lead.
+								2.5 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <=
 					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
-						                //OR only 1 non-master spade:
+						         
+					               //OR: only 1 non-master spade:
 						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 
 						         && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)
+						     
 						)
 						&& //No K to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
@@ -1301,6 +1316,39 @@ public class NoMellowBidPlaySituation {
 			}
 			
 		}
+		
+		
+		/*
+		//Testing obvious measure to just throw really bad cards:
+		// Didn't work. Need to consider that some cards are good for making lead tricks...
+		// Maybe this naive strat works better if You and Partner need 1 more trick and you're not sure you'll get it.
+		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			if(suitIndex == Constants.SPADE || dataModel.currentAgentHasSuit(suitIndex) == false) {
+				continue;
+			}
+			
+			int numberOfCardsInSuit = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			if(numberOfCardsInSuit == 0) {
+				continue;
+			}
+			
+			if(NonMellowBidHandIndicators.getCouldMakeAFollowTrickRating(dataModel, suitIndex) <= 0.1
+					&& NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRating(dataModel, suitIndex) <= 0.1) {
+				return dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+			}
+			
+			//DEBUG
+			//String suitString = dataModel.getCardString(0, suitIndex).substring(1);
+			//System.out.println("Could-Make-A-Follow-Trick-Rating for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldMakeAFollowTrickRating(dataModel, suitIndex));
+			//System.out.println("Could-Make-A-Follow-Trick-Rating after throwing low card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldMakeAFollowTrickRatingMinusLowCard(dataModel, suitIndex));
+			//System.out.println("");
+			//System.out.println("Could-Trump-Suit-And-Win-Rating for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRating(dataModel, suitIndex));
+			//System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowOffsuit(dataModel, suitIndex));
+			
+			//System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low spade card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowSpade(dataModel, suitIndex));
+			
+		}*/
 		
 		return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuit);
 	}

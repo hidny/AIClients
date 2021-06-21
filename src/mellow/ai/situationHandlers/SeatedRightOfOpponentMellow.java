@@ -66,11 +66,17 @@ public class SeatedRightOfOpponentMellow {
 				if(suit == Constants.SPADE) {
 					curLowestRankSuitScore += 3.5;
 				}
+
+				long numStartedWithInSuit = dataModel.getNumCardsCurrentUserStartedWithInSuit(suit);
+				
+				curLowestRankSuitScore += 2.0 * numStartedWithInSuit;
+				
 				
 				if(curLowestRankSuitScore < lowestRankScore) {
 					bestSuitIndex = suit;
 					lowestRankScore = curLowestRankSuitScore;
 				}
+				
 				
 			}
 		
@@ -79,13 +85,70 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(bestSuitIndex != -1) {
 			
-			return leadLowButAvoidWastingLowestCardInSuit(dataModel, bestSuitIndex);
+			//Old:
+			//return leadLowButAvoidWastingLowestCardInSuit(dataModel, bestSuitIndex);
 			
+			//New:
+			return getHighestCardYouCouldLeadWithoutSavingMellowInSuit(dataModel, bestSuitIndex);
 			
 		} else {
 		
 			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 		}
+	}
+	
+	//TODO: investigate placing this in seated left of mellow...
+	// But: this might be less straight-forward left of mellow because you might be giving protector some info...
+		
+	public static String getHighestCardYouCouldLeadWithoutSavingMellowInSuit(DataModel dataModel, int suitIndex) {
+		
+		String ret = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+		
+		//1st make sure that's it's the first time out:
+		
+		if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 6) {
+			
+			int numCardsInSuit = dataModel.getNumberOfCardsOneSuit(suitIndex);
+			
+			if(numCardsInSuit < 2) {
+				return ret;
+			}
+			
+			String secondSmallest = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitIndex);
+			
+			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(secondSmallest) <= 2) {
+				ret = secondSmallest;
+			} else {
+				return ret;
+			}
+			
+			if(numCardsInSuit < 3) {
+				return ret;
+			}
+			
+			String thirdSmallest = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suitIndex);
+			
+			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(thirdSmallest) <= 2) {
+				ret = thirdSmallest;
+			} else {
+				return ret;
+			}
+			
+			if(numCardsInSuit < 4) {
+				return ret;
+			}
+			
+			String fourthSmallest = dataModel.getCardCurrentPlayergetFourthLowestInSuit(suitIndex);
+			
+			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(fourthSmallest) <= 2) {
+				return fourthSmallest;
+			} else {
+				return ret;
+			}
+			
+		}
+		
+		return ret;
 	}
 
 	public static String AISecondThrow(DataModel dataModel) {
@@ -638,6 +701,9 @@ public class SeatedRightOfOpponentMellow {
 	//TODO: If I'm seating before the protecter, I usually play higher.
 	//Myabe make another function to reflect this.
 	
+	//TODO: replace with get Highest Card You could Lead function here,
+	// and maybe in the seatedLeft file...
+	/*
 	public static String leadLowButAvoidWastingLowestCardInSuit(DataModel dataModel, int suitToPlay) {
 		int numCardsCurPlayerHasOfSuit = dataModel.getNumberOfCardsOneSuit(suitToPlay);
 		
@@ -676,6 +742,6 @@ public class SeatedRightOfOpponentMellow {
 			return consideredCard;
 		}
 		
-	}
+	}*/
 	
 }
