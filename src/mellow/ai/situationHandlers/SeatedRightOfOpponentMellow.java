@@ -85,9 +85,6 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(bestSuitIndex != -1) {
 			
-			//Old:
-			//return leadLowButAvoidWastingLowestCardInSuit(dataModel, bestSuitIndex);
-			
 			//New:
 			return getHighestCardYouCouldLeadWithoutSavingMellowInSuit(dataModel, bestSuitIndex);
 			

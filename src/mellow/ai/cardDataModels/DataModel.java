@@ -2295,6 +2295,25 @@ public class DataModel {
 	}
 
 	
+	
+	//If player lead master, then they probably have 1 more of that suit.
+	//One thing is that it's not true if they were forced to play it over a 9,
+	// or forced to play it even though someone trumped...
+	//So be careful!
+	//Skip logic with Queen for now because it's that informative...
+	public boolean didPlayerIndexLeadMasterAKOffsuit(int playerIndex, int suitIndex) {
+		
+		if(cardsUsedByPlayer[playerIndex][suitIndex][ACE]
+				|| cardsUsedByPlayer[playerIndex][suitIndex][KING]) {
+			return true;
+			
+		} else {
+			return false;
+		}
+		
+		
+	}
+	
 	//public boolean playerCouldSweepSuit
 	
 	//TODO: later

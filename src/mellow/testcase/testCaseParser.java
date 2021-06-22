@@ -16,19 +16,13 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 public class testCaseParser {
 
 	//folders:
-	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2"};
+	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2"};
 
 	//public static String TEST_FOLDERS[] = {"Michael2021"};
-	//public static String TEST_FOLDERS[] = {"Michael2021-2"};
+	public static String TEST_FOLDERS[] = {"Michael2021-2"};
 	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
-	//public static String TEST_FOLDER = "Michael2021";
-	//public static String TEST_FOLDER = "Michael";
-	//public static String TEST_FOLDER = "MichaelApril2020";
-	//public static String TEST_FOLDER = "doubleMellowTests";
-	//public static String TEST_FOLDER = "MichaelDebugMadeUp";
-	
-	//public static String TEST_FOLDER = "garbageTestData";
+	//public static String TEST_FOLDERS[] = {"MonteCarloTests"};
 	
 
 	public static int numLeadingPass = 0;
@@ -62,7 +56,12 @@ public class testCaseParser {
 		
 		//Option 3: Slow and thorougk Monte Carlo AI:
 		//MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
-		
+
+		//Test monte carlo if we're using monte carlo folder:
+		if(TEST_FOLDERS.length == 1 && TEST_FOLDERS[0].toLowerCase().equals("montecarlotests")) {
+			decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
+			
+		}
 		
 		int numPasses = 0;
 		int numTrials = list.length;

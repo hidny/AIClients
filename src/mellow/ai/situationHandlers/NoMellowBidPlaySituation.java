@@ -51,7 +51,7 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S KD")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 4S 2S 8H 9D 4D ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -77,10 +77,8 @@ public class NoMellowBidPlaySituation {
 				continue;
 			}
 			
-			int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
-					- dataModel.getNumCardsPlayedForSuit(suitIndex) 
-					- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
-			
+			int numCardsOfSuitOtherPlayersHave =
+			dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 			
 
 		
@@ -247,6 +245,12 @@ public class NoMellowBidPlaySituation {
 						) {
 						//increased to 26.0 to fix testcase Michael2021 -> 290...
 						curScore += 26.0;
+						
+						if(dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
+							//Made it more than +10, because I wanted to beat
+							//playing spade with bid diff of 1 in our favour.
+							curScore += 12.0;
+						}
 						
 					} else {
 						curScore -= 10.0;
@@ -465,7 +469,16 @@ public class NoMellowBidPlaySituation {
 				if((dataModel.currentPlayerHasMasterInSuit(1) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(1) < 6)
 						|| (dataModel.currentPlayerHasMasterInSuit(2) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(2) < 6)
 						|| (dataModel.currentPlayerHasMasterInSuit(3) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(3) < 6)) {
-					curScore += 30.0;
+					
+					//Only do this if you think you might win a trick somehow, so you could lead again...
+					//TODO: this is a rough estimate that doesn't account for stolen tricks,
+					// Tricks given to partner/ taken from partner
+					// or unfortunate circumstances...
+					if(dataModel.getTrick(Constants.CURRENT_AGENT_INDEX)
+						< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)) {
+						curScore += 30.0;
+					}
+					
 				} else {
 					
 					//Check if you have AK combo because you might want to drain S if you have that.

@@ -532,6 +532,8 @@ public class SeatedLeftOfOpponentMellow {
 	//TODO: If I'm seating before the protecter, I usually play higher.
 	//Myabe make another function to reflect this.
 	
+	//TODO: look into replacing this with: getHighestCardYouCouldLeadWithoutSavingMellowInSuit()
+	//But be careful!
 	public static String leadLowButAvoidWastingLowestCardInSuit(DataModel dataModel, int suitToPlay) {
 		int numCardsCurPlayerHasOfSuit = dataModel.getNumberOfCardsOneSuit(suitToPlay);
 		
