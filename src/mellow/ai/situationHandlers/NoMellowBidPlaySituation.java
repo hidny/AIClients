@@ -51,7 +51,7 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 4S 2S 8H 9D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8C 6D 3D ")) {
 			System.out.println("DEBUG");
 		}
 
@@ -222,7 +222,7 @@ public class NoMellowBidPlaySituation {
 					} else {
 
 						
-						curScore -= 10;
+						curScore -= 100;
 					}
 					
 						
@@ -246,14 +246,15 @@ public class NoMellowBidPlaySituation {
 						//increased to 26.0 to fix testcase Michael2021 -> 290...
 						curScore += 26.0;
 						
-						if(dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
+						if(dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+								&& ! dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.LEFT_PLAYER_INDEX, suitIndex)) {
 							//Made it more than +10, because I wanted to beat
 							//playing spade with bid diff of 1 in our favour.
 							curScore += 12.0;
 						}
 						
 					} else {
-						curScore -= 10.0;
+						curScore -= 50.0;
 					}
 					
 					if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
@@ -475,7 +476,8 @@ public class NoMellowBidPlaySituation {
 					// Tricks given to partner/ taken from partner
 					// or unfortunate circumstances...
 					if(dataModel.getTrick(Constants.CURRENT_AGENT_INDEX)
-						< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)) {
+						< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
+						|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
 						curScore += 30.0;
 					}
 					

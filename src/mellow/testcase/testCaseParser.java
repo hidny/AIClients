@@ -16,10 +16,10 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 public class testCaseParser {
 
 	//folders:
-	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2"};
+	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2"};
 
 	//public static String TEST_FOLDERS[] = {"Michael2021"};
-	public static String TEST_FOLDERS[] = {"Michael2021-2"};
+	//public static String TEST_FOLDERS[] = {"Michael2021-2"};
 	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
 	//public static String TEST_FOLDERS[] = {"MonteCarloTests"};
@@ -422,7 +422,7 @@ public class testCaseParser {
 			} while(cur.startsWith("Expert response:") == false);
 
 			cur = in.nextLine();
-			String expertResponse = cur;
+			String expertResponse = cur.toUpperCase();
 			
 			do {
 				cur = in.nextLine();
@@ -433,7 +433,7 @@ public class testCaseParser {
 			} else {
 				cur = "";
 			}
-			String expertAltResponse = cur;
+			String expertAltResponse = cur.toUpperCase();
 
 
 			System.out.println("AI response: " + response);
