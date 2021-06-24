@@ -23,23 +23,31 @@ public class PartnerSaidMelllowSituation {
 		//EX: don't worry about counting number of cards left in suit and number of spades left and blah blah blah...
 		//EX2: if player needs to play unsafe card, don't worry about having no common-sense to deal with it.
 		
+		//TRAM (The rest are mine) logic:
+		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+
+		//TODO: put in function
+		if( (throwIndex == 0 && NoMellowBidPlaySituation.couldTRAM(dataModel))
+			|| (throwIndex > 0 && NoMellowBidPlaySituation.couldPlayMasterSAndTram(dataModel))) {
+			
+			System.out.println("THE REST ARE MINE! (TRAM)");
+			
+			if(throwIndex == 0 && ! dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				return dataModel.getMasterCard();
+			} else {
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+			}
+		}
+		//END TODO put in function
+		
 		//1st prio:
 		if(dataModel.currentThrowIsLeading()) {
 			
 			return AIHandleLead(dataModel);
 			
 		} else {
-			
-			int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
-			
-
-			//Check TRAM:
-			if(NoMellowBidPlaySituation.couldLeadMasterSAndTram(dataModel) ) {
-				System.out.println("DEBUG: TRAM in MELLOW PROTECTOR!");
-				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-			}
-			//END CHECK TRAM
-			
+		
 			
 			if(throwIndex == 1) {
 			
