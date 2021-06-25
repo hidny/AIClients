@@ -73,14 +73,13 @@ public class PartnerSaidMelllowSituation {
 	
 	public static String AIHandleLead(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 5S JD 5D AC 6C 4C KH TH 4H 3H")) {
+			System.out.println("Debug");
+		}
 		int bestSuitIndexToPlay = -1;
 		int valueOfBestSuitPlay = -1;
 
 		System.out.println("DEBUG: reached mellow protection test. Test0!");
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S 6S KH 9H KC 9C 7C 3C 2C 8D ")) {
-			System.out.println("DEBUG");
-		}
 		
 		//1st check that there's an offsuit current player has, but mellow signalled they don't have:
 		// OR if the protector can safely play spade:
@@ -128,7 +127,7 @@ public class PartnerSaidMelllowSituation {
 					//playing this suit is good but not great... but maybe it's still the best choice...
 					if(curSuit != Constants.SPADE && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, curSuit)
 							&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE) == false) {
-						currentValueOfSuitPlay = 1;
+						currentValueOfSuitPlay += 1;
 					}
 
 					
@@ -148,7 +147,7 @@ public class PartnerSaidMelllowSituation {
 		
 		if(bestSuitIndexToPlay != -1) {
 			if(dataModel.currentPlayerHasMasterInSuit( bestSuitIndexToPlay)) {
-				return dataModel.getMasterInHandOfSuit( bestSuitIndexToPlay);
+				return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getMasterInHandOfSuit( bestSuitIndexToPlay));
 			} else {
 				return dataModel.getCardCurrentPlayerGetHighestInSuit( bestSuitIndexToPlay);
 			}
@@ -157,8 +156,13 @@ public class PartnerSaidMelllowSituation {
 		
 		//At this point, there's no obvious lead...
 		
+		//Consider spades:
+		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+				|| NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE) ){
+			return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE));
+		}
 		//Try to play to a master (if applicable)
-		for(int curSuit=0; curSuit<Constants.NUM_SUITS; curSuit++) {
+		for(int curSuit=1; curSuit<Constants.NUM_SUITS; curSuit++) {
 			if(dataModel.currentPlayerHasMasterInSuit(curSuit)) {
 				
 				//TODO: this is really dangerous if mellow protector doesn't have a high second card...

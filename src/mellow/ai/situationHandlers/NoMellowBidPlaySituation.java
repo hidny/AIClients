@@ -781,16 +781,16 @@ public class NoMellowBidPlaySituation {
 				//Must play trump:
 			} else if(dataModel.currentPlayerMustTrump()) {
 				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+			
 				
-				//Option to trump:
+				//Option to trump no need to go bid:
 			} else {
 				
 				
 				if(dataModel.isMasterCard(leaderCard)
 						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1) {
 						
-						//&& (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) || dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) == false)) {
-					
+						
 					//Let partner trump for you:
 					if(
 							//Partner could trump for you
@@ -890,7 +890,59 @@ public class NoMellowBidPlaySituation {
 				} else {
 					cardToPlay = getJunkiestCardToFollowLead(dataModel);
 				}
+				
+				
+				
+				//At this point, we might have decided to trump,
+				// but we might reconsider given LHS is also trumping...
+
+				boolean goBigOrGoHome = false;
+				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+								&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+								&& dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
+					goBigOrGoHome = true;
+				}
+				
+				if(goBigOrGoHome
+						&& CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE) {
+					
+					int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+					
+					if((3 * numSpadesInHand >
+					dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					      && numSpadesInHand > 1
+					)
+					|| (numSpadesInHand == 2
+						&&	!dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+						&&	NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+						&& !NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)
+						)
+					|| (numSpadesInHand == 3
+							&& !dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+							&& !NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+							&& NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+						)
+					) {
+						cardToPlay = getJunkiestCardToFollowLead(dataModel);
+					} else {
+						
+						String highcard = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						if(dataModel.isMasterCard(dataModel.getCurrentFightWinningCardBeforeAIPlays())
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highcard) >= 1) {
+							
+							//TODO: maybe handle signals for min spade LHS has...
+								//&& ! dataModel.signalHandler.NOTIMPLEMENTED
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							
+						} else {
+							cardToPlay = getJunkiestCardToFollowLead(dataModel);
+						}
+						
+					}
+				}
 			}
+			
 		}
 		
 	

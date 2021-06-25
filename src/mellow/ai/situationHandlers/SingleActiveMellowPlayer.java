@@ -36,13 +36,26 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowLead(DataModel dataModel) {
 		
+		//TODO: the logic here is hard... just play spade...
+		
 		String ret = "";
-		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 0) {
+		int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+		if(numSpadesInHand > 0) {
 			
-
-			//TODO: if highest Spade is Queen, maybe don't do this?
-			//TOO complicated... :(
 			ret = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			
+			//I thought about doing something more complicated, but I don't think it's as good.
+			/*if(numSpadesInHand == 1
+					|| DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) <= dataModel.RANK_TEN
+					|| dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) > 3) {
+				ret = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+			} else {
+				ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				
+			}
+			*/
+			
 		} else {
 			ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 		}
