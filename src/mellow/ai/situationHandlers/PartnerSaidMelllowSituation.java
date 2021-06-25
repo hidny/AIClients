@@ -70,196 +70,341 @@ public class PartnerSaidMelllowSituation {
 			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
 		}
 	}
-	
+
 	public static String AIHandleLead(DataModel dataModel) {
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 5S JD 5D AC 6C 4C KH TH 4H 3H")) {
-			System.out.println("Debug");
-		}
-		int bestSuitIndexToPlay = -1;
-		int valueOfBestSuitPlay = -1;
-
-		System.out.println("DEBUG: reached mellow protection test. Test0!");
 		
-		//1st check that there's an offsuit current player has, but mellow signalled they don't have:
-		// OR if the protector can safely play spade:
+		System.out.println("AILEADPROTECT)");
+		int bestSuitIndexToPlay = -1;
+		double valueOfBestSuitPlay = -Double.MAX_VALUE;
+		
 		for(int curSuit=0; curSuit<Constants.NUM_SUITS; curSuit++) {
 			if(dataModel.currentAgentHasSuit(curSuit)) {
-
-				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, curSuit)
-						|| curSuit == Constants.SPADE) {
-					//
-					//if mellow player signal no to suit
-					//Or if 
-					
-					//TODO: check if any test case even reaches this point
-					System.out.println("DEBUG: reached mellow protection test. Test1!");
-					
-					//value of suit: num cards opponents have of suit
-					int numCardsOpponentsCurrentlyHaveOfSuit = Constants.NUM_RANKS -
-						dataModel.getNumCardsPlayedForSuit(curSuit)
-						 - dataModel.getNumCardsCurrentUserStartedWithInSuit(curSuit);
-					
-					int currentValueOfSuitPlay = numCardsOpponentsCurrentlyHaveOfSuit;
-					
-					//if suit is trump, see if there's another suit
-					if(curSuit == Constants.SPADE) {
-
-						currentValueOfSuitPlay = -1;
-
-						if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit
-								(dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit), Constants.CURRENT_PARTNER_INDEX)) {
-							currentValueOfSuitPlay += 2;
-						}
-						
-						
-					}
-					
-					//If current player has master of suit:
-					//that's good! (I can't tell how good, but it's pretty.. pretty.. pretty good.)
-					if(dataModel.currentPlayerHasMasterInSuit(curSuit)) {
-						//Add 2 to value because why not?
-						currentValueOfSuitPlay += 3;
-					}
-					
-					//Exceptions:
-					//if opponent to the right is void and if opponent can trump: playing suit is not great
-					//playing this suit is good but not great... but maybe it's still the best choice...
-					if(curSuit != Constants.SPADE && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, curSuit)
-							&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE) == false) {
-						currentValueOfSuitPlay += 1;
-					}
-
-					
-					//TODO: I don't know what I'd choose between leading trump and leading into opponent because it's context dependant
-					//Whatever!
-					
-					if(currentValueOfSuitPlay > valueOfBestSuitPlay) {
-						
-						bestSuitIndexToPlay = curSuit;
-						valueOfBestSuitPlay = currentValueOfSuitPlay;
-					}
+				
+				double currentValueOfSuitPlay = 0.0;
+				
+				if(curSuit == Constants.SPADE) {
+					currentValueOfSuitPlay = getValueLeadingSpade(dataModel);
+				} else {
+					currentValueOfSuitPlay = getValueLeadingOffsuit(dataModel, curSuit);
 				}
+				
+				if(currentValueOfSuitPlay > valueOfBestSuitPlay) {
 					
-				
-			}
-		}
-		
-		if(bestSuitIndexToPlay != -1) {
-			if(dataModel.currentPlayerHasMasterInSuit( bestSuitIndexToPlay)) {
-				return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getMasterInHandOfSuit( bestSuitIndexToPlay));
-			} else {
-				return dataModel.getCardCurrentPlayerGetHighestInSuit( bestSuitIndexToPlay);
-			}
-			
-		}
-		
-		//At this point, there's no obvious lead...
-		
-		//Consider spades:
-		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
-				|| NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE) ){
-			return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE));
-		}
-		//Try to play to a master (if applicable)
-		for(int curSuit=1; curSuit<Constants.NUM_SUITS; curSuit++) {
-			if(dataModel.currentPlayerHasMasterInSuit(curSuit)) {
-				
-				//TODO: this is really dangerous if mellow protector doesn't have a high second card...
-				//Ex: A 3 2, and you lead the A leaving the 3 and 2.
-
-
-				return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
-			}
-		}
-		
-		String bestCardToPlay = null;
-
-		valueOfBestSuitPlay = -1;
-
-		//Try to play the lowest card above mellow player safe signal in offsuit:
-		for(int curSuit=0; curSuit<Constants.NUM_SUITS; curSuit++) {
-
-			if(dataModel.currentAgentHasSuit(curSuit) == false) {
-				continue;
-			}
-			
-			System.out.println("DEBUG: reached mellow protection test where we're just trying to lead a nice card over mellow player. Test2!");
-			
-			//?? I'll need to make up a value judgement...
-			
-			//int currentValueOfSuitPlay = numCardsOpponentsHaveOfSuit;
-			int numCardsOtherPlayersCurrentlyHaveOfSuit = Constants.NUM_RANKS -
-					dataModel.getNumCardsPlayedForSuit(curSuit)
-					 - dataModel.getNumCardsCurrentUserStartedWithInSuit(curSuit);
-			
-			String maxRankMellowPartnerCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, curSuit);
-
-			int currentValueOfSuitPlay = -1;
-			String currentCardToPlay = null;
-			
-			if(maxRankMellowPartnerCard == null) {
-
-				currentCardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(curSuit);
-				
-				currentValueOfSuitPlay = Constants.NUM_RANKS - 
-						dataModel.getRankIndex(currentCardToPlay)
-						+ (numCardsOtherPlayersCurrentlyHaveOfSuit / 2);
-				
-			} else if(maxRankMellowPartnerCard != null
-				&& dataModel.couldPlayCardInHandOverCardInSameSuit(maxRankMellowPartnerCard)) {
-				currentCardToPlay = dataModel.getCardInHandClosestOverSameSuit(maxRankMellowPartnerCard);
-				
-				//TODO: I just made this formula up because I felt like it... 
-				currentValueOfSuitPlay = Constants.NUM_RANKS - 
-						dataModel.getRankIndex(currentCardToPlay)
-						+ (numCardsOtherPlayersCurrentlyHaveOfSuit / 2);
-				
-				if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, curSuit)) {
-					currentCardToPlay = 
-							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
-									dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
-				
-				} else	if( ! NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuit)
-						&& ! (NonMellowBidHandIndicators.hasQEquiv(dataModel, curSuit)
-								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuit) >= 3)
-						) {
-					currentCardToPlay = 
-							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
-									dataModel.getCardCurrentPlayerGetHighestInSuit(curSuit));
+					bestSuitIndexToPlay = curSuit;
+					valueOfBestSuitPlay = currentValueOfSuitPlay;
 				}
-			}
-			
-			
-			//Not too big exception...
-			/*
-			//Exception:
-			//if opponent to the right is void and if opponent can trump: playing suit is not great
-			if(curSuit != Constants.SPADE && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, curSuit)
-					&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE) == false) {
-				currentValueOfSuitPlay = -2;
-			}
-			*/
-			if(currentValueOfSuitPlay >= valueOfBestSuitPlay) {
-				bestCardToPlay = currentCardToPlay;
-				valueOfBestSuitPlay = currentValueOfSuitPlay;
+				
 			}
 			
 			
 		}
-		if(bestCardToPlay != null) {
-			return bestCardToPlay;
-		}
 		
 		
-		//Play spade?
-		if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
-			return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+		String highestCardOfSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndexToPlay);
+		
+		String cardToPlay = "";
+		if(dataModel.currentPlayerHasMasterInSuit(bestSuitIndexToPlay)
+			|| NonMellowBidHandIndicators.hasKEquiv(dataModel, bestSuitIndexToPlay) ) {
+			
+			cardToPlay = 
+				getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
 		} else {
-			//play random highest card
-			return dataModel.getHighestOffSuitCardAnySuit();
+			//cardToPlay = highestCardOfSuit;
+			
+			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay)) {
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndexToPlay);
+			} else {
+				
+				String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay);
+				
+				if(dataModel.couldPlayCardInHandOverCardInSameSuit(maxRankCardMellow)) {
+					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(maxRankCardMellow);
+				} else {
+					cardToPlay = highestCardOfSuit;
+				}
+			}
 		}
 		
+		return cardToPlay;
+	}
+	
+	public static double getValueLeadingSpade(DataModel dataModel) {
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S KH TH 7H 2H")) {
+			System.out.println("Debug");
+		}
+		double ret = 0.0;
+		
+		//Prefer leading spade by default:
+		ret = 15.0;
+		
+		//Factors:
+
+		//Master
+		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+			ret += 100.0;
+		}
+		
+		//Has Kequiv
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)) {
+			ret += 20.0;
+		}
+		
+		//Has Qequiv
+		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)) {
+			ret += 20.0;
+		}
+		
+		//Has Jequiv
+		if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+				dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) == 3) {
+			ret += 20.0;
+		}
+		//Has Tequiv
+		if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+				dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) == 4) {
+			ret += 20.0;
+		}
+		
+		
+		int numCardsInHandOfSuit = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+		
+		//Check for a good backup card: (2nd highest card)
+		if(numCardsInHandOfSuit >= 2) {
+			String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			
+			String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+			
+			int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(secondHighest, highest);
+
+			//int cardsUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(secondHighest);
+			
+			//if(cardsUnder)
+			ret += 20.0 - 5.0 * inBetweenCards;
+			
+			
+		}
+		
+		
+		//Mellow is void or seems void
+		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)
+			|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
+			ret += 50.0;
+			
+			
+		//Mellow has no card over highest spade in hand::
+		} else if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(
+				dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)
+				, MELLOW_PLAYER_INDEX)) {
+			ret += 40.0;
+		}
+		
+		
+		//Don't use up last spade... unless there's no danger.
+		if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 1) {
+			
+			int numOffsuitDangerAndCouldTrumpToSave = 0;
+			for(int s=1; s<Constants.NUM_SUITS; s++) {
+				//if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, s)) {
+				//	numOffsuitVoid++;
+				//}
+				
+				if( ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, s)) {
+					String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
+					
+					if( ! dataModel.couldPlayCardInHandOverCardInSameSuit(maxRankCardMellow)
+							&& DataModel.getRankIndex(maxRankCardMellow) > DataModel.RANK_THREE) {
+						
+						if(3 * dataModel.getNumberOfCardsOneSuit(s) < dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(s)) {
+							numOffsuitDangerAndCouldTrumpToSave++;
+						}
+					}
+				}
+			}
+			
+			//If you have lots of spade, playing it isn't so bad...
+			if(3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1) {
+
+				ret -= 15.0;
+			} else {
+				if(numOffsuitDangerAndCouldTrumpToSave > 1) {
+					ret -= 100.0;
+					
+				} else if(numOffsuitDangerAndCouldTrumpToSave == 1) {
+					ret -= 50.0;
+				}
+			}
+			
+		}
+		//END Don't use up last spade... unless there's no danger.
+		
+		return ret;
+	}
+	
+	//public static boolean hasDangerousSuit
+	
+	public static double getValueLeadingOffsuit(DataModel dataModel, int currentSuitIndex) {
+		double ret = 0.0;
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S KH TH 7H 2H")) {
+			System.out.println("Debug");
+		}
+		//Factors:
+		//TODO
+		
+		int numCardsInHandOfSuit = dataModel.getNumberOfCardsOneSuit(currentSuitIndex);
+		
+		//Master:
+		if(dataModel.currentPlayerHasMasterInSuit(currentSuitIndex)) {
+			ret += 20.0;
+			
+			if(numCardsInHandOfSuit >= 2) {
+				String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+				
+				String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(currentSuitIndex);
+				
+				int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(secondHighest, highest);
+
+				//int cardsUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(secondHighest);
+				
+				//if(cardsUnder)
+				ret += 30.0 - 10.0 * inBetweenCards;
+				
+				
+				
+			}
+			
+		}
+		
+		//Kequiv:
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, currentSuitIndex)) {
+			ret += 15.0;
+			
+
+			if(numCardsInHandOfSuit >= 2) {
+				String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+				
+				String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(currentSuitIndex);
+				
+				int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(secondHighest, highest);
+				
+				ret += 20.0 - 5.0 * inBetweenCards;
+				
+			}
+		}
+		
+
+		//Qequiv:
+		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, currentSuitIndex)) {
+			ret += 10.0;
+			
+			if(numCardsInHandOfSuit >= 2) {
+				String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+				
+				String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(currentSuitIndex);
+				
+				int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(secondHighest, highest);
+				
+				ret += 20.0 - 5.0 * inBetweenCards;
+				
+			}
+			
+		}
+
+		int numOthersWithCard = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(currentSuitIndex);
+		
+		//prefer leading when others have plenty of the suit...
+		ret += 4.0 * numOthersWithCard;
+		
+		
+		
+		//RHS could trump.
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, currentSuitIndex)
+				&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+			) {
+			
+			ret -= 60;
+			
+		}
+		
+		boolean LHSCouldTrump = false;
+		//LHS could trump. (Only really matters if mellow player can't play off)
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, currentSuitIndex)
+				&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+			) {
+			
+			LHSCouldTrump = true;
+		}
+		
+		//Is mellow player void in suit?
+		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, currentSuitIndex)
+				|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
+				ret += 50.0;
+				
+		} else if(LHSCouldTrump
+				&& numOthersWithCard > 3) {
+			ret -= 30.0;
+		}
+		
+		
+		//Mellow is void or seems void
+		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, currentSuitIndex)
+			|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
+			ret += 35.0;
+			
+			
+		//Mellow has no card over highest spade in hand::
+		} else if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(
+				dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex)
+				, MELLOW_PLAYER_INDEX)) {
+			ret += 20.0;
+		
+		//Mellow potentially has a card in suit:	
+		} else {
+		
+			String cardMellowMax = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, currentSuitIndex);
+			
+			
+			int numCardsSuit = dataModel.getNumberOfCardsOneSuit(currentSuitIndex);
+			
+			//Consider 2nd highest card of suit:
+			if(numCardsSuit >= 2
+					&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(currentSuitIndex))
+					 >= DataModel.getRankIndex(cardMellowMax) - 1
+					) {
+				ret += 10.0;
+			}
+	
+			//Consider 3rd highest card of suit:
+			if(numCardsSuit >= 3
+					&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetThirdHighestInSuit(currentSuitIndex))
+					 >= DataModel.getRankIndex(cardMellowMax) - 2
+					) {
+				ret += 5.0;
+				
+			}
+		}
+		
+		
+		
+		//Is leading suit a danger because mellow could have higher one:
+		if( ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
+			String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, currentSuitIndex);
+			
+			String highestCardInHand = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+			
+			if( DataModel.getRankIndex(maxRankCardMellow) >
+			DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex))) {
+				ret -= 30.0;
+				
+				int numBetween = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(highestCardInHand, maxRankCardMellow);
+				
+				ret -= 20.0*numBetween;
+			}
+		}
+		
+		return ret;
 	}
 	
 	public static String AISecondThrow(DataModel dataModel) {

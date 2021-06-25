@@ -1053,6 +1053,16 @@ public class DataModel {
 		return ret;
 	}
 	
+	public int getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(String cardLow, String cardHigh) {
+		if(CardStringFunctions.getIndexOfSuit(cardHigh) != CardStringFunctions.getIndexOfSuit(cardLow)) {
+			System.err.println("Error: in getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit. Using diff suit...");
+			System.exit(1);
+		}
+		
+		return Math.abs(getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardHigh)
+				      - getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardLow));
+	}
+	
 	public int getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(String card) {
 
 		int rankStart = getRankIndex(card) + 1;
