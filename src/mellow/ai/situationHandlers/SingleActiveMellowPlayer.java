@@ -42,22 +42,35 @@ public class SingleActiveMellowPlayer {
 		int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 		if(numSpadesInHand > 0) {
 			
-			ret = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-			
-			//I thought about doing something more complicated, but I don't think it's as good.
-			/*if(numSpadesInHand == 1
-					|| DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) <= dataModel.RANK_TEN
-					|| dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) > 3) {
+			if(numSpadesInHand == 1
+				||	DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) <
+					DataModel.JACK
+				|| dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4) {
+
 				ret = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-				
 			} else {
-				ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 				
+				//TODO: over simplified, but whatever:
+				ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
-			*/
 			
 		} else {
+			//TODO: over simplified, but whatever:
 			ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+		}
+		
+		//Try to lead with a 4 or a 5:
+		int suitIndexRet = CardStringFunctions.getIndexOfSuit(ret);
+		if(suitIndexRet != Constants.SPADE
+				&& DataModel.getRankIndex(ret) <= DataModel.RANK_THREE
+				&& dataModel.getNumberOfCardsOneSuit(suitIndexRet) > 1) {
+			
+			if(dataModel.hasCard(dataModel.getCardString(DataModel.RANK_FIVE, suitIndexRet))) {
+				ret = dataModel.getCardString(DataModel.RANK_FIVE, suitIndexRet);
+			} else if(dataModel.hasCard(dataModel.getCardString(DataModel.RANK_FOUR, suitIndexRet))) {
+				ret = dataModel.getCardString(DataModel.RANK_FOUR, suitIndexRet);
+			}
+			
 		}
 		
 		return ret;
