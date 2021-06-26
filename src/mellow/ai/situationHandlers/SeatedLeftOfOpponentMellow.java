@@ -262,7 +262,6 @@ public class SeatedLeftOfOpponentMellow {
 		int suitIndex = CardStringFunctions.getIndexOfSuit(maxMellowCard);
 		
 		int numCardsAboveCurrentRankCovered = 0;
-		int rankCoverIndex = -1;
 		
 		for(int rank=DataModel.RANK_TWO; rank<=DataModel.getRankIndex(maxMellowCard); rank++) {
 			
@@ -284,14 +283,24 @@ public class SeatedLeftOfOpponentMellow {
 			}
 			
 			if(rank + numCardsAboveCurrentRankCovered == DataModel.getRankIndex(maxMellowCard)) {
-				return PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
-						dataModel, dataModel.getCardInHandClosestOverSameSuit(curCard));
+
+				ret = dataModel.getCardInHandClosestOverSameSuit(curCard);
+				
+				if(ret != null) {
+					ret = PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+							ret);
+				} else {
+					ret = null;
+				}
+				
+				break;
 			
 			} else if(rank + numCardsAboveCurrentRankCovered > DataModel.getRankIndex(maxMellowCard)) {
-				return 
-						PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+				
+					ret=PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
 								dataModel,
 								curCard);
+				break;
 			}
 				
 		}
