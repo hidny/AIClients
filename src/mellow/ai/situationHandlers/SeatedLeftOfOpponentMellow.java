@@ -114,9 +114,6 @@ public class SeatedLeftOfOpponentMellow {
 					
 				} else {
 					
-					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S KH 3H 2H 8C 6C TD ")) {
-						System.out.println("DEBUG");
-					}
 					//Play barely over max card mellow player signaled they have...
 					//This strategy might be exploitable, but it takes a lot of imagination on the mellow player's part.
 					
@@ -143,31 +140,26 @@ public class SeatedLeftOfOpponentMellow {
 									fourthThrowMinCardToWin = null;
 								}
 							}
-
-							String minCardOverMaxMellowCard = null;
-							String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals
-									(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow());
 							
-					
-							if(dataModel.couldPlayCardInHandOverCardInSameSuit(maxMellowCard)) {
-								minCardOverMaxMellowCard = dataModel.getCardInHandClosestOverSameSuit(maxMellowCard);
-							}
+							//This might be null if all cards damage future mellow burning odds...
+							String minCardToPlayWithNoDamageToFutureMellowBurnOdds = getMinCardToPlayWithNoDamageToFutureMellowBurnOdds(dataModel);
 							
-							if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard != null) {
+							
+							if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
 
-								if(  dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardOverMaxMellowCard)
+								if(  dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardToPlayWithNoDamageToFutureMellowBurnOdds)
 									&& ! dataModel.getCardSecondThrow().equals(currentFightWinner)) {
 									
 									return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
 									
 								} else {
 									String tempCardToRet = getHighestPartOfGroup(dataModel,
-											minCardOverMaxMellowCard);
+											minCardToPlayWithNoDamageToFutureMellowBurnOdds);
 									
 									String tempTestCard = getHighestPartOfGroup(dataModel,
 											fourthThrowMinCardToWin);
 									
-									if( ! minCardOverMaxMellowCard.equals(fourthThrowMinCardToWin)
+									if( ! minCardToPlayWithNoDamageToFutureMellowBurnOdds.equals(fourthThrowMinCardToWin)
 											&& tempCardToRet.equals(tempTestCard)) {
 										System.out.println("DEBUG: there's a fork in the road here.");
 										System.out.println("DEBUG: Do you take your partner's trick, or let win have it");
@@ -176,14 +168,14 @@ public class SeatedLeftOfOpponentMellow {
 									return tempCardToRet;
 								}
 
-							} else if(fourthThrowMinCardToWin != null && minCardOverMaxMellowCard == null) { 
+							} else if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds == null) { 
 								return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
 								
 
-							} else if(fourthThrowMinCardToWin == null && minCardOverMaxMellowCard != null) {
+							} else if(fourthThrowMinCardToWin == null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
 								
 								String topCardInHand = getHighestPartOfGroup(dataModel, 
-										minCardOverMaxMellowCard);
+										minCardToPlayWithNoDamageToFutureMellowBurnOdds);
 	
 								//Think about not wasting soon to be master cards:
 								if(dataModel.isMasterCard(topCardInHand)
@@ -247,6 +239,65 @@ public class SeatedLeftOfOpponentMellow {
 		}
 	}
 	
+	//return null if there is no safe card...
+	public static String getMinCardToPlayWithNoDamageToFutureMellowBurnOdds(DataModel dataModel) {
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S JH 2H AD QD ")) {
+			System.out.println("Debug");
+		}
+
+		//String minCardOverMaxMellowCard = null;
+		String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals
+				(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow());
+		
+		
+		String minCardOverMaxMellowCard = null;
+		if(dataModel.couldPlayCardInHandOverCardInSameSuit(maxMellowCard)) {
+			minCardOverMaxMellowCard = dataModel.getCardInHandClosestOverSameSuit(maxMellowCard);
+		}
+		
+		String ret = minCardOverMaxMellowCard;
+		
+		//if(maxMellowCard
+		int suitIndex = CardStringFunctions.getIndexOfSuit(maxMellowCard);
+		
+		int numCardsAboveCurrentRankCovered = 0;
+		int rankCoverIndex = -1;
+		
+		for(int rank=DataModel.RANK_TWO; rank<=DataModel.getRankIndex(maxMellowCard); rank++) {
+			
+			//Adjust numbers based on w
+			String curCard = DataModel.getCardString(rank, suitIndex);
+			if(dataModel.hasCard(curCard)) {
+				
+				numCardsAboveCurrentRankCovered++;
+				
+			} else if( ! dataModel.isCardPlayedInRound(curCard)) {
+				
+				numCardsAboveCurrentRankCovered--;
+				
+				if(numCardsAboveCurrentRankCovered < 0) {
+					numCardsAboveCurrentRankCovered = 0;
+				}
+			} else {
+				//Do nothing
+			}
+			
+			if(rank + numCardsAboveCurrentRankCovered == DataModel.getRankIndex(maxMellowCard)) {
+				return PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+						dataModel, dataModel.getCardInHandClosestOverSameSuit(curCard));
+			
+			} else if(rank + numCardsAboveCurrentRankCovered > DataModel.getRankIndex(maxMellowCard)) {
+				return 
+						PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+								dataModel,
+								curCard);
+			}
+				
+		}
+		
+		return ret;
+	}
 	//OLD TODOS:
 
 	//TODO: FUNCTION 4
@@ -347,9 +398,9 @@ public class SeatedLeftOfOpponentMellow {
 			}
 			
 		}
-		//return dataModel.getHighestOffSuitCardAnySuitButSpade();
+		return dataModel.getHighestOffSuitCardAnySuitButSpade();
 		
-		return bestCard;
+		//return bestCard;
 	}
 	
 	//TODO: make it more precise, and then actually use it...

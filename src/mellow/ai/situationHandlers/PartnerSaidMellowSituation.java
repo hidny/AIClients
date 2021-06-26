@@ -6,7 +6,7 @@ import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
-public class PartnerSaidMelllowSituation {
+public class PartnerSaidMellowSituation {
 
 	//Play move to protect partner mellow
 	//The optimal play here is really complicated...

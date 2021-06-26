@@ -7,7 +7,7 @@ import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.BiddingSituation;
 import mellow.ai.situationHandlers.NoMellowBidPlaySituation;
-import mellow.ai.situationHandlers.PartnerSaidMelllowSituation;
+import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
 import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
 import mellow.ai.situationHandlers.SingleActiveMellowPlayer;
@@ -185,7 +185,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				System.out.println("MELLOW SOMEWHERE");
 				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0) {
 					//TODO: Working on the october 3rd, 2020:
-					return PartnerSaidMelllowSituation.playMoveToProtectPartnerMellow(dataModel);
+					return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
 
 				} else {
 					
@@ -212,7 +212,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				//TODO: not quite right:
 				//This should be the most complicated logic of the game,
 				//but let's start simple!
-				return PartnerSaidMelllowSituation.playMoveToProtectPartnerMellow(dataModel);
+				return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
 				
 			} else {
 
