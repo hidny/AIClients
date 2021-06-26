@@ -617,16 +617,12 @@ public class NoMellowBidPlaySituation {
 		String cardToPlay = null;
 		//get suit to follow.
 		
-		System.out.println("2nd throw--");
+		System.out.println("2nd throw");
 		//START REALLY OLD CODE:
 		//SEE NOTES FOR BETTER PLAN
 		
 		//TODO: pseudo code for not following suit
 	
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 9S 4S KC 7C 5C ")) {
-			System.out.println("Debug");
-		}
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();

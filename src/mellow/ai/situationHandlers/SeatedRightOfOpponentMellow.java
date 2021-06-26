@@ -150,6 +150,12 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
+
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 7S 7C 3C AD QD JD 5D 3D ")) {
+			System.out.println("Debug");
+		}
+		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
 		

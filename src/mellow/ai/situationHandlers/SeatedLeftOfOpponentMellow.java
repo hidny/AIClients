@@ -16,9 +16,6 @@ public class SeatedLeftOfOpponentMellow {
 	//TODO
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 9S 3S 4H QD ")) {
-			System.out.println("DEBUG");
-		}
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
@@ -104,6 +101,10 @@ public class SeatedLeftOfOpponentMellow {
 				dataModel.isPrevThrowWinningFight() == false) {
 
 			//handle case where mellow is already safe:
+			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 7S 7C 3C AD QD JD 5D 3D ")) {
+				System.out.println("DEBUG");
+			}
 		
 			if(dataModel.throwerMustFollowSuit()) {
 				
@@ -142,7 +143,8 @@ public class SeatedLeftOfOpponentMellow {
 							}
 							
 							//This might be null if all cards damage future mellow burning odds...
-							String minCardToPlayWithNoDamageToFutureMellowBurnOdds = getMinCardToPlayWithNoDamageToFutureMellowBurnOdds(dataModel);
+							String minCardToPlayWithNoDamageToFutureMellowBurnOdds = getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit(dataModel, dataModel.getSuitOfLeaderThrow());
+							
 							
 							
 							if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
@@ -239,17 +241,18 @@ public class SeatedLeftOfOpponentMellow {
 		}
 	}
 	
+	
 	//return null if there is no safe card...
-	public static String getMinCardToPlayWithNoDamageToFutureMellowBurnOdds(DataModel dataModel) {
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S JH 2H AD QD ")) {
-			System.out.println("Debug");
-		}
+	public static String getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit(DataModel dataModel, int suitIndex) {
+
 
 		//String minCardOverMaxMellowCard = null;
 		String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals
-				(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow());
+				(MELLOW_PLAYER_INDEX, suitIndex);
 		
+		if(maxMellowCard == null) {
+			return dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+		}
 		
 		String minCardOverMaxMellowCard = null;
 		if(dataModel.couldPlayCardInHandOverCardInSameSuit(maxMellowCard)) {
@@ -257,9 +260,6 @@ public class SeatedLeftOfOpponentMellow {
 		}
 		
 		String ret = minCardOverMaxMellowCard;
-		
-		//if(maxMellowCard
-		int suitIndex = CardStringFunctions.getIndexOfSuit(maxMellowCard);
 		
 		int numCardsAboveCurrentRankCovered = 0;
 		
@@ -284,13 +284,11 @@ public class SeatedLeftOfOpponentMellow {
 			
 			if(rank + numCardsAboveCurrentRankCovered == DataModel.getRankIndex(maxMellowCard)) {
 
-				ret = dataModel.getCardInHandClosestOverSameSuit(curCard);
+				String tmpCard = dataModel.getCardInHandClosestOverSameSuit(curCard);
 				
-				if(ret != null) {
+				if(tmpCard != null) {
 					ret = PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
-							ret);
-				} else {
-					ret = null;
+							tmpCard);
 				}
 				
 				break;
@@ -330,7 +328,9 @@ public class SeatedLeftOfOpponentMellow {
 		double bestValue = 0.0;
 		String bestCard = null;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH 9H 5H KD 9D 8D 2D ")) {
+
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 7S 7C 3C AD QD JD 5D 3D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -342,8 +342,12 @@ public class SeatedLeftOfOpponentMellow {
 			}
 			
 			double curValue = 0.0;
-			String curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex);
+			//String curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex);
+			String curCard = getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit(dataModel, curSuitIndex);
 			
+			if(curCard == null) {
+				curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex);
+			}
 			
 			if(dataModel.isVoid(mellowPlayerIndex, curSuitIndex)) {
 				curValue -= 100.0;
@@ -407,9 +411,9 @@ public class SeatedLeftOfOpponentMellow {
 			}
 			
 		}
-		return dataModel.getHighestOffSuitCardAnySuitButSpade();
+		//getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit
 		
-		//return bestCard;
+		return bestCard;
 	}
 	
 	//TODO: make it more precise, and then actually use it...
