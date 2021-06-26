@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
+import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
 public class PartnerSaidMelllowSituation {
@@ -106,8 +107,15 @@ public class PartnerSaidMelllowSituation {
 		if(dataModel.currentPlayerHasMasterInSuit(bestSuitIndexToPlay)
 			|| NonMellowBidHandIndicators.hasKEquiv(dataModel, bestSuitIndexToPlay) ) {
 			
-			cardToPlay = 
-				getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
+			if(CardStringFunctions.getIndexOfSuit(highestCardOfSuit) != Constants.SPADE) {
+				
+				//Try to confuse opponents by not playing your master card when you don't have to:
+				cardToPlay = 
+						getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
+			
+			} else {
+				cardToPlay = highestCardOfSuit;
+			}
 		} else {
 			//cardToPlay = highestCardOfSuit;
 			

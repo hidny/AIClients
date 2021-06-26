@@ -8,10 +8,10 @@ import mellow.cardUtils.CardStringFunctions;
 //TODO
 public class MellowVoidSignalsNoActiveMellows {
 
-	public static void main(String[] args) {
+	//public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-	}
+	//}
 	
 	public DataModel dataModel;
 	
@@ -24,22 +24,28 @@ public class MellowVoidSignalsNoActiveMellows {
 		initSignalVars();
 	}
 
-	public int hardMaxCardPlayed[][];
-	public int softMaxCardPlayed[][];
+	public int hardMinCardPlayedBecausePlayedUnderCurWinner[][];
+	//public int softMaxCardPlayed[][];
+	
 	
 
-	public int hardMaxCardPlayed2[][];
+	public int hardMinCardRankBecausePlayedOverPartner[][];
+	public int hardMaxCardPlayedBecauseLackOfTrump[][];
+	
+	public static int MAX_UNDER_RANK_2 = -2;
 	
 	public void initSignalVars() {
-		hardMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
-		softMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
-		hardMaxCardPlayed2 = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMinCardPlayedBecausePlayedUnderCurWinner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		//softMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMinCardRankBecausePlayedOverPartner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMaxCardPlayedBecauseLackOfTrump = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
-		for(int i=0; i<hardMaxCardPlayed.length; i++) {
-			for(int j=0; j<hardMaxCardPlayed[0].length; j++) {
-				hardMaxCardPlayed[i][j] = -1;
-				softMaxCardPlayed[i][j] = -1;
-				hardMaxCardPlayed2[i][j] = -1;
+		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
+			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
+				hardMinCardPlayedBecausePlayedUnderCurWinner[i][j] = -1;
+				//softMaxCardPlayed[i][j] = -1;
+				hardMinCardRankBecausePlayedOverPartner[i][j] = -1;
+				hardMaxCardPlayedBecauseLackOfTrump[i][j] = -1;
 			}
 		}
 	}
@@ -72,16 +78,17 @@ public class MellowVoidSignalsNoActiveMellows {
 			
 			if(throwerIndex == 0) {
 				
+				//TODO
 				//Weak attempt to handle meaning of leading a king while the ace is still out:
 				//It didn't change a single test case... :(
 				
-				if(dataModel.getRankIndex(card) == dataModel.KING
-						&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
-						) {
+				//if(dataModel.getRankIndex(card) == dataModel.KING
+				//		&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
+				//		) {
 					
-					softMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+				//	softMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
 
-				}
+				//}
 				
 			} else if(throwerIndex > 0 ) {
 				
@@ -97,7 +104,7 @@ public class MellowVoidSignalsNoActiveMellows {
 		
 						//What if you don't want to go over partner?
 						
-						hardMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+						hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
 					
 						
 						//TODO: 
@@ -133,12 +140,12 @@ public class MellowVoidSignalsNoActiveMellows {
 							if(dataModel.getCardLeaderThrow().equals(curWinnerCard) && 
 									throwerIndex == 2) {
 								System.out.println("DEBUG MAX " + card + " is barely over 1");
-								hardMaxCardPlayed2[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+								hardMinCardRankBecausePlayedOverPartner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
 								
 							} else if(dataModel.getCardSecondThrow().equals(curWinnerCard) && 
 									throwerIndex == 3) {
 								System.out.println("DEBUG MAX " + card + " is barely over 2");
-								hardMaxCardPlayed2[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+								hardMinCardRankBecausePlayedOverPartner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
 								
 							}
 						}
@@ -147,10 +154,39 @@ public class MellowVoidSignalsNoActiveMellows {
 				
 				//what if you go over, but it's not master?? ...
 				
+				
+				// When 4th player fails to trump to make an easy trick, that means something:
+				//TODO: make another one for the 3rd player...
+				if(throwerIndex == 3
+						&& CardStringFunctions.getIndexOfSuit(card) != dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE) {
+					
+					String curWinnerCard= dataModel.getCurrentFightWinningCardBeforeAIPlays();
+					
+					if( ! dataModel.getCardSecondThrow().equals(curWinnerCard)) {
+						
+						if(CardStringFunctions.getIndexOfSuit(curWinnerCard) == dataModel.getSuitOfLeaderThrow() ) {
+							
+							if(CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE) {
+								hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] = MAX_UNDER_RANK_2;
+							}
+						} else if(CardStringFunctions.getIndexOfSuit(curWinnerCard) == Constants.SPADE ) {
+							
+							hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] = DataModel.getRankIndex(curWinnerCard);
+							
+						} else {
+							
+							System.err.println("ERROR: This signal case should not be possible for this game.");
+							System.exit(1);
+						}
+					
+						
+					}
+				}
 			}
 			
-			//if player index index not 0:
-				//for now, don't worrty about your own signals
+			//if player index not 0:
+				//for now, don't worry about your own signals
 			
 			//else
 			
@@ -190,25 +226,23 @@ public class MellowVoidSignalsNoActiveMellows {
 	//TODO: try using this later...
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {
 
-		int curMinRank = hardMaxCardPlayed[playerIndex][suitIndex] + 1;
+		int curMinRank = hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][suitIndex] + 1;
 		
-		if(hardMaxCardPlayed[playerIndex][suitIndex] == -1 
-				&& softMaxCardPlayed[playerIndex][suitIndex] != -1) {
-			curMinRank = softMaxCardPlayed[playerIndex][suitIndex];
+		if(hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex] != -1
+				&& curMinRank <  hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex]) {
+				
+			curMinRank = hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex];
 		}
 		
-		if(hardMaxCardPlayed2[playerIndex][suitIndex] != -1) {
-			
-			if(curMinRank <  hardMaxCardPlayed2[playerIndex][suitIndex]) {
-				curMinRank = hardMaxCardPlayed2[playerIndex][suitIndex];
-
-				System.out.println("DEBUG MAX RANK for playerindex " + playerIndex + " = " + hardMaxCardPlayed2[playerIndex][suitIndex] + " - suit index = " + suitIndex);
-				System.out.println("It happened! Yes!");
-			}
-			//System.exit(1);
+		
+		int curMaxRank = DataModel.ACE;
+		
+		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex] != -1
+				&& curMaxRank > hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex]) {
+			curMaxRank = hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex];
 		}
 		
-		for(int rank=curMinRank; rank <= DataModel.ACE; rank++) {
+		for(int rank=curMinRank; rank <= curMaxRank; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
 				
 				//SANITY TEST (TO DELETE)

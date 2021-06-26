@@ -36,7 +36,9 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowLead(DataModel dataModel) {
 		
-		//TODO: the logic here is hard... just play spade...
+		//To be honest, I'm not passionate about any of the failed tests right now...
+		//System.out.println("(MELLOW LEAD TEST)");
+		
 		
 		String ret = "";
 		int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);

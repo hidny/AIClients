@@ -617,12 +617,16 @@ public class NoMellowBidPlaySituation {
 		String cardToPlay = null;
 		//get suit to follow.
 		
-		System.out.println("2nd throw");
+		System.out.println("2nd throw--");
 		//START REALLY OLD CODE:
 		//SEE NOTES FOR BETTER PLAN
 		
 		//TODO: pseudo code for not following suit
 	
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S AH 9H KD 8D 4D")) {
+			System.out.println("Debug");
+		}
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
@@ -782,6 +786,8 @@ public class NoMellowBidPlaySituation {
 			} else if(dataModel.currentPlayerMustTrump()) {
 				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 			
+				//TODO: if 3rd signalled void in suit, and signalled less than 7S,
+				//play 7S or over...
 				
 				//Option to trump no need to go bid:
 			} else {
@@ -794,7 +800,7 @@ public class NoMellowBidPlaySituation {
 					//Let partner trump for you:
 					if(
 							//Partner could trump for you
-							! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) 
+							! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
 							
 							//If there's only 1 more spade available... so partner could probably trump:
@@ -858,20 +864,20 @@ public class NoMellowBidPlaySituation {
 						//Partner probably can't trump
 						(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 						      || ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex))
-						&& 
+						//&& 
 						
-						(
+						//(
 								//Not much spade:
 								//I adjusted it to 2.5 to make it slightly more willing to trump and take the lead.
-								2.5 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <=
-					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+						//		2.5 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <=
+					     //          dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 						         
 					               //OR: only 1 non-master spade:
-						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 
-						         && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)
+						//      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 
+						//         && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)
 						      
 						     
-						)
+						//)
 						&& //No K to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
 						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE))
@@ -883,9 +889,9 @@ public class NoMellowBidPlaySituation {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
 					
-					if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
-						cardToPlay = getJunkiestCardToFollowLead(dataModel);
-					}
+					//if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
+					//	cardToPlay = getJunkiestCardToFollowLead(dataModel);
+					//}
 					
 				} else {
 					cardToPlay = getJunkiestCardToFollowLead(dataModel);
