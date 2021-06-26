@@ -60,7 +60,7 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 9S 4S KC 7C 5C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH 8H 4H 3H JC 8C ")) {
 			System.out.println("DEBUG");
 		}
 

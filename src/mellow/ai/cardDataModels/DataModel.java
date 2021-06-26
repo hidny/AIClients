@@ -828,6 +828,39 @@ public class DataModel {
 		
 	}
 	
+	public int getIndexOfCurrentlyWinningPlayerBeforeAIPlays() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		
+		if(throwNumber == 0) {
+			System.err.println("ERROR: calling get Current Fight Winning Card before 1st throw.");
+			System.exit(1);
+		}
+
+		String currentWinnerCard = getCardLeaderThrow();
+		int ret = getLeaderIndex();
+		
+		if(throwNumber > 1) {
+			if(cardAGreaterThanCardBGivenLeadCard(getCardSecondThrow(), currentWinnerCard)) {
+				currentWinnerCard = getCardSecondThrow();
+				ret = getLeaderIndex() + 1;
+			}
+		}
+		
+		if(throwNumber > 2) {
+			if(cardAGreaterThanCardBGivenLeadCard(getCardThirdThrow(), currentWinnerCard)) {
+				currentWinnerCard = getCardThirdThrow();
+				ret = getLeaderIndex() + 2;
+			}
+		}
+		
+		
+		return ret;
+	}
+	
+	public int getLeaderIndex() {
+		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
+		return (4 - throwNumber) % Constants.NUM_PLAYERS;
+	}
 	
 	public boolean hasNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() {
 		return getNonLeadCardInHandThatCanDecreaseChanceof4thThrowerWinning() != null;

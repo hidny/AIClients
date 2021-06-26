@@ -102,124 +102,132 @@ public class SeatedLeftOfOpponentMellow {
 
 			//handle case where mellow is already safe:
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 7S 7C 3C AD QD JD 5D 3D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 9S 3S 4H QD ")) {
 				System.out.println("DEBUG");
 			}
+			//TODO: the logic is completely messed up!
 		
 			if(dataModel.throwerMustFollowSuit()) {
 				
-				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
+				String curWinningCard =  dataModel.getCurrentFightWinningCardBeforeAIPlays();
+				int leadSuitIndex = dataModel.getSuitOfLeaderThrow();
+				String highestCardOfSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuitIndex);
+				
+				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())
+						|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit
+									(MELLOW_PLAYER_INDEX, leadSuitIndex)) {
 					
 					//lazy approx:
 					return getHighestPartOfGroup(dataModel, NoMellowBidPlaySituation.handleNormalThrow(dataModel));
 					
-				} else {
-					
-					//Play barely over max card mellow player signaled they have...
-					//This strategy might be exploitable, but it takes a lot of imagination on the mellow player's part.
-					
-					if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit
-							(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())) {
+				} else if(dataModel.cardAGreaterThanCardBGivenLeadCard
+							                 (highestCardOfSuit,
+							                		 curWinningCard)
+						   && dataModel.currentPlayerHasMasterInSuit(dataModel.getSuitOfLeaderThrow())
 						
-						//lazy approx:
-						return getHighestPartOfGroup(dataModel, NoMellowBidPlaySituation.handleNormalThrow(dataModel));
-
-					} else {
-
-							String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
+						 //Don't play over partner...
+						   //TODO: maybe have strategies for this case?
+						   && (dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() != Constants.CURRENT_PARTNER_INDEX
+								|| dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(curWinningCard, highestCardOfSuit) > 0)
+						   ){
 							
-							String fourthThrowMinCardToWin = null;
-							if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == dataModel.getSuitOfLeaderThrow()
-									&& dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)) {
-								
-								if(throwIndex >= 3) {
-									fourthThrowMinCardToWin = dataModel.getCardInHandClosestOverCurrentWinner();
-								} else if(throwIndex >= 1 && throwIndex <= 2) {
-									
-									//Just try to play over maxMellowCard if it's the 3rd throw
-									
-									fourthThrowMinCardToWin = null;
-								}
+							
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						
+				} else {
+
+					//TODO: PUT INTO FUNCTION -- 3242
+						String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
+						
+						String fourthThrowMinCardToWin = null;
+						if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == dataModel.getSuitOfLeaderThrow()
+								&& dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)) {
+							
+							 if(throwIndex >= 3) {
+							     fourthThrowMinCardToWin = dataModel.getCardInHandClosestOverCurrentWinner();
+							                  
+							 } else if(throwIndex >= 1 && throwIndex <= 2) {
+						  //Just try to play over maxMellowCard if it's the 3rd throw
+								 fourthThrowMinCardToWin = null;
 							}
-							
-							//This might be null if all cards damage future mellow burning odds...
-							String minCardToPlayWithNoDamageToFutureMellowBurnOdds = getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit(dataModel, dataModel.getSuitOfLeaderThrow());
-							
-							
-							
-							if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
+						}
+						
+						//This might be null if all cards damage future mellow burning odds...
+						String minCardToPlayWithNoDamageToFutureMellowBurnOdds = getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit(dataModel, dataModel.getSuitOfLeaderThrow());
+						
+						
+						
+						if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
 
-								if(  dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardToPlayWithNoDamageToFutureMellowBurnOdds)
-									&& ! dataModel.getCardSecondThrow().equals(currentFightWinner)) {
-									
-									return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
-									
-								} else {
-									String tempCardToRet = getHighestPartOfGroup(dataModel,
-											minCardToPlayWithNoDamageToFutureMellowBurnOdds);
-									
-									String tempTestCard = getHighestPartOfGroup(dataModel,
-											fourthThrowMinCardToWin);
-									
-									if( ! minCardToPlayWithNoDamageToFutureMellowBurnOdds.equals(fourthThrowMinCardToWin)
-											&& tempCardToRet.equals(tempTestCard)) {
-										System.out.println("DEBUG: there's a fork in the road here.");
-										System.out.println("DEBUG: Do you take your partner's trick, or let win have it");
-									}
-
-									return tempCardToRet;
-								}
-
-							} else if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds == null) { 
+							if(  dataModel.cardAGreaterThanCardBGivenLeadCard(fourthThrowMinCardToWin, minCardToPlayWithNoDamageToFutureMellowBurnOdds)
+								&& ! dataModel.getCardSecondThrow().equals(currentFightWinner)) {
+								
 								return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
 								
-
-							} else if(fourthThrowMinCardToWin == null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
-								
-								String topCardInHand = getHighestPartOfGroup(dataModel, 
+							} else {
+								String tempCardToRet = getHighestPartOfGroup(dataModel,
 										minCardToPlayWithNoDamageToFutureMellowBurnOdds);
-	
-								//Think about not wasting soon to be master cards:
-								if(dataModel.isMasterCard(topCardInHand)
-										&& ! dataModel.cardAGreaterThanCardBGivenLeadCard(topCardInHand, currentFightWinner)) {
-									
-									//Think about not throwing away master 1
-									if(3 * dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) 
-										> 
-										dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(dataModel.getSuitOfLeaderThrow())
-										&& dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) >= 2
-										) {
-										
-										String secondTopCardInHand = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
-										
-										if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(secondTopCardInHand)
-										        ==
-												  dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(topCardInHand)) {
-											
-											return topCardInHand;
-										
-										} else {
-											
-											return secondTopCardInHand;
-										}
 								
-									} else {
+								String tempTestCard = getHighestPartOfGroup(dataModel,
+										fourthThrowMinCardToWin);
+								
+								if( ! minCardToPlayWithNoDamageToFutureMellowBurnOdds.equals(fourthThrowMinCardToWin)
+										&& tempCardToRet.equals(tempTestCard)) {
+									System.out.println("DEBUG: there's a fork in the road here.");
+									System.out.println("DEBUG: Do you take your partner's trick, or let win have it");
+								}
+
+								return tempCardToRet;
+							}
+
+						} else if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds == null) { 
+							return getHighestPartOfGroup(dataModel, fourthThrowMinCardToWin);
+							
+
+						} else if(fourthThrowMinCardToWin == null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
+							
+							String topCardInHand = getHighestPartOfGroup(dataModel, 
+									minCardToPlayWithNoDamageToFutureMellowBurnOdds);
+
+							//Think about not wasting soon to be master cards:
+							if(dataModel.isMasterCard(topCardInHand)
+									&& ! dataModel.cardAGreaterThanCardBGivenLeadCard(topCardInHand, currentFightWinner)) {
+								
+								//Think about not throwing away master 1
+								if(3 * dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) 
+									> 
+									dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(dataModel.getSuitOfLeaderThrow())
+									&& dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) >= 2
+									) {
+									
+									String secondTopCardInHand = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
+									
+									if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(secondTopCardInHand)
+									        ==
+											  dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(topCardInHand)) {
+										
 										return topCardInHand;
-									}
 									
+									} else {
+										
+										return secondTopCardInHand;
+									}
+							
 								} else {
-								
 									return topCardInHand;
 								}
 								
 							} else {
-								return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
-								
+							
+								return topCardInHand;
 							}
-					}
-					
-					
-					
+							
+						} else {
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+							
+						}
+
+						//END TODO: PUT INTO FUNCTION -- 3242
 				}
 				
 			} else if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
