@@ -4,6 +4,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.simulation.MonteCarloMain;
+import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -60,7 +61,7 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH 8H 4H 3H JC 8C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH 9C JD")) {
 			System.out.println("DEBUG");
 		}
 
@@ -77,542 +78,609 @@ public class NoMellowBidPlaySituation {
 				continue;
 			}
 			
-			int numCardsOfSuitOtherPlayersHave =
-			dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+			CardAndValue cardAndValueRet;
 			
-
-		
-			String cardToPlay = null;
-			
-			double curScore = 0.0;
-			
-			boolean partnerSignalledHighCardOfSuit = false;
-			
-
-			
-			
-			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-				//Made up a number to say having the master card to lead in partner's void suit is cool:
-				//TODO: refine later
-				curScore += 10.0;
-				
-				
-				//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
-
-				//	curScore += 10.0;
-				//}
-				/* else if (dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.QUEEN) {
-
-					curScore += 15.0;
-				}*/
-
-				//Treat partner's possible master as your own...
-			} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
-				curScore += 9.0;
-				partnerSignalledHighCardOfSuit = true;
-				
-				//Don't want to setup our partner for failure:
-				if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
-						dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-		                  (Constants.CURRENT_PARTNER_INDEX, suitIndex) == false) {
-					curScore -= 100.0;
-				}
-						
-			}
-			
-			
-			//Leading in a suit where RHS prob has master could be a good idea sometimes...
-			//Like when partner is trumping
-			//or partner has no spade.
-			if(      ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
-					&& dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
-					&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
-				curScore -= 55.0;
-			}
-			
-			if(suitIndex != Constants.SPADE) {
-
-				
-				//Check if leading suitIndex helps partner trump:
-				if(
-						(       (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-								|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-								                  (Constants.CURRENT_PARTNER_INDEX, suitIndex))
-							&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false
-						)
-					&& (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
-							|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-						)
-						
-					&& numCardsOfSuitOtherPlayersHave >= 1) {
-				
-						if(numCardsOfSuitOtherPlayersHave >= 2
-									
-								//If player on left is also void, that's great!
-								|| (numCardsOfSuitOtherPlayersHave >= 1
-									&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
-								) {
-	
-							curScore += 100;
-	
-						} else {
-							
-							curScore += 70;
-
-						}
-						
-						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-							
-							cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-							
-						} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
-							//It's slightly controversial to not play lowest when partner is trumping, but I like the agro play...
-							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-						
-						} else {
-							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-						}
-						
-				} else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
-						&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
-						&& dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-					
-					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-					
-					//The in-between jackpot:
-					curScore += 1100;
-						
-				} else if(numCardsOfSuitOtherPlayersHave == 0
-						|| ( dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex)
-						     && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex))
-						) {
-					//Might want to do this if right is out of spades...
-					
-					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-					
-					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
-						
-						//Jackpot 1!
-						curScore += 1000;
-						
-						if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-							//TODO: maybe it's good to let partnier win sometimes...
-							curScore += 200;
-						}
-						
-						
-					} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
-						
-						//Pretty good. You're making this trick if your partner doesn't take it...
-						curScore +=300;
-						
-					} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-							
-						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false) {
-						
-						curScore += 50;
-						
-					
-					} else {
-
-						//Reduced from -100 to -30 because leading your only spade can be even worse than this.
-						curScore -= 30;
-						
-						//TODO:
-						//Maybe make it -100
-						//if no spade or spade has no hope of making a trick even after opponents trump high... 
-					}
-					
-						
-				} else {
-					
-					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.LEFT_PLAYER_INDEX, suitIndex)
-
-							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-								(Constants.CURRENT_PARTNER_INDEX, suitIndex) == false
-
-							&& numCardsOfSuitOtherPlayersHave > 3) {
-								curScore -= 5.0 * (numCardsOfSuitOtherPlayersHave);
-					}
-					
-					
-					
-					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-						(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
-						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-						) {
-						//increased to 26.0 to fix testcase Michael2021 -> 290...
-						curScore += 26.0;
-						
-						if(dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
-								&& ! dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.LEFT_PLAYER_INDEX, suitIndex)) {
-							//Made it more than +10, because I wanted to beat
-							//playing spade with bid diff of 1 in our favour.
-							curScore += 12.0;
-						}
-						
-					} else {
-						curScore -= 50.0;
-					}
-					
-					//Don't lead into suit that is going to be trumped by LHS
-					//Unless there's only 2 unknown cards or less
-					//Or the partner is void too
-					if( dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.LEFT_PLAYER_INDEX, suitIndex)
-							&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 3
-							&&  (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.CURRENT_PARTNER_INDEX, suitIndex) == false
-							|| dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE))
-							) {
-						curScore -= 50;
-					}
-					
-					if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-						//Don't lower it...
-
-					} else if(partnerSignalledHighCardOfSuit) {
-						//Don't lower it again
-
-					} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
-						//Only lower it a little...
-						curScore -= 5.0;
-					
-					} else {
-						curScore -= 26.0;
-						
-						
-					}
-					
-					//Play the ace so you back it up with a king:
-					if(numCardsOfSuitInHand > 1
-						&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == dataModel.KING) {
-						curScore += 5.0;
-						
-					}
-					//Don't play suit with King if you don't have the queen
-					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
-							&& numCardsOfSuitInHand > 1
-							&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) < dataModel.QUEEN
-							&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
-						
-						curScore -= 50.0;
-						
-					}
-					
-					//Play the king if it's alone
-					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
-							&& numCardsOfSuitInHand == 1
-							&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
-						
-						curScore += 50.0;
-						
-					}
-					
-					//Consider playing suits that others have a lot of so you are less likely to be trumped
-					if(3.0 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) - numCardsOfSuitOtherPlayersHave  <= 1
-
-							//TODO: think about this in the case where you have no spade!
-				//Maybe it doesn't matter after all
-//*******************************************
-							//&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 0
-//*******************************************							
-							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-							(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
-						
-						//Only consider becoming void if it's feasible:
-						int numCardsLessThanAvgOther = numCardsOfSuitOtherPlayersHave - 3 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
-						
-						if(numCardsLessThanAvgOther > 0) {
-							curScore += Math.min(5.0 * numCardsLessThanAvgOther, 30);
-						}
-					}
-					
-					
-					if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-						
-						cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-					} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-						
-					} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
-						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-					
-					//TODO: special consideration for QEquiv??
-						
-					} else {
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-					}
-					
-					
-					//I like leading offsuit queens... if no one is void and I don't have a hope of winning with it.
-					if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
-							&& 
-								! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
-							&& 
-								! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
-						) {
-						
-						if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) < 3
-								|| (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5 
-										&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 4
-												|| dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))))
-								) {
-							curScore += 15.0;
-							
-							cardToPlay = DataModel.getCardString(DataModel.QUEEN, suitIndex);
-
-							if(dataModel.hasCard( DataModel.getCardString(DataModel.JACK, suitIndex))) {
-								curScore += 10.0;
-							}
-						}
-						
-					}
-					
-					if(partnerSignalledHighCardOfSuit) {
-						
-						//TODO: this might need more thought...
-						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-					}
-				}
-				
-				
+			if(suitIndex == Constants.SPADE) {
+				//cardAndValueRet = AILeaderThrowGetSpadeValue(dataModel);
+				cardAndValueRet = AILeaderThrowGetSpadeValue(dataModel);
 			} else {
-				//TODO: consider leading spade here...
-				
-				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-					
-					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-					
-					if(numCardsOfSuitInHand >= 2) {
-						String cardTmp = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
-						
-						//If you have the AK equiv, don't be afraid to play A to see what's going on.
-						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardTmp)
-								== dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay)) {
-							curScore += 30.0;
-						}
-							
-					}
-					
-				} else {
-					curScore += 5.0;
-					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-					
-				}
-
-				
-				
-				
-				
-				/*
-				 * int numCardsOfSuitOtherPlayersHave = Constants.NUM_RANKS
-					- dataModel.getNumCardsPlayedForSuit(suitIndex) 
-					- dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
-			
-			int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
-			
-				 */
-				
-
-				//TODO: this is a rough rule of thumb...
-				//Want to play spade if partner is void, but not when opponents are void:
-				if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-					curScore += 40.0;
-				}
-				//Don't want to play spade when opponents are void: 
-				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
-					curScore -= 40.0;
-				
-					//If 1/2 opponents void, be less tempted to play spade:
-				} else if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
-					curScore -= 10.0;
-				}
-				
-				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-						&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-					//Maybe there's a case for draining your partner's spade when the opponents don't have spade...
-					// but I'd like to see it to believe it.
-					//It happened in the orig testcases... shoot.
-					curScore -=100.0;
-				}
-				
-				
-				
-				if(numCardsOfSuitOtherPlayersHave == 0) {
-					//TODO: this fixes testcase 220 of Michael2021, but
-					// maybe it's not always best
-					// I do think it's better than leading the offsuit masters though
-					if(dataModel.currentPlayerHasMasterInSuit(1)
-							|| dataModel.currentPlayerHasMasterInSuit(2)
-							|| dataModel.currentPlayerHasMasterInSuit(3)) {
-						curScore += 70.0;
-					}
-				}
-				
-				//Don't lead small spade if you don't have much...
-				if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
-					curScore -= 20.0;
-					
-					
-					
-				} else {
-					double diff = numCardsOfSuitInHand - (1.0 *numCardsOfSuitOtherPlayersHave)/3.0;
-					
-					//Just play spade if you have them...
-					if(diff >= 2.3) {
-						curScore += 20.0;
-						if(diff >= 3.4) {
-							curScore += 10.0;
-							
-							if(diff > 4.5) {
-								curScore += 5.0;
-							}
-						}
-					}
-				}
-				
-
-				//Don't volunteer to play spade if you 1 less than master in spade
-				//and have few spades
-				if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-						&& !NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)
-						&& 3 * (numCardsOfSuitInHand-1) < numCardsOfSuitOtherPlayersHave) {
-					curScore -= 20.0;
-				}
-				
-				//Play spade in the hopes of making your offsuit masters relevant:
-				if((dataModel.currentPlayerHasMasterInSuit(1) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(1) < 6)
-						|| (dataModel.currentPlayerHasMasterInSuit(2) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(2) < 6)
-						|| (dataModel.currentPlayerHasMasterInSuit(3) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(3) < 6)) {
-					
-					//Only do this if you think you might win a trick somehow, so you could lead again...
-					//TODO: this is a rough estimate that doesn't account for stolen tricks,
-					// Tricks given to partner/ taken from partner
-					// or unfortunate circumstances...
-					if(dataModel.getTrick(Constants.CURRENT_AGENT_INDEX)
-						< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
-						|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
-						curScore += 30.0;
-					}
-					
-				} else {
-					
-					//Check if you have AK combo because you might want to drain S if you have that.
-					for(int suitTemp = 1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
-						if(dataModel.hasCard(dataModel.getCardString(DataModel.ACE, suitTemp))
-								&& dataModel.hasCard(dataModel.getCardString(DataModel.KING, suitTemp))) {
-							curScore += 30.0;
-							System.out.println("BOOM");
-							break;
-						}
-					}
-				}
-				
-				
-				//Drain the spades... TODO: this is rough... and doesn't always work out...
-				if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
-						&& (dataModel.currentPlayerHasMasterInSuit(1)
-							|| dataModel.currentPlayerHasMasterInSuit(2)
-							|| dataModel.currentPlayerHasMasterInSuit(3))
-						&& numCardsOfSuitOtherPlayersHave > 0) {
-					curScore += 30.0;
-					
-					//Check if we have aggressive spade lead options:
-					if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
-						
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-						curScore += 25.0;
-						
-					}
-				}
-				
-				
-				
-				
-				//Basic awareness of when to play S based on bids:
-				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
-						&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
-						- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) >= 2
-						&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-					curScore += 20.0;
-					curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
-							- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) - 2);
-				}
-				
-				if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
-						&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
-						- dataModel.getTrick(Constants.RIGHT_PLAYER_INDEX) >= 2
-					    && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
-					curScore -= 40.0;
-				}
-				
-
-				if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
-						&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
-						- dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) >= 2
-					    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
-					curScore -= 40.0;
-				}
-				
-				int bidDiff = (dataModel.getBid(Constants.CURRENT_PLAYER_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX))
-				- (dataModel.getBid(Constants.LEFT_PLAYER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
-				//Rough way to look at the bids to decide whether or not to play spade
-				
-				if(bidDiff > 0) {
-					//Limit how much of a benefit this is because it's covered elsewheres:
-					curScore += 5.0 * Math.min(4, bidDiff);
-				} else {
-					curScore += 5.0 * bidDiff;
-				}
-				
-				//Check if we're wasting spades we can trump with:
-				if(numCardsOfSuitInHand <= 2 && 
-						dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1) {
-					for(int suitTemp = 1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
-						if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitTemp)
-								&& ! (dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitTemp)
-										&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))) {
-							if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitTemp) > 3) {
-								
-								if(numCardsOfSuitInHand == 1) {
-									curScore -= 20.0;
-								} else if(numCardsOfSuitInHand == 2) {
-									curScore -= 10.0;
-								}
-								
-							}
-						}
-					}
-				}
-				//END Check if we're wasting spades we can trump with:
-				
-				//End basic awareness...
-				
+				cardAndValueRet = AILeaderThrowGetOffSuitValue(dataModel, suitIndex);
 			}
 			
-			
-			if(curScore > currentBestScore) {
-				currentBestScore = curScore;
-				bestCardToPlay = cardToPlay;
+			if(cardAndValueRet.getValue() > currentBestScore) {
+				
+				currentBestScore = cardAndValueRet.getValue();
+				bestCardToPlay = cardAndValueRet.getCard();
 			}
 			
 		}
 		
 		return bestCardToPlay;
 	}
+	
+	public static CardAndValue AILeaderThrowGetSpadeValue(DataModel dataModel) {
+		
+		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE);
+		int numCardsOfSuitOtherPlayersHave =
+		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
+		
 
+	
+		String cardToPlay = null;
+		
+		double curScore = 0.0;
+		
+		boolean partnerSignalledHighCardOfSuit = false;
+		
+
+		
+		
+		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+			//Made up a number to say having the master card to lead in partner's void suit is cool:
+			//TODO: refine later
+			curScore += 10.0;
+			
+			
+			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
+
+			//	curScore += 10.0;
+			//}
+			/* else if (dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.QUEEN) {
+
+				curScore += 15.0;
+			}*/
+
+			//Treat partner's possible master as your own...
+		} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			curScore += 9.0;
+			partnerSignalledHighCardOfSuit = true;
+			
+			//Don't want to setup our partner for failure:
+			if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
+					dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+	                  (Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false) {
+				curScore -= 100.0;
+			}
+					
+		}
+		
+		
+		//Leading in a suit where RHS prob has master could be a good idea sometimes...
+		//Like when partner is trumping
+		//or partner has no spade.
+		if(      ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+				&& dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+			curScore -= 55.0;
+		}
+		
+		
+		//Start of custom Logic for considering spade:
+		
+		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+			
+			cardToPlay = dataModel.getMasterInHandOfSuit(Constants.SPADE);
+			
+			if(numCardsOfSuitInHand >= 2) {
+				String cardTmp = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+				
+				//If you have the AK equiv, don't be afraid to play A to see what's going on.
+				if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardTmp)
+						== dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay)) {
+					curScore += 30.0;
+				}
+					
+			}
+			
+		} else {
+			curScore += 5.0;
+			cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+			
+		}
+
+		//TODO: this is a rough rule of thumb...
+		//Want to play spade if partner is void, but not when opponents are void:
+		if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			curScore += 40.0;
+		}
+		//Don't want to play spade when opponents are void: 
+		if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+			curScore -= 40.0;
+		
+			//If 1/2 opponents void, be less tempted to play spade:
+		} else if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+			curScore -= 10.0;
+		}
+		
+		if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			//Maybe there's a case for draining your partner's spade when the opponents don't have spade...
+			// but I'd like to see it to believe it.
+			//It happened in the orig testcases... shoot.
+			curScore -=100.0;
+		}
+		
+		
+		
+		if(numCardsOfSuitOtherPlayersHave == 0) {
+			//TODO: this fixes testcase 220 of Michael2021, but
+			// maybe it's not always best
+			// I do think it's better than leading the offsuit masters though
+			if(dataModel.currentPlayerHasMasterInSuit(1)
+					|| dataModel.currentPlayerHasMasterInSuit(2)
+					|| dataModel.currentPlayerHasMasterInSuit(3)) {
+				curScore += 70.0;
+			}
+		}
+		
+		//Don't lead small spade if you don't have much...
+		if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
+			curScore -= 20.0;
+			
+			
+			
+		} else {
+			double diff = numCardsOfSuitInHand - (1.0 *numCardsOfSuitOtherPlayersHave)/3.0;
+			
+			//Just play spade if you have them...
+			if(diff >= 2.3) {
+				curScore += 20.0;
+				if(diff >= 3.4) {
+					curScore += 10.0;
+					
+					if(diff > 4.5) {
+						curScore += 5.0;
+					}
+				}
+			}
+		}
+		
+
+		//Don't volunteer to play spade if you 1 less than master in spade
+		//and have few spades
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+				&& !NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)
+				&& 3 * (numCardsOfSuitInHand-1) < numCardsOfSuitOtherPlayersHave) {
+			curScore -= 20.0;
+		}
+		
+		//Play spade in the hopes of making your offsuit masters relevant:
+		if((dataModel.currentPlayerHasMasterInSuit(1) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(1) < 6)
+				|| (dataModel.currentPlayerHasMasterInSuit(2) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(2) < 6)
+				|| (dataModel.currentPlayerHasMasterInSuit(3) && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(3) < 6)) {
+			
+			//Only do this if you think you might win a trick somehow, so you could lead again...
+			//TODO: this is a rough estimate that doesn't account for stolen tricks,
+			// Tricks given to partner/ taken from partner
+			// or unfortunate circumstances...
+			if(dataModel.getTrick(Constants.CURRENT_AGENT_INDEX)
+				< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
+				|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+				curScore += 30.0;
+			}
+			
+		} else {
+			
+			//Check if you have AK combo because you might want to drain S if you have that.
+			for(int suitTemp = 1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
+				if(dataModel.hasCard(dataModel.getCardString(DataModel.ACE, suitTemp))
+						&& dataModel.hasCard(dataModel.getCardString(DataModel.KING, suitTemp))) {
+					curScore += 30.0;
+					System.out.println("BOOM");
+					break;
+				}
+			}
+		}
+		
+		
+		//Drain the spades... TODO: this is rough... and doesn't always work out...
+		if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
+				&& (dataModel.currentPlayerHasMasterInSuit(1)
+					|| dataModel.currentPlayerHasMasterInSuit(2)
+					|| dataModel.currentPlayerHasMasterInSuit(3))
+				&& numCardsOfSuitOtherPlayersHave > 0) {
+			curScore += 30.0;
+			
+			//Check if we have aggressive spade lead options:
+			if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+				
+				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				curScore += 25.0;
+				
+			}
+		}
+		
+		
+		//Basic awareness of when to play S based on bids:
+		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
+				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+				- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) >= 2
+				&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			curScore += 20.0;
+			curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+					- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) - 2);
+		}
+		
+		if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
+				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
+				- dataModel.getTrick(Constants.RIGHT_PLAYER_INDEX) >= 2
+			    && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+			curScore -= 40.0;
+		}
+		
+
+		if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
+				&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+				- dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) >= 2
+			    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+			curScore -= 40.0;
+		}
+		
+		int bidDiff = (dataModel.getBid(Constants.CURRENT_PLAYER_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX))
+		- (dataModel.getBid(Constants.LEFT_PLAYER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
+		//Rough way to look at the bids to decide whether or not to play spade
+		
+		if(bidDiff > 0) {
+			//Limit how much of a benefit this is because it's covered elsewheres:
+			curScore += 5.0 * Math.min(4, bidDiff);
+		} else {
+			curScore += 5.0 * bidDiff;
+		}
+		
+		//Check if we're wasting spades we can trump with:
+		if(numCardsOfSuitInHand <= 2 && 
+				dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1) {
+			for(int suitTemp = 1; suitTemp<Constants.NUM_SUITS; suitTemp++) {
+				if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, suitTemp)
+						&& ! (dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitTemp)
+								&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))) {
+					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitTemp) > 3) {
+						
+						if(numCardsOfSuitInHand == 1) {
+							curScore -= 20.0;
+						} else if(numCardsOfSuitInHand == 2) {
+							curScore -= 10.0;
+						}
+						
+					}
+				}
+			}
+		}
+		//END Check if we're wasting spades we can trump with:
+		
+		//End basic awareness...
+
+		return new CardAndValue(cardToPlay, curScore);
+	}
+
+	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
+		
+		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+		int numCardsOfSuitOtherPlayersHave =
+		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+		
+
+	
+		String cardToPlay = null;
+		
+		double curScore = 0.0;
+		
+		boolean partnerSignalledHighCardOfSuit = false;
+		
+
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			//Made up a number to say having the master card to lead in partner's void suit is cool:
+			//TODO: refine later
+			curScore += 10.0;
+			
+			
+			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
+
+			//	curScore += 10.0;
+			//}
+			/* else if (dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.QUEEN) {
+
+				curScore += 15.0;
+			}*/
+
+			//Treat partner's possible master as your own...
+		} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.CURRENT_PARTNER_INDEX) {
+			curScore += 9.0;
+			partnerSignalledHighCardOfSuit = true;
+			
+			//Don't want to setup our partner for failure:
+			if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
+					dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+	                  (Constants.CURRENT_PARTNER_INDEX, suitIndex) == false) {
+				curScore -= 100.0;
+			}
+					
+		}
+		
+		
+		//Leading in a suit where RHS prob has master could be a good idea sometimes...
+		//Like when partner is trumping
+		//or partner has no spade.
+		if(      ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
+				&& (dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.RIGHT_PLAYER_INDEX)
+						
+				&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+			curScore -= 55.0;
+		}
+		
+		//Start of logic that's only for considering playing offsuits:
+	
+			
+		//Check if leading suitIndex helps partner trump:
+		if(
+				(       (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						                  (Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.CURRENT_PARTNER_INDEX
+						)
+					&& dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false
+				)
+			&& ((dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+				(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
+				&& dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.RIGHT_PLAYER_INDEX)
+					|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				)
+				
+			&& numCardsOfSuitOtherPlayersHave >= 1) {
+		
+				if(numCardsOfSuitOtherPlayersHave >= 2
+							
+						//If player on left is also void, that's great!
+						|| (numCardsOfSuitOtherPlayersHave >= 1
+							&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex))
+						) {
+
+					curScore += 100;
+
+				} else {
+					
+					curScore += 70;
+
+				}
+				
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					
+					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+					
+				} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+					//It's slightly controversial to not play lowest when partner is trumping, but I like the agro play...
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+				
+				} else {
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				}
+				
+		} else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
+				&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
+				&& dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			
+			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			
+			//The in-between jackpot:
+			curScore += 1100;
+				
+		} else if(numCardsOfSuitOtherPlayersHave == 0
+				|| ( dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex)
+				     && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex))
+				) {
+			//Might want to do this if right is out of spades...
+			
+			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			
+			if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
+				
+				//Jackpot 1!
+				curScore += 1000;
+				
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					//TODO: maybe it's good to let partnier win sometimes...
+					curScore += 200;
+				}
+				
+				
+			} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+				
+				//Pretty good. You're making this trick if your partner doesn't take it...
+				curScore +=300;
+				
+			} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+					
+				&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+				(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false) {
+				
+				curScore += 50;
+				
+			
+			} else {
+
+				//Reduced from -100 to -30 because leading your only spade can be even worse than this.
+				curScore -= 30;
+				
+				//TODO:
+				//Maybe make it -100
+				//if no spade or spade has no hope of making a trick even after opponents trump high... 
+			}
+			
+				
+		} else {
+			
+			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.LEFT_PLAYER_INDEX, suitIndex)
+
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						(Constants.CURRENT_PARTNER_INDEX, suitIndex) == false
+
+					&& numCardsOfSuitOtherPlayersHave > 3) {
+						curScore -= 5.0 * (numCardsOfSuitOtherPlayersHave);
+			}
+			
+			
+			
+			if( (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
+				  && dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.RIGHT_PLAYER_INDEX
+				)
+				|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				) {
+				//increased to 26.0 to fix testcase Michael2021 -> 290...
+				curScore += 26.0;
+				
+				if(dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						&& ! dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.LEFT_PLAYER_INDEX, suitIndex)) {
+					//Made it more than +10, because I wanted to beat
+					//playing spade with bid diff of 1 in our favour.
+					curScore += 12.0;
+				}
+				
+			} else {
+				curScore -= 50.0;
+			}
+			
+			//Don't lead into suit that is going to be trumped by LHS
+			//Unless there's only 2 unknown cards or less
+			//Or the partner is void too
+			if( (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.LEFT_PLAYER_INDEX, suitIndex)
+				|| 	dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.LEFT_PLAYER_INDEX
+					)
+					&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 3
+					&&  (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.CURRENT_PARTNER_INDEX, suitIndex) == false
+					|| dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE))
+					) {
+				curScore -= 50;
+			}
+			
+			if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				//Don't lower it...
+
+			} else if(partnerSignalledHighCardOfSuit) {
+				//Don't lower it again
+
+			} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+				//Only lower it a little...
+				curScore -= 5.0;
+			
+			} else {
+				curScore -= 26.0;
+				
+				
+			}
+			
+			//Play the ace so you back it up with a king:
+			if(numCardsOfSuitInHand > 1
+				&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == dataModel.KING) {
+				curScore += 5.0;
+				
+			}
+			//Don't play suit with King if you don't have the queen
+			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
+					&& numCardsOfSuitInHand > 1
+					&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) < dataModel.QUEEN
+					&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
+				
+				curScore -= 50.0;
+				
+			}
+			
+			//Play the king if it's alone
+			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
+					&& numCardsOfSuitInHand == 1
+					&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
+				
+				curScore += 50.0;
+				
+			}
+			
+			//Consider playing suits that others have a lot of so you are less likely to be trumped
+			if(3.0 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) - numCardsOfSuitOtherPlayersHave  <= 1
+
+					//TODO: think about this in the case where you have no spade!
+		//Maybe it doesn't matter after all
+//*******************************************
+					//&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 0
+//*******************************************							
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					&& dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.RIGHT_PLAYER_INDEX) {
+				
+				//Only consider becoming void if it's feasible:
+				int numCardsLessThanAvgOther = numCardsOfSuitOtherPlayersHave - 3 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+				
+				if(numCardsLessThanAvgOther > 0) {
+					curScore += Math.min(5.0 * numCardsLessThanAvgOther, 30);
+				}
+			}
+			
+			
+			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				
+				cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+			} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+				
+			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+			
+			//TODO: special consideration for QEquiv??
+				
+			} else {
+				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			}
+			
+			
+			//I like leading offsuit queens... if no one is void and I don't have a hope of winning with it.
+			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
+					&& 
+						! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					   && dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.LEFT_PLAYER_INDEX
+					&& 
+						! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					   && dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.RIGHT_PLAYER_INDEX
+				) {
+				
+				if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) < 3
+						|| (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5 
+								&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 4
+										|| dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))))
+						) {
+					curScore += 15.0;
+					
+					cardToPlay = DataModel.getCardString(DataModel.QUEEN, suitIndex);
+
+					if(dataModel.hasCard( DataModel.getCardString(DataModel.JACK, suitIndex))) {
+						curScore += 10.0;
+					}
+				}
+				
+			}
+			
+			if(partnerSignalledHighCardOfSuit) {
+				
+				//TODO: this might need more thought...
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+			}
+		}
+		
+
+		return new CardAndValue(cardToPlay, curScore);
+	}
+	
 	public static String AISecondThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		//get suit to follow.

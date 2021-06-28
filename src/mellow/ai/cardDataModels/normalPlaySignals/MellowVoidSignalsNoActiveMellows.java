@@ -31,22 +31,38 @@ public class MellowVoidSignalsNoActiveMellows {
 
 	public int hardMinCardRankBecausePlayedOverPartner[][];
 	public int hardMaxCardPlayedBecauseLackOfTrump[][];
+	public int hardMaxBecauseSomeoneElseSignalledMasterQueen[][];
+	
+	//TODO
+	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
+	
+	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];
+	//public int playerIndexQueenForSuit[] = new int[Constants.NUM_PLAYERS];
 	
 	public static int MAX_UNDER_RANK_2 = -2;
+	public static int NO_KING_SACRIFICE = -1;
+	public static int DONT_KNOW_OR_PLAYED = -1;
 	
 	public void initSignalVars() {
 		hardMinCardPlayedBecausePlayedUnderCurWinner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		//softMaxCardPlayed = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMinCardRankBecausePlayedOverPartner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxCardPlayedBecauseLackOfTrump = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMaxBecauseSomeoneElseSignalledMasterQueen = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
+				
 				hardMinCardPlayedBecausePlayedUnderCurWinner[i][j] = -1;
 				//softMaxCardPlayed[i][j] = -1;
 				hardMinCardRankBecausePlayedOverPartner[i][j] = -1;
 				hardMaxCardPlayedBecauseLackOfTrump[i][j] = -1;
+				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = -1;
 			}
+		}
+		
+		for(int i=0; i<playerIndexKingSacrificeForSuit.length; i++) {
+			playerIndexKingSacrificeForSuit[i] = NO_KING_SACRIFICE;
 		}
 	}
 	
@@ -62,11 +78,39 @@ public class MellowVoidSignalsNoActiveMellows {
 		int playerIndex = dataModel.convertPlayerNameToIndex(playerName);
 		int throwerIndex = dataModel.getCardsPlayedThisRound() % 4;
 		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
 		//if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
 			//Don't feel like tracking own signals yet...
 		//	return;
 		//}
-			
+		
+		if(playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
+			playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
+			if( ! dataModel.isCardPlayedInRound("Q" + card.substring(1) )) {
+				
+				boolean partnerHasAce = false;
+				if(	dataModel.isMasterCard("Q" + card.substring(1)) == false) {
+					partnerHasAce = true;
+				}
+				
+				for(int pIndexTmp=0; pIndexTmp<Constants.NUM_PLAYERS; pIndexTmp++) {
+					if(pIndexTmp != playerIndex
+							&& (partnerHasAce == false
+							    || pIndexTmp != (playerIndex + 2) % Constants.NUM_PLAYERS)) {
+						hardMaxBecauseSomeoneElseSignalledMasterQueen[pIndexTmp][suitIndex] = DataModel.JACK;
+					}
+				}
+				
+			} else if(! card.equals("Q" + card.substring(1))
+					&& dataModel.getSuitOfLeaderThrow() == suitIndex
+					&& throwerIndex > 0
+					){
+				System.out.println("DEBUG: WEIRD CASE! Why would the player do a king sacrifice??");
+			}
+			//TODO: add strong queen signal here...
+			//(EX: If player lead KD and has a 5D later, it's pretty clear that player also has the QD)
+			//Unless queen was played...
+		}
 		
 		
 		//I'm going to start with the normal no mellow situation for now...
@@ -78,17 +122,21 @@ public class MellowVoidSignalsNoActiveMellows {
 			
 			if(throwerIndex == 0) {
 				
-				//TODO
-				//Weak attempt to handle meaning of leading a king while the ace is still out:
-				//It didn't change a single test case... :(
+				// Attempt to handle meaning of leading a king while the ace is still out:
+				// TODO: It didn't change a single test case... yet :(
 				
-				//if(dataModel.getRankIndex(card) == dataModel.KING
-				//		&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
-				//		) {
+				if(dataModel.getRankIndex(card) == dataModel.KING
+						&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
+						) {
+					System.out.println("KING SACRIFICE!");
+					playerIndexKingSacrificeForSuit[suitIndex] = playerIndex;
 					
-				//	softMaxCardPlayed[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+				} else if(dataModel.getRankIndex(card) == dataModel.ACE
+						&& playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
 
-				//}
+					System.out.println("KING UNSACRIFICE!");
+					playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
+				}
 				
 			} else if(throwerIndex > 0 ) {
 				
@@ -223,6 +271,15 @@ public class MellowVoidSignalsNoActiveMellows {
 		return playerStrongSignaledNoCardsOfSuit(playerIndex, suitIndex);
 	}
 	
+	public int getPlayerIndexOfKingSacrificeForSuit(int indexSuit) {
+		return playerIndexKingSacrificeForSuit[indexSuit];
+	}
+	
+	//public int getPlayerIndexSignalledMasterQueen(int indexSuit) {
+	//	return playerIndexQueenForSuit[indexSuit];
+		
+	//}
+	
 	//TODO: try using this later...
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {
 
@@ -240,6 +297,12 @@ public class MellowVoidSignalsNoActiveMellows {
 		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex] != -1
 				&& curMaxRank > hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex];
+		}
+		
+		if(hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex] != -1
+			&& curMaxRank > hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex]) {
+			curMaxRank = hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex];
+			System.out.println("DEBUG: difference was made!");
 		}
 		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {

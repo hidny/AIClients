@@ -112,8 +112,15 @@ public class PlayerSignalHandler {
 		return this.mellowLetPartnerWinSignals.playerSignalledHighCardInSuit(playerIndex, suitIndex);
 	}
 	
+	public int getPlayerIndexOfKingSacrificeForSuit(int indexSuit) {
+		return this.mellowVoidSignalsNoActiveMellows.getPlayerIndexOfKingSacrificeForSuit(indexSuit);
+	}
 	
-
+	//public int getPlayerIndexSignalledMasterQueen(int indexSuit) {
+	//	return this.mellowVoidSignalsNoActiveMellows.getPlayerIndexSignalledMasterQueen(indexSuit);
+	//}
+	
+	//Player who bid Mellow signals 
 	public int getNumCardsMellowSignalledOverCardSameSuit(String card, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.getNumCardsMellowSignalledOverCardSameSuit(card, mellowPlayerIndex);
 	}

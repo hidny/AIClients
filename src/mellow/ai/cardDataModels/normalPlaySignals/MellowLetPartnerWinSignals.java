@@ -136,6 +136,7 @@ public class MellowLetPartnerWinSignals {
 		
 	}
 	
+	//TODO: I'm confused, isn't this in MellowVoidSignalsNoActiveMellows?
 	public boolean playerSignalledHighCardInSuit(int playerIndex, int suitIndex) {
 		
 		if(softMinHighCardInHand[playerIndex][suitIndex] == -1) {
