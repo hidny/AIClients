@@ -897,18 +897,26 @@ public class NoMellowBidPlaySituation {
 						int maxRankLHS = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
 
 						if(maxRankLHS == MellowVoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
-							System.out.println("LHS VOID!");
+							System.out.println("DEBUG: LHS VOID!");
 							consideredHighTrump = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
-						} else if(dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardString(maxRankLHS, Constants.SPADE)) != null) {
-
-							System.out.println("LHS has a upper limit of spade!");
-							consideredHighTrump = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardString(maxRankLHS, Constants.SPADE));
+						} else if( dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE)) != null) {
+							String minSpadeOverLHS =dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE));
+						
+							if(! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+									|| (dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+										    &&  dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(consideredHighTrump, minSpadeOverLHS)
+										    		> 0)) {
+								System.out.println("DEBUG: LHS has a upper limit of spade!");
+								consideredHighTrump = minSpadeOverLHS;		        	 
+							}
+						
 						}
 						//dataModel.getCardInHandClosestOverSameSuit(leaderCard)
 						
 						//JUNE 28th: Here!
 						//TODO: June28th: be more willing to play 'consideredHighTrump' if it's not a master card.
 						//consideredHighTrump should be able to be lower...
+						//TODO: June28th: transplant logic to 3rd AIThirdThrow
 						
 						if( dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(consideredHighTrump)
 								>= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
