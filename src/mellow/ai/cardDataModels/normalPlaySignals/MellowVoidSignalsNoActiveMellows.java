@@ -323,6 +323,29 @@ public class MellowVoidSignalsNoActiveMellows {
 		
 		return true;
 	}
+	
+	
+	public int getMaxRankSpadeSignalled(int playerIndex) {
+		int curMaxRank = DataModel.ACE;
+		
+		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] != -1
+				&& curMaxRank > hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE]) {
+			curMaxRank = hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE];
+		}
+		
+		int retRank = curMaxRank;
+		for(; retRank >= DataModel.RANK_TWO; retRank--) {
+			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][Constants.SPADE][retRank] != dataModel.IMPOSSIBLE) {
+				break;
+			}
+		}
+		
+		if(retRank < DataModel.RANK_TWO) {
+			return MAX_UNDER_RANK_2;
+		} else {
+			return retRank;
+		}
+	}
 	//End functions.
 	
 	//TODO: have basic logic to use this...

@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
+import mellow.ai.cardDataModels.normalPlaySignals.MellowVoidSignalsNoActiveMellows;
 import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
@@ -715,6 +716,7 @@ public class NoMellowBidPlaySituation {
 				
 				} else if(thirdVoid == false && fourthProbVoid) {
 					//TODO This doesn't really work if trump is spade... 
+					
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 					
 				} else if(thirdVoid == false && fourthProbVoid == false){
@@ -892,7 +894,23 @@ public class NoMellowBidPlaySituation {
 						
 						String consideredHighTrump = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
-						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(consideredHighTrump)
+						int maxRankLHS = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
+
+						if(maxRankLHS == MellowVoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
+							System.out.println("LHS VOID!");
+							consideredHighTrump = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						} else if(dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardString(maxRankLHS, Constants.SPADE)) != null) {
+
+							System.out.println("LHS has a upper limit of spade!");
+							consideredHighTrump = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardString(maxRankLHS, Constants.SPADE));
+						}
+						//dataModel.getCardInHandClosestOverSameSuit(leaderCard)
+						
+						//JUNE 28th: Here!
+						//TODO: June28th: be more willing to play 'consideredHighTrump' if it's not a master card.
+						//consideredHighTrump should be able to be lower...
+						
+						if( dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(consideredHighTrump)
 								>= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)) {
 							
 							if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 7
@@ -904,7 +922,8 @@ public class NoMellowBidPlaySituation {
 								
 							} else {
 								//Play high because if you're trumped over, at least they needed to throw a high one
-								cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+								cardToPlay = consideredHighTrump;
+								
 							}
 							
 						} else if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 4) {
@@ -920,6 +939,7 @@ public class NoMellowBidPlaySituation {
 						} else {
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 						}
+						
 					}
 
 				//I guess we should trump if we don't have much spade?

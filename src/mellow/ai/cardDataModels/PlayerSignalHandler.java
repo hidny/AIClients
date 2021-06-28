@@ -115,6 +115,10 @@ public class PlayerSignalHandler {
 	public int getPlayerIndexOfKingSacrificeForSuit(int indexSuit) {
 		return this.mellowVoidSignalsNoActiveMellows.getPlayerIndexOfKingSacrificeForSuit(indexSuit);
 	}
+
+	public int getMaxRankSpadeSignalled(int playerIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.getMaxRankSpadeSignalled(playerIndex);
+	}
 	
 	//public int getPlayerIndexSignalledMasterQueen(int indexSuit) {
 	//	return this.mellowVoidSignalsNoActiveMellows.getPlayerIndexSignalledMasterQueen(indexSuit);
@@ -137,4 +141,5 @@ public class PlayerSignalHandler {
 		
 	}
 */
+	
 }
