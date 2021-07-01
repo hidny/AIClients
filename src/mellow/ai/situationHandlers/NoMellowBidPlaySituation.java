@@ -96,6 +96,10 @@ public class NoMellowBidPlaySituation {
 			
 		}
 		
+		//For now, play highest of group:
+		//EX: if you have the KS and QS, play KS if you were originally intending the QS.
+		bestCardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, bestCardToPlay);
+		
 		return bestCardToPlay;
 	}
 	
