@@ -104,9 +104,7 @@ public class SingleActiveMellowPlayer {
 					//Special case where mellow plays over lead
 					if(throwIndex == 1
 							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 6
-							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
-									currentFightWinner)
-							     < 2
+							&& dataModel.getCardInHandClosestOverSameSuit(currentFightWinner) != null
 							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
 									dataModel.getCardInHandClosestOverSameSuit(currentFightWinner))
 								< 2
