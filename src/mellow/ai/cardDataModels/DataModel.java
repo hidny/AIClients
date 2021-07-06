@@ -708,6 +708,25 @@ public class DataModel {
 		}
 	}
 	
+	public boolean isFirstBidder() {
+		return this.dealerIndexAtStartOfRound == Constants.RIGHT_PLAYER_INDEX;
+	}
+	public boolean isSecondBidder() {
+		return this.dealerIndexAtStartOfRound == Constants.CURRENT_PARTNER_INDEX;
+	}
+	public boolean isThirdBidder() {
+		return this.dealerIndexAtStartOfRound == Constants.RIGHT_PLAYER_INDEX;
+	}
+	public boolean isFourthBidder() {
+		return this.dealerIndexAtStartOfRound == Constants.CURRENT_AGENT_INDEX;
+	}
+	public boolean isLastBidder() {
+		return isFourthBidder();
+	}
+	public boolean isDealer() {
+		return isFourthBidder();
+	}
+	
 	//Returns the index of the person who's turn is
 	//where the player the data model represents is index 0.
 	//This is allowed to be queried whenever

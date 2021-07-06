@@ -174,6 +174,84 @@ public class BiddingSituation {
 		System.out.println("Final bid " + intBid);
 
 		
+		if(dataModel.getOurScore() > 800 ||
+				dataModel.getOpponentScore() > 800) {
+				
+			if(dataModel.isDealer()) {
+				intBid = adjustDealerBidBecauseGameIsCloseToOver(dataModel, intBid);
+			}
+				
+		}
+		
 		return intBid + "";
+	}
+	
+	
+	//TODO: this is way too rough...
+	public static int adjustDealerBidBecauseGameIsCloseToOver(DataModel dataModel, int origBid) {
+		int ret = origBid;
+		
+		int curScore = dataModel.getOurScore();
+
+		int prevBid = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
+		int projectedIncreaseScore = 0;
+		if(prevBid == 0) {
+			projectedIncreaseScore += 100;
+		} else {
+			projectedIncreaseScore += 10 * prevBid;
+		}
+		
+		if(origBid == 0) {
+			projectedIncreaseScore += 100;
+		} else {
+			projectedIncreaseScore += 10 * prevBid;
+		}
+		
+		int projectedScore = curScore + projectedIncreaseScore;
+		
+		
+		int theirScore = dataModel.getOpponentScore();
+		int firstOppBid = dataModel.getBid(Constants.LEFT_PLAYER_INDEX);
+		int secondOppBid = dataModel.getBid(Constants.RIGHT_PLAYER_INDEX);
+		
+		int projectedIncreaseOppScore = 0;
+		
+		if(firstOppBid == 0) {
+			projectedIncreaseOppScore += 100;
+		} else {
+			projectedIncreaseOppScore += 10 * firstOppBid;
+		}
+		
+		if(secondOppBid == 0) {
+			projectedIncreaseOppScore += 100;
+		} else {
+			projectedIncreaseOppScore += 10 * secondOppBid;
+		}
+		
+		int projectedOppScore = theirScore + projectedIncreaseOppScore;
+		
+		int giveEmTheExtraScore = 13 - firstOppBid - secondOppBid - prevBid - origBid;
+		projectedOppScore += giveEmTheExtraScore;
+		
+		if(projectedScore > 1000 && projectedScore > projectedOppScore) {
+			
+			int decreaseInBid = 1;
+			for(decreaseInBid = 1; decreaseInBid<origBid; decreaseInBid++) {
+				if(projectedScore - 9 * decreaseInBid > 1000
+						&& projectedScore - 9 * decreaseInBid > projectedIncreaseOppScore) {
+					//keep going
+				} else {
+					break;
+				}
+			}
+			
+			if(decreaseInBid > 1) {
+				System.out.println("(BID LESS TEST)");
+			}
+			ret = origBid - (decreaseInBid - 1);
+			
+		}
+		
+		return ret;
 	}
 }

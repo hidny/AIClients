@@ -293,8 +293,31 @@ public class testCaseParser {
 			
 			decider.setDealer(players[dealerIndex]);
 			
+			//Set the score if it exists:
+			int ourScore = 0;
+			int theirScore = 0;
+			
+			boolean getScoreNextLines = false;
 			do {
 				cur = in.nextLine();
+				if(cur.toLowerCase().contains("your score")) {
+					getScoreNextLines = true;
+				} else if(getScoreNextLines) {
+					String scores = cur.trim();
+					Scanner score = new Scanner(scores);
+					if(score.hasNextInt()) {
+						ourScore = score.nextInt();
+					}
+					
+					if(score.hasNextInt()) {
+						theirScore = score.nextInt();
+					}
+					//System.out.println("Scores: " + ourScore + " vs " + theirScore);
+					decider.setNewScores(ourScore, theirScore);
+					
+					getScoreNextLines = false;
+				}
+				
 			} while(cur.startsWith("Cards dealt:") == false);
 			cur = in.nextLine();
 			
