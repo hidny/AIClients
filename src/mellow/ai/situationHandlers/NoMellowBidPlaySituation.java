@@ -1415,7 +1415,9 @@ public class NoMellowBidPlaySituation {
 			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
 					&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0 
 							//TODO: implement indicator functions to estimaste odds of making a trick...
-					  ||  dataModel.getTrick(Constants.CURRENT_AGENT_INDEX) < dataModel.getBid(Constants.CURRENT_AGENT_INDEX))
+					  ||  dataModel.getTrick(Constants.CURRENT_AGENT_INDEX) < dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
+					  		//Simple check for spades (It fixed the test case!): (TODO: make more complex)
+					  || 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) )
 					) {
 				//Don't throw off master cards unless you really need to...
 				//Or the idea of leading it is unrealistic.
