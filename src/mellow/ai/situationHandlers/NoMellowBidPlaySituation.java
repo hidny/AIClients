@@ -62,7 +62,7 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 8S QH JC ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 8D 7D")) {
 			System.out.println("DEBUG");
 		}
 
@@ -89,6 +89,15 @@ public class NoMellowBidPlaySituation {
 			}
 			
 			if(cardAndValueRet.getValue() > currentBestScore) {
+				
+				currentBestScore = cardAndValueRet.getValue();
+				bestCardToPlay = cardAndValueRet.getCard();
+				
+			} else if(cardAndValueRet.getValue() == currentBestScore
+					&& (DataModel.getRankIndex(cardAndValueRet.getCard()) > DataModel.getRankIndex(bestCardToPlay)
+							|| DataModel.getRankIndex(cardAndValueRet.getCard()) == DataModel.KING
+							)
+					) {
 				
 				currentBestScore = cardAndValueRet.getValue();
 				bestCardToPlay = cardAndValueRet.getCard();
@@ -320,7 +329,8 @@ public class NoMellowBidPlaySituation {
 		if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
 				&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
 				- dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) >= 2
-			    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+			    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+			    && ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
 			curScore -= 40.0;
 		}
 		
@@ -332,7 +342,7 @@ public class NoMellowBidPlaySituation {
 			//Limit how much of a benefit this is because it's covered elsewheres:
 			curScore += 5.0 * Math.min(4, bidDiff);
 		} else {
-			curScore += 5.0 * bidDiff;
+			curScore += 5.0 * Math.max(-3, bidDiff);
 		}
 		
 		//Check if we're wasting spades we can trump with:
@@ -368,6 +378,9 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JH 8H 7H")) {
+			System.out.println("DEBUG");
+		}
 	
 		String cardToPlay = null;
 		
@@ -375,6 +388,30 @@ public class NoMellowBidPlaySituation {
 		
 		boolean partnerSignalledHighCardOfSuit = false;
 		
+		
+		//Don't want to lead S if you're the only one with it... unless you have a plan...
+		if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
+				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
+			
+			boolean dontLeadSuit = false;
+			
+			//If current play has Kequiv and nothing else, hope that another player will throw off Aequiv later:
+			if(   (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+					&& numCardsOfSuitInHand == 1)
+				||
+				  (numCardsOfSuitInHand >= 2
+				    && numCardsOfSuitOtherPlayersHave >= 4
+				    && ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
+				    && ! NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				    )
+				) {
+				dontLeadSuit = true;
+			}
+			if(dontLeadSuit == false) {
+				curScore += 50.0;
+			}
+		}
+		//End case where current play is only one with spade.
 
 		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 			//Made up a number to say having the master card to lead in partner's void suit is cool:
@@ -403,7 +440,10 @@ public class NoMellowBidPlaySituation {
 	                  (Constants.CURRENT_PARTNER_INDEX, suitIndex) == false) {
 				curScore -= 100.0;
 			}
-					
+		
+			//Don't mind not messing up your partner's K (Didn't really help...)
+		} else if(dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))) {
+			curScore += 5.0;
 		}
 		
 		
