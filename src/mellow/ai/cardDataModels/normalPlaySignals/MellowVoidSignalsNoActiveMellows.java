@@ -246,11 +246,26 @@ public class MellowVoidSignalsNoActiveMellows {
 							&& ! dataModel.getCardSecondThrow().equals(curWinnerCard)) {
 						hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(curWinnerCard);
 						
-						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) > 0) {
-							System.out.println("SIGNALLED LOW CARD");
-						}
+						//if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) > 0) {
+						//	System.out.println("SIGNALLED LOW CARD");
+						//}
 					}
 				}
+			
+				
+				//Signal when 3rd thrower doesn't play master spade
+				//TODO
+				//What if don't play master because 4th is trumping?
+				//or saving master for some other reason.
+				/*if(throwerIndex == 2
+						
+						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+						&& ! dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
+					
+					if( dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card)) {
+						//TODO
+					}	
+				}*/
 			}
 			
 		}

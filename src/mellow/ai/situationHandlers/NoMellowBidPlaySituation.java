@@ -704,7 +704,15 @@ public class NoMellowBidPlaySituation {
 								&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 4
 										|| dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))))
 						) {
-					curScore += 15.0;
+					
+					if(dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) < 3) {
+						//Reduce the bonus if AI started with less than 3 cards of suit,
+						//because AI already gets a low # card in suit count bonus,
+						//and I want AI to decide to play master over playing queen
+						curScore += 5.0;
+					} else {
+						curScore += 25.0;
+					}
 					
 					cardToPlay = DataModel.getCardString(DataModel.QUEEN, suitIndex);
 
