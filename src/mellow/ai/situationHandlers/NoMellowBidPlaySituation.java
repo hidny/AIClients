@@ -378,7 +378,7 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JH 8H 7H")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H KD")) {
 			System.out.println("DEBUG");
 		}
 	

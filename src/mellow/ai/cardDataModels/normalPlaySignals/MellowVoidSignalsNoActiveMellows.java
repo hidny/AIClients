@@ -32,6 +32,7 @@ public class MellowVoidSignalsNoActiveMellows {
 	public int hardMinCardRankBecausePlayedOverPartner[][];
 	public int hardMaxCardPlayedBecauseLackOfTrump[][];
 	public int hardMaxBecauseSomeoneElseSignalledMasterQueen[][];
+	public int hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[][];
 	
 	//TODO
 	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
@@ -49,6 +50,7 @@ public class MellowVoidSignalsNoActiveMellows {
 		hardMinCardRankBecausePlayedOverPartner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxCardPlayedBecauseLackOfTrump = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxBecauseSomeoneElseSignalledMasterQueen = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMaxBecauseSomeoneDidntMakeATrickas4thThrower = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
@@ -58,6 +60,7 @@ public class MellowVoidSignalsNoActiveMellows {
 				hardMinCardRankBecausePlayedOverPartner[i][j] = -1;
 				hardMaxCardPlayedBecauseLackOfTrump[i][j] = -1;
 				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = -1;
+				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = -1;
 			}
 		}
 		
@@ -201,7 +204,8 @@ public class MellowVoidSignalsNoActiveMellows {
 				}
 				
 				//what if you go over, but it's not master?? ...
-				
+
+				String curWinnerCard= dataModel.getCurrentFightWinningCardBeforeAIPlays();
 				
 				// When 4th player fails to trump to make an easy trick, that means something:
 				//TODO: make another one for the 3rd player...
@@ -209,7 +213,6 @@ public class MellowVoidSignalsNoActiveMellows {
 						&& CardStringFunctions.getIndexOfSuit(card) != dataModel.getSuitOfLeaderThrow()
 						&& CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE) {
 					
-					String curWinnerCard= dataModel.getCurrentFightWinningCardBeforeAIPlays();
 					
 					if( ! dataModel.getCardSecondThrow().equals(curWinnerCard)) {
 						
@@ -230,16 +233,26 @@ public class MellowVoidSignalsNoActiveMellows {
 					
 						
 					}
+
+				//Hard max because 4th thrower didn't make a trick:
+			} else if(throwerIndex == 3
+						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()) {
+					
+					
+					
+					
+					if( dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card)
+							&& ! dataModel.getCardSecondThrow().equals(curWinnerCard)) {
+						hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(curWinnerCard);
+						
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) > 0) {
+							System.out.println("SIGNALLED LOW CARD");
+						}
+					}
 				}
 			}
 			
-			//if player index not 0:
-				//for now, don't worry about your own signals
-			
-			//else
-			
-					//updateMaxCardPlayed
-					// 
 		}
 	}
 	
@@ -302,7 +315,12 @@ public class MellowVoidSignalsNoActiveMellows {
 		if(hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex] != -1
 			&& curMaxRank > hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex];
-			System.out.println("DEBUG: difference was made!");
+		}
+		
+		if(hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex] != -1
+				&& curMaxRank > hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex]) {
+			curMaxRank = hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex];
+			
 		}
 		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {
