@@ -35,6 +35,9 @@ public class MellowVoidSignalsNoActiveMellows {
 	public int hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[][];
 	
 	//TODO
+	public int hardMaxBecauseSomeoneDidntPlayMaster[][];
+	
+	//TODO
 	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
 	
 	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];
@@ -50,8 +53,10 @@ public class MellowVoidSignalsNoActiveMellows {
 		hardMinCardRankBecausePlayedOverPartner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxCardPlayedBecauseLackOfTrump = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxBecauseSomeoneElseSignalledMasterQueen = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
-		hardMaxBecauseSomeoneDidntMakeATrickas4thThrower = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
+		hardMaxBecauseSomeoneDidntMakeATrickas4thThrower = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMaxBecauseSomeoneDidntPlayMaster = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
 				
@@ -61,6 +66,7 @@ public class MellowVoidSignalsNoActiveMellows {
 				hardMaxCardPlayedBecauseLackOfTrump[i][j] = -1;
 				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = -1;
 				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = -1;
+				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = -1;
 			}
 		}
 		
@@ -239,6 +245,7 @@ public class MellowVoidSignalsNoActiveMellows {
 						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
 						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()) {
 					
+				//TODO: is this check redundant now?
 					
 					
 					
@@ -266,6 +273,49 @@ public class MellowVoidSignalsNoActiveMellows {
 						//TODO
 					}	
 				}*/
+				
+				if(  dataModel.isMasterCard(curWinnerCard) == false
+						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()
+						&& dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card) ) {
+					
+						boolean letPartnerWin = false;
+						if(throwerIndex == 2
+								&& dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
+							letPartnerWin = true;
+						} else if(throwerIndex == 3
+								&& dataModel.getCardSecondThrow().equals(curWinnerCard)) {
+							letPartnerWin = true;
+						}
+						
+						if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE
+									&& throwerIndex == 1
+									&& (dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit((playerIndex + 2) % Constants.NUM_PLAYERS, dataModel.getSuitOfLeaderThrow())
+											|| dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) < 2)
+									&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit((playerIndex + 2) % Constants.NUM_PLAYERS, Constants.SPADE)) {
+							letPartnerWin = true;
+						}
+					
+						if( !letPartnerWin ) {
+							//System.out.println("BOOM 1");
+							//hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(curWinnerCard);
+							hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)) - 1;
+						}
+				
+				}
+				
+				
+			}
+			
+			
+			if(throwerIndex == 0 
+					&& dataModel.isMasterCard(card) == false
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 3) {
+				//hard max base on lead TODO
+				//TODO
+				//System.out.println("BOOM 2");
+				hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)) - 1;
+				
 			}
 			
 		}
@@ -336,6 +386,12 @@ public class MellowVoidSignalsNoActiveMellows {
 				&& curMaxRank > hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex];
 			
+		}
+		
+		if(hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex] != -1
+				&& curMaxRank > hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex]) {
+			curMaxRank = hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex];
+
 		}
 		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {

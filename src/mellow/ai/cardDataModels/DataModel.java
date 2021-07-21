@@ -1677,6 +1677,22 @@ public class DataModel {
 		return cardToPlay;
 	}
 	
+	public String getHighestCardOfSuitNotPlayed(int suitIndex) {
+		String ret = "";
+		
+		//new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
+		FOUNDCARD:
+		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
+			//TODO: have no preference between the off suits... or have a smart preference.
+			if(this.cardsUsed[suitIndex][i] == false) {
+				return this.getCardString(i, suitIndex);
+			}
+		}
+		System.err.println("ERROR: highest card of suit not played is null!");
+		System.exit(1);
+		return "";
+	}
+	
 	
 	//LOWEST CARD
 	public String getLowOffSuitCardToLead() {
