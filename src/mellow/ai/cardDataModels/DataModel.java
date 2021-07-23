@@ -1678,7 +1678,6 @@ public class DataModel {
 	}
 	
 	public String getHighestCardOfSuitNotPlayed(int suitIndex) {
-		String ret = "";
 		
 		//new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 		FOUNDCARD:

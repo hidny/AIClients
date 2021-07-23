@@ -144,17 +144,18 @@ public class NoMellowBidPlaySituation {
 				curScore += 15.0;
 			}*/
 
+		//Treat partner's possible master as your own...
+		} else if(dataModel.signalHandler.partnerHasMasterBasedOnSignals(Constants.SPADE)) {
+			
+			//System.out.println("TEST " + suitIndex);
+			curScore += 9.5;
+			partnerSignalledHighCardOfSuit = true;
+			
 			//Treat partner's possible master as your own...
 		} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
 			curScore += 9.0;
 			partnerSignalledHighCardOfSuit = true;
 			
-			//Don't want to setup our partner for failure:
-			if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
-					dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
-	                  (Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false) {
-				curScore -= 100.0;
-			}
 					
 		}
 		
@@ -367,6 +368,12 @@ public class NoMellowBidPlaySituation {
 		//END Check if we're wasting spades we can trump with:
 		
 		//End basic awareness...
+		
+		//Just encourage partner to play high...
+		//if they signalled master S.
+		if(partnerSignalledHighCardOfSuit) {
+			cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+		}
 
 		return new CardAndValue(cardToPlay, curScore);
 	}
@@ -428,6 +435,19 @@ public class NoMellowBidPlaySituation {
 				curScore += 15.0;
 			}*/
 
+		} else if(dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex)) {
+			
+			//System.out.println("TEST " + suitIndex);
+			curScore += 9.5;
+			partnerSignalledHighCardOfSuit = true;
+			
+			//Don't want to setup our partner for failure:
+			if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
+					dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+	                  (Constants.CURRENT_PARTNER_INDEX, suitIndex) == false) {
+				curScore -= 100.0;
+			}
+			
 			//Treat partner's possible master as your own...
 		} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
 				|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.CURRENT_PARTNER_INDEX) {

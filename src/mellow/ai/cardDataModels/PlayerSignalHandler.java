@@ -141,5 +141,11 @@ public class PlayerSignalHandler {
 		
 	}
 */
+
+	//TODO
+	public boolean partnerHasMasterBasedOnSignals(int suitIndex) {
+		
+		return this.mellowVoidSignalsNoActiveMellows.partnerHasMasterBasedOnSignals(suitIndex);
+	}
 	
 }

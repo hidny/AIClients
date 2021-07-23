@@ -328,7 +328,6 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		
 	}
 	
-	
 	//No two cards signals: (For when you're playing before the mellow player)
 	
 	//TODO: TEST

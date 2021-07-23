@@ -102,7 +102,9 @@ public class MonteCarloMain {
 		double sum_impact_to_avg = 0.0;
 		
 		for(int i=0; i<num_simulations; i++) {
-			
+			if(i % 100 == 0) {
+				System.err.println(i+ " out of " + num_simulations);
+			}
 			//Distribute unknown cards for simulation:
 			String distCards[][];
 			if(isThorough) {
