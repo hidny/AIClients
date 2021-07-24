@@ -62,7 +62,7 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 8D 7D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 8S 6C")) {
 			System.out.println("DEBUG");
 		}
 
@@ -119,14 +119,15 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 8S 6C")) {
+			System.out.println("Debug");
+		}
 	
 		String cardToPlay = null;
 		
 		double curScore = 0.0;
 		
 		boolean partnerSignalledHighCardOfSuit = false;
-		
-
 		
 		
 		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
@@ -380,12 +381,14 @@ public class NoMellowBidPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
+
+		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H KD")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 8S 6C")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -575,9 +578,13 @@ public class NoMellowBidPlaySituation {
 				//Reduced from -100 to -30 because leading your only spade can be even worse than this.
 				curScore -= 30;
 				
-				//TODO:
-				//Maybe make it -100
-				//if no spade or spade has no hope of making a trick even after opponents trump high... 
+				if(numCardsOfSuitInHand > 1
+						&& dataModel.signalHandler.playerAlwaysFollowedSuit
+						(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
+					//Don't lead this suit if partner might think they can trump without getting trumped over.
+					curScore -= 70;
+				}
+				
 			}
 			
 				
@@ -659,7 +666,8 @@ public class NoMellowBidPlaySituation {
 					&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) < dataModel.QUEEN
 					&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
 				
-				curScore -= 50.0;
+				//Changed to -30, because doing this is better than feed RHS a suit RHS is void in.
+				curScore -= 30.0;
 				
 			}
 			
@@ -700,8 +708,12 @@ public class NoMellowBidPlaySituation {
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
-				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-			
+				
+				if(numCardsOfSuitInHand > 1) {
+					cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+				} else {
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				}
 			//TODO: special consideration for QEquiv??
 				
 			} else {

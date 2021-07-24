@@ -42,10 +42,15 @@ public class MellowVoidSignalsNoActiveMellows {
 	
 	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];
 	//public int playerIndexQueenForSuit[] = new int[Constants.NUM_PLAYERS];
+
+	//This is not much of a signal, but whatever...
+	public boolean didNotFollowSuit[][];
 	
 	public static int MAX_UNDER_RANK_2 = -2;
 	public static int NO_KING_SACRIFICE = -1;
 	public static int DONT_KNOW_OR_PLAYED = -1;
+	
+
 	
 	public void initSignalVars() {
 		hardMinCardPlayedBecausePlayedUnderCurWinner = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
@@ -57,6 +62,8 @@ public class MellowVoidSignalsNoActiveMellows {
 		hardMaxBecauseSomeoneDidntMakeATrickas4thThrower = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxBecauseSomeoneDidntPlayMaster = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 
+		didNotFollowSuit = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
 				
@@ -67,6 +74,8 @@ public class MellowVoidSignalsNoActiveMellows {
 				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = -1;
 				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = -1;
 				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = -1;
+				
+				didNotFollowSuit[i][j] = false;
 			}
 		}
 		
@@ -92,6 +101,10 @@ public class MellowVoidSignalsNoActiveMellows {
 			//Don't feel like tracking own signals yet...
 		//	return;
 		//}
+		
+		if(suitIndex != dataModel.getSuitOfLeaderThrow()) {
+			didNotFollowSuit[playerIndex][dataModel.getSuitOfLeaderThrow()] = true;
+		}
 		
 		if(playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
 			playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
@@ -471,6 +484,10 @@ public class MellowVoidSignalsNoActiveMellows {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean playerAlwaysFollowedSuit(int playerIndex, int suitIndex) {
+		return ! didNotFollowSuit[playerIndex][suitIndex];
 	}
 
 }

@@ -142,10 +142,12 @@ public class PlayerSignalHandler {
 	}
 */
 
-	//TODO
 	public boolean partnerHasMasterBasedOnSignals(int suitIndex) {
-		
 		return this.mellowVoidSignalsNoActiveMellows.partnerHasMasterBasedOnSignals(suitIndex);
+	}
+	
+	public boolean playerAlwaysFollowedSuit(int playerIndex, int suitIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.playerAlwaysFollowedSuit(playerIndex, suitIndex);
 	}
 	
 }
