@@ -119,9 +119,6 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 8S 6C")) {
-			System.out.println("Debug");
-		}
 	
 		String cardToPlay = null;
 		
@@ -942,7 +939,10 @@ public class NoMellowBidPlaySituation {
 				//Option to trump no need to go bid:
 			} else {
 				
-				
+
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 4S 3S 8C 6C 5C 2C 3D 2D")) {
+					System.out.println("Debug");
+				}
 				if(dataModel.isMasterCard(leaderCard)
 						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1) {
 						
@@ -1045,6 +1045,9 @@ public class NoMellowBidPlaySituation {
 					               //OR: only 1 non-master spade:
 						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1 
 						         && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) == false)   
+						      
+						      	//OR: opponent only one that signalled master
+						      || (dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(leaderSuitIndex))
 						)
 						
 						&& //No K to protect:
