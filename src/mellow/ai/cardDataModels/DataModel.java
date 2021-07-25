@@ -286,11 +286,20 @@ public class DataModel {
 		
 		bidsMadeThisRound++;
 	}
+
+	public int getBidTotal() {
+		int ret = 0;
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			ret += bids[i];
+			
+		}
+		return ret;
+	}
 	
 	public int getBid(String playerName) {
 		return bids[convertPlayerNameToIndex(playerName)];
 	}
-	
+
 	public int getBid(int indexPlayer) {
 		return bids[indexPlayer];
 	}

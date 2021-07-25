@@ -193,7 +193,8 @@ public class SeatedRightOfOpponentMellow {
 			//TODO: put in function
 
 				//Example: If you have 4+ cards, maybe 2nd best is ok...
-				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false
+						&& dataModel.getBidTotal() < Constants.NUM_STARTING_CARDS_IN_HAND - 1) {
 					
 					
 					//Find minimum card over highest card mellow signalled:
@@ -411,6 +412,8 @@ public class SeatedRightOfOpponentMellow {
 
 				//Example: If you have 4+ cards, maybe 2nd best is ok...
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+						//TODO: maybe?
+						//&& dataModel.getBidTotal() < Constants.NUM_STARTING_CARDS_IN_HAND - 1
 
 					//Find minimum card over highest card mellow signalled:
 					
