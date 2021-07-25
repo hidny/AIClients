@@ -261,6 +261,10 @@ public class SingleActiveMellowPlayer {
 		// At least separate by value of i...
 		
 		public static double getRiskRating3(DataModel dataModel, int suit, int numTopCardsToIgnore) {
+
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TH 5H 3H 2H 6C ")) {
+				System.out.println("Debug!");
+			}
 			int numOfSuitPlayerHas = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
 			
 			numOfSuitPlayerHas -= numTopCardsToIgnore;
@@ -331,7 +335,7 @@ public class SingleActiveMellowPlayer {
 					
 				}
 				
-				if(i == 2 && numOver  < 3 ) {
+				if(i == 2 && numUnder >= 1 && numOver  < 3 ) {
 					ret += (3.0 - numOver);
 				}
 				
