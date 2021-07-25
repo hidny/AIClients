@@ -370,6 +370,13 @@ public class SeatedLeftOfOpponentMellow {
 				//TODO: Maybe don't do this if you really don't want tricks...
 				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) >= 4) {
 					curCard = dataModel.getCardCurrentPlayergetThirdLowestInSuit(curSuitIndex);
+					
+					if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) ==0) {
+
+						curValue -=25.0;
+					}
+				} else {
+					curValue -=30.0;
 				}
 				
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuitIndex)
