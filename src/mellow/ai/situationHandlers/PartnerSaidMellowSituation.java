@@ -188,7 +188,7 @@ public class PartnerSaidMellowSituation {
 			//int cardsUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(secondHighest);
 			
 			//if(cardsUnder)
-			ret += 20.0 - 5.0 * inBetweenCards;
+			ret += 20.0 - 5.0 * Math.min(4, inBetweenCards);
 			
 			
 		}
@@ -211,6 +211,21 @@ public class PartnerSaidMellowSituation {
 		//Don't use up last spade... unless there's no danger.
 		if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 1) {
 			
+			
+			//Don't play last S if it's very risky next time spades is led...
+			if(dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) <= 1) {
+				
+				String maxRankCardSignalMellowPlayer = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE);
+				
+				
+				if(maxRankCardSignalMellowPlayer != null
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(maxRankCardSignalMellowPlayer) >= 3) {
+					ret -= 200.0;
+				}
+				
+			}
+			
+			
 			int numOffsuitDangerAndCouldTrumpToSave = 0;
 			for(int s=1; s<Constants.NUM_SUITS; s++) {
 				//if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, s)) {
@@ -229,6 +244,7 @@ public class PartnerSaidMellowSituation {
 					}
 				}
 			}
+			
 			
 			//If you have lots of spade, playing it isn't so bad...
 			if(3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
@@ -261,6 +277,10 @@ public class PartnerSaidMellowSituation {
 		//Factors:
 		//TODO
 		
+		boolean protectorHaslotsOfSpade = 
+				3 * (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) - 1) >= dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
+				
+		
 		int numCardsInHandOfSuit = dataModel.getNumberOfCardsOneSuit(currentSuitIndex);
 		
 		//Master:
@@ -281,6 +301,14 @@ public class PartnerSaidMellowSituation {
 				
 				
 				
+			} else if(! protectorHaslotsOfSpade) {
+				String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+				
+				int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highest);
+				
+				//I put a -1 because the propect of the mellow player having the lowest card of suit is actually good...
+				ret += 30.0 - 10.0 * (inBetweenCards - 1);
+
 			}
 			
 		}
@@ -299,6 +327,14 @@ public class PartnerSaidMellowSituation {
 				
 				ret += 20.0 - 5.0 * inBetweenCards;
 				
+			} else if(! protectorHaslotsOfSpade) {
+				String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+				
+				int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highest);
+
+				//I put a -1 because the propect of the mellow player having the lowest card of suit is actually good...
+				ret += 30.0 - 10.0 * (inBetweenCards - 1);
+
 			}
 		}
 		
@@ -316,6 +352,14 @@ public class PartnerSaidMellowSituation {
 				
 				ret += 20.0 - 5.0 * inBetweenCards;
 				
+			} else if(! protectorHaslotsOfSpade) {
+				String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
+				
+				int inBetweenCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highest);
+
+				//I put a -1 because the propect of the mellow player having the lowest card of suit is actually good...
+				ret += 30.0 - 10.0 * (inBetweenCards - 1);
+
 			}
 			
 		}

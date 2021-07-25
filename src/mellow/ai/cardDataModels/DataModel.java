@@ -2400,6 +2400,16 @@ public class DataModel {
 		
 	}
 	
+	public int getNumberOfCardsPlayerPlayedInSuit(int playerIndex, int suitIndex) {
+		int ret = 0;
+		for(int rank=RANK_TWO; rank<=ACE; rank++) {
+			if(cardsUsedByPlayer[playerIndex][suitIndex][rank]) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
 	//public boolean playerCouldSweepSuit
 	
 	//TODO: later
