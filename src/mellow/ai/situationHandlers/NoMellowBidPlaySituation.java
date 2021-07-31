@@ -132,6 +132,11 @@ public class NoMellowBidPlaySituation {
 			//TODO: refine later
 			curScore += 10.0;
 			
+			if(dataModel.currentPlayerHasAtLeastTwoMastersInSuit(Constants.SPADE)
+					&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+					&& ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+				curScore += 50.0;
+			}
 			
 			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
 
@@ -656,36 +661,7 @@ public class NoMellowBidPlaySituation {
 			if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				curScore += cashOutMasterRating(dataModel, suitIndex);
-				//TODO: make function to see if it's vulnerable and RHS may not trump.
-				/*
-				if(numCardsOfSuitOtherPlayersHave > 3 ) {
-					
-					curScore += 10.0 - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
-					
-					if(numCardsOfSuitOtherPlayersHave >= 3
-							&& numCardsOfSuitOtherPlayersHave >= 6) {
-						curScore += 10.0;
-					}
-					
-				}
 				
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TC 8C 5C KD TD 9D 8D 5D")) {
-					System.out.println("DEBUG");
-				}
-				if( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
-						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
-						) {
-					
-						curScore += 30.0;
-						
-						if(numCardsOfSuitInHand >= 2
-								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
-									dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == 0) {
-							curScore += 10.0;
-						}
-						
-				}
-				*/
 
 			} else if(partnerSignalledHighCardOfSuit) {
 				//Don't lower it again
@@ -1740,11 +1716,9 @@ public class NoMellowBidPlaySituation {
 				}
 				
 				rating += 10;
-				
+
 				//backup master bonus:
-				if(numCardsOfSuitInHand >= 2
-						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
-							dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == 0) {
+				if(dataModel.currentPlayerHasAtLeastTwoMastersInSuit(suitIndex)) {
 					rating += 20;
 				}
 				

@@ -1648,6 +1648,27 @@ public class DataModel {
 		}
 		return null;
 	}
+	
+	public boolean currentPlayerHasAtLeastTwoMastersInSuit(int suitIndex) {
+		
+		boolean foundOne = false;
+		
+		for(int i=Constants.NUM_RANKS - 1; i>=0; i--) {
+			if(cardsUsed[suitIndex][i] == true) {
+				continue;
+			} else if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				if(!foundOne) {
+					foundOne = true;
+				} else {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		}
+		
+		return false;
+	}
 	//END of MASTER FUNCTIONS
 
 	public String getHighestOffSuitCardAnySuitButSpade() {
