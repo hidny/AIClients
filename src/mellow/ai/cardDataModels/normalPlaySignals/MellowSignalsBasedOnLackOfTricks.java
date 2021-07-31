@@ -19,8 +19,8 @@ public class MellowSignalsBasedOnLackOfTricks {
 		}
 
 		//A or K not player in round
-		if(dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.ACE, suitIndex)) == false
-				&& dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.KING, suitIndex)) == false) {
+		if(dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.ACE, suitIndex))
+				&& dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.KING, suitIndex))) {
 			return false;
 		}
 		
@@ -41,6 +41,9 @@ public class MellowSignalsBasedOnLackOfTricks {
 		int numTricks= dataModel.getNumTricks(playerIndex);
 		
 		if(numTricks < numBid) {
+			return true;
+		} else if(numTricks == numBid && numBid > 1) {
+			//Just give it a pass.
 			return true;
 		} else {
 			return false;

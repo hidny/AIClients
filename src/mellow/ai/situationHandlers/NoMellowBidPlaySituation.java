@@ -403,7 +403,7 @@ public class NoMellowBidPlaySituation {
 		
 
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S TC 9C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5H TC 5C 3C")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -480,16 +480,22 @@ public class NoMellowBidPlaySituation {
 				curScore -= 100.0;
 			}
 		
-		} else if(MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+		} else if(MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				  && ! MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
 			
-			
-			curScore += 8.5;
-			
-			//No risk of messing up partner's K counts for something...
-			if(dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))) {
-				curScore += 1.0;
+			if(! dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))
+			&& ! dataModel.hasCard(dataModel.getCardString(DataModel.ACE, suitIndex))
+			&& ! dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.KING, suitIndex))
+			&& ! dataModel.hasCard(dataModel.getCardString(DataModel.KING, suitIndex))
+					) {
+				//Don't risk losing partner's K
+				curScore -= 2.0;
+			} else {
+				curScore += 9.5;
+				//Don't trust this signal enough to play low...
+				//partnerSignalledHighCardOfSuit = true;
+				
 			}
-		
 			
 			//Don't mind not messing up your partner's K (Didn't really help...)
 		} else if(dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))) {
@@ -643,7 +649,13 @@ public class NoMellowBidPlaySituation {
 						&& ! dataModel.didPlayerIndexLeadMasterAKOffsuit(Constants.LEFT_PLAYER_INDEX, suitIndex)) {
 					//Made it more than +10, because I wanted to beat
 					//playing spade with bid diff of 1 in our favour.
-					curScore += 12.0;
+					
+					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 3) {
+						curScore += 12.0;
+					} else {
+						//Want this to be less than 4.5, so player will prefer to play into partner's A or K...
+						curScore += 3.0;
+					}
 				}
 				
 			} else {
