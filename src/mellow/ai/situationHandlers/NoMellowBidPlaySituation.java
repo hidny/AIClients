@@ -238,17 +238,33 @@ public class NoMellowBidPlaySituation {
 		} else {
 			double diff = numCardsOfSuitInHand - (1.0 *numCardsOfSuitOtherPlayersHave)/3.0;
 			
-			//Just play spade if you have them...
-			if(diff >= 2.3) {
-				curScore += 20.0;
-				if(diff >= 3.4) {
-					curScore += 10.0;
-					
-					if(diff > 4.5) {
-						curScore += 5.0;
+			if( ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+					|| ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+				//Just play spade if you have them...
+				if(diff >= 1.1) {
+					curScore += 20.0;
+					if(diff >= 2.1) {
+						curScore += 10.0;
+						
+						if(diff > 3.1) {
+							curScore += 15.0;
+						}
 					}
 				}
 			}
+			
+			//Look forward to leading S because it might help your offsuit masters:
+			double maxValueCashOut = 0.0;
+			
+			for(int s=1; s<Constants.NUM_SUITS; s++) {
+				if(s == Constants.SPADE) {
+					continue;
+				} else {
+					maxValueCashOut = Math.max(maxValueCashOut, cashOutMasterRating(dataModel, s));
+				}
+				
+			}
+			curScore += maxValueCashOut;
 		}
 		
 
@@ -426,6 +442,7 @@ public class NoMellowBidPlaySituation {
 			curScore += 10.0;
 			
 			
+			
 			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
 
 			//	curScore += 10.0;
@@ -524,7 +541,8 @@ public class NoMellowBidPlaySituation {
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				}
-				
+		
+		//Easy trick:
 		} else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
 				&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
 				&& dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
@@ -636,7 +654,38 @@ public class NoMellowBidPlaySituation {
 			}
 			
 			if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-				//Don't lower it...
+				
+				curScore += cashOutMasterRating(dataModel, suitIndex);
+				//TODO: make function to see if it's vulnerable and RHS may not trump.
+				/*
+				if(numCardsOfSuitOtherPlayersHave > 3 ) {
+					
+					curScore += 10.0 - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+					
+					if(numCardsOfSuitOtherPlayersHave >= 3
+							&& numCardsOfSuitOtherPlayersHave >= 6) {
+						curScore += 10.0;
+					}
+					
+				}
+				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TC 8C 5C KD TD 9D 8D 5D")) {
+					System.out.println("DEBUG");
+				}
+				if( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						) {
+					
+						curScore += 30.0;
+						
+						if(numCardsOfSuitInHand >= 2
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+									dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == 0) {
+							curScore += 10.0;
+						}
+						
+				}
+				*/
 
 			} else if(partnerSignalledHighCardOfSuit) {
 				//Don't lower it again
@@ -940,9 +989,6 @@ public class NoMellowBidPlaySituation {
 			} else {
 				
 
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 4S 3S 8C 6C 5C 2C 3D 2D")) {
-					System.out.println("Debug");
-				}
 				if(dataModel.isMasterCard(leaderCard)
 						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1) {
 						
@@ -1659,5 +1705,55 @@ public class NoMellowBidPlaySituation {
 		}*/
 		
 		return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuit);
+	}
+	
+	
+	public static int cashOutMasterRating(DataModel dataModel, int suitIndex) {
+		
+		if(! dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			return 0;
+		}
+		
+		int numCardsOfSuitInHand = dataModel.getNumberOfCardsOneSuit(suitIndex);
+		int numCardsOfSuitInOtherHand = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+		
+		int rating = 0;
+		if( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+				|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				) {
+			
+				if((dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+						&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+								|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE))
+						&& numCardsOfSuitInOtherHand > 2) {
+					return 0;
+				}
+				
+				//Don't lead into suit when opponent will trump because partner can't do anything...
+				//This gives opponents an easy trick...
+				// There might be edge cases where you want this to happen... but I don't know.
+				if(numCardsOfSuitInOtherHand <= 1
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) >= 1) {
+					return -10;
+				}
+				
+				rating += 10;
+				
+				//backup master bonus:
+				if(numCardsOfSuitInHand >= 2
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+							dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == 0) {
+					rating += 20;
+				}
+				
+				if(numCardsOfSuitInOtherHand <= 5) {
+					rating += 25;
+				}
+				
+		}
+		
+		return rating;
 	}
 }
