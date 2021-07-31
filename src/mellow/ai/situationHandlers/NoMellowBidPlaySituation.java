@@ -62,9 +62,6 @@ public class NoMellowBidPlaySituation {
 	//TODO: This is a mess!
 	public static String AILeaderThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 8S 6C")) {
-			System.out.println("DEBUG");
-		}
 
 		String bestCardToPlay = null;
 		double currentBestScore = -1000000.0;
@@ -119,13 +116,16 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S TC 9C")) {
+			System.out.println("DEBUG");
+		}
 	
 		String cardToPlay = null;
 		
 		double curScore = 0.0;
 		
 		boolean partnerSignalledHighCardOfSuit = false;
-		
+
 		
 		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
 			//Made up a number to say having the master card to lead in partner's void suit is cool:
@@ -138,14 +138,6 @@ public class NoMellowBidPlaySituation {
 				curScore += 50.0;
 			}
 			
-			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
-
-			//	curScore += 10.0;
-			//}
-			/* else if (dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.QUEEN) {
-
-				curScore += 15.0;
-			}*/
 
 		//Treat partner's possible master as your own...
 		} else if(dataModel.signalHandler.partnerHasMasterBasedOnSignals(Constants.SPADE)) {
@@ -238,6 +230,10 @@ public class NoMellowBidPlaySituation {
 		if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
 			curScore -= 20.0;
 			
+			if(numCardsOfSuitInHand == 1) {
+				//Save your last spade
+				curScore -= 20.0;
+			}
 			
 			
 		} else {
@@ -406,7 +402,8 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 8S 6C")) {
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S TC 9C")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -639,7 +636,9 @@ public class NoMellowBidPlaySituation {
 				}
 				
 			} else {
-				curScore -= 50.0;
+				//Make leading master worse than leading last spade
+				//even though others have S.
+				curScore -= 52.0;
 			}
 			
 			//Don't lead into suit that is going to be trumped by LHS
