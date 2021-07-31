@@ -308,7 +308,7 @@ public class DataModel {
 		return tricks[convertPlayerNameToIndex(playerName)];
 	}
 	
-	public int getTrick(int indexPlayer) {
+	public int getNumTricks(int indexPlayer) {
 		return tricks[indexPlayer];
 	}
 	

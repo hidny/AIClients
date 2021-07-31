@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
+import mellow.ai.cardDataModels.normalPlaySignals.MellowSignalsBasedOnLackOfTricks;
 import mellow.ai.cardDataModels.normalPlaySignals.MellowVoidSignalsNoActiveMellows;
 import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.objects.CardAndValue;
@@ -154,7 +155,6 @@ public class NoMellowBidPlaySituation {
 					
 		}
 		
-		
 		//Leading in a suit where RHS prob has master could be a good idea sometimes...
 		//Like when partner is trumping
 		//or partner has no spade.
@@ -286,7 +286,7 @@ public class NoMellowBidPlaySituation {
 			//TODO: this is a rough estimate that doesn't account for stolen tricks,
 			// Tricks given to partner/ taken from partner
 			// or unfortunate circumstances...
-			if(dataModel.getTrick(Constants.CURRENT_AGENT_INDEX)
+			if(dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX)
 				< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
 				|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
 				curScore += 30.0;
@@ -327,16 +327,16 @@ public class NoMellowBidPlaySituation {
 		//Basic awareness of when to play S based on bids:
 		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
 				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
-				- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) >= 2
+				- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >= 2
 				&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
 			curScore += 20.0;
 			curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
-					- dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX) - 2);
+					- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) - 2);
 		}
 		
 		if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
 				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
-				- dataModel.getTrick(Constants.RIGHT_PLAYER_INDEX) >= 2
+				- dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX) >= 2
 			    && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
 			curScore -= 40.0;
 		}
@@ -344,7 +344,7 @@ public class NoMellowBidPlaySituation {
 
 		if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
 				&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
-				- dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) >= 2
+				- dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) >= 2
 			    && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 			    && ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
 			curScore -= 40.0;
@@ -480,6 +480,17 @@ public class NoMellowBidPlaySituation {
 				curScore -= 100.0;
 			}
 		
+		} else if(MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+			
+			
+			curScore += 8.5;
+			
+			//No risk of messing up partner's K counts for something...
+			if(dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))) {
+				curScore += 1.0;
+			}
+		
+			
 			//Don't mind not messing up your partner's K (Didn't really help...)
 		} else if(dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))) {
 			curScore += 5.0;
@@ -1105,7 +1116,7 @@ public class NoMellowBidPlaySituation {
 				boolean goBigOrGoHome = false;
 				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
 								&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-								&& dataModel.getTrick(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
+								&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
 					goBigOrGoHome = true;
 				}
 				
@@ -1519,7 +1530,7 @@ public class NoMellowBidPlaySituation {
 			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
 					&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0 
 							//TODO: implement indicator functions to estimaste odds of making a trick...
-					  ||  dataModel.getTrick(Constants.CURRENT_AGENT_INDEX) < dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
+					  ||  dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) < dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
 					  		//Simple check for spades (It fixed the test case!): (TODO: make more complex)
 					  || 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) )
 					) {

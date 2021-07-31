@@ -440,11 +440,11 @@ public class SeatedLeftOfOpponentMellow {
 			return false;
 		}
 		int numBid = dataModel.getBid(Constants.CURRENT_AGENT_INDEX);
-		int numTricks = dataModel.getTrick(Constants.CURRENT_AGENT_INDEX);
+		int numTricks = dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX);
 		
 
 		int numBidPartner = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
-		int numTricksPartner = dataModel.getTrick(Constants.CURRENT_PARTNER_INDEX);
+		int numTricksPartner = dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX);
 		
 		int partnerCover = Math.max(numTricksPartner - 1, 0);
 		

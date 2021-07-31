@@ -355,7 +355,7 @@ public class MonteCarloMain {
 		int scoreAdjustment = 0;
 		
 		int numBids = dataModelTmp.getBid(0 + adjustmentIndex) + dataModelTmp.getBid(2 + adjustmentIndex);
-		int numTricks = dataModelTmp.getTrick(0 + adjustmentIndex) + dataModelTmp.getTrick(2 + adjustmentIndex);
+		int numTricks = dataModelTmp.getNumTricks(0 + adjustmentIndex) + dataModelTmp.getNumTricks(2 + adjustmentIndex);
 		
 		if(numBids <= numTricks) {
 			scoreAdjustment = 10*numBids + 1 * (numTricks - numBids);
