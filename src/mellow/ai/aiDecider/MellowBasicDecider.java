@@ -12,6 +12,7 @@ import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
 import mellow.ai.situationHandlers.SingleActiveMellowPlayer;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
 
 //_______________________
 //This is a basic AI that handles mellow rounds for someone who is leading, 2nd, and 3rd and 4th
@@ -189,13 +190,52 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 
 				} else {
 					
-					if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
+					if(shouldTryToWinTricksInsteadOfAttackingMellow(dataModel)) {
+
+						System.out.println("[WEIRD] We need every trick except maybe the current one!");
 						
-						return SeatedLeftOfOpponentMellow.playMoveSeatedLeftOfOpponentMellow(dataModel);
-					
+						//TODO: put in function:
+						int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+						
+						//If we bid 11 or more, mellow will want to take the trick, so play normal...
+						int numBidUs = dataModel.getBid(Constants.CURRENT_AGENT_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
+						
+						//Condition where we assume mellow player won't take it.
+						//This fixes 1 test case...
+						if(throwIndex == 2 && numBidUs < 11) {
+							
+							int indexWinner = dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays();
+							
+							if(indexWinner == Constants.CURRENT_PARTNER_INDEX
+									&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0) {
+								
+								// play low because mellow player doesn't want to take it...
+								
+								int leadSuitIndex = dataModel.getSuitOfLeaderThrow();
+								if(dataModel.currentAgentHasSuit(leadSuitIndex)) {
+									//Play lowest of suit
+									return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+								} else {
+									//Play lowest offsuit
+									return NoMellowBidPlaySituation.getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
+								}
+							}
+						}
+						
+						
+						//TODO: this should be a new situation...
+						return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+						//END TODO: put in function
+						
 					} else {
+						if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
+							
+							return SeatedLeftOfOpponentMellow.playMoveSeatedLeftOfOpponentMellow(dataModel);
 						
-						return SeatedRightOfOpponentMellow.playMoveSeatedRightOfOpponentMellow(dataModel);
+						} else {
+							
+							return SeatedRightOfOpponentMellow.playMoveSeatedRightOfOpponentMellow(dataModel);
+						}
 					}
 				}
 			}
@@ -216,8 +256,6 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				
 			} else {
 
-				//Opponents double mellow:
-				//Just play low if you can....
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
 			
@@ -243,6 +281,68 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return this.dataModel.createHardCopy();
 	}
 
+	public static boolean shouldTryToWinTricksInsteadOfAttackingMellow(DataModel dataModel) {
+		
+		if(getNumTricksWeCouldAffordToGiveAway(dataModel) == 0) {
+			return true;
+		} else {
+		
+			return false;
+		}
+	}
 	
+	public static int getNumTricksWeCouldAffordToGiveAway(DataModel dataModel) {
+		
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6S 3S AD TD 3D ")) {
+			System.out.println("DEBUG");
+		}
+		int numTricksUs = dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) + dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX);
+		
+		int numTricksThem = dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) + dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX);
+		
+		int numBidUs = dataModel.getBid(Constants.CURRENT_AGENT_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
+		
+		int numTricksAvailable = Constants.NUM_STARTING_CARDS_IN_HAND - numTricksUs - numTricksThem;
+		
+		int numTricksNeededBeforeFight = numTricksAvailable - (numBidUs  - numTricksUs);
+		
+		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+		
+		//TODO: TMP shortcut:
+		if(numTricksNeededBeforeFight >= 2) {
+			return numTricksNeededBeforeFight;
+		}
+		
+		
+		int numTricksNeeded= numTricksNeededBeforeFight;
+		if(throwIndex > 1) {
+			
+			int indexWinner = dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays();
+			
+			if(indexWinner != Constants.CURRENT_PARTNER_INDEX) {
+				
+				String hypoCardToPlay = SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
+				String curWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
+				
+				if(dataModel.cardAGreaterThanCardBGivenLeadCard(curWinner, hypoCardToPlay )) {
+					
+					//Opponents get the last trick:
+					numTricksNeeded = numTricksNeededBeforeFight -1;
+				}
+				
+			}
+		}
+		
+
+		//TODO: What if you know you're lost because opponents have S?
+		
+		if(numTricksNeeded < 0) {
+			System.out.println("[WEIRD] WE BURNED!");
+		}
+		
+		return numTricksNeeded;
+		//;
+	}
 	
 }
