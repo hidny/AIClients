@@ -294,7 +294,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	public static int getNumTricksWeCouldAffordToGiveAway(DataModel dataModel) {
 		
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6S 3S AD TD 3D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH 8H 7H")) {
 			System.out.println("DEBUG");
 		}
 		int numTricksUs = dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) + dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX);

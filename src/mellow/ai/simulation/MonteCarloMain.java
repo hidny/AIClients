@@ -31,7 +31,8 @@ public class MonteCarloMain {
 	public static int LIMIT_THOROUGH_SEARCH = 2000;
 
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -56,7 +57,10 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_SAMPLE = 10;
 	//END TODO
 
-	public static int MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT = 20;
+	//No more debug print!
+	public static int MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT = 0;
+	
+	
 	//For testing:
 	//public static Scanner in = new Scanner(System.in);
 	
@@ -73,7 +77,8 @@ public class MonteCarloMain {
 		long numWaysOtherPlayersCouldHaveCards = dataModel.getCurrentNumWaysOtherPlayersCouldHaveCards();
 		
 		boolean isThorough = false;
-		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH) {
+		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
+				|| numWaysOtherPlayersCouldHaveCards <= 2 * num_simulations) {
 			isThorough = true;
 		}
 		

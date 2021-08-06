@@ -403,7 +403,7 @@ public class NoMellowBidPlaySituation {
 		
 
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5H TC 5C 3C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH 8H 7H")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -758,8 +758,16 @@ public class NoMellowBidPlaySituation {
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				}
-			//TODO: special consideration for QEquiv??
 				
+			} else if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+				
+				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						&& numCardsOfSuitInHand >= 3) {
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				} else {
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+				}
 			} else {
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 			}
@@ -1701,6 +1709,12 @@ public class NoMellowBidPlaySituation {
 			//System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low spade card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowSpade(dataModel, suitIndex));
 			
 		}*/
+		
+		//Take care of an edge-case:
+		if(bestSuit == -1) {
+			System.err.println("WARNING: Called get junkiest card while only having spade...");
+			return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+		}
 		
 		return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuit);
 	}

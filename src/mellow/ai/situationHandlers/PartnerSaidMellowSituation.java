@@ -138,7 +138,7 @@ public class PartnerSaidMellowSituation {
 	
 	public static double getValueLeadingSpade(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S KH TH 7H 2H")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 5H 2H AC 2C TD 8D")) {
 			System.out.println("Debug");
 		}
 		double ret = 0.0;
