@@ -565,6 +565,14 @@ public class SeatedLeftOfOpponentMellow {
 				// pretend lowest spades have a higher rank to discourage use of spades:
 				if(suit == Constants.SPADE) {
 					curLowestRankSuitScore += 9.5;
+					
+					int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE));
+					
+					if(numOver >= 0) {
+						//This is over-simplified, but whatever
+						curLowestRankSuitScore += 50.0;
+					}
+					
 				}
 				
 				//Don't want to lead low if you have master and are left of mellow.

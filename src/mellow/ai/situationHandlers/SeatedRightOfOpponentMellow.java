@@ -65,6 +65,15 @@ public class SeatedRightOfOpponentMellow {
 				// pretend lowest spades have a higher rank to discourage use of spades:
 				if(suit == Constants.SPADE) {
 					curLowestRankSuitScore += 3.5;
+					
+
+					int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE));
+					
+					if(numOver >= 0) {
+						//This is over-simplified, but whatever
+						curLowestRankSuitScore += 10.0;
+					}
+					
 				}
 
 				long numStartedWithInSuit = dataModel.getNumCardsCurrentUserStartedWithInSuit(suit);
