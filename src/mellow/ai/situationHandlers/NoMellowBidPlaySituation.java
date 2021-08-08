@@ -223,7 +223,19 @@ public class NoMellowBidPlaySituation {
 					|| dataModel.currentPlayerHasMasterInSuit(2)
 					|| dataModel.currentPlayerHasMasterInSuit(3)) {
 				curScore += 70.0;
+				
+				//if( numCardsOfSuitInHand == 1 && dataModel.getNumCardsInCurrentPlayerHand() >= 4) {
+				//	curScore -=100;
+				//}
+			} else {
+			
+				if( numCardsOfSuitInHand == 1 && dataModel.getNumCardsInCurrentPlayerHand() >= 3) {
+					curScore -=100;
+				} else if(numCardsOfSuitInHand == 2 && dataModel.getNumCardsInCurrentPlayerHand() >= 5) {
+					curScore -= 50;
+				}
 			}
+			
 		}
 		
 		//Don't lead small spade if you don't have much...
@@ -416,26 +428,37 @@ public class NoMellowBidPlaySituation {
 		
 		//Don't want to lead S if you're the only one with it... unless you have a plan...
 		if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
-				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
-			
-			boolean dontLeadSuit = false;
-			
-			//If current play has Kequiv and nothing else, hope that another player will throw off Aequiv later:
-			if(   (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
-					&& numCardsOfSuitInHand == 1)
-				||
-				  (numCardsOfSuitInHand >= 2
-				    && numCardsOfSuitOtherPlayersHave >= 4
-				    && ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
-				    && ! NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
-				    )
+				|| (dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+				    && dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 				) {
-				dontLeadSuit = true;
+			
+			if(couldWinAllCardsOfOffsuitInHand(dataModel, suitIndex)) {
+				return new CardAndValue(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex), 10000.0);
 			}
-			if(dontLeadSuit == false) {
-				curScore += 50.0;
+			
+			if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0 &&
+					dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				boolean dontLeadSuit = false;
+				
+				//If current play has Kequiv and nothing else, hope that another player will throw off Aequiv later:
+				if(   (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+						&& numCardsOfSuitInHand == 1)
+					||
+					  (numCardsOfSuitInHand >= 2
+					    && numCardsOfSuitOtherPlayersHave >= 4
+					    && ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
+					    && ! NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+					    )
+					) {
+					dontLeadSuit = true;
+				}
+				if(dontLeadSuit == false) {
+					curScore += 50.0;
+				}
 			}
 		}
+			
+			
 		//End case where current play is only one with spade.
 
 		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
@@ -1765,5 +1788,35 @@ public class NoMellowBidPlaySituation {
 		}
 		
 		return rating;
+	}
+	
+	public static boolean couldWinAllCardsOfOffsuitInHand(DataModel datamodel, int suitIndex) {
+		
+		int numCardsOfSuitInHand = datamodel.getNumCardsInCurrentPlayerHand();
+		int numCardsInHandFound = 0;
+		
+		for(int rank=DataModel.ACE; rank>=DataModel.RANK_TWO; rank--) {
+			String tmpCard = DataModel.getCardString(rank, suitIndex);
+			if(datamodel.hasCard(tmpCard)) {
+				numCardsInHandFound++;
+				
+				if(numCardsInHandFound == numCardsOfSuitInHand) {
+					return true;
+				}
+				
+			} else if(datamodel.isCardPlayedInRound(tmpCard)) {
+				//Do nothing
+			} else {
+				int numCardsNotInHandUnder = datamodel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(tmpCard);
+				
+				if(numCardsNotInHandUnder + 1 > numCardsInHandFound) {
+					return false;
+				} else {
+					return true;
+				}
+			}
+		}
+		
+		return true;
 	}
 }

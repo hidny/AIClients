@@ -160,7 +160,7 @@ public class PlayerSaidMellowSignals {
 		for(int rank=dataModel.ACE; rank>=dataModel.RANK_TWO; rank--) {
 			if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE
 					&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
-				return dataModel.getCardString(rank, suitIndex);
+				return DataModel.getCardString(rank, suitIndex);
 			}
 			
 		}
