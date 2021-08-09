@@ -767,6 +767,18 @@ public class NoMellowBidPlaySituation {
 				}
 			}
 			
+			//Consider not messing up your partner's counted king:
+			if(numCardsOfSuitInHand + numCardsOfSuitOtherPlayersHave == Constants.NUM_RANKS) {
+				
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex) == false
+						&& NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex) == false
+						&& NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex) == false
+						&& dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) < dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) ){
+					
+					curScore -= 20.0;
+				}
+			}
+			
 			
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				

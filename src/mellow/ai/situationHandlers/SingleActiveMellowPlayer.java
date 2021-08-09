@@ -269,6 +269,9 @@ public class SingleActiveMellowPlayer {
 			
 			numOfSuitPlayerHas -= numTopCardsToIgnore;
 			
+			int numOfSuitOtherPlayersHave = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit);
+			
+			
 			if(numOfSuitPlayerHas <= 0) {
 				return 0.0;
 			}
@@ -279,13 +282,17 @@ public class SingleActiveMellowPlayer {
 			
 			for(int i=0; i<numOfSuitPlayerHas && i<4; i++) {
 				
-				if(i==0) {
+				//Only worry about high cards that can be forced to be played:
+				int indexToUse = Math.min(i, numOfSuitOtherPlayersHave - 1);
+				
+				
+				if(indexToUse==0) {
 					cardToConsider = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
-				} else if(i == 1) {
+				} else if(indexToUse == 1) {
 					cardToConsider = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suit);
-				} else if(i == 2) {
+				} else if(indexToUse == 2) {
 					cardToConsider = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suit);
-				} else if(i == 3) {
+				} else if(indexToUse == 3) {
 					cardToConsider = dataModel.getCardCurrentPlayergetFourthLowestInSuit(suit);
 					
 					
