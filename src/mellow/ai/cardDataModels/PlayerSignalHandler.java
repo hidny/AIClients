@@ -2,7 +2,7 @@ package mellow.ai.cardDataModels;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.normalPlaySignals.MellowLetPartnerWinSignals;
-import mellow.ai.cardDataModels.normalPlaySignals.MellowVoidSignalsNoActiveMellows;
+import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
 import mellow.ai.cardDataModels.playerSaidMellowSignals.PlayerSaidMellowSignals;
 import mellow.cardUtils.CardStringFunctions;
 
@@ -32,14 +32,14 @@ public class PlayerSignalHandler {
 	private DataModel dataModel;
 	
 	private PlayerSaidMellowSignals playerSaidMellowSignals;
-	private MellowVoidSignalsNoActiveMellows mellowVoidSignalsNoActiveMellows;
+	private VoidSignalsNoActiveMellows mellowVoidSignalsNoActiveMellows;
 	private MellowLetPartnerWinSignals mellowLetPartnerWinSignals;
 	
 	public PlayerSignalHandler(DataModel dataModel) {
 		this.dataModel = dataModel;
 		
 		this.playerSaidMellowSignals = new PlayerSaidMellowSignals(dataModel);
-		this.mellowVoidSignalsNoActiveMellows = new MellowVoidSignalsNoActiveMellows(dataModel);
+		this.mellowVoidSignalsNoActiveMellows = new VoidSignalsNoActiveMellows(dataModel);
 		this.mellowLetPartnerWinSignals = new MellowLetPartnerWinSignals(dataModel);
 	}
 	
@@ -144,6 +144,10 @@ public class PlayerSignalHandler {
 
 	public boolean partnerHasMasterBasedOnSignals(int suitIndex) {
 		return this.mellowVoidSignalsNoActiveMellows.partnerHasMasterBasedOnSignals(suitIndex);
+	}
+	
+	public boolean partnerDoesNotHaveMasterBasedOnSignals(int suitIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.partnerDoesNotHaveMasterBasedOnSignals(suitIndex);
 	}
 
 	public boolean leftHandSideHasMasterBasedOnSignals(int suitIndex) {

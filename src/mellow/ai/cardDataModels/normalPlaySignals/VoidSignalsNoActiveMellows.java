@@ -6,7 +6,7 @@ import mellow.cardUtils.CardStringFunctions;
 
 
 //TODO
-public class MellowVoidSignalsNoActiveMellows {
+public class VoidSignalsNoActiveMellows {
 
 	//public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -15,7 +15,7 @@ public class MellowVoidSignalsNoActiveMellows {
 	
 	public DataModel dataModel;
 	
-	public MellowVoidSignalsNoActiveMellows(DataModel dataModel) {
+	public VoidSignalsNoActiveMellows(DataModel dataModel) {
 		this.dataModel = dataModel;
 		initSignalVars();
 	}
@@ -486,7 +486,23 @@ public class MellowVoidSignalsNoActiveMellows {
 		}
 	}
 	
-	
+	public boolean partnerDoesNotHaveMasterBasedOnSignals(int suitIndex) {
+		
+		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
+		
+		if(dataModel.hasCard(masterCard)) {
+			return false;
+		}
+		
+		int masterCardRank = DataModel.getRankIndex(masterCard);
+		
+		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
+				) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public boolean letfHandSideHasMasterBasedOnSignals(int suitIndex) {
 		

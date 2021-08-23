@@ -4,7 +4,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.cardDataModels.normalPlaySignals.MellowSignalsBasedOnLackOfTricks;
-import mellow.ai.cardDataModels.normalPlaySignals.MellowVoidSignalsNoActiveMellows;
+import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
 import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
@@ -525,7 +525,14 @@ public class NoMellowBidPlaySituation {
 			curScore += 5.0;
 		}
 		
+		//Aug 23rd
+		//TODO: try not to lead suit you or your partner doesn't have master of.
+		//if(dataModel.currentPlayerHasMasterInSuit(suitIndex) == false
+		//		&& dataModel.signalHandler.partnerDoesNotHaveMasterBasedOnSignals(suitIndex)) {
+		//	curScore -= 20.0;
+		//}
 		
+				
 		//Leading in a suit where RHS prob has master could be a good idea sometimes...
 		//Like when partner is trumping
 		//or partner has no spade.
@@ -1067,7 +1074,7 @@ public class NoMellowBidPlaySituation {
 						
 						int maxRankLHS = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
 
-						if(maxRankLHS == MellowVoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
+						if(maxRankLHS == VoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
 							consideredHighTrump = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 						} else if( dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE)) != null) {
 							String minSpadeOverLHS =dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE));
@@ -1264,7 +1271,7 @@ public class NoMellowBidPlaySituation {
 							
 							int maxRankLHS = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
 
-							if(maxRankLHS == MellowVoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
+							if(maxRankLHS == VoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
 								consideredHighTrump = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 							
 							} else if( dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE)) != null) {
