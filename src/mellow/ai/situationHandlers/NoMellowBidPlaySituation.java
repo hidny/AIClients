@@ -415,7 +415,9 @@ public class NoMellowBidPlaySituation {
 		
 
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH 8H 7H")) {
+		if(suitIndex == Constants.DIAMOND
+				&&
+				DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH QH 9H 4H KC 9C 2C KD 8D")) {
 			System.out.println("DEBUG");
 		}
 	

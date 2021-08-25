@@ -74,6 +74,9 @@ public class PartnerSaidMellowSituation {
 
 	public static String AIHandleLead(DataModel dataModel) {
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 9H 6H 7C 5C 3C 2C")) {
+			System.out.println("Debug!");
+		}
 		System.out.println("AILEADPROTECT)");
 		int bestSuitIndexToPlay = -1;
 		double valueOfBestSuitPlay = -Double.MAX_VALUE;
@@ -105,7 +108,8 @@ public class PartnerSaidMellowSituation {
 		
 		String cardToPlay = "";
 		if(dataModel.currentPlayerHasMasterInSuit(bestSuitIndexToPlay)
-			|| NonMellowBidHandIndicators.hasKEquiv(dataModel, bestSuitIndexToPlay) ) {
+			|| (NonMellowBidHandIndicators.hasKEquiv(dataModel, bestSuitIndexToPlay)
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestCardOfSuit) > 1) ) {
 			
 			if(CardStringFunctions.getIndexOfSuit(highestCardOfSuit) != Constants.SPADE) {
 				
@@ -453,6 +457,15 @@ public class PartnerSaidMellowSituation {
 				int numBetween = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(highestCardInHand, maxRankCardMellow);
 				
 				ret -= 20.0*numBetween;
+				
+				//Check if mellow could theoretically go under:
+				int numBelow = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestCardInHand);
+				if(numBelow == 0) {
+					ret -= 100.0;
+				} else if(numBelow == 1) {
+					ret -= 90.0;
+				}
+				
 			}
 		}
 		
