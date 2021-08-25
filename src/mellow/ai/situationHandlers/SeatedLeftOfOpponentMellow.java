@@ -102,7 +102,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			//handle case where mellow is already safe:
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 9S 3S 4H QD ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S 4S AH JH TH 6H 7D ")) {
 				System.out.println("DEBUG");
 			}
 			//TODO: the logic is completely messed up!
@@ -118,7 +118,7 @@ public class SeatedLeftOfOpponentMellow {
 									(MELLOW_PLAYER_INDEX, leadSuitIndex)) {
 					
 					//lazy approx:
-					return getHighestPartOfGroup(dataModel, NoMellowBidPlaySituation.handleNormalThrow(dataModel));
+					return getHighestPartOfGroup(dataModel, NoMellowPlaySituation.handleNormalThrow(dataModel));
 					
 				} else if(dataModel.cardAGreaterThanCardBGivenLeadCard
 							                 (highestCardOfSuit,
@@ -231,7 +231,23 @@ public class SeatedLeftOfOpponentMellow {
 				}
 				
 			} else if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
-				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+				String maxMellowSpade =dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
+				
+				if( maxMellowSpade == null) {
+					
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					
+				} else if(DataModel.getRankIndex(maxMellowSpade) < DataModel.QUEEN
+						&& dataModel.couldPlayCardInHandOverCardInSameSuit(maxMellowSpade)) {
+				
+					return dataModel.getCardInHandClosestOverSameSuit(maxMellowSpade);
+					
+				} else {
+
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					
+				}
 
 			} else {
 				
@@ -245,7 +261,7 @@ public class SeatedLeftOfOpponentMellow {
 		
 		
 			//TODO: don't be lazy in future (i.e. fill this up!)
-			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+			return NoMellowPlaySituation.handleNormalThrow(dataModel);
 		}
 	}
 	

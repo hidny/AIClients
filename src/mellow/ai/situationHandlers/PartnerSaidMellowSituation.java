@@ -28,8 +28,8 @@ public class PartnerSaidMellowSituation {
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 
 		//TODO: put in function
-		if( (throwIndex == 0 && NoMellowBidPlaySituation.couldTRAM(dataModel))
-			|| (throwIndex > 0 && NoMellowBidPlaySituation.couldPlayMasterSAndTram(dataModel))) {
+		if( (throwIndex == 0 && NoMellowPlaySituation.couldTRAM(dataModel))
+			|| (throwIndex > 0 && NoMellowPlaySituation.couldPlayMasterSAndTram(dataModel))) {
 			
 			System.out.println("THE REST ARE MINE! (TRAM)");
 			
@@ -68,7 +68,7 @@ public class PartnerSaidMellowSituation {
 				System.exit(1);
 			}
 			
-			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+			return NoMellowPlaySituation.handleNormalThrow(dataModel);
 		}
 	}
 

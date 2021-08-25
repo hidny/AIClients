@@ -10,7 +10,7 @@ import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
-public class NoMellowBidPlaySituation {
+public class NoMellowPlaySituation {
 
 	public static String handleNormalThrow(DataModel dataModel) {
 
@@ -117,7 +117,7 @@ public class NoMellowBidPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S TC 9C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS 9S 7H 6H 9C 3C 2C 8D 7D 4D ")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -181,6 +181,10 @@ public class NoMellowBidPlaySituation {
 				}
 					
 			}
+		} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+			
+			curScore += 8.0;
+			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 			
 		} else {
 			curScore += 5.0;
@@ -818,7 +822,9 @@ public class NoMellowBidPlaySituation {
 			
 			
 			//I like leading offsuit queens... if no one is void and I don't have a hope of winning with it.
-			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
+			if(DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
+					&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.ACE, suitIndex))
+					&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.KING, suitIndex))
 					&& 
 						! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
 					   && dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.LEFT_PLAYER_INDEX

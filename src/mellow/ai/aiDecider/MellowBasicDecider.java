@@ -6,7 +6,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.BiddingSituation;
-import mellow.ai.situationHandlers.NoMellowBidPlaySituation;
+import mellow.ai.situationHandlers.NoMellowPlaySituation;
 import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
 import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
@@ -174,7 +174,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		}
 		
 		if(numActiveMellows == 0) {
-			return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+			return NoMellowPlaySituation.handleNormalThrow(dataModel);
 			
 		} else if(numActiveMellows == 1) {
 			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
@@ -217,14 +217,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 									return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 								} else {
 									//Play lowest offsuit
-									return NoMellowBidPlaySituation.getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
+									return NoMellowPlaySituation.getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
 								}
 							}
 						}
 						
 						
 						//TODO: this should be a new situation...
-						return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+						return NoMellowPlaySituation.handleNormalThrow(dataModel);
 						//END TODO: put in function
 						
 					} else {

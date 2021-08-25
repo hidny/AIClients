@@ -36,7 +36,7 @@ public class SeatedRightOfOpponentMellow {
 		
 		
 		//TODO: this is wrong, but whatever...
-		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+		return NoMellowPlaySituation.handleNormalThrow(dataModel);
 	}
 	
 
@@ -360,7 +360,7 @@ public class SeatedRightOfOpponentMellow {
 			return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 		}
 
-		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+		return NoMellowPlaySituation.handleNormalThrow(dataModel);
 	}
 		
 	
@@ -660,7 +660,7 @@ public class SeatedRightOfOpponentMellow {
 			return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 		}
 
-		return NoMellowBidPlaySituation.handleNormalThrow(dataModel);
+		return NoMellowPlaySituation.handleNormalThrow(dataModel);
 	}
 	
 	public static String AIFourthThrow(DataModel dataModel) {
