@@ -154,6 +154,10 @@ public class PlayerSignalHandler {
 		return this.mellowVoidSignalsNoActiveMellows.letfHandSideHasMasterBasedOnSignals(suitIndex);
 	}
 	
+	public boolean rightHandSideHasMasterBasedOnSignals(int suitIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.letfHandSideHasMasterBasedOnSignals(suitIndex);
+	}
+	
 	public boolean playerAlwaysFollowedSuit(int playerIndex, int suitIndex) {
 		return this.mellowVoidSignalsNoActiveMellows.playerAlwaysFollowedSuit(playerIndex, suitIndex);
 	}

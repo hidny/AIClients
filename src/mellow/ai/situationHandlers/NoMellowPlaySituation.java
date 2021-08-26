@@ -117,7 +117,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS 9S 7H 6H 9C 3C 2C 8D 7D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS TH 6H 3H QC 6D")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -302,11 +302,50 @@ public class NoMellowPlaySituation {
 			//TODO: this is a rough estimate that doesn't account for stolen tricks,
 			// Tricks given to partner/ taken from partner
 			// or unfortunate circumstances...
-			if(dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX)
-				< dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
-				|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
-				curScore += 30.0;
+
+			if((dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+					|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				
+				if(dataModel.getNumCardsInCurrentPlayerHand() == 2
+						&& dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+					//Over-fitting, but whatever!
+					curScore += 10.0;
+				} else {
+					curScore += 0.0;
+				}
+			} else {
+				
+
+				curScore += 10.0;
+				
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					curScore += 1.0;
+				}
+				
+				//TODO: put in function
+				int numPlayersWithSpade = 0;
+				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+					numPlayersWithSpade++;
+				}
+				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+					numPlayersWithSpade++;
+				}
+				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					numPlayersWithSpade++;
+				}
+				//END TODO function
+				
+				if(numPlayersWithSpade * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
+					curScore += 15.0;
+				}
+				
 			}
+			//if(dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) + dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX)
+			//	< dataModel.getBid(Constants.CURRENT_AGENT_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+			//	|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+				
+			//}
 			
 		} else {
 			
@@ -413,6 +452,7 @@ public class NoMellowPlaySituation {
 		
 
 		
+		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
@@ -421,8 +461,9 @@ public class NoMellowPlaySituation {
 
 		if(suitIndex == Constants.DIAMOND
 				&&
-				DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH QH 9H 4H KC 9C 2C KD 8D")) {
-			System.out.println("DEBUG");
+				DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 8H 7H 4H TC 7C 6C 4D ")) {
+				System.out.println("Debug");
+				
 		}
 	
 		String cardToPlay = null;
@@ -508,7 +549,11 @@ public class NoMellowPlaySituation {
 	                  (Constants.CURRENT_PARTNER_INDEX, suitIndex) == false) {
 				curScore -= 100.0;
 			}
-		
+
+		} else if(dataModel.signalHandler.partnerDoesNotHaveMasterBasedOnSignals(suitIndex)
+				&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+			curScore -= 20.0;
+			
 		} else if(MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.CURRENT_PARTNER_INDEX, suitIndex)
 				  && ! MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
 			
@@ -725,9 +770,10 @@ public class NoMellowPlaySituation {
 				//Don't lower it again
 
 			} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+				
 				//Only lower it a little...
 				curScore -= 5.0;
-			
+				
 			} else {
 				curScore -= 26.0;
 				

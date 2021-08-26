@@ -523,6 +523,27 @@ public class VoidSignalsNoActiveMellows {
 			return false;
 		}
 	}
+
+
+	public boolean rightHandSideHasMasterBasedOnSignals(int suitIndex) {
+		
+		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
+		
+		if(dataModel.hasCard(masterCard)) {
+			return false;
+		}
+		
+		int masterCardRank = DataModel.getRankIndex(masterCard);
+		
+		if(getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) >= masterCardRank
+			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
+			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) < masterCardRank
+				) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	public boolean playerAlwaysFollowedSuit(int playerIndex, int suitIndex) {
 		return ! didNotFollowSuit[playerIndex][suitIndex];
