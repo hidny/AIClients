@@ -54,7 +54,7 @@ public class SeatedRightOfOpponentMellow {
 		
 			String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
 	
-			if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
+			if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
 				
 				//TODO: instead of just returning, try grading the options!
 				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
@@ -176,7 +176,7 @@ public class SeatedRightOfOpponentMellow {
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 					String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(leaderThrow);
 					
-					if(dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(leaderThrow, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
+					if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(leaderThrow, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
 						
 						//TODO: We may not want to lead every single time we can...
 						//HANDLE this complication LATER!
@@ -217,7 +217,7 @@ public class SeatedRightOfOpponentMellow {
 						if(dataModel.hasCard(tempCard)) {
 							
 							
-							if(  dataModel.signalHandler.getNumCardsMellowSignalledBetweenTwoCards(tempCard, leaderThrow, MELLOW_PLAYER_INDEX)
+							if(  dataModel.signalHandler.getNumCardsMellowBidderSignalledBetweenTwoCards(tempCard, leaderThrow, MELLOW_PLAYER_INDEX)
 								    >= 2) {
 									break;
 							}
@@ -273,7 +273,7 @@ public class SeatedRightOfOpponentMellow {
 
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
-					&& dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+					&& dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 				System.err.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
 				System.exit(1);
 			}
@@ -281,9 +281,9 @@ public class SeatedRightOfOpponentMellow {
 
 			//System.out.println("DEBUG TEST player with mellow on left tempted to trump:");
 			
-			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 				
-				if(dataModel.signalHandler.mellowPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+				if(dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
 					
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
@@ -393,7 +393,7 @@ public class SeatedRightOfOpponentMellow {
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 					String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(curStrongestCard);
 					
-					if(dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(curStrongestCard, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
+					if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(curStrongestCard, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
 						
 						//TODO: We may not want to lead every single time we can...
 						//HANDLE this complication LATER!
@@ -454,14 +454,14 @@ public class SeatedRightOfOpponentMellow {
 							
 							if(topCardInLeadSuit != null) {
 								
-								if(dataModel.signalHandler.getNumCardsMellowSignalledBetweenTwoCards(tempCard, topCardInLeadSuit, MELLOW_PLAYER_INDEX)
+								if(dataModel.signalHandler.getNumCardsMellowBidderSignalledBetweenTwoCards(tempCard, topCardInLeadSuit, MELLOW_PLAYER_INDEX)
 								    >= 2) {
 									break;
 								}
 								
 							} else {
 							
-								if(dataModel.signalHandler.getNumCardsMellowSignalledOverCardSameSuit(tempCard, MELLOW_PLAYER_INDEX)
+								if(dataModel.signalHandler.getNumCardsMellowBidderSignalledOverCardSameSuit(tempCard, MELLOW_PLAYER_INDEX)
 										>= 2) {
 									break;
 								}
@@ -529,7 +529,7 @@ public class SeatedRightOfOpponentMellow {
 					System.exit(1);
 				}
 				
-				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+				if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				
@@ -539,7 +539,7 @@ public class SeatedRightOfOpponentMellow {
 					if(dataModel.couldPlayCardInHandOverCardInSameSuit(curStrongestCard)) {
 						String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(curStrongestCard);
 						
-						if(dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(curStrongestCard, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
+						if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(curStrongestCard, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
 							
 							//TODO: We may not want to lead every single time we can...
 							//HANDLE this complication LATER!
@@ -570,7 +570,7 @@ public class SeatedRightOfOpponentMellow {
 
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
-					&& dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+					&& dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 				System.err.println("ERROR: mellowPlayerSignalNoCardsOfSuit didn't work!");
 				System.exit(1);
 			}
@@ -578,9 +578,9 @@ public class SeatedRightOfOpponentMellow {
 
 			//System.out.println("DEBUG TEST player with mellow on left tempted to trump:");
 					
-			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 				
-				if(dataModel.signalHandler.mellowPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+				if(dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
 					
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
@@ -637,7 +637,7 @@ public class SeatedRightOfOpponentMellow {
 				// and might as well trump if mellow player is void in spade...
 				if( ! dataModel.currentPlayerOnlyHasSpade()
 						//TODO: shouldn't make a diff...
-						&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
+						&& ! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 
 					//TODO: why not play lower trump and dare mellow player to go under?
 					//return dataModel.getHighestOffSuitCardAnySuitButSpade();

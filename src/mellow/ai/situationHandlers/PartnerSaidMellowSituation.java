@@ -123,7 +123,7 @@ public class PartnerSaidMellowSituation {
 		} else {
 			//cardToPlay = highestCardOfSuit;
 			
-			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay)) {
+			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay)) {
 				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndexToPlay);
 			} else {
 				
@@ -200,12 +200,12 @@ public class PartnerSaidMellowSituation {
 		
 		//Mellow is void or seems void
 		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)
-			|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
+			|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 			ret += 50.0;
 			
 			
 		//Mellow has no card over highest spade in hand::
-		} else if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(
+		} else if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(
 				dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)
 				, MELLOW_PLAYER_INDEX)) {
 			ret += 40.0;
@@ -236,7 +236,7 @@ public class PartnerSaidMellowSituation {
 				//	numOffsuitVoid++;
 				//}
 				
-				if( ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, s)) {
+				if( ! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, s)) {
 					String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
 					
 					if( ! dataModel.couldPlayCardInHandOverCardInSameSuit(maxRankCardMellow)
@@ -395,7 +395,7 @@ public class PartnerSaidMellowSituation {
 		
 		//Is mellow player void in suit?
 		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, currentSuitIndex)
-				|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
+				|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
 				ret += 50.0;
 				
 		} else if(LHSCouldTrump
@@ -406,12 +406,12 @@ public class PartnerSaidMellowSituation {
 		
 		//Mellow is void or seems void
 		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, currentSuitIndex)
-			|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
+			|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
 			ret += 35.0;
 			
 			
 		//Mellow has no card over highest spade in hand::
-		} else if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(
+		} else if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(
 				dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex)
 				, MELLOW_PLAYER_INDEX)) {
 			ret += 20.0;
@@ -445,7 +445,7 @@ public class PartnerSaidMellowSituation {
 		
 		
 		//Is leading suit a danger because mellow could have higher one:
-		if( ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
+		if( ! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
 			String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, currentSuitIndex);
 			
 			String highestCardInHand = dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex);
@@ -492,7 +492,7 @@ public class PartnerSaidMellowSituation {
 			if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE) == false) {
 				
 				
-				if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(curStrongestCardPlayed, MELLOW_PLAYER_INDEX) == false) {
+				if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(curStrongestCardPlayed, MELLOW_PLAYER_INDEX) == false) {
 
 					//If mellow player partner seems vulnerable based on signals: trump if possible
 					//TODO: make it more sophisticated in future
@@ -550,13 +550,13 @@ public class PartnerSaidMellowSituation {
 					
 				} else {
 					
-					if(dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
+					if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
 						
 						//TODO still want to take trick sometimes... 
 						
 						//TODO: dataModel.numCardsInHandGreaterThanCardSameSuit
 						
-						if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuitExceptRank2(highestProtector, MELLOW_PLAYER_INDEX)) {
+						if(dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(highestProtector, MELLOW_PLAYER_INDEX)) {
 							return highestProtector;
 						
 						//} else if
@@ -697,7 +697,7 @@ public class PartnerSaidMellowSituation {
 						String lowestCard = dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 						
 						if(curCard.equals(lowestCard)
-								|| dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCards(lowestCard, curCard, leadSuit)
+								|| dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(lowestCard, curCard, leadSuit)
 								) {
 							
 							return curCard;

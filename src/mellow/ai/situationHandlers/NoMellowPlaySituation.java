@@ -475,8 +475,8 @@ public class NoMellowPlaySituation {
 		
 		//Don't want to lead S if you're the only one with it... unless you have a plan...
 		if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0
-				|| (dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
-				    && dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				|| (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+				    && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 				) {
 			
 			if(couldWinAllCardsOfOffsuitInHand(dataModel, suitIndex)) {
@@ -551,7 +551,7 @@ public class NoMellowPlaySituation {
 			}
 
 		} else if(dataModel.signalHandler.partnerDoesNotHaveMasterBasedOnSignals(suitIndex)
-				&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)) {
 			curScore -= 20.0;
 			
 		} else if(MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.CURRENT_PARTNER_INDEX, suitIndex)
@@ -922,6 +922,9 @@ public class NoMellowPlaySituation {
 		//START REALLY OLD CODE:
 		//SEE NOTES FOR BETTER PLAN
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 8S 9C 9D 6D 3D")) {
+			System.out.println("Debug");
+		}
 		//TODO: pseudo code for not following suit
 	
 		
@@ -1075,6 +1078,9 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 9H 4H 2H TD ")) {
+				System.out.println("DEBUG 1531");
+			}
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
 				cardToPlay = getJunkiestCardToFollowLead(dataModel);
@@ -1133,9 +1139,10 @@ public class NoMellowPlaySituation {
 							highSpadeInMind = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 							
 						} else if( dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE)) != null) {
+							
 							String minSpadeOverLHS =dataModel.getCardInHandClosestOverSameSuit(DataModel.getCardString(maxRankLHS, Constants.SPADE));
-						
 							couldProbPlayOverLHS = true;
+							
 							if(! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
 									|| (dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
 										    &&  dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(highSpadeInMind, minSpadeOverLHS)
@@ -1282,8 +1289,8 @@ public class NoMellowPlaySituation {
 				// but we might reconsider given LHS is also trumping...
 
 				boolean goBigOrGoHome = false;
-				if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
-								&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+								&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 								&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
 					goBigOrGoHome = true;
 				}
@@ -1313,7 +1320,10 @@ public class NoMellowPlaySituation {
 						
 						String highcard = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
-						if(dataModel.isMasterCard(dataModel.getCurrentFightWinningCardBeforeAIPlays())
+						if(numSpadesInHand == 1 && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)) {
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						} else if(dataModel.isMasterCard(dataModel.getCurrentFightWinningCardBeforeAIPlays())
 								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highcard) >= 1) {
 							
 							//TODO: maybe handle signals for min spade LHS has...

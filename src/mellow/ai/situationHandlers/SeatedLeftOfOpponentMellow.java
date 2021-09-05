@@ -114,7 +114,7 @@ public class SeatedLeftOfOpponentMellow {
 				String highestCardOfSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuitIndex);
 				
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())
-						|| dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit
+						|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit
 									(MELLOW_PLAYER_INDEX, leadSuitIndex)) {
 					
 					//lazy approx:
@@ -376,10 +376,10 @@ public class SeatedLeftOfOpponentMellow {
 			if(dataModel.isVoid(mellowPlayerIndex, curSuitIndex)) {
 				curValue -= 100.0;
 
-			} else if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex)) {
+			} else if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex)) {
 				curValue -= 50.0;
 				
-			} else if(dataModel.signalHandler.mellowSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
+			} else if(dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
 				curValue -= 48.0;
 
 			} else if(dataModel.isMasterCard(curCard)) {
@@ -422,7 +422,7 @@ public class SeatedLeftOfOpponentMellow {
 			
 			//Count Amount of cards over top mellow signal...
 			//The more cards over, the less inclined you should be about throwing off...
-			if(dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex) == false) {
+			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex) == false) {
 				
 				String topMellowSignalCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, curSuitIndex);
 				
@@ -550,7 +550,7 @@ public class SeatedLeftOfOpponentMellow {
 		
 			String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
 	
-			if(dataModel.signalHandler.mellowSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
+			if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
 				
 
 				//TODO: FROM DEBUG TESTCASE:

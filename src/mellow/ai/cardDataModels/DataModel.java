@@ -276,7 +276,7 @@ public class DataModel {
 			//I think that's viable as a strat to get opponent to also say mellow near the end of game...
 			
 			//For now, assume that if there's a mellow bid, player has no AS
-			signalHandler.setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, ACE);
+			signalHandler.setCardMellowBidderSignalNoIfUncertain(playerIndex, Constants.SPADE, ACE);
 			
 		} else {
 			//TODO!

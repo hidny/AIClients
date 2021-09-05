@@ -73,7 +73,7 @@ public class PlayerSignalHandler {
 	//TODO: I'm thinking of just passing this.playerSaidMellowSignals to the situation handlers and
 	//      not having these functions here...
 	
-	public void setCardMellowSignalNoIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
+	public void setCardMellowBidderSignalNoIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
 		this.playerSaidMellowSignals.setCardMellowSignalNoIfUncertain(playerIndex, suitIndex, rankIndex);
 	}
 	
@@ -81,23 +81,23 @@ public class PlayerSignalHandler {
 		return this.playerSaidMellowSignals.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex);
 	}
 	
-	public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
+	public boolean mellowBidderSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.mellowSignalledNoCardOverCardSameSuit(inputCard, mellowPlayerIndex);
 	}
 	
-	public boolean mellowSignalledNoCardUnderCardSameSuitExceptRank2(String inputCard, int mellowPlayerIndex) {
+	public boolean mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(String inputCard, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.mellowSignalledNoCardUnderCardSameSuitExceptRank2(inputCard, mellowPlayerIndex);
 	}
 	
-	public boolean mellowSignalledNoCardBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
+	public boolean mellowBidderSignalledNoCardBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.mellowSignalledNoCardBetweenTwoCards(smallerCard, biggerCard, mellowPlayerIndex);
 	}
 	
-	public boolean mellowPlayerSignalNoCardsOfSuit(int mellowPlayerIndex, int suitIndex) {
+	public boolean mellowBidderPlayerSignalNoCardsOfSuit(int mellowPlayerIndex, int suitIndex) {
 		return this.playerSaidMellowSignals.mellowPlayerSignalNoCardsOfSuit(mellowPlayerIndex, suitIndex);
 	}
 	
-	public boolean mellowPlayerMayBeInDangerInSuit(int mellowPlayerIndex, int suitIndex) {
+	public boolean mellowBidderPlayerMayBeInDangerInSuit(int mellowPlayerIndex, int suitIndex) {
 		return this.playerSaidMellowSignals.mellowPlayerMayBeInDangerInSuit(mellowPlayerIndex, suitIndex);
 	}
 
@@ -125,11 +125,11 @@ public class PlayerSignalHandler {
 	//}
 	
 	//Player who bid Mellow signals 
-	public int getNumCardsMellowSignalledOverCardSameSuit(String card, int mellowPlayerIndex) {
+	public int getNumCardsMellowBidderSignalledOverCardSameSuit(String card, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.getNumCardsMellowSignalledOverCardSameSuit(card, mellowPlayerIndex);
 	}
 	
-	public int getNumCardsMellowSignalledBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
+	public int getNumCardsMellowBidderSignalledBetweenTwoCards(String smallerCard, String biggerCard, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.getNumCardsMellowSignalledBetweenTwoCards(smallerCard, biggerCard, mellowPlayerIndex);
 	}
 

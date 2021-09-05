@@ -303,9 +303,9 @@ public class VoidSignalsNoActiveMellows {
 						
 						if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE
 									&& throwerIndex == 1
-									&& (dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit((playerIndex + 2) % Constants.NUM_PLAYERS, dataModel.getSuitOfLeaderThrow())
+									&& (dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit((playerIndex + 2) % Constants.NUM_PLAYERS, dataModel.getSuitOfLeaderThrow())
 											|| dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) < 2)
-									&& ! dataModel.signalHandler.mellowPlayerSignalNoCardsOfSuit((playerIndex + 2) % Constants.NUM_PLAYERS, Constants.SPADE)) {
+									&& ! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit((playerIndex + 2) % Constants.NUM_PLAYERS, Constants.SPADE)) {
 							letPartnerWin = true;
 						}
 					
