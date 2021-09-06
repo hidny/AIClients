@@ -950,7 +950,7 @@ public class NoMellowPlaySituation {
 		//START REALLY OLD CODE:
 		//SEE NOTES FOR BETTER PLAN
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 8S 9C 9D 6D 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 3S KC TC 6C 3C AD KD TD 5D 4D 2D")) {
 			System.out.println("Debug");
 		}
 		//TODO: pseudo code for not following suit
@@ -1019,6 +1019,10 @@ public class NoMellowPlaySituation {
 							} else if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
 								
 								return cardToPlay;
+								
+							} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(curPlayerTopCardInSuit, leaderCard) >= 1) {
+								//If Jack lead, don't lead king.
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 								
 							} else {
 								//Play the King while the Ace is still out!
@@ -1701,7 +1705,7 @@ public class NoMellowPlaySituation {
 			//Easy for throwing off:
 			if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
 					&& numUnderLowest == 0 
-					&& numOverHighest >= 1
+					&& (numOverHighest >= 1 || dataModel.getNumCardsInCurrentPlayerHand() <=2)
 					&& numberOfCardsInSuit == 1) {
 				
 				System.out.println("Nothing lower...");
