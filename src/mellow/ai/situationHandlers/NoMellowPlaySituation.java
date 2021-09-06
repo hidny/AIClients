@@ -139,6 +139,33 @@ public class NoMellowPlaySituation {
 				curScore += 50.0;
 			}
 			
+			boolean opponentsHaveNoSpadeProbably = false;
+			if(numCardsOfSuitOtherPlayersHave == 0) {
+				opponentsHaveNoSpadeProbably = true;
+				
+				
+			} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+					&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) ) {
+				opponentsHaveNoSpadeProbably = true;
+				//But partner has S...
+				
+			}
+			
+			int numForcingCards = dataModel.getNumForcingCardsCurrentPlayerHasInALLOffSuitAssumingNoTrump();
+			
+			if(opponentsHaveNoSpadeProbably
+					&& 2 * (numCardsOfSuitInHand + numForcingCards) < dataModel.getNumCardsInCurrentPlayerHand()) {
+				
+				//TODO:
+				//public int getNumMasterOrForcingCards() {
+					
+				//}
+				
+				//Don't lead spade when opponents don't have spade.
+				//Unless you only have 1 non spade, then I don't know.
+				curScore -= 300;
+			}
 
 		//Treat partner's possible master as your own...
 		} else if(dataModel.signalHandler.partnerHasMasterBasedOnSignals(Constants.SPADE)) {
@@ -459,9 +486,9 @@ public class NoMellowPlaySituation {
 		
 
 
-		if(suitIndex == Constants.DIAMOND
-				&&
-				DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 8H 7H 4H TC 7C 6C 4D ")) {
+		if(//suitIndex == Constants.DIAMOND
+			//&&
+				DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 7H TD ")) {
 				System.out.println("Debug");
 				
 		}
@@ -721,7 +748,8 @@ public class NoMellowPlaySituation {
 					(Constants.RIGHT_PLAYER_INDEX, suitIndex) == false
 				  && dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) != Constants.RIGHT_PLAYER_INDEX
 				)
-				|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 				) {
 				//increased to 26.0 to fix testcase Michael2021 -> 290...
 				curScore += 26.0;

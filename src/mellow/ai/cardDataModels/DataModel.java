@@ -1596,6 +1596,8 @@ public class DataModel {
 		return isMasterCard(getCardLeaderThrow());
 	}
 	
+	
+	
 	//pre: card not currently losing in fight.
 	public boolean isMasterCard(String card) {
 		
@@ -2304,6 +2306,10 @@ public class DataModel {
 				return false;
 		}
 		
+		//At this point, we know we can make all spades tricks,
+		//but will there be spades left afterwards?
+		
+		
 		int playerOwnedCards = 0;
 		int otherPlayerOwnedCards = 0;
 		
@@ -2401,6 +2407,61 @@ public class DataModel {
 		return true;
 	}
 
+	public int getNumForcingCardsCurrentPlayerHasInALLOffSuitAssumingNoTrump() {
+		int ret = 0;
+		ret += getNumForcingCardsCurrentPlayerHasInOffSuitAssumingNoTrump(Constants.HEART);
+		ret += getNumForcingCardsCurrentPlayerHasInOffSuitAssumingNoTrump(Constants.CLUB);
+		ret += getNumForcingCardsCurrentPlayerHasInOffSuitAssumingNoTrump(Constants.DIAMOND);
+		
+		
+		return ret;
+	}
+	
+	public int getNumForcingCardsCurrentPlayerHasInOffSuitAssumingNoTrump(int suitIndex) {
+		
+		int numForcingCards = 0;
+		int otherPlayerOwnedCards = 0;
+		
+		for(int rank=ACE; rank >= RANK_TWO; rank--) {
+			
+			if(cardsUsed[suitIndex][rank] == false) {
+				if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][rank] == CERTAINTY) {
+					
+					
+					if(otherPlayerOwnedCards > 0) {
+						
+						int numCardsInSuitPlayerHasOverCurCard = numForcingCards;
+						int numCardsInSuitOtherHaveOver = otherPlayerOwnedCards;
+						int numCardsInSuitOtherHaveUnder = 0;
+						
+						for(int rank2=rank-1; rank2 >= RANK_TWO; rank2--) {
+							if(cardsUsed[suitIndex][rank2] == false) {
+								if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][rank2] != CERTAINTY) {
+									numCardsInSuitOtherHaveUnder++;
+								}
+							}
+						}
+						
+						if(numCardsInSuitPlayerHasOverCurCard 
+								< numCardsInSuitOtherHaveOver + numCardsInSuitOtherHaveUnder ) {
+							break;
+						}
+						
+					}
+
+					numForcingCards++;
+					
+
+				} else {
+					
+					otherPlayerOwnedCards++;
+				}
+				
+			}
+		}
+		
+		return numForcingCards;
+	}
 	
 	
 	//If player lead master, then they probably have 1 more of that suit.
