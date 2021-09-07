@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -36,29 +37,27 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowLead(DataModel dataModel) {
 		
-		//To be honest, I'm not passionate about any of the failed tests right now...
-		//System.out.println("(MELLOW LEAD TEST)");
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6S 3S 3H 2H QC JC TC 9C 6C JD 6D 2D ")) {
+			System.out.println("Debug");
+		}
 		
 		String ret = "";
 		int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
-		if(numSpadesInHand > 0) {
-			
-			if(numSpadesInHand == 1
+		if(numSpadesInHand > 0
+				&&  
+				   (numSpadesInHand == 1
 				||	DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) <
 					DataModel.JACK
-				|| dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4) {
+				|| dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4)
+		) {
 
 				ret = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-			} else {
-				
-				//TODO: over simplified, but whatever:
-				ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
-			}
 			
 		} else {
 			//TODO: over simplified, but whatever:
-			ret = dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			//ret = dataModel.getLowOffSuitCardToLeadInSafeSuit();
+			ret = getOffsuitMellowLead(dataModel);
 		}
 		
 		//Try to lead with a 4 or a 5:
@@ -457,5 +456,109 @@ public class SingleActiveMellowPlayer {
 			
 			
 			return oddsLosingFirstRound;
+		}
+		
+		public static String getOffsuitMellowLead(DataModel dataModel) {
+			
+			String bestCardToPlay = null;
+			double currentBestScore = -1000000.0;
+			
+			//TODO: play random card if all spade or something...
+			
+			for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
+				
+				if(suitIndex == Constants.SPADE) {
+					continue;	
+				}
+				
+				int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+				
+				//Can't play a suit you don't have:
+				if(numCardsOfSuitInHand == 0) {
+					continue;
+				}
+				
+				CardAndValue cardAndValueRet = GetValueofMellowBidLeadingOffsuit(dataModel, suitIndex);
+				
+				
+				if(cardAndValueRet.getValue() > currentBestScore) {
+					
+					currentBestScore = cardAndValueRet.getValue();
+					bestCardToPlay = cardAndValueRet.getCard();
+					
+				} else if(cardAndValueRet.getValue() == currentBestScore
+						&& (DataModel.getRankIndex(cardAndValueRet.getCard()) > DataModel.getRankIndex(bestCardToPlay)
+								|| DataModel.getRankIndex(cardAndValueRet.getCard()) == DataModel.KING
+								)
+						) {
+					
+					currentBestScore = cardAndValueRet.getValue();
+					bestCardToPlay = cardAndValueRet.getCard();
+				}
+				
+			}
+			
+			if(bestCardToPlay != null) {
+				return bestCardToPlay;
+			} else {
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			}
+			
+		}
+		
+		public static CardAndValue GetValueofMellowBidLeadingOffsuit(DataModel dataModel, int suitIndex) {
+			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 5S TD 8D 6D 4D 2D JC 8C 6C TH 4H 3H")) {
+				System.out.println("DEBUG");
+			}
+			String lowestCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+			int numCards = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			double value = 0.0;
+			value -= 10 * Math.min(numCards, 4);
+			
+			if(numCards > 0 ) {
+				if(DataModel.getRankIndex(lowestCard) > DataModel.RANK_FIVE) {
+					value -= 30.0 * (DataModel.getRankIndex(lowestCard) - DataModel.RANK_FIVE);
+				}
+			} else {
+				
+				System.err.println("WARNING: Checking value of playing card of suit when mellow has no card of suit.");
+				return new CardAndValue( dataModel.getLowOffSuitCardToLeadInSafeSuit(), -1000000.0);
+			}
+			
+			if(numCards > 1) {
+				
+				String secondLowest = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitIndex);
+				
+				if(DataModel.getRankIndex(secondLowest) > DataModel.RANK_NINE) {
+					
+					value -= 20 * (DataModel.getRankIndex(secondLowest) - DataModel.RANK_NINE);
+				}
+			}
+			
+			
+			if(numCards > 2) {
+				
+				String thirdLowest = dataModel.getCardCurrentPlayergetThirdLowestInSuit(suitIndex);
+				
+				if(DataModel.getRankIndex(thirdLowest) > DataModel.RANK_NINE) {
+					
+					value -= 20 * (DataModel.getRankIndex(thirdLowest) - DataModel.RANK_NINE);
+				}
+			}
+			
+			if(numCards > 3) {
+				
+				String fourthLowest = dataModel.getCardCurrentPlayergetFourthLowestInSuit(suitIndex);
+				
+				if(DataModel.getRankIndex(fourthLowest) >= DataModel.KING) {
+					
+					value -= 20 * (DataModel.getRankIndex(fourthLowest) - DataModel.KING);
+				}
+			}
+			
+			return new CardAndValue(lowestCard, value);
+			
 		}
 }
