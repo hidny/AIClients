@@ -74,9 +74,7 @@ public class PartnerSaidMellowSituation {
 
 	public static String AIHandleLead(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 9H 6H 7C 5C 3C 2C")) {
-			System.out.println("Debug!");
-		}
+		
 		System.out.println("AILEADPROTECT)");
 		int bestSuitIndexToPlay = -1;
 		double valueOfBestSuitPlay = -Double.MAX_VALUE;
@@ -142,7 +140,7 @@ public class PartnerSaidMellowSituation {
 	
 	public static double getValueLeadingSpade(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 5H 2H AC 2C TD 8D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S 4S 7H 3H TD 2D ")) {
 			System.out.println("Debug");
 		}
 		double ret = 0.0;
@@ -181,6 +179,7 @@ public class PartnerSaidMellowSituation {
 		
 		int numCardsInHandOfSuit = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 		
+		/*
 		//Check for a good backup card: (2nd highest card)
 		if(numCardsInHandOfSuit >= 2) {
 			String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -195,8 +194,51 @@ public class PartnerSaidMellowSituation {
 			ret += 20.0 - 5.0 * Math.min(4, inBetweenCards);
 			
 			
-		}
+		}*/
 		
+		String cardMellowMax = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
+		
+		int numCardsSuit = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+		
+		if(cardMellowMax != null) {
+			//Consider 2nd highest card of suit:
+			if(numCardsSuit >= 2 ) {
+				
+				String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+				
+				
+				if(
+						DataModel.getRankIndex(secondHighest)
+						 >= DataModel.getRankIndex(cardMellowMax) - 1
+						) {
+	
+					ret += 10.0;
+				} else {
+					//ret -= 5.0 * 
+					//		(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardMellowMax, secondHighest)
+					//				-1);
+				}
+			}
+			
+			//Consider 3rd highest card of suit:
+			if(numCardsSuit >= 3 ) {
+				String thirdHighest = dataModel.getCardCurrentPlayerGetThirdHighestInSuit(Constants.SPADE);
+				
+				if(DataModel.getRankIndex(thirdHighest)
+					 >= DataModel.getRankIndex(cardMellowMax) - 2
+					) {
+				ret += 5.0;
+				
+				} else {
+				
+				
+				//ret -= 4.0 * 
+				//		(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardMellowMax, thirdHighest)
+				//				-2);
+				}
+			}
+		}
+			
 		
 		//Mellow is void or seems void
 		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)
@@ -275,8 +317,8 @@ public class PartnerSaidMellowSituation {
 	public static double getValueLeadingOffsuit(DataModel dataModel, int currentSuitIndex) {
 		double ret = 0.0;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S KH TH 7H 2H")) {
-			System.out.println("Debug");
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S 4S 7H 3H TD 2D ")) {
+			System.out.println("Debug!");
 		}
 		//Factors:
 		//TODO
@@ -410,38 +452,56 @@ public class PartnerSaidMellowSituation {
 			ret += 35.0;
 			
 			
-		//Mellow has no card over highest spade in hand::
+		//Mellow has no card over highest card of suit in hand::
 		} else if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(
 				dataModel.getCardCurrentPlayerGetHighestInSuit(currentSuitIndex)
 				, MELLOW_PLAYER_INDEX)) {
 			ret += 20.0;
 		
-		//Mellow potentially has a card in suit:	
-		} else {
+		}
 		
-			String cardMellowMax = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, currentSuitIndex);
-			
-			
-			int numCardsSuit = dataModel.getNumberOfCardsOneSuit(currentSuitIndex);
-			
+		String cardMellowMax = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, currentSuitIndex);
+		
+		int numCardsSuit = dataModel.getNumberOfCardsOneSuit(currentSuitIndex);
+		
+		if(cardMellowMax != null) {
 			//Consider 2nd highest card of suit:
-			if(numCardsSuit >= 2
-					&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(currentSuitIndex))
-					 >= DataModel.getRankIndex(cardMellowMax) - 1
-					) {
-				ret += 10.0;
-			}
+			if(numCardsSuit >= 2 ) {
+				
+				String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(currentSuitIndex);
+				
+				
+				if(
+						DataModel.getRankIndex(secondHighest)
+						 >= DataModel.getRankIndex(cardMellowMax) - 1
+						) {
 	
+					ret += 10.0;
+				} else {
+					ret -= 5.0 * 
+							(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardMellowMax, secondHighest)
+									-1);
+				}
+			}
+			
 			//Consider 3rd highest card of suit:
-			if(numCardsSuit >= 3
-					&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetThirdHighestInSuit(currentSuitIndex))
+			if(numCardsSuit >= 3 ) {
+				String thirdHighest = dataModel.getCardCurrentPlayerGetThirdHighestInSuit(currentSuitIndex);
+				
+				if(DataModel.getRankIndex(thirdHighest)
 					 >= DataModel.getRankIndex(cardMellowMax) - 2
 					) {
 				ret += 5.0;
 				
+				} else {
+				
+				
+				ret -= 4.0 * 
+						(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardMellowMax, thirdHighest)
+								-2);
+				}
 			}
 		}
-		
 		
 		
 		//Is leading suit a danger because mellow could have higher one:
