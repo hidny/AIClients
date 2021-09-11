@@ -140,9 +140,7 @@ public class PartnerSaidMellowSituation {
 	
 	public static double getValueLeadingSpade(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S 4S 7H 3H TD 2D ")) {
-			System.out.println("Debug");
-		}
+		
 		double ret = 0.0;
 		
 		//Prefer leading spade by default:
@@ -317,9 +315,7 @@ public class PartnerSaidMellowSituation {
 	public static double getValueLeadingOffsuit(DataModel dataModel, int currentSuitIndex) {
 		double ret = 0.0;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S 4S 7H 3H TD 2D ")) {
-			System.out.println("Debug!");
-		}
+	
 		//Factors:
 		//TODO
 		
@@ -550,10 +546,6 @@ public class PartnerSaidMellowSituation {
 			
 			
 			if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE) == false) {
-				
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 3S 2S")) {
-					System.out.println("Debug!");
-				}
 				
 				
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit)

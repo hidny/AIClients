@@ -206,6 +206,9 @@ public class SingleActiveMellowPlayer {
 	//Find the suit the mellow player wants to throw-off most:
 	public static String getBestOffSuitCardToThrowOffAsMellowPlayer(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH 8H 3H KD")) {
+			System.out.println("Debug");
+		}
 		int NO_SUIT_FOUND = -1;
 		int chosenSuit = NO_SUIT_FOUND;
 		double bestScore = Double.MIN_VALUE;
@@ -399,16 +402,19 @@ public class SingleActiveMellowPlayer {
 				oddsLosingFirstRound = 0.0;
 			} else if(numUnder == 1) {
 				
-				//rough approx... but whatever
-				//The real number should be less, but this is low enough...
-				
-				//Real:
-				//This answers question if partner doesn't have the suit:
-				
-				//Odds the opponent has all of 1 suit and partner can't trump...
-				double oddsNeedingToBeTrumped = Math.pow(1.0/3.0, numOver + numUnder);
-				oddsLosingFirstRound = oddsPartnerHasNoSpade * oddsNeedingToBeTrumped;
-				
+				if(numOver == 0) {
+					oddsLosingFirstRound = 1.0 * oddsPartnerHasNoSpade;
+				} else {
+					//rough approx... but whatever
+					//The real number should be less, but this is low enough...
+					
+					//Real:
+					//This answers question if partner doesn't have the suit:
+					
+					//Odds the opponent has all of 1 suit and partner can't trump...
+					double oddsNeedingToBeTrumped = 2 * Math.pow(1.0/3.0, numOver + numUnder);
+					oddsLosingFirstRound = oddsPartnerHasNoSpade * oddsNeedingToBeTrumped;
+				}
 				
 			
 			} else if(numUnder == 2) {
