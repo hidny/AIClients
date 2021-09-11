@@ -682,6 +682,7 @@ public class SeatedRightOfOpponentMellow {
 				
 				//System.err.println("WARNING: this condition means player has 13 spades!!!");
 				//System.exit(1);
+				
 				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 			}
 			
@@ -697,6 +698,7 @@ public class SeatedRightOfOpponentMellow {
 				
 				if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, Constants.SPADE) == false) {
 					//TODO: what if highest spade is 5S??
+
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				} else {
 					

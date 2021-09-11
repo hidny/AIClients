@@ -551,14 +551,36 @@ public class PartnerSaidMellowSituation {
 			
 			if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE) == false) {
 				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 3S 2S")) {
+					System.out.println("Debug!");
+				}
 				
-				if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(curStrongestCardPlayed, MELLOW_PLAYER_INDEX) == false) {
+				
+				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit)
+						&& ! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.getNumCardsInCurrentPlayerHand() + dataModel.getNumberOfCardsPlayerPlayedInSuit(MELLOW_PLAYER_INDEX, Constants.SPADE) <= 4
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+								dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) >= 1
+						 ) {
+					//Edge-case:
+					//Trump high if it's near the end of the round and mellow might be stuck with spades:
+					
+					if(dataModel.couldPlayCardInHandOverCardInSameSuit(
+							dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE))) {
+						
+						return dataModel.getCardInHandClosestOverSameSuit(
+								dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE));
+					} else {
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					}
+				
+				} else if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(curStrongestCardPlayed, MELLOW_PLAYER_INDEX) == false) {
 
 					//If mellow player partner seems vulnerable based on signals: trump if possible
 					//TODO: make it more sophisticated in future
-					
-					
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					
+					
 				} else {
 					//no spade, so just throw off something:
 					//Later try to pick best garbage card 
@@ -566,6 +588,7 @@ public class PartnerSaidMellowSituation {
 
 					//TODO: maybe trump anyways sometimes
 					//Ex: if start with 5+S, and/or mellow is safe in S, trump anyways!
+					
 					
 					return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 				}
