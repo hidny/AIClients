@@ -161,10 +161,6 @@ public class SeatedRightOfOpponentMellow {
 
 
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 7S 7C 3C AD QD JD 5D 3D ")) {
-			System.out.println("Debug");
-		}
-		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
 		
@@ -271,6 +267,10 @@ public class SeatedRightOfOpponentMellow {
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 			
 
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS KH QH 8H 5H 3H AC KC 6C 5C 4C")) {
+				System.out.println("Debug");
+			}
+			
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
 					&& dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
@@ -283,7 +283,13 @@ public class SeatedRightOfOpponentMellow {
 			
 			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 				
-				if(dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+				if(dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false
+						|| 
+						//Just assume mellow Bid doesn't have master card:
+						(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(leaderThrow) == 1
+						   && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) > 6)
+						
+						) {
 
 					
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
