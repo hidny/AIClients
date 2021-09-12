@@ -992,11 +992,11 @@ public class PartnerSaidMellowSituation {
 
 		
 		if(hasLotsOfTrump) {
-			double bonus = 4.0 * Math.pow(0.5, numCards);
+			double bonus = 2.0 * Math.pow(0.5, numCards-1);
 			
 			value += bonus;
 		} else if(couldTrump) {
-			double bonus = 3.0 * Math.pow(0.3, numCards);
+			double bonus = 1.0 * Math.pow(0.3, numCards-1);
 			value += bonus;
 		}
 					

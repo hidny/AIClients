@@ -162,4 +162,9 @@ public class PlayerSignalHandler {
 		return this.mellowVoidSignalsNoActiveMellows.playerAlwaysFollowedSuit(playerIndex, suitIndex);
 	}
 	
+	
+	
+	public boolean partnerHasOnlyMasterOrIsVoidBasedOnSignals(int suitIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.playerHasOnlyMasterOrIsVoidBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, suitIndex);
+	}
 }

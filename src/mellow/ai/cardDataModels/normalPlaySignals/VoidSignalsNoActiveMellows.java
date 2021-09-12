@@ -466,6 +466,48 @@ public class VoidSignalsNoActiveMellows {
 	//For now, just make sure it works by printing what it thinks the signals are.
 	
 
+	public boolean playerHasOnlyMasterOrIsVoidBasedOnSignals(int playerIndex, int suitIndex) {
+		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
+		
+		if(dataModel.hasCard(masterCard)) {
+			return false;
+		}
+		
+
+		int masterCardRank = DataModel.getRankIndex(masterCard);
+		
+		for(int rank = getMinCardRankSignal(playerIndex, suitIndex ); rank<masterCardRank; rank++) {
+			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean partnerDoesNotHaveMasterBasedOnSignals(int suitIndex) {
+		
+		return playerDoesNotHaveMasterBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, suitIndex);
+	}
+
+
+	public boolean playerDoesNotHaveMasterBasedOnSignals(int playerIndex, int suitIndex) {
+		
+		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
+		
+		if(dataModel.hasCard(masterCard)) {
+			return false;
+		}
+		
+		int masterCardRank = DataModel.getRankIndex(masterCard);
+		
+		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+
 	public boolean partnerHasMasterBasedOnSignals(int suitIndex) {
 		
 		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
@@ -486,24 +528,7 @@ public class VoidSignalsNoActiveMellows {
 		}
 	}
 	
-	public boolean partnerDoesNotHaveMasterBasedOnSignals(int suitIndex) {
-		
-		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
-		
-		if(dataModel.hasCard(masterCard)) {
-			return false;
-		}
-		
-		int masterCardRank = DataModel.getRankIndex(masterCard);
-		
-		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
-				) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
+	
 	public boolean letfHandSideHasMasterBasedOnSignals(int suitIndex) {
 		
 		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);

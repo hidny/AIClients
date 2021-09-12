@@ -950,9 +950,6 @@ public class NoMellowPlaySituation {
 		//START REALLY OLD CODE:
 		//SEE NOTES FOR BETTER PLAN
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 3S KC TC 6C 3C AD KD TD 5D 4D 2D")) {
-			System.out.println("Debug");
-		}
 		//TODO: pseudo code for not following suit
 	
 		
@@ -1445,6 +1442,8 @@ public class NoMellowPlaySituation {
 				
 				//No Spade, so play off:
 			} else {
+				
+				
 				cardToPlay = getJunkiestCardToFollowLead(dataModel);
 			}
 		
@@ -1657,14 +1656,17 @@ public class NoMellowPlaySituation {
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH 7H TD")) {
-			System.out.println("Debug");
-		}
+
 		
 		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
 		
 		int bestSuit = -1;
 		double valueOfBestSuit = 0;
+		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KC 6C 3C JD 9D")) {
+			System.out.println("Debug");
+		}
 		
 		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
 			if(suitIndex == Constants.SPADE || dataModel.currentAgentHasSuit(suitIndex) == false) {
@@ -1699,6 +1701,18 @@ public class NoMellowPlaySituation {
 			
 			currentValue -= numUnderLowest;
 			
+			
+			//2-3209 hack that I decided to cancel:
+			//TODO: research this!
+			//if(numOverHighest == 0
+			//		&& numberOfCardsInSuit == 2
+			//		&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) <= 1) {
+				
+				//Try to save AK equiv or AQ equiv
+				//currentValue -= 5.0;
+				
+			//}
+			
 			boolean partnerVoid = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex);
 			boolean partnerTrumping = dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) == false;
 
@@ -1718,8 +1732,10 @@ public class NoMellowPlaySituation {
 				}
 				
 				//Logic doesn't really do anything yet.
-				if(partnerVoid && partnerTrumping) {
-					System.out.println("DEBUG WARNING");
+				if(dataModel.getNumCardsInCurrentPlayerHand() > 2
+						&& partnerVoid
+						&& partnerTrumping) {
+					System.out.println("(DEBUG WARNING)");
 					currentValue -= 50;
 				}
 			} else if(numberOfCardsInSuit < numOverHighest + 1) {
@@ -1746,11 +1762,12 @@ public class NoMellowPlaySituation {
 					) {
 				//Don't throw off master cards unless you really need to...
 				//Or the idea of leading it is unrealistic.
-				currentValue -= 20.0;
+				currentValue -= 30.0;
 				
 				//Maybe it's not bad if you're planing on trumping though...
 				
 			} else if( (numberOfCardsInSuit == 2 || numberOfCardsInSuit == 3)
+					&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
 					&&  NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
 					&& numberOfCardsOthersHaveInSuit >= 2) {
 				
@@ -1812,6 +1829,13 @@ public class NoMellowPlaySituation {
 			boolean lhsTrumping = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex)
 					  && ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE);
 			
+			boolean partnerSignalledVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex);
+			
+			boolean partnerSignalledOnlyMasterOrVoid = dataModel.signalHandler.partnerHasOnlyMasterOrIsVoidBasedOnSignals(suitIndex);
+			
+			//TODO: maybe this is useful?
+			//boolean partnerSignalledMaster = dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex);
+			
 			if(rhsTrumping) {
 				currentValue += 2.0;
 			}
@@ -1825,6 +1849,27 @@ public class NoMellowPlaySituation {
 			}
 
 		
+			if(rhsTrumping == false
+					&& partnerTrumping
+					//TODO: the real question is whether or not you could lead/
+					&& numberOfCardsOthersHaveInSuit >= 2
+					) {
+				
+				if(partnerSignalledVoid) {
+					currentValue -= 8.0;
+				} else if(partnerSignalledOnlyMasterOrVoid
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 1) {
+					currentValue -=10.0;
+				} else if(partnerSignalledOnlyMasterOrVoid) {
+					currentValue -= 6.0;
+				}
+			} else if(rhsTrumping == false) {
+				
+				if(partnerSignalledOnlyMasterOrVoid
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 1) {
+					currentValue -=10.0;
+				}
+			}
 			
 			
 			if(numberOfCardsOthersHaveInSuit == 0) {
