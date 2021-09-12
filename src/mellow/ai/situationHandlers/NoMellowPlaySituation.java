@@ -1664,7 +1664,7 @@ public class NoMellowPlaySituation {
 		double valueOfBestSuit = 0;
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KC 6C 3C JD 9D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS QS 7S 2S QC 9C 2C JD TD 5D")) {
 			System.out.println("Debug");
 		}
 		
@@ -1738,13 +1738,19 @@ public class NoMellowPlaySituation {
 					System.out.println("(DEBUG WARNING)");
 					currentValue -= 50;
 				}
-			} else if(numberOfCardsInSuit < numOverHighest + 1) {
+			} else if(numberOfCardsInSuit < numOverHighest) {
 				
 				//Reliable hammer for throwing off that I discovered:
 				
 				//TODO: what if throwing off a card signals that opponent could TRAM suit?
 				//Shouldn't we be careful about that?
 				currentValue += 5 * (numOverHighest - numberOfCardsInSuit);
+			
+			} else if(numberOfCardsInSuit == numOverHighest) {
+				
+				if(numberOfCardsInSuit >= 3) {
+					currentValue += 2;
+				}
 			}
 
 			//End easy for throwing off
