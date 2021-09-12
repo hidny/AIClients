@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
+import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -787,7 +788,15 @@ public class PartnerSaidMellowSituation {
 				//else:
 				
 			} else {
-				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS 8S 5S 9H 8H 5H 2H 6D ")) {
+					System.out.println("DEBUG!");
+					//TODO: have better logic here. (See 3282)
+				}
+				
+				//return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				
+				return getNonLeadSuitNonSpadeToThrowOff(dataModel);
 			}
 			
 		
@@ -827,4 +836,179 @@ public class PartnerSaidMellowSituation {
 		return cardToConsider;
 	}
 	
+	//This function is rough, but it seems to work with the testcases...
+	
+	public static String getNonLeadSuitNonSpadeToThrowOff(DataModel dataModel) {
+		
+		
+		String bestCardToPlay = null;
+		double currentBestScore = -1000000.0;
+		
+		//TODO: play random card if all spade or something...
+		
+		for(int suitIndex = 0; suitIndex< Constants.NUM_SUITS; suitIndex++) {
+			
+			if(suitIndex == Constants.SPADE) {
+				continue;	
+			}
+			
+			int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
+			
+			//Can't play a suit you don't have:
+			if(numCardsOfSuitInHand == 0) {
+				continue;
+			}
+			
+			CardAndValue cardAndValueRet = getValueOfThrowingOffsuit(dataModel, suitIndex);
+			
+			
+			if(cardAndValueRet.getValue() > currentBestScore
+					
+					|| (cardAndValueRet.getValue() == currentBestScore
+					&& (DataModel.getRankIndex(cardAndValueRet.getCard()) < DataModel.getRankIndex(bestCardToPlay)
+					)
+							)
+					) {
+				
+				currentBestScore = cardAndValueRet.getValue();
+				bestCardToPlay = cardAndValueRet.getCard();
+			}
+			
+		}
+		
+		if(bestCardToPlay != null) {
+			return bestCardToPlay;
+		} else {
+			return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+		}
+	}
+	
+	
+	
+	public static CardAndValue getValueOfThrowingOffsuit(DataModel dataModel, int suitIndex) {
+	
+		String lowestCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+		
+		String maxMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, suitIndex);
+					
+
+		double value = 0.0;
+		
+		int numCards = dataModel.getNumberOfCardsOneSuit(suitIndex);
+		
+		if(maxMellow == null) {
+			return new CardAndValue(lowestCard, 0.0);
+		}
+		
+		//Factor the suit itself:
+		//The every card in suit affects the final value.
+		//The lower cards affect it much more than the higher cards though.
+		
+		//There isn't that many test cases to check this code against,
+		//so this could be way off!
+		
+		if(numCards >=1) {
+			String highestCard = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			
+			value *= 0.5;
+			
+			if(maxMellow != null
+				&&	DataModel.getRankIndex(maxMellow) > DataModel.getRankIndex(highestCard)) {
+				
+				int numBetween = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
+						(maxMellow, highestCard);
+			
+				value += 1 + numBetween;
+			} else {
+				value += 0;
+			}
+	
+		}
+		
+		if(numCards >=2) {
+			value *= 0.5;
+			
+			String secondHighestCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+			
+			if(maxMellow != null
+				&&	DataModel.getRankIndex(maxMellow) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex))) {
+				
+				int numBetween = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
+						(maxMellow, secondHighestCard);
+			
+				value += (0 + numBetween);
+			} else {
+				value += 0;
+			}
+	
+		}
+		
+		if(numCards >=3) {
+			value *= 0.5;
+
+			String thirdHighestCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+			
+			if(maxMellow != null
+				&&	DataModel.getRankIndex(maxMellow) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex))) {
+				
+				int numBetween = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
+						(maxMellow, thirdHighestCard);
+			
+				value += Math.max(0, (-1 + numBetween));
+			} else {
+				value += 0;
+			}
+	
+		}
+		
+		if(numCards >=4) {
+			value *= 0.5;
+			String fourthHighestCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+			
+			if(maxMellow != null
+				&&	DataModel.getRankIndex(maxMellow) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex))) {
+				
+				int numBetween = dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
+						(maxMellow, fourthHighestCard);
+			
+				value += Math.max(0, (-2 + numBetween));
+			} else {
+				value += 0;
+			}
+	
+		}
+		
+		//Factor in the trumps:
+		boolean couldTrump = dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 0;
+		
+		int lotsOfTrumpFactor = 0;
+		for(int i=1; i<Constants.NUM_PLAYERS; i++) {
+			if( ! dataModel.isVoid(i, Constants.SPADE)) {
+				lotsOfTrumpFactor++;
+			}
+		}
+		boolean hasLotsOfTrump = lotsOfTrumpFactor * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
+		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
+
+		
+		if(hasLotsOfTrump) {
+			double bonus = 4.0 * Math.pow(0.5, numCards);
+			
+			value += bonus;
+		} else if(couldTrump) {
+			double bonus = 3.0 * Math.pow(0.3, numCards);
+			value += bonus;
+		}
+					
+		return new CardAndValue(lowestCard, value);
+	}
+	
+	//Idea:
+	//Danger 1st
+	//Danger 2nd
+	//Danger 3rd
+	//Danger 4th
+	
+	
 }
+
