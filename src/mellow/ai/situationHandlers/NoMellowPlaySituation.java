@@ -119,7 +119,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS TH 6H 3H QC 6D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "2S 5C ")) {
 			System.out.println("DEBUG");
 		}
 	
@@ -495,7 +495,9 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "2S 5C ")) {
+			System.out.println("DEBUG");
+		}
 		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
@@ -503,13 +505,7 @@ public class NoMellowPlaySituation {
 		
 
 
-		if(//suitIndex == Constants.DIAMOND
-			//&&
-				DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 7H TD ")) {
-				System.out.println("Debug");
-				
-		}
-	
+		
 		String cardToPlay = null;
 		
 		double curScore = 0.0;
@@ -752,12 +748,23 @@ public class NoMellowPlaySituation {
 				//Reduced from -100 to -30 because leading your only spade can be even worse than this.
 				curScore -= 30;
 				
-				if(numCardsOfSuitInHand > 1
+				if(dataModel.currentAgentHasSuit(Constants.SPADE)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) <= 2
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+								dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+							>= 1
+							) {
+					
+					//Try to clear the spade so your low spade could maybe become master:
+					curScore += 40;
+
+				} else if(numCardsOfSuitInHand > 1
 						&& dataModel.signalHandler.playerAlwaysFollowedSuit
 						(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
 					//Don't lead this suit if partner might think they can trump without getting trumped over.
 					curScore -= 70;
-				}
+				} 
+						
 				
 			}
 			
