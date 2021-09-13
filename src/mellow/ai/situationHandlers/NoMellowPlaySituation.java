@@ -110,6 +110,8 @@ public class NoMellowPlaySituation {
 		return bestCardToPlay;
 	}
 	
+	
+	//pre: current player has spade in hand
 	public static CardAndValue AILeaderThrowGetSpadeValue(DataModel dataModel) {
 		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE);
@@ -189,6 +191,21 @@ public class NoMellowPlaySituation {
 				&& dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 				&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
 			curScore -= 55.0;
+		}
+		
+		int numVoid = 0;
+		for(int i=1; i<Constants.NUM_PLAYERS; i++) {
+			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(i, Constants.SPADE)) {
+				numVoid++;
+			}
+		}
+		
+		if(numVoid == 2 && 
+				numCardsOfSuitInHand <= 
+				dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+						dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))) {
+			//Don't lead into spade when someone else completely dominates it:
+			curScore -= 100;
 		}
 		
 		
@@ -678,7 +695,22 @@ public class NoMellowPlaySituation {
 			
 			//The in-between jackpot:
 			curScore += 1100;
-				
+			
+			//Lazy way of preferring to lead masters without creating opponent masters:
+			if(dataModel.playerWillWinWithAllCardsInHandForSuitIfNotTrumpedMinusCardToTakeTrick(
+						Constants.CURRENT_AGENT_INDEX,
+						suitIndex,
+						"")
+						) {
+				curScore += 100;
+			}
+			
+			curScore -= numCardsOfSuitInHand;
+			if(numCardsOfSuitInHand > 1) {
+				curScore -= numCardsOfSuitOtherPlayersHave;
+			}
+			
+			
 		} else if(numCardsOfSuitOtherPlayersHave == 0
 				|| ( dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suitIndex)
 				     && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex))

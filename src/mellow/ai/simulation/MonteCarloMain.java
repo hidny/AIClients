@@ -156,13 +156,18 @@ public class MonteCarloMain {
 
 				playOutSimulationTilEndOfRound(dataModelTmp, playersInSimulation);
 			
-				StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmp);
+				
+				//StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmp);
+				
+				//Make monte carlos sims more readable:
+				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmp);
 				
 				//Get Util at the end of the simulated round:
 					//Util is a function of scoreA, scoreB, isDealer
 					//TODO: this is just getting the point difference after the round and isn't the most useful measure of how well we're doing.
 					//A better strat would be an approx measure of the current player's winning chances... which is hard to calculate.
-				actionUtil[a] += decisionImpact * getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats);
+				actionUtil[a] += decisionImpact * getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundPointDiffStats);
+				
 				
 				/*System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
 				in.next();*/
@@ -302,9 +307,51 @@ public class MonteCarloMain {
 		return dataModelTmp;
 	}
 	
+	public static StatsBetweenRounds getPointDiffEndOfRound(DataModel dataModelTmp) {
+		int curScoreUs = 0;
+		int curScoreThem = 0;
+		
+		int numMellowUS = 0;
+		int numMellowThem = 0;
+		
+		//Handle mellows:
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			if(dataModelTmp.saidMellow(i)) {
+				int MULTIPLIER = 1;
+				
+				if(dataModelTmp.burntMellow(i)) {
+					MULTIPLIER = -1;
+				}
+				
+				if(i%2 == 0) {
+					curScoreUs += MULTIPLIER * 100;
+					numMellowUS++;
+				} else {
+					curScoreThem += MULTIPLIER * 100;
+					numMellowThem++;
+				}
+			}
+		}
+
+		if(numMellowUS < 2){
+			curScoreUs += handleNormalBidScoreDiff(dataModelTmp, true);
+		}
+		
+		if(numMellowThem < 2) {
+			curScoreThem += handleNormalBidScoreDiff(dataModelTmp, false);
+		}
+		
+		StatsBetweenRounds ret = new StatsBetweenRounds();
+		ret.setScores(curScoreUs, curScoreThem);
+		
+		int nextDealerIndex = (dataModelTmp.getDealerIndexAtStartOfRound() + 1) % Constants.NUM_PLAYERS;
+		ret.setDealerIndexAtStartOfRound(nextDealerIndex);
+		
+		return ret;
+	}
 	//Get stats at the end of the round:
 	//(i.e: Get scores and dealer index at the end of the round)
-	public static StatsBetweenRounds getStatsAfterSimulatedRound(DataModel dataModelTmp) {
+	public static StatsBetweenRounds getStatsAfterSdimulatedRound(DataModel dataModelTmp) {
 		int scoreUsAtStartOfRound = dataModelTmp.getOurScore();
 		int scoreThemAtStartOfRound = dataModelTmp.getOpponentScore();
 		
