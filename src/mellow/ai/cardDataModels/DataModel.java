@@ -1997,6 +1997,17 @@ public class DataModel {
 		return "";
 	}
 	
+	//Really bad recursion, because why not?
+	public String getCardCurrentPlayerGetIthLowestInSuit(int i, int suitIndex) {
+		
+		if(i==0) {
+			return this.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+		} else {
+			return this.getCardInHandClosestOverSameSuit(getCardCurrentPlayerGetIthLowestInSuit(i-1, suitIndex));
+		}
+		
+	}
+	
 	public boolean currentAgentHasSuit(int suitIndex) {
 		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}

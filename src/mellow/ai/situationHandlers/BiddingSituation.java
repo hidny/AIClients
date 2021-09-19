@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.situationHandlers.bidding.BasicMellowWinProbCalc;
 
 public class BiddingSituation {
 	
@@ -183,7 +184,18 @@ public class BiddingSituation {
 				
 		}
 		
-		return intBid + "";
+		if(BasicMellowWinProbCalc.getMellowSuccessProb1(dataModel) > 0.3) {
+			//System.out.println("Mellow prob: " + BasicMellowWinProbCalc.getMellowSuccessProb1(dataModel));
+		}
+		
+		if(BasicMellowWinProbCalc.getMellowSuccessProb1(dataModel) > 0.5 + intBid * 0.05) {
+			return 0 + "";
+		} else if(BasicMellowWinProbCalc.getMellowSuccessProb1(dataModel) < 0.3
+				&& intBid == 0) {
+			return 1 + "";
+		} else {
+			return intBid + "";
+		}
 	}
 	
 	
