@@ -521,6 +521,7 @@ public class VoidSignalsNoActiveMellows {
 		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) >= masterCardRank
 			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) < masterCardRank
 			&& getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) < masterCardRank
+			&& ! playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex )
 				) {
 			return true;
 		} else {
@@ -542,6 +543,7 @@ public class VoidSignalsNoActiveMellows {
 		if(getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) >= masterCardRank
 			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
 			&& getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) < masterCardRank
+			&& ! playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex )
 				) {
 			return true;
 		} else {
@@ -563,6 +565,7 @@ public class VoidSignalsNoActiveMellows {
 		if(getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) >= masterCardRank
 			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
 			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) < masterCardRank
+			&& ! playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex )
 				) {
 			return true;
 		} else {

@@ -4,6 +4,12 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.cardUtils.CardStringFunctions;
 
+//TODO: Am I using this class?
+//Are the functions in this class good?
+
+//It seems like only:
+// playerSignalledHighCardInSuit is being used here...
+
 //TODO: maybe make signals for when a player let the opponent win...
 //    That's a strong signal that can work...
 
@@ -145,7 +151,7 @@ public class MellowLetPartnerWinSignals {
 		
 		for(int rank = softMinHighCardInHand[playerIndex][suitIndex]; rank<=DataModel.ACE; rank++) {
 			
-			if( ! dataModel.isCardPlayedInRound(dataModel.getCardString(rank, suitIndex)) ) {
+			if( ! dataModel.isCardPlayedInRound(DataModel.getCardString(rank, suitIndex)) ) {
 				return true;
 			}
 		}

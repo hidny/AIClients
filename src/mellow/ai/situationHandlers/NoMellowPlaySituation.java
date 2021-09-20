@@ -119,7 +119,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "2S 5C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 9S 5S 4H 8C 6C JD 4D")) {
 			System.out.println("DEBUG");
 		}
 	
