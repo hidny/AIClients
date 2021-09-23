@@ -16,6 +16,8 @@ public class Constants {
 	public static final int CLUB = 2;
 	public static final int DIAMOND = 3;
 	
+	public static final int GOAL_SCORE = 1000;
+	
 	public static final String OFFSUITS[] = {"H", "C", "D"};
 
 	//Current player index is 0

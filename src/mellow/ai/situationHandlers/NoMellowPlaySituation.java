@@ -1496,6 +1496,10 @@ public class NoMellowPlaySituation {
 			//FIGHT WITHIN SUIT:
 			} else {
 				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TS JH 5H 3H AC JC KD JD 9D ")) {
+					System.out.println("Debug");
+				}
+				
 				//If lead is winning
 				if(dataModel.cardAGreaterThanCardBGivenLeadCard(dataModel.getCardLeaderThrow(), dataModel.getCardSecondThrow())) {
 					
@@ -1511,6 +1515,8 @@ public class NoMellowPlaySituation {
 							> dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex)
 								&& 
 							dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(leadThrow, highestInHand) <= 2
+							    &&
+							! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)    
 								    ) {
 							
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
