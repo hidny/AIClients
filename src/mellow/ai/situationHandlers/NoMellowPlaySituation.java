@@ -1146,8 +1146,8 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 9H 4H 2H TD ")) {
-				System.out.println("DEBUG 1531");
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 3H 2H QC JC 4C 2C")) {
+				System.out.println("DEBUG 3558");
 			}
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
@@ -1324,7 +1324,10 @@ public class NoMellowPlaySituation {
 						      	//OR: opponent only one that signalled master
 						      || (dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(leaderSuitIndex))
 						)
-						
+
+						&& //No single master spade
+						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1
+		                   && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))
 						&& //No K to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
 						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE))
