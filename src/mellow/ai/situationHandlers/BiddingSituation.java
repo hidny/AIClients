@@ -222,6 +222,8 @@ public class BiddingSituation {
 		if(dataModel.getOpponentScore() > 800
 				&& dataModel.getDealerIndexAtStartOfRound() == Constants.CURRENT_AGENT_INDEX) {
 			
+
+			//Condition for bidding higher if you're about to lose:
 			//See if you want to bid high...
 			int scoresProjectedWorstCase[] = getProjectedScoresAssumingTheWorst(dataModel, intBid);
 			
@@ -234,11 +236,11 @@ public class BiddingSituation {
 					&& oppScore >= Constants.GOAL_SCORE
 					&& opponentsDidntSayMellow(dataModel)) {
 				
+				//TODO: If opponents said mellow, say mellow if it means your team may win
 				return getFinalWildDealerBid(dataModel, intBid);
 			}
 		}
 		
-		//TODO: condition for bidding higher if you're about to lose
 		
 		
 		if(BasicMellowWinProbCalc.getMellowSuccessProb1(dataModel) > 0.3) {
@@ -255,6 +257,8 @@ public class BiddingSituation {
 		}
 	}
 	
+	
+	//TODO: put below functions in their own class:
 	
 	public static String getFinalWildDealerBid(DataModel dataModel, int origBid) {
 		//TODO: put in function increase bid
@@ -288,6 +292,8 @@ public class BiddingSituation {
 				
 				//Try to bid lower because we could afford it:
 				
+				//TODO 1: PUT INTO FUNCTION TRY TO LOWER BID SLIGHTLY
+				//TODO 2: MAKE SIMPLER TO READ VERSION THAT USES THE getProjectedScoresAssumingTheWorst FUNCTION
 				//Try to bid 1 lower so the total bid is 13:
 				int testLowerBidBy1 = currentBid - 1;
 				
@@ -327,7 +333,8 @@ public class BiddingSituation {
 				
 				return finalBid + "";
 				
-				
+
+				//END TODO 1: PUT INTO FUNCTION TRY TO LOWER BID SLIGHTLY
 			}
 		}
 	}
@@ -386,7 +393,7 @@ public class BiddingSituation {
 		}
 	}
 	
-	//TODO: assume opponents don't bid mellow later
+	//TODO: LATER: make a new function where you assume opponents don't bid mellow
 	public static int getPossiblyLowerBidBecauseItsNearEndOfGameAssumeWorst(DataModel dataModel, int origBid, int scoresProjectedWorstCase[]) {
 		
 		if(origBid == 0) {
