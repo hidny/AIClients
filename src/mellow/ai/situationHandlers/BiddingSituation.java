@@ -57,7 +57,9 @@ public class BiddingSituation {
 		
 		//Add a bid for every extra spade over 3 you have:
 		if (dataModel.getNumberOfCardsOneSuit(0) >= 4) {
-			bid += dataModel.getNumberOfCardsOneSuit(0) - 4.0;
+
+			//Lowered to 3.75 from 4.0 and got 13 less failed cases. 
+			bid += dataModel.getNumberOfCardsOneSuit(0) - 3.75;
 			
 			if (dataModel.hasCard("JS")) {
 				bid +=  1.0;
