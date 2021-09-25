@@ -115,6 +115,15 @@ public class PartnerSaidMellowSituation {
 				//Try to confuse opponents by not playing your master card when you don't have to:
 				cardToPlay = 
 						getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
+				
+				if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 0
+					&& dataModel.getNumberOfCardsOneSuit(bestSuitIndexToPlay) > 1
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay,
+							dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay)) == 0
+					) {
+					//But, don't make it obvious that mellow has none of suit.
+					cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay);
+				}
 			
 			} else {
 				cardToPlay = highestCardOfSuit;
@@ -319,6 +328,10 @@ public class PartnerSaidMellowSituation {
 	
 		//Factors:
 		//TODO
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 9H 8H 6H 2H 7D 6D ")) {
+			System.out.println("debug");
+		}
 		
 		boolean protectorHaslotsOfSpade = 
 				3 * (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) - 1) >= dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
