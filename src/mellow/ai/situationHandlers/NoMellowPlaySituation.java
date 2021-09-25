@@ -1712,7 +1712,11 @@ public class NoMellowPlaySituation {
 		double valueOfBestSuit = 0;
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS QS 7S 2S QC 9C 2C JD TD 5D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KH JH 4H 2H JC AD 6D 4D 2D ")) {
+			System.out.println("Debug");
+		}
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KC QC TC 8C")) {
 			System.out.println("Debug");
 		}
 		
@@ -1953,9 +1957,35 @@ public class NoMellowPlaySituation {
 					
 				}
 			} else {
-				
+
 				currentValue += numberOfCardsInSuit;
+				
+				//Extra condition to throw off suit with more cards:
+				if(dataModel.getNumberOfCardsOneSuit(suitIndex) > 3){
+					int maxStrength = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex)
+			                   * numberOfCardsInSuit;
+					
+					
+					if(maxStrength == 0) {
+						currentValue += 20;
+					} else {
+						int strength = maxStrength;
+						
+						
+						for(int i=0; i<numberOfCardsInSuit; i++) {
+							strength -= dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+									dataModel.getCardCurrentPlayerGetIthLowestInSuit(numberOfCardsInSuit - i - 1, suitIndex));
+							
+						}
+						
+						
+						currentValue += (10.0 * (maxStrength - strength)) / maxStrength;
+					}
+				}
 			}
+				
+				
+
 			
 			
 			
