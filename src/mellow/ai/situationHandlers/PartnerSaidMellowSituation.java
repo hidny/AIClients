@@ -103,6 +103,9 @@ public class PartnerSaidMellowSituation {
 		}
 		
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S TH 9H 8H 6H 2H TC 7D 6D")) {
+			System.out.println("Debug");
+		}
 		String highestCardOfSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndexToPlay);
 		
 		String cardToPlay = "";
@@ -138,7 +141,14 @@ public class PartnerSaidMellowSituation {
 				String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay);
 				
 				if(dataModel.couldPlayCardInHandOverCardInSameSuit(maxRankCardMellow)) {
-					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(maxRankCardMellow);
+					
+					if(dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(maxRankCardMellow) >= 3) {
+						//If you have lots of choice, play the second highest...
+						//Might not be a great idea for leading spade, but we'll see.
+						cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(bestSuitIndexToPlay);
+					} else {
+						cardToPlay = dataModel.getCardInHandClosestOverSameSuit(maxRankCardMellow);
+					}
 				} else {
 					cardToPlay = highestCardOfSuit;
 				}
@@ -329,9 +339,7 @@ public class PartnerSaidMellowSituation {
 		//Factors:
 		//TODO
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 9H 8H 6H 2H 7D 6D ")) {
-			System.out.println("debug");
-		}
+		
 		
 		boolean protectorHaslotsOfSpade = 
 				3 * (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) - 1) >= dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
