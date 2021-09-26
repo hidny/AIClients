@@ -396,7 +396,7 @@ public class SeatedLeftOfOpponentMellow {
 				}
 				
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuitIndex)
-					&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, curSuitIndex)) {
+					&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, curSuitIndex)) {
 				
 				//Also save your king equiv...
 				//TODO: Maybe don't do this if you really don't want tricks...

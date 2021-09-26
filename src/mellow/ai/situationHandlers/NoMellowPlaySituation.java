@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 8S 7S 2S 5C JD TD 9D 7D 6D 5D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS TS 9S 8S QH 4H 7C 4C 2C AD JD TD ")) {
 			System.out.println("Debug");
 		}
 
@@ -130,6 +130,7 @@ public class NoMellowPlaySituation {
 
 		
 		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+
 			//Made up a number to say having the master card to lead in partner's void suit is cool:
 			//TODO: refine later
 			curScore += 10.0;
@@ -188,7 +189,7 @@ public class NoMellowPlaySituation {
 		//or partner has no spade.
 		if(      ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
 				&& dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-				&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+				&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
 			curScore -= 55.0;
 		}
 		
@@ -224,7 +225,7 @@ public class NoMellowPlaySituation {
 				}
 					
 			}
-		} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+		} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
 			
 			curScore += 8.0;
 			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
@@ -270,8 +271,9 @@ public class NoMellowPlaySituation {
 					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(offsuit) == Constants.NUM_RANKS - 1)) {
 					
 					
-					//I don't know how much lower to go.
+					//Tested -100, and that messes up a lot of test cases.
 					curScore -= 40.0;
+					
 					//I don't know if we should break or not...
 					//break;
 				}
@@ -375,7 +377,7 @@ public class NoMellowPlaySituation {
 		//Don't volunteer to play spade if you 1 less than master in spade
 		//and have few spades
 		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-				&& !NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)
+				&& !NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
 				&& 3 * (numCardsOfSuitInHand-1) < numCardsOfSuitOtherPlayersHave) {
 			curScore -= 20.0;
 		}
@@ -457,7 +459,7 @@ public class NoMellowPlaySituation {
 			curScore += 30.0;
 			
 			//Check if we have aggressive spade lead options:
-			if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+			if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
 				
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				curScore += 25.0;
@@ -671,7 +673,7 @@ public class NoMellowPlaySituation {
 				&& (dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
 						|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.RIGHT_PLAYER_INDEX)
 						
-				&& ! NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+				&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
 			curScore -= 55.0;
 		}
 		
@@ -727,7 +729,7 @@ public class NoMellowPlaySituation {
 					
 					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
 					
-				} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+				} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
 					//It's slightly controversial to not play lowest when partner is trumping, but I like the agro play...
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				
@@ -889,7 +891,7 @@ public class NoMellowPlaySituation {
 			} else if(partnerSignalledHighCardOfSuit) {
 				//Don't lower it again
 
-			} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+			} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
 				
 				//Only lower it a little...
 				curScore -= 5.0;
@@ -962,7 +964,7 @@ public class NoMellowPlaySituation {
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-			} else if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, suitIndex)) {
+			} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
@@ -1154,7 +1156,7 @@ public class NoMellowPlaySituation {
 								
 
 								//Save K/Q equiv and try to not throw it if you don't have both the K and the Q equiv:
-								if(NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)) {
+								if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
 									return cardToConsider;
 								
 								} else if(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE).equals(cardToConsider)
@@ -1437,7 +1439,7 @@ public class NoMellowPlaySituation {
 					|| (numSpadesInHand == 2
 						&&	!dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
 						&&	NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-						&& !NonMellowBidHandIndicators.hasKQEquiv(dataModel, Constants.SPADE)
+						&& !NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
 						)
 					|| (numSpadesInHand == 3
 							&& !dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)

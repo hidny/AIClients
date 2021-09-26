@@ -343,23 +343,27 @@ public class NonMellowBidHandIndicators {
 		
 	}
 	
-	public static boolean hasKQEquiv(DataModel dataModel, int suitIndex) {
+	
+	public static boolean hasKQEquivAndNoAEquiv(DataModel dataModel, int suitIndex) {
 		
 		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 2) {
 			return false;
 		}
 		
-		String cardA = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-		String cardB = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+		String secondHighestCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
 		
 		int numOver = 0;
 		
-		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(cardB); curRank--) {
+		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(secondHighestCard); curRank--) {
 			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				if(numOver == 0) {
+					//Has AQ equiv...
+					return false;
+				}
 				continue;
 	
 			} else if(dataModel.isCardPlayedInRound(
-					dataModel.getCardString(curRank, suitIndex))
+					DataModel.getCardString(curRank, suitIndex))
 					) {
 				continue;
 	
