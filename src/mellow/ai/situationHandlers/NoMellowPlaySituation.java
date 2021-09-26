@@ -119,10 +119,6 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 9S 5S 4H 8C 6C JD 4D")) {
-			System.out.println("DEBUG");
-		}
-	
 		String cardToPlay = null;
 		
 		double curScore = 0.0;
@@ -234,6 +230,27 @@ public class NoMellowPlaySituation {
 			curScore += 5.0;
 			cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 			
+		}
+		
+		//If trumping over RHS opponent, don't volunteer to lead spade:
+		if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				&& numCardsOfSuitInHand < dataModel.getNumCardsInCurrentPlayerHand() - 1
+				&& 3 * numCardsOfSuitInHand <= 2 + dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
+					
+			for(int offsuit=1; offsuit<Constants.NUM_SUITS; offsuit++) {
+					if( dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, offsuit)
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, offsuit)
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, offsuit)
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, offsuit)
+					) {
+					
+					//I don't know how much lower to go.
+					curScore -= 30.0;
+					//I don't know if we should break or not...
+					//break;
+				}
+					
+			}
 		}
 
 		//TODO: this is a rough rule of thumb...
@@ -495,9 +512,10 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 9H QD 8D 6D 5D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 4S 2S QH 9H 6H JC 6C 4C 3C ")) {
 			System.out.println("DEBUG");
 		}
+	
 		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
@@ -673,7 +691,11 @@ public class NoMellowPlaySituation {
 						
 						// RHS has a 50:50 chance of trumping, so
 						// don't play it if there's a better option.
+						//I could go lower than +20, but whatever...
+						
 						curScore += 20;
+						
+						
 					} else {
 						curScore += 70;
 					}
@@ -935,6 +957,12 @@ public class NoMellowPlaySituation {
 						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 						&& numCardsOfSuitInHand >= 3) {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					
+				} else if(numCardsOfSuitInHand == 3
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 9) {
+					//Try to make the Queen maybe?
+					cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitIndex);
+					
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				}
