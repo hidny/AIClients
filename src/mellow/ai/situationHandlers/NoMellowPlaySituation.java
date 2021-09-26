@@ -495,7 +495,7 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "2S 5C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 9H QD 8D 6D 5D ")) {
 			System.out.println("DEBUG");
 		}
 		
@@ -666,8 +666,17 @@ public class NoMellowPlaySituation {
 
 				} else {
 					
-					curScore += 70;
-
+					if(numCardsOfSuitOtherPlayersHave == 1
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+							&& numCardsOfSuitInHand > 1
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)	) {
+						
+						// RHS has a 50:50 chance of trumping, so
+						// don't play it if there's a better option.
+						curScore += 20;
+					} else {
+						curScore += 70;
+					}
 				}
 				
 				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
