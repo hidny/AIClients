@@ -118,6 +118,9 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 8S 7S 2S 5C JD TD 9D 7D 6D 5D 2D ")) {
+			System.out.println("Debug");
+		}
 
 		String cardToPlay = null;
 		
@@ -252,6 +255,29 @@ public class NoMellowPlaySituation {
 					
 			}
 		}
+		
+		if(3 * numCardsOfSuitInHand < 8 + numCardsOfSuitOtherPlayersHave ) {
+			//If we're trumping or planning to trump, don't lead spade, unless we started with 6+ spades... 
+			for(int offsuit=1; offsuit<Constants.NUM_SUITS; offsuit++) {
+				
+				if( (dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, offsuit)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(offsuit) >= 9
+						&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, offsuit)
+						&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, offsuit)
+						&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, offsuit)
+						)
+				  || (dataModel.getNumberOfCardsOneSuit(offsuit) == 1
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(offsuit) == Constants.NUM_RANKS - 1)) {
+					
+					
+					//I don't know how much lower to go.
+					curScore -= 40.0;
+					//I don't know if we should break or not...
+					//break;
+				}
+			}
+		}
+					
 
 		//TODO: this is a rough rule of thumb...
 		//Want to play spade if partner is void, but not when opponents are void:
@@ -512,10 +538,6 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 4S 2S QH 9H 6H JC 6C 4C 3C ")) {
-			System.out.println("DEBUG");
-		}
-	
 		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
