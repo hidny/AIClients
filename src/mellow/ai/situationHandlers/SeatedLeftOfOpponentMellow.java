@@ -16,7 +16,10 @@ public class SeatedLeftOfOpponentMellow {
 	//TODO
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
 		
-		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AC AD KD 2D ")) {
+			System.out.println("Debug");
+		}
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		if(throwIndex == 0) {
@@ -80,6 +83,7 @@ public class SeatedLeftOfOpponentMellow {
 					}
 					
 				} else {
+					
 					
 					//If can't follow suit:
 					if(dataModel.currentPlayerOnlyHasSpade()) {

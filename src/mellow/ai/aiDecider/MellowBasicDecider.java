@@ -322,7 +322,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			
 			if(indexWinner != Constants.CURRENT_PARTNER_INDEX) {
 				
-				String hypoCardToPlay = SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
+				String hypoCardToPlay = NoMellowPlaySituation.handleNormalThrow(dataModel);
 				String curWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 				
 				if(dataModel.cardAGreaterThanCardBGivenLeadCard(curWinner, hypoCardToPlay )) {
