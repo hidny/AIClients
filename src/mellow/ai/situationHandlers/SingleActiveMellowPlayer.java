@@ -10,7 +10,7 @@ public class SingleActiveMellowPlayer {
 
 	public static String handleThrowAsSingleActiveMellowBidder(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AC AD KD 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4H 3H KC 9C 5C 2C 8D 6D ")) {
 			System.out.println("DEBUG");
 		}
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
@@ -209,9 +209,9 @@ public class SingleActiveMellowPlayer {
 	//Find the suit the mellow player wants to throw-off most:
 	public static String getBestOffSuitCardToThrowOffAsMellowPlayer(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH 3H AC QC JC TC 4C 2C TD 2D ")) {
+		/*if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH 3H AC QC JC TC 4C 2C TD 2D ")) {
 			System.out.println("Debug");
-		}
+		}*/
 		int NO_SUIT_FOUND = -1;
 		int chosenSuit = NO_SUIT_FOUND;
 		double bestScore = Double.MIN_VALUE;
@@ -228,6 +228,7 @@ public class SingleActiveMellowPlayer {
 			}
 			
 			double tmpScore = getWillingnessToThrowOffSuitAsMellowPlayer3(dataModel, i);
+			
 			
 			//System.out.println("Willingness: " + tmpScore);
 			
@@ -267,7 +268,7 @@ public class SingleActiveMellowPlayer {
 		
 		public static double getRiskRating3(DataModel dataModel, int suit, int numTopCardsToIgnore) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 6S 2S 4C 6D 4D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4H 3H KC 9C 5C 2C 8D 6D ")) {
 				System.out.println("Debug");
 			}
 			int numOfSuitPlayerHas = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
@@ -311,7 +312,7 @@ public class SingleActiveMellowPlayer {
 				
 			//Lowest card logic:
 				if(i==0 && numUnder >=2) {
-					ret += numUnder - 1.5;
+					ret += (numUnder - 1.5);
 					
 				//I made this up!
 				} else if(i==0){
@@ -330,7 +331,7 @@ public class SingleActiveMellowPlayer {
 				}
 				
 				if(i == 1 && numUnder >=5) {
-					ret += (2.0/3.0) * numUnder - 4.5;
+					ret += (2.0/3.0) * (numUnder - 4.5);
 				
 				//I made this up!
 				}
@@ -351,7 +352,7 @@ public class SingleActiveMellowPlayer {
 				}
 				
 				if(i == 2 && numUnder >=8) {
-					ret += (5.0/6.0) *numUnder - 7.5;
+					ret += (5.0/6.0) * (numUnder - 7.5);
 					
 				}
 				
@@ -366,9 +367,9 @@ public class SingleActiveMellowPlayer {
 					
 				}
 				
+				//System.out.println("i = " + i + "  and ret = " + ret);
 				
-			
-				//System.out.println("Test what offsuit to throw: " + cardToConsider + ": " + ret + ":" + i + ":" + numUnder);
+				
 			}
 			
 			
