@@ -540,6 +540,9 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH QH JH 3H QD JD 9D ")) {
+			System.out.println("Debug");
+		}
 		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
@@ -655,6 +658,10 @@ public class NoMellowPlaySituation {
 			
 			//Don't mind not messing up your partner's K (Didn't really help...)
 		} else if(dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))) {
+			curScore += 5.0;
+			
+			//leading KQequiv is about the same as leading Q.
+		} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
 			curScore += 5.0;
 		}
 		
@@ -895,6 +902,16 @@ public class NoMellowPlaySituation {
 				
 				//Only lower it a little...
 				curScore -= 5.0;
+				
+				
+				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				|| ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						) {
+					//Prefer to lead suits that are less played... if opponents are trumping:
+					
+					curScore += (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) - 6.0)/2.0;
+				}
+				
 				
 			} else {
 				curScore -= 26.0;
