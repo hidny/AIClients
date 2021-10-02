@@ -272,7 +272,13 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	
 	@Override
 	public String getBidToMake() {
-		return BiddingSituation.getSimpleBidToMake(dataModel);
+	//Run montecarlo simulations if config set to monte carlo 
+	//AND decider is not currently in a simulation: (Running a simulation in a simulation is expensive)
+		if(this.doMonteCarloSimuations && dataModel.getSimulation_level() == 0) {
+			return MonteCarloMain.runMonteCarloMethod(dataModel, this.num_simulations_for_monte_carlo);
+		} else {
+			return BiddingSituation.getSimpleBidToMake(dataModel);
+		}
 	}
 	
 	

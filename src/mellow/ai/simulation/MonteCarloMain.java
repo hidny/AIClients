@@ -135,7 +135,7 @@ public class MonteCarloMain {
 			sum_impact_to_avg +=  decisionImpact;
 			
 
-			DataModel dataModelTmp;
+			DataModel dataModelTmpForPlayer0;
 			MellowBasicDecider playersInSimulation[];
 			
 			
@@ -144,23 +144,28 @@ public class MonteCarloMain {
 				System.out.println("Possible action: " + actionString[a]);
 
 				//Create a tmp data model for current player to keep track of everything:
-				dataModelTmp = dataModel.createHardCopy();
+				dataModelTmpForPlayer0 = dataModel.createHardCopy();
 				
 				//Tell the data model that it's in the next level of a simulation.
-				dataModelTmp.incrementSimulationLevel();
+				dataModelTmpForPlayer0.incrementSimulationLevel();
 				
+				//AHHH!!
 				//TODO: For now I'm assuming action is a throw (not a bid) (This should change)
-				dataModelTmp.updateDataModelWithPlayedCard(dataModel.getPlayers()[0], actionString[a]);
+				if(dataModelTmpForPlayer0.stillInBiddingPhase()) {
+					dataModelTmpForPlayer0.setBid(dataModel.getPlayers()[0], Integer.parseInt(actionString[a]));
+				} else {
+					dataModelTmpForPlayer0.updateDataModelWithPlayedCard(dataModel.getPlayers()[0], actionString[a]);
+				}
 				
-				playersInSimulation = setupAIsForSimulation(dataModelTmp, distCards);
+				playersInSimulation = setupAIsForSimulation(dataModelTmpForPlayer0, distCards);
 
-				playOutSimulationTilEndOfRound(dataModelTmp, playersInSimulation);
+				playOutSimulationTilEndOfRound(dataModelTmpForPlayer0, playersInSimulation);
 			
 				
 				//StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmp);
 				
 				//Make monte carlos sims more readable:
-				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmp);
+				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmpForPlayer0);
 				
 				//Get Util at the end of the simulated round:
 					//Util is a function of scoreA, scoreB, isDealer
@@ -196,7 +201,7 @@ public class MonteCarloMain {
 	});
 	
 	public static double getRelativeImpactOfSimulatedDistCards(DataModel dataModel, String distCards[][]) {
-		DataModel dataModelTmp = dataModel.createHardCopy();
+		DataModel dataModelTmpForPlayer0 = dataModel.createHardCopy();
 		
 		String players[] = new String[Constants.NUM_PLAYERS];
 		players[0] = "Hero";
@@ -211,7 +216,7 @@ public class MonteCarloMain {
 				//We know the current player's bid is what's expected, so skip that check:
 				continue;
 			}
-			String hand[] = dataModelTmp.getGuessAtOriginalCardsHeld(playerI, distCards[playerI]);
+			String hand[] = dataModelTmpForPlayer0.getGuessAtOriginalCardsHeld(playerI, distCards[playerI]);
 			
 			MellowBasicDecider tempDecider = new MellowBasicDecider();
 			tempDecider.resetStateForNewRound();
@@ -222,7 +227,7 @@ public class MonteCarloMain {
 			//Set dealer to be the player of the right of the Hero:
 			tempDecider.setDealer("Villain2");
 
-			int expectedResponse = dataModelTmp.getBid(playerI);
+			int expectedResponse = dataModelTmpForPlayer0.getBid(playerI);
 			int response = 0;
 			try {
 				response = Integer.parseInt(tempDecider.getBidToMake());
@@ -258,56 +263,76 @@ public class MonteCarloMain {
 		return bestIndex;
 	}
 	
-	public static MellowBasicDecider[] setupAIsForSimulation(DataModel dataModelTmp, String distCards[][]) {
+	public static MellowBasicDecider[] setupAIsForSimulation(DataModel dataModelTmpForPlayer0, String distCards[][]) {
 		
 		MellowBasicDecider playerInSimulation[] = new MellowBasicDecider[Constants.NUM_PLAYERS];
 		
 		//For each player: create a HARD coded data model for their perspective (Maybe their own MellowBasicDecider):
 		for(int j=0; j<Constants.NUM_PLAYERS; j++) {
 			if(j==0) {
-				playerInSimulation[j] = new MellowBasicDecider(dataModelTmp);
+				playerInSimulation[j] = new MellowBasicDecider(dataModelTmpForPlayer0);
 			} else {
-				playerInSimulation[j] = new MellowBasicDecider(dataModelTmp.getDataModelFromPerspectiveOfPlayerI(j, distCards));
+				playerInSimulation[j] = new MellowBasicDecider(dataModelTmpForPlayer0.getDataModelFromPerspectiveOfPlayerI(j, distCards));
 			}
 		}
 		
 		return playerInSimulation;
 	}
 	
-	public static DataModel playOutSimulationTilEndOfRound(DataModel dataModelTmp, MellowBasicDecider playerInSimulation[]) {
+	public static DataModel playOutSimulationTilEndOfRound(DataModel dataModelTmpForPlayer0, MellowBasicDecider playerInSimulation[]) {
 		
-		int numCardsPlayed = dataModelTmp.getCardsPlayedThisRound();
-		String players[] = dataModelTmp.getPlayers();
+		int numCardsPlayed = dataModelTmpForPlayer0.getCardsPlayedThisRound();
+		String players[] = dataModelTmpForPlayer0.getPlayers();
 		
 		//Get whose turn it is:
-		int actionIndex = dataModelTmp.getCurrentActionIndex();
+		int actionIndex = dataModelTmpForPlayer0.getCurrentActionIndex();
+		
+		if(dataModelTmpForPlayer0.stillInBiddingPhase()) {
+			
+			while(actionIndex <= dataModelTmpForPlayer0.getDealerIndexAtStartOfRound()) {
+				
+				int bid = Integer.parseInt(playerInSimulation[actionIndex].getBidToMake());
+				
+				for(int k=0; k<Constants.NUM_PLAYERS; k++) {
+					playerInSimulation[k].receiveBid(players[actionIndex], bid);
+				}
+				
+				actionIndex++;
+			}
+			
+		}
+		
 		
 		for(int j=numCardsPlayed; j<Constants.NUM_CARDS; j++) {
 			
 			//If it's the beginning of a new round:
 			if(j % Constants.NUM_PLAYERS == 0) {
 				//figure out who leads
-				actionIndex = dataModelTmp.getCurrentActionIndex();
+				actionIndex = dataModelTmpForPlayer0.getCurrentActionIndex();
 			}
 			
-			String card = playerInSimulation[actionIndex].getCardToPlay();
 			
+				
+			String card = playerInSimulation[actionIndex].getCardToPlay();
 			for(int k=0; k<Constants.NUM_PLAYERS; k++) {
 				playerInSimulation[k].receiveCardPlayed(players[actionIndex], card);
 			}
+				
+
 			actionIndex = (actionIndex + 1) % Constants.NUM_PLAYERS;
+			
 		
 		}
 
-		if(dataModelTmp.getCardsPlayedThisRound() != Constants.NUM_CARDS ) {
+		if(dataModelTmpForPlayer0.getCardsPlayedThisRound() != Constants.NUM_CARDS ) {
 			System.err.println("ERROR: (in simulation) simulation hasn't reached the end of the round");
 			System.exit(1);
 		}
 		
-		return dataModelTmp;
+		return dataModelTmpForPlayer0;
 	}
 	
-	public static StatsBetweenRounds getPointDiffEndOfRound(DataModel dataModelTmp) {
+	public static StatsBetweenRounds getPointDiffEndOfRound(DataModel dataModelTmpForPlayer0) {
 		int curScoreUs = 0;
 		int curScoreThem = 0;
 		
@@ -316,10 +341,10 @@ public class MonteCarloMain {
 		
 		//Handle mellows:
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
-			if(dataModelTmp.saidMellow(i)) {
+			if(dataModelTmpForPlayer0.saidMellow(i)) {
 				int MULTIPLIER = 1;
 				
-				if(dataModelTmp.burntMellow(i)) {
+				if(dataModelTmpForPlayer0.burntMellow(i)) {
 					MULTIPLIER = -1;
 				}
 				
@@ -334,26 +359,26 @@ public class MonteCarloMain {
 		}
 
 		if(numMellowUS < 2){
-			curScoreUs += handleNormalBidScoreDiff(dataModelTmp, true);
+			curScoreUs += handleNormalBidScoreDiff(dataModelTmpForPlayer0, true);
 		}
 		
 		if(numMellowThem < 2) {
-			curScoreThem += handleNormalBidScoreDiff(dataModelTmp, false);
+			curScoreThem += handleNormalBidScoreDiff(dataModelTmpForPlayer0, false);
 		}
 		
 		StatsBetweenRounds ret = new StatsBetweenRounds();
 		ret.setScores(curScoreUs, curScoreThem);
 		
-		int nextDealerIndex = (dataModelTmp.getDealerIndexAtStartOfRound() + 1) % Constants.NUM_PLAYERS;
+		int nextDealerIndex = (dataModelTmpForPlayer0.getDealerIndexAtStartOfRound() + 1) % Constants.NUM_PLAYERS;
 		ret.setDealerIndexAtStartOfRound(nextDealerIndex);
 		
 		return ret;
 	}
 	//Get stats at the end of the round:
 	//(i.e: Get scores and dealer index at the end of the round)
-	public static StatsBetweenRounds getStatsAfterSdimulatedRound(DataModel dataModelTmp) {
-		int scoreUsAtStartOfRound = dataModelTmp.getOurScore();
-		int scoreThemAtStartOfRound = dataModelTmp.getOpponentScore();
+	public static StatsBetweenRounds getStatsAfterSdimulatedRound(DataModel dataModelTmpForPlayer0) {
+		int scoreUsAtStartOfRound = dataModelTmpForPlayer0.getOurScore();
+		int scoreThemAtStartOfRound = dataModelTmpForPlayer0.getOpponentScore();
 		
 		int curScoreUs = scoreUsAtStartOfRound;
 		int curScoreThem = scoreThemAtStartOfRound;
@@ -363,10 +388,10 @@ public class MonteCarloMain {
 		
 		//Handle mellows:
 		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
-			if(dataModelTmp.saidMellow(i)) {
+			if(dataModelTmpForPlayer0.saidMellow(i)) {
 				int MULTIPLIER = 1;
 				
-				if(dataModelTmp.burntMellow(i)) {
+				if(dataModelTmpForPlayer0.burntMellow(i)) {
 					MULTIPLIER = -1;
 				}
 				
@@ -381,23 +406,23 @@ public class MonteCarloMain {
 		}
 
 		if(numMellowUS < 2){
-			curScoreUs += handleNormalBidScoreDiff(dataModelTmp, true);
+			curScoreUs += handleNormalBidScoreDiff(dataModelTmpForPlayer0, true);
 		}
 		
 		if(numMellowThem < 2) {
-			curScoreThem += handleNormalBidScoreDiff(dataModelTmp, false);
+			curScoreThem += handleNormalBidScoreDiff(dataModelTmpForPlayer0, false);
 		}
 		
 		StatsBetweenRounds ret = new StatsBetweenRounds();
 		ret.setScores(curScoreUs, curScoreThem);
 		
-		int nextDealerIndex = (dataModelTmp.getDealerIndexAtStartOfRound() + 1) % Constants.NUM_PLAYERS;
+		int nextDealerIndex = (dataModelTmpForPlayer0.getDealerIndexAtStartOfRound() + 1) % Constants.NUM_PLAYERS;
 		ret.setDealerIndexAtStartOfRound(nextDealerIndex);
 		
 		return ret;
 	}
 	
-	public static int handleNormalBidScoreDiff(DataModel dataModelTmp, boolean teamIsUs) {
+	public static int handleNormalBidScoreDiff(DataModel dataModelTmpForPlayer0, boolean teamIsUs) {
 		int adjustmentIndex = 0;
 		
 		if(teamIsUs == false) {
@@ -406,8 +431,8 @@ public class MonteCarloMain {
 		
 		int scoreAdjustment = 0;
 		
-		int numBids = dataModelTmp.getBid(0 + adjustmentIndex) + dataModelTmp.getBid(2 + adjustmentIndex);
-		int numTricks = dataModelTmp.getNumTricks(0 + adjustmentIndex) + dataModelTmp.getNumTricks(2 + adjustmentIndex);
+		int numBids = dataModelTmpForPlayer0.getBid(0 + adjustmentIndex) + dataModelTmpForPlayer0.getBid(2 + adjustmentIndex);
+		int numTricks = dataModelTmpForPlayer0.getNumTricks(0 + adjustmentIndex) + dataModelTmpForPlayer0.getNumTricks(2 + adjustmentIndex);
 		
 		if(numBids <= numTricks) {
 			scoreAdjustment = 10*numBids + 1 * (numTricks - numBids);
