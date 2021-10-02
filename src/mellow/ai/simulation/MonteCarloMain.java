@@ -104,6 +104,16 @@ public class MonteCarloMain {
 		}
 		
 		
+		int maxBidThatIsRealistic = -1;
+		if(dataModel.stillInBiddingPhase()) {
+			int bid = Integer.parseInt(new MellowBasicDecider(dataModel).getBidToMake());
+			maxBidThatIsRealistic = (bid + 3);
+			
+			//TODO: Might not need as many simulations for bids...
+			num_simulations /= 2 ;
+			
+		}
+		
 		double sum_impact_to_avg = 0.0;
 		
 		for(int i=0; i<num_simulations; i++) {
@@ -141,6 +151,10 @@ public class MonteCarloMain {
 			
 			for(int a=0; a<actionString.length; a++) {
 
+				if(Integer.parseInt(actionString[a]) > maxBidThatIsRealistic) {
+					continue;
+				}
+				
 				System.out.println("Possible action: " + actionString[a]);
 
 				//Create a tmp data model for current player to keep track of everything:
@@ -152,6 +166,7 @@ public class MonteCarloMain {
 				//AHHH!!
 				//TODO: For now I'm assuming action is a throw (not a bid) (This should change)
 				if(dataModelTmpForPlayer0.stillInBiddingPhase()) {
+					
 					dataModelTmpForPlayer0.setBid(dataModel.getPlayers()[0], Integer.parseInt(actionString[a]));
 				} else {
 					dataModelTmpForPlayer0.updateDataModelWithPlayedCard(dataModel.getPlayers()[0], actionString[a]);
@@ -238,8 +253,10 @@ public class MonteCarloMain {
 			}
 			
 			//For now, only tolarate an off-by-one error:
-			
-			if(Math.abs(expectedResponse - response) >= 2) {
+			if(Math.abs(expectedResponse - response) >= 3) {
+				impact /= 2.0;
+	
+			} else if(Math.abs(expectedResponse - response) >= 2) {
 				impact /= 1.5;
 
 			} else if(Math.abs(expectedResponse - response) >= 1) {
