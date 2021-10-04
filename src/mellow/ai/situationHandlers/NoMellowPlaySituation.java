@@ -540,7 +540,8 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH QH JH 3H QD JD 9D ")) {
+		if(suitIndex == 3
+				&& DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH 7H JD TD 9D 6D 4D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -740,6 +741,12 @@ public class NoMellowPlaySituation {
 					//It's slightly controversial to not play lowest when partner is trumping, but I like the agro play...
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				
+				} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				
+				} else if(NonMellowBidHandIndicators.has3PlusAndQJTEquivOrBetter(dataModel, suitIndex)) {
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+					
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				}
