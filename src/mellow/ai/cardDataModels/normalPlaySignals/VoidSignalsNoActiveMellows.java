@@ -423,6 +423,19 @@ public class VoidSignalsNoActiveMellows {
 
 		}
 		
+		//TODO: put in another function:
+		/*int ret=curMaxRank;
+		for(; ret>=DataModel.RANK_TWO; ret--) {
+			if(dataModel.isCardPlayedInRound(DataModel.getCardString(ret, suitIndex))) {
+				continue;
+			} else {
+				break;
+			}
+		}
+		if(ret < DataModel.RANK_TWO) {
+			return -1;
+		}*/
+		
 		return curMaxRank;
 	}
 	
@@ -434,6 +447,19 @@ public class VoidSignalsNoActiveMellows {
 				
 			curMinRank = hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex];
 		}
+		
+		//TODO: put in another function:
+		/*int ret=curMinRank;
+		for(; ret<DataModel.ACE; ret++) {
+			if(dataModel.isCardPlayedInRound(DataModel.getCardString(ret, suitIndex))) {
+				continue;
+			} else {
+				break;
+			}
+		}
+		if(ret > DataModel.ACE) {
+			return -1;
+		}*/
 		
 		return curMinRank;
 	}
@@ -575,6 +601,38 @@ public class VoidSignalsNoActiveMellows {
 	
 	public boolean playerAlwaysFollowedSuit(int playerIndex, int suitIndex) {
 		return ! didNotFollowSuit[playerIndex][suitIndex];
+	}
+	
+
+	public boolean playerSingalledMasterCardOrVoidAccordingToCurPlayer(int playerIndex, int suitIndex) {
+		if(playerSignaledNoCardsOfSuit(playerIndex, suitIndex)) {
+			return true;
+		}
+		
+		
+		boolean ret = false;
+		
+		int minRank = getMinCardRankSignal(playerIndex, suitIndex);
+	
+		int numCardsFound = 0;
+		
+		for(int r = minRank; r<=dataModel.ACE; r++) {
+			String tmpCard = dataModel.getCardString(r, suitIndex);
+			
+			if(dataModel.hasCard(tmpCard)) {
+				continue;
+			} else if(dataModel.isCardPlayedInRound(tmpCard)) {
+				continue;
+			} else {
+				numCardsFound++;
+			}
+		}
+		
+		if(numCardsFound <= 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

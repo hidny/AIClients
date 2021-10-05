@@ -485,6 +485,38 @@ public class NonMellowBidHandIndicators {
 		}
 		 
 	 }
+	 
+	 
+ public static String getCardThatWillEventuallyForceOutAllMasters(DataModel dataModel, int suitIndex) {
+		 
+		 if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+				return null;
+		 }
+		 
+	    int numOver = 0;
+	    int numCardsInHand=0;
+			
+		for(int curRank = dataModel.ACE; curRank >= dataModel.RANK_TWO; curRank--) {
+			
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				numCardsInHand++;
+				if(numCardsInHand > numOver) {
+					return DataModel.getCardString(curRank, suitIndex);
+				}
+	
+			} else if(dataModel.isCardPlayedInRound(
+					DataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+	
+			} else {
+				numOver++;
+				
+			}
+		}
+		return null;
+		 
+	 }
 	//Just start with functions.
 
 	 

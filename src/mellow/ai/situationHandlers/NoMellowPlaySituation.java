@@ -540,8 +540,8 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(suitIndex == 3
-				&& DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH 7H JD TD 9D 6D 4D ")) {
+		if(suitIndex == 1
+				&& DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 2S JH 9H 6D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -736,16 +736,10 @@ public class NoMellowPlaySituation {
 				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 					
 					cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+				} else if(NonMellowBidHandIndicators.getCardThatWillEventuallyForceOutAllMasters(dataModel, suitIndex) != null) {
 					
-				} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
-					//It's slightly controversial to not play lowest when partner is trumping, but I like the agro play...
-					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
-				
-				} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
-					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
-				
-				} else if(NonMellowBidHandIndicators.has3PlusAndQJTEquivOrBetter(dataModel, suitIndex)) {
-					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+					//TODO: maybe return the highest card of group?
+					cardToPlay = NonMellowBidHandIndicators.getCardThatWillEventuallyForceOutAllMasters(dataModel, suitIndex);
 					
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
@@ -881,6 +875,8 @@ public class NoMellowPlaySituation {
 				curScore -= 52.0;
 			}
 			
+			//System.out.println(dataModel.signalHandler.getMinCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex));
+			//System.out.println("VS: " + DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)));
 			//Don't lead into suit that is going to be trumped by LHS
 			//Unless there's only 2 unknown cards or less
 			//Or the partner is void too
@@ -895,7 +891,21 @@ public class NoMellowPlaySituation {
 					|| dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE))
 					) {
 				curScore -= 50;
+	
+			} else if(
+					! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					&& dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					&& ! dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+					&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						 || dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)	)			
+				) {
+				//If LHS signalled high card or void, don't be eager to play suit:
+				curScore -= 30;
+				
 			}
+				
+				
+			
 			
 			if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				

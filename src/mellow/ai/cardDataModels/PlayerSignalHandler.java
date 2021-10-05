@@ -167,4 +167,17 @@ public class PlayerSignalHandler {
 	public boolean partnerHasOnlyMasterOrIsVoidBasedOnSignals(int suitIndex) {
 		return this.mellowVoidSignalsNoActiveMellows.playerHasOnlyMasterOrIsVoidBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, suitIndex);
 	}
+	
+	
+	public int getMinCardRankSignal(int playerIndex, int suitIndex ) {
+		return this.mellowVoidSignalsNoActiveMellows.getMinCardRankSignal(playerIndex, suitIndex);
+	}
+	
+	
+	public boolean playerSingalledMasterCardOrVoidAccordingToCurPlayer(int playerIndex, int suitIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.playerSingalledMasterCardOrVoidAccordingToCurPlayer(playerIndex, suitIndex);
+			
+	}
+		
+		
 }
