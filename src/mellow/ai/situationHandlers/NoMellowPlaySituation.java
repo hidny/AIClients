@@ -540,8 +540,7 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(suitIndex == 1
-				&& DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 2S JH 9H 6D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS JS TS 7S QH 7H 6H 3H QC TC 6C 5C 7D")) {
 			System.out.println("Debug");
 		}
 		
@@ -961,6 +960,10 @@ public class NoMellowPlaySituation {
 				curScore += 50.0;
 				
 			}
+			//Slightly prefer suits with queens in then...
+			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.QUEEN) {
+			//	curScore += 2.0;
+			//}
 			
 			//Consider playing suits that others have a lot of so you are less likely to be trumped
 			if(3.0 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) - numCardsOfSuitOtherPlayersHave  <= 1
@@ -990,7 +993,7 @@ public class NoMellowPlaySituation {
 						&& NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex) == false
 						&& dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) < dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) ){
 					
-					curScore -= 20.0;
+					curScore -= 30.0;
 				}
 			}
 			
