@@ -1064,9 +1064,29 @@ public class NoMellowPlaySituation {
 					if(dataModel.hasCard( DataModel.getCardString(DataModel.JACK, suitIndex))) {
 						curScore += 10.0;
 					}
+
 				}
 				
+				
 			}
+			
+			//Like to play low offsuits when you have lots of spade...
+			if(3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
+				4.0 + dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+				&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)
+				&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
+				&& dataModel.getNumberOfCardsOneSuit(suitIndex) >= 3
+				&& (NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
+				|| NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex))) {
+		
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				
+				System.out.println("TEST");
+				//TEST
+				curScore += 20.0;
+		
+			}
+	
 			
 			if(partnerSignalledHighCardOfSuit) {
 				

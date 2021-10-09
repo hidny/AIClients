@@ -151,7 +151,8 @@ public class MonteCarloMain {
 			
 			for(int a=0; a<actionString.length; a++) {
 
-				if(Integer.parseInt(actionString[a]) > maxBidThatIsRealistic) {
+				if(dataModel.stillInBiddingPhase()
+						&& Integer.parseInt(actionString[a]) > maxBidThatIsRealistic) {
 					continue;
 				}
 				
