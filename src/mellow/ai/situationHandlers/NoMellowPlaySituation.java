@@ -598,8 +598,6 @@ public class NoMellowPlaySituation {
 			//TODO: refine later
 			curScore += 10.0;
 			
-			
-			
 			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
 
 			//	curScore += 10.0;
@@ -981,8 +979,14 @@ public class NoMellowPlaySituation {
 				int numCardsLessThanAvgOther = numCardsOfSuitOtherPlayersHave - 3 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 				
 				if(numCardsLessThanAvgOther > 0) {
-					curScore += Math.min(5.0 * numCardsLessThanAvgOther, 30);
+					curScore += Math.min(5.0 * numCardsLessThanAvgOther, 25);
 				}
+				
+				if(numCardsLessThanAvgOther > 2
+						&& dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					curScore += 5.0;
+				}
+				
 			}
 			
 			//Consider not messing up your partner's counted king:
@@ -1083,7 +1087,16 @@ public class NoMellowPlaySituation {
 				
 				System.out.println("TEST");
 				//TEST
-				curScore += 20.0;
+
+				if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
+						&& dataModel.getNumberOfCardsOneSuit(suitIndex) == 3
+						&&  dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 6 ){
+
+					//Don't be too excited to play low when you only have Q and 2 others... 
+					curScore += 5.0;
+				} else {
+					curScore += 20.0;
+				}
 		
 			}
 	
