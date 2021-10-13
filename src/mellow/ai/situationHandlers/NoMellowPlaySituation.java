@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS TS 9S 8S QH 4H 7C 4C 2C AD JD TD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S AH 9H 2H QC TC 6C 5C")) {
 			System.out.println("Debug");
 		}
 
@@ -468,12 +468,14 @@ public class NoMellowPlaySituation {
 		}
 		
 		
+		//TODO put in function:
 		//Basic awareness of when to play S based on bids:
 		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
 				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 				- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >= 2
-				&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-			curScore += 20.0;
+				/*&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE*/) {
+		//END TODO put in function
+			curScore += 25.0;
 			curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 					- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) - 2);
 		}
@@ -540,7 +542,7 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS JS TS 7S QH 7H 6H 3H QC TC 6C 5C 7D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S AH 9H 2H QC TC 6C 5C")) {
 			System.out.println("Debug");
 		}
 		
@@ -905,7 +907,7 @@ public class NoMellowPlaySituation {
 			
 			
 			if( dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
-				
+				//AH!!
 				curScore += cashOutMasterRating(dataModel, suitIndex);
 				
 
@@ -1122,6 +1124,8 @@ public class NoMellowPlaySituation {
 		
 		//TODO: pseudo code for not following suit
 	
+
+
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
@@ -1277,9 +1281,11 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 3H 2H QC JC 4C 2C")) {
-				System.out.println("DEBUG 3558");
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 2S 8D 4D")) {
+				System.out.println("Debug");
+				
 			}
+			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
 				cardToPlay = getJunkiestCardToFollowLead(dataModel);
@@ -1481,6 +1487,21 @@ public class NoMellowPlaySituation {
 					      && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)){ 
 
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+				
+				//LHS probably has master and no spade, and partner has to follow suit, so just trump it
+				} else if(
+						dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 4
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						&& 	! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+							&& (dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+									||
+								dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(leaderSuitIndex) == Constants.LEFT_PLAYER_INDEX
+						       )
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+						&& ! dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)) {
+					
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					
 				} else {
 					cardToPlay = getJunkiestCardToFollowLead(dataModel);
 				}
@@ -2173,6 +2194,14 @@ public class NoMellowPlaySituation {
 	public static int cashOutMasterRating(DataModel dataModel, int suitIndex) {
 		
 		if(! dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			return 0;
+		}
+		
+		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
+				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+				- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >= 2
+				&& dataModel.getNumberOfCardsOneSuit(suitIndex) > 1
+				/*&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE*/) {
 			return 0;
 		}
 		

@@ -32,7 +32,7 @@ public class MonteCarloMain {
 
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -127,7 +127,10 @@ public class MonteCarloMain {
 		
 		double sum_impact_to_avg = 0.0;
 		
-		for(int i=0; i<num_simulations; i++) {
+		int numSkipped = 0;
+		int maxSkipped = 100 * num_simulations;
+		int i=0;
+		for(; i<num_simulations && numSkipped < maxSkipped; i++) {
 			if(i % 100 == 0) {
 				System.err.println(i+ " out of " + num_simulations);
 			}
@@ -144,6 +147,12 @@ public class MonteCarloMain {
 			//      to dampen the effect of unrealistic distributions of cards:
 			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
 			//double decisionImpact = 1.0;
+			
+			if(decisionImpact < 0.1) {
+				numSkipped++;
+				i--;
+				continue;
+			}
 			
 			/*if(isThorough == false && decisionImpact < 0.001 && sum_impact_to_avg > 0.099) {
 				i--;
@@ -215,8 +224,9 @@ public class MonteCarloMain {
 		//Allow print statements now that the simulation is over:
 		System.setOut(originalStream);
 
+		int numSimulationsNotSkipped = i;
 		
-		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, num_simulations);
+		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, numSimulationsNotSkipped);
 
 		//in.next();
 		System.out.print("END OF SIMULATION  PLAY: ");
@@ -274,15 +284,44 @@ public class MonteCarloMain {
 				System.exit(1);
 			}
 			
-			//For now, only tolarate an off-by-one error:
-			if(Math.abs(expectedResponse - response) >= 3) {
-				impact /= 2.0;
+			if(response > 0 && expectedResponse > 0
+					&& playerI == Constants.CURRENT_PARTNER_INDEX) {
+				//For now, only tolerate an off-by-one error:
+				if(Math.abs(expectedResponse - response) >= 4) {
+					impact /= 8.0;
+		
+				} else if(Math.abs(expectedResponse - response) >= 3) {
+					impact /= 7.0;
+		
+				} else if(Math.abs(expectedResponse - response) >= 2) {
+					impact /= 6.0;
 	
-			} else if(Math.abs(expectedResponse - response) >= 2) {
-				impact /= 1.5;
-
-			} else if(Math.abs(expectedResponse - response) >= 1) {
-				impact /= 1.2;
+				} else if(Math.abs(expectedResponse - response) >= 1) {
+					impact /= 1.2;
+				}
+			} else if(response > 0 && expectedResponse > 0) {
+				if(Math.abs(expectedResponse - response) >= 4) {
+					impact /= 3.0;
+		
+				} else if(Math.abs(expectedResponse - response) >= 3) {
+					impact /= 2.0;
+		
+				} else if(Math.abs(expectedResponse - response) >= 2) {
+					impact /= 1.5;
+	
+				} else if(Math.abs(expectedResponse - response) >= 1) {
+					impact /= 1.2;
+				}
+			} else {
+				if(Math.abs(expectedResponse - response) >= 3) {
+					impact /= 3.0;
+		
+				} else if(Math.abs(expectedResponse - response) >= 2) {
+					impact /= 1.5;
+	
+				} else if(Math.abs(expectedResponse - response) >= 1) {
+					impact /= 1.2;
+				}
 			}
 		}
 		

@@ -142,10 +142,15 @@ public class MellowLetPartnerWinSignals {
 		
 	}
 	
+	//TODO: REPLACE!
 	//TODO: I'm confused, isn't this in MellowVoidSignalsNoActiveMellows?
 	public boolean playerSignalledHighCardInSuit(int playerIndex, int suitIndex) {
 		
 		if(softMinHighCardInHand[playerIndex][suitIndex] == -1) {
+			return false;
+		}
+		
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(playerIndex, suitIndex)) {
 			return false;
 		}
 		
