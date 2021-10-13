@@ -223,6 +223,14 @@ public class BiddingSituation {
 			
 		}
 		
+		if(dataModel.getOurScore() < 800
+				&&  dataModel.getDealerIndexAtStartOfRound() == Constants.CURRENT_AGENT_INDEX) {
+			while(dataModel.getBidTotalSoFar() + intBid >= Constants.NUM_STARTING_CARDS_IN_HAND
+					&& intBid > 1) {
+				System.out.println("(LOWER BID TO BE SAFE)");
+				intBid--;
+			}
+		}
 		
 		//TODO: put into function (make it 5 lines instead of 15)
 		if(dataModel.getOpponentScore() > 800
@@ -303,6 +311,7 @@ public class BiddingSituation {
 				&& intBid == 0) {
 			return 1 + "";
 		} else {
+			
 			return intBid + "";
 		}
 	}
