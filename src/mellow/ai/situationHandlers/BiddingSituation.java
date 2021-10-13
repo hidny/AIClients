@@ -166,7 +166,9 @@ public class BiddingSituation {
 		}
 		
 		//Don't double mellow:
-		if(intBid == 0 && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0) {
+		if(intBid == 0
+				&& (dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
+				    && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0)) {
 			intBid = 1;
 		}
 		

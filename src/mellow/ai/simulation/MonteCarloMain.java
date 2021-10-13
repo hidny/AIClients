@@ -90,12 +90,33 @@ public class MonteCarloMain {
 		//TODO: When handling bids: please dismiss unreasonable bids quickly!
 		
 		//TODO: test bid:
-		//Create mapping from index to action (card or bid) 
-		String actionString[] = dataModel.getListOfPossibleActions();
-		double actionUtil[] = new double[actionString.length];
+		//Create mapping from index to action (card or bid)
+		String actionString[];
+		int maxBidThatIsRealistic = -1;
+		
+		if(dataModel.stillInBiddingPhase()) {
+			int bid = Integer.parseInt(new MellowBasicDecider(dataModel).getBidToMake());
+			maxBidThatIsRealistic = (bid + 3);
+
+			//TODO: Might not need as many simulations for bids...
+			num_simulations /= 2;
+			
+			actionString = new String[maxBidThatIsRealistic + 1];
+			for(int i=0; i<actionString.length; i++) {
+				actionString[i] = i + "";
+			}
+			
+		} else {
+			actionString = dataModel.getListOfPossibleActions();
+			
+		}
+
+		double actionUtil[];
+		actionUtil = new double[actionString.length];
 		for(int i=0; i<actionUtil.length; i++) {
 			actionUtil[i] = 0.0;
 		}
+		
 		
 		//Reduce number of print statements called:
 		PrintStream originalStream = System.out;
@@ -103,16 +124,6 @@ public class MonteCarloMain {
 			System.setOut(dummyStream);
 		}
 		
-		
-		int maxBidThatIsRealistic = -1;
-		if(dataModel.stillInBiddingPhase()) {
-			int bid = Integer.parseInt(new MellowBasicDecider(dataModel).getBidToMake());
-			maxBidThatIsRealistic = (bid + 3);
-			
-			//TODO: Might not need as many simulations for bids...
-			num_simulations /= 2 ;
-			
-		}
 		
 		double sum_impact_to_avg = 0.0;
 		
@@ -154,6 +165,9 @@ public class MonteCarloMain {
 				if(dataModel.stillInBiddingPhase()
 						&& Integer.parseInt(actionString[a]) > maxBidThatIsRealistic) {
 					continue;
+				}
+				if(a == actionString.length - 1) {
+					System.out.println("Debug");
 				}
 				
 				System.out.println("Possible action: " + actionString[a]);
@@ -221,9 +235,9 @@ public class MonteCarloMain {
 		
 		String players[] = new String[Constants.NUM_PLAYERS];
 		players[0] = "Hero";
-		players[1] = "Villain1";
+		players[1] = "LHSOpponent";
 		players[2] = "Partner";
-		players[3] = "Villain2";
+		players[3] = "RHSOpponent";
 		
 		
 		double impact = 1.0;
@@ -231,7 +245,14 @@ public class MonteCarloMain {
 			if(playerI == Constants.CURRENT_AGENT_INDEX) {
 				//We know the current player's bid is what's expected, so skip that check:
 				continue;
+
+			} else if(dataModel.stillInBiddingPhase()
+					&& dataModel.getDealerIndexAtStartOfRound()
+						 >= playerI) {
+				//player didn't even bid yet!
+				continue;
 			}
+			
 			String hand[] = dataModelTmpForPlayer0.getGuessAtOriginalCardsHeld(playerI, distCards[playerI]);
 			
 			MellowBasicDecider tempDecider = new MellowBasicDecider();
@@ -240,8 +261,8 @@ public class MonteCarloMain {
 			tempDecider.setNameOfPlayers(players);
 			tempDecider.setCardsForNewRound(hand);
 			
-			//Set dealer to be the player of the right of the Hero:
-			tempDecider.setDealer("Villain2");
+			//Set dealer:
+			tempDecider.setDealer(players[(dataModel.getDealerIndexAtStartOfRound() - playerI + Constants.NUM_PLAYERS) % Constants.NUM_PLAYERS]);
 
 			int expectedResponse = dataModelTmpForPlayer0.getBid(playerI);
 			int response = 0;

@@ -300,7 +300,24 @@ public class DataModel {
 		return bids[convertPlayerNameToIndex(playerName)];
 	}
 
+	public boolean playerMadeABidInRound(int indexPlayer) {
+		if(this.stillInBiddingPhase()
+				&& indexPlayer <= this.dealerIndexAtStartOfRound) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	public int getBid(int indexPlayer) {
+
+		if(this.stillInBiddingPhase()) {
+			if(indexPlayer <= this.dealerIndexAtStartOfRound) {
+				System.err.println("Getting player's bid while still in bidding phase!");
+				System.err.println("Index player: " + indexPlayer);
+				System.err.println("Index dealer: " + this.dealerIndexAtStartOfRound);
+				System.exit(1);
+			}
+		}
 		return bids[indexPlayer];
 	}
 	
@@ -740,47 +757,55 @@ public class DataModel {
 	//where the player the data model represents is index 0.
 	//This is allowed to be queried whenever
 	public int getCurrentActionIndex() {
+		
 		int throwNumber = cardsPlayedThisRound % Constants.NUM_PLAYERS;
 
-		if(throwNumber == 0) {
-			if(cardsPlayedThisRound == 0) {
-				int indexPlayer = (dealerIndexAtStartOfRound + 1) % Constants.NUM_PLAYERS;
-				return indexPlayer;
-
-			} else if(cardsPlayedThisRound > 0) {
-				//Simulate fight:
-				int numCardsPlayedBeforeFight = cardsPlayedThisRound - Constants.NUM_PLAYERS;
-				
-				int leadPlayerIndex = playerWhoPlayedCard[numCardsPlayedBeforeFight];
-	
-				String leadCard = cardStringsPlayed[numCardsPlayedBeforeFight];
-				
-				int leadSuit = CardStringFunctions.getIndexOfSuit(leadCard);
-				
-				String winningCard = leadCard;
-				
-				int currentWinningIndex = 0;
-				
-				for(int fightIndex=1; fightIndex<Constants.NUM_PLAYERS; fightIndex++) {
-					
-					String currentCard = cardStringsPlayed[numCardsPlayedBeforeFight + fightIndex];
-					
-					if(getCardPower(currentCard, leadSuit) > getCardPower(winningCard, leadSuit)) {
-						winningCard = currentCard;
-						currentWinningIndex = fightIndex;
-					}
-				}
-				
-				return (leadPlayerIndex + currentWinningIndex) % Constants.NUM_PLAYERS;
-
-			} else {
-				System.err.println("ERROR: Negative cards played... What?");
-				System.exit(1);
-				return -1;
-			}
+		if(this.stillInBiddingPhase()) {
+			
+			return (dealerIndexAtStartOfRound + 1 + this.bidsMadeThisRound ) % Constants.NUM_PLAYERS;
+			
 		} else {
-			int indexPlayer = (getPrevThrowerIndex() + 1) % Constants.NUM_PLAYERS;
-			return indexPlayer;
+			
+			if(throwNumber == 0) {
+				if(cardsPlayedThisRound == 0) {
+					int indexPlayer = (dealerIndexAtStartOfRound + 1) % Constants.NUM_PLAYERS;
+					return indexPlayer;
+	
+				} else if(cardsPlayedThisRound > 0) {
+					//Simulate fight:
+					int numCardsPlayedBeforeFight = cardsPlayedThisRound - Constants.NUM_PLAYERS;
+					
+					int leadPlayerIndex = playerWhoPlayedCard[numCardsPlayedBeforeFight];
+		
+					String leadCard = cardStringsPlayed[numCardsPlayedBeforeFight];
+					
+					int leadSuit = CardStringFunctions.getIndexOfSuit(leadCard);
+					
+					String winningCard = leadCard;
+					
+					int currentWinningIndex = 0;
+					
+					for(int fightIndex=1; fightIndex<Constants.NUM_PLAYERS; fightIndex++) {
+						
+						String currentCard = cardStringsPlayed[numCardsPlayedBeforeFight + fightIndex];
+						
+						if(getCardPower(currentCard, leadSuit) > getCardPower(winningCard, leadSuit)) {
+							winningCard = currentCard;
+							currentWinningIndex = fightIndex;
+						}
+					}
+					
+					return (leadPlayerIndex + currentWinningIndex) % Constants.NUM_PLAYERS;
+	
+				} else {
+					System.err.println("ERROR: Negative cards played... What?");
+					System.exit(1);
+					return -1;
+				}
+			} else {
+				int indexPlayer = (getPrevThrowerIndex() + 1) % Constants.NUM_PLAYERS;
+				return indexPlayer;
+			}
 		}
 	}
 	
