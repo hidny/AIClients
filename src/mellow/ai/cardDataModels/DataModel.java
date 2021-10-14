@@ -327,6 +327,11 @@ public class DataModel {
 				System.err.println("Getting player's bid while still in bidding phase!");
 				System.err.println("Index player: " + indexPlayer);
 				System.err.println("Index dealer: " + this.dealerIndexAtStartOfRound);
+				try {
+					throw new Exception("ahh");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				System.exit(1);
 			}
 		}

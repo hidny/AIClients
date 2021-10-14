@@ -392,7 +392,7 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		} else {
 
 			
-			if(bidsAreDone()) {
+			if( ! dataModel.stillInBiddingPhase()) {
 				//record how many tricks everyone got...
 				for(int i=0; i<dataModel.getPlayers().length; i++) {
 					ret += "# " + dataModel.getPlayers()[i] + ": "
@@ -406,15 +406,5 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		return ret;
 	}
 	
-	public boolean bidsAreDone() {
-		
-		for(int i=0; i<dataModel.getPlayers().length; i++) {
-			if(dataModel.getBid(i) == -1) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
 	
 }
