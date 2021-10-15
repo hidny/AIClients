@@ -258,13 +258,13 @@ public class BiddingSituation {
 		
 		
 		if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3) {
-			//System.out.println("Mellow prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb1(dataModel));
-			//System.out.println("Mellow prob2: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
-			//System.out.println("int bid: " + intBid);
+			System.out.println("Mellow prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb1(dataModel));
+			System.out.println("Mellow prob2: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
+			System.out.println("int bid: " + intBid);
 
 		}
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S JH 7H 5H 3H JC 9C 6C TD 6D 4D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
 			System.out.println("Debug");
 		}
 		
@@ -300,6 +300,17 @@ public class BiddingSituation {
 						
 						
 						return 1 + "";
+					} else if(! dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX) ){
+						
+						int scoresProjectedReasonableCase[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorst(dataModel, 3);
+						
+						if(scoresProjectedReasonableCase[0] >= Constants.GOAL_SCORE
+								&& scoresProjectedReasonableCase[1] < Constants.GOAL_SCORE - 150
+								&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.6) {
+								
+								
+								return 1 + "";
+						}
 					}
 				}
 			}

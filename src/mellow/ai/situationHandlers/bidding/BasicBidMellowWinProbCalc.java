@@ -70,7 +70,7 @@ public class BasicBidMellowWinProbCalc {
 	}
 	
 	public static double getProbNoBurnOffsuit(DataModel dataModel, int suitIndex) {
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4S 2S AH 9H 7H 5H 3H KC QC 9C 4C 3C 6D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8H 7H 5H 3H 4C 2C AD QD TD 9D 6D 5D")) {
 			System.out.println("Debug");
 		}
 		double ret = 1.0;
@@ -91,6 +91,13 @@ public class BasicBidMellowWinProbCalc {
 			
 			double probLosingRank = rankProbs[DataModel.getRankIndex(card)];
 			
+			if(DataModel.getRankIndex(card) < DataModel.RANK_FIVE) {
+				probLosingRank = 0.0;
+				
+			} else if(DataModel.getRankIndex(card) <= DataModel.RANK_NINE) {
+				probLosingRank = rankProbs[DataModel.getRankIndex(card) - 1];
+			}
+			
 			ret *= (1 - 0.95 * probLosingRank);
 	
 		}
@@ -101,6 +108,13 @@ public class BasicBidMellowWinProbCalc {
 			
 			double probLosingRank = rankProbs[DataModel.getRankIndex(card) + (numOffsuits - 3)];
 			
+			if(DataModel.getRankIndex(card) < DataModel.RANK_SIX) {
+				probLosingRank = 0.0;
+				
+			} else if(DataModel.getRankIndex(card) <= DataModel.RANK_TEN) {
+				probLosingRank = rankProbs[DataModel.getRankIndex(card) - 1];
+			}
+			
 			//Maybe .8 is too high?
 			ret *= (1 - 0.8 * probLosingRank);
 	
@@ -110,6 +124,13 @@ public class BasicBidMellowWinProbCalc {
 			String card = dataModel.getCardCurrentPlayergetFourthLowestInSuit(suitIndex);
 			
 			double probLosingRank = rankProbs[DataModel.getRankIndex(card)];
+			
+			if(DataModel.getRankIndex(card) < DataModel.RANK_SEVEN) {
+				probLosingRank = 0.0;
+				
+			} else if(DataModel.getRankIndex(card) <= DataModel.JACK) {
+				probLosingRank = rankProbs[DataModel.getRankIndex(card) - 1];
+			}
 			
 			ret *= (1 - 0.1 * probLosingRank);
 	
@@ -129,7 +150,7 @@ public class BasicBidMellowWinProbCalc {
 	
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4S 2S AH 9H 7H 5H 3H KC QC 9C 4C 3C 6D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8H 7H 5H 3H 4C 2C AD QD TD 9D 6D 5D")) {
 			System.out.println("Debug");
 		}
 		
