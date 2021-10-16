@@ -204,7 +204,8 @@ public class SimulationSetupWithMemBoost {
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
 	private static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int playerIndex, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn) {
 		
-		System.err.println("... " + playerIndex);
+		//System.err.println("... " + playerIndex);
+		
 		//Setup basic vars:
 		boolean voidSuit[] = getVoidSuitArrayForPlayer(numUnknownCardsPerSuit, originalIsVoidList, playerIndex);
 		int numVoids = getSumOfElementsInArray(voidSuit);
@@ -238,20 +239,58 @@ public class SimulationSetupWithMemBoost {
 		}
 	//END Skipping conditions
 		
-		long prevNumCombosSkippedThru = 0L;
-		long numCombosSkippedThru = 0L;
 		
 		int numTrumpSeperators = Constants.NUM_SUITS - 1 - numVoids;
-		boolean suitPartitionIter[] = setupComboIterator(numTrumpSeperators, numSpaceAvailable);
 		
-		//TODO: shortcut
+		boolean suitPartitionIterShortcut[] = null;
+		
+		//TODO: shortcut for player index 1:
 		int suitPartitionIterIndexToUse = -1;
 		if(playerIndex == START_INDEX_PLAYER) {
 			suitPartitionIterIndexToUse = binarySearchForSuitComboForDepth0(comboIndexNumber);
 		
+			//boolean combo[] = convertComboNumberToArray(curNumCardsRemainingPerSuit[indexSuit], numCardsPlayerWillTakeOfSuit, comboNumberForSuit);
+			
+			 //convertComboNumberToArray(int numUnknownCardsInSuit, int numCardsToTake, int comboNumber)
+			
+			suitPartitionIterShortcut = convertComboNumberToArray(numSpaceAvailable + numTrumpSeperators, numTrumpSeperators, suitPartitionIterIndexToUse);
 			//TODO: actually use the shortcut
 			//Will need to convert suitPartitionIterIndexToUse to bool array, but I've done that before.
+			
+			int suitArrayForEachNonVoidSuit[] = convertComboToArray(suitPartitionIterShortcut, Constants.NUM_SUITS - numVoids);
+			int suitsTakenByPlayer[] = getNumCardsOfEachSuitTakenByPlayer(voidSuit, suitArrayForEachNonVoidSuit);
+			int numCardsPerSuitAfterTake[] = getCardsPerSuitRemainingAfterTake(numUnknownCardsPerSuit, suitsTakenByPlayer);
+			
+			selectedPartitionAndIndexToFillIn.setSuitsTakenByPlayers(playerIndex, suitsTakenByPlayer);
+			
+			if(playerIndex + 1 < numSpacesAvailPerPlayer.length) {
+				
+				//Recursively fill in partition info for next player:
+				long indexFromStartOfCombo = (comboIndexNumber - curNumWaysDepth1[suitPartitionIterIndexToUse]);
+				long numWaysToSetupNextPlayers = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerIndex + 1);
+				long currentPlayerComboNumber = indexFromStartOfCombo / numWaysToSetupNextPlayers;
+				long nextComboIndexNumber = indexFromStartOfCombo % numWaysToSetupNextPlayers;
+				
+				selectedPartitionAndIndexToFillIn.setPlayerComboNumber(playerIndex, currentPlayerComboNumber);
+				
+				return getSelectedPartitionAndIndexBasedOnCombinationIndex(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, nextComboIndexNumber, playerIndex + 1, selectedPartitionAndIndexToFillIn);
+
+			} else {
+				
+				//Last player to fill-in shouldn't make it to the while loop in this function
+				System.err.println("ERROR: something went wrong in getSelectedPartitionAndIndex. Last player wasted time and iterated thru suit partitions.");
+				System.exit(1);
+				return null;
+			}
+			
 		}
+		
+		//END TODO SHORTCUT
+		
+		long prevNumCombosSkippedThru = 0L;
+		long numCombosSkippedThru = 0L;
+		
+		boolean suitPartitionIter[] = setupComboIterator(numTrumpSeperators, numSpaceAvailable);
 		
 		//TODO: make shortcut for index 1...
 		//END TODO
@@ -283,12 +322,29 @@ public class SimulationSetupWithMemBoost {
 				if(numCombosSkippedThru > comboIndexNumber 
 						//TODO: is this AND condition even needed:
 						&& currentNumWays > 0) {
-	
-					System.err.println("hello..." + playerIndex);
+					
+					//SANITY CHECK:
+					//System.err.println("hello..." + playerIndex);
 					if(playerIndex == START_INDEX_PLAYER) {
 						if(suitPartitionIterIndexToUse == curSuitPartitionIterIndex) {
 							System.err.println("GOOD!");
 							System.err.println("Test in getSelectedPartitionAndIndexBasedOnCombinationIndex passed!");
+							
+							if(suitPartitionIterShortcut.length != suitPartitionIter.length) {
+								System.err.println("ERROR in getSelectedPartitionAndIndexBasedOnCombinationIndex: The length of suitPartitionIterShortcut is incorrect!");
+
+								System.err.println("Debug!");
+								System.exit(1);
+							}
+							
+							for(int i=0; i<suitPartitionIterShortcut.length; i++) {
+								if(suitPartitionIterShortcut[i] != suitPartitionIter[i]) {
+									System.err.println("ERROR in getSelectedPartitionAndIndexBasedOnCombinationIndex: The element at i = " + i + " of suitPartitionIterShortcut is incorrect!");
+									System.err.println("Debug!");
+									
+									System.exit(1);
+								}
+							}
 						} else {
 							System.err.println("suitPartitionIterIndexToUse: " + suitPartitionIterIndexToUse);
 							System.err.println("curSuitPartitionIterIndex: " + curSuitPartitionIterIndex);
@@ -298,6 +354,7 @@ public class SimulationSetupWithMemBoost {
 							System.exit(1);
 						}
 					}
+					//END SANITY CHECK:
 					
 					selectedPartitionAndIndexToFillIn.setSuitsTakenByPlayers(playerIndex, suitsTakenByPlayer);
 					
