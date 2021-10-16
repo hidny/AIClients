@@ -1,7 +1,7 @@
 package mellow.ai.cardDataModels;
 
 import mellow.Constants;
-import mellow.ai.simulation.SimulationSetup;
+import mellow.ai.simulation.SimulationSetupWithMemBoost;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 import mellow.cardUtils.*;
 
@@ -632,7 +632,7 @@ public class DataModel {
 		boolean originalIsVoidList[][] = createVoidArray();
 		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
 
-		return SimulationSetup.getNumberOfWaysToSimulate(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		return SimulationSetupWithMemBoost.getNumberOfWaysToSimulate(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 	}
 	
 	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex) {
@@ -643,9 +643,9 @@ public class DataModel {
 		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
 		
 		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
-				SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex);
+				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex);
 		
-		return SimulationSetup.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
+		return SimulationSetupWithMemBoost.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 		
 	}
 	

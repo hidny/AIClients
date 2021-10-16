@@ -32,6 +32,8 @@ public class MonteCarloMain {
 
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Test case stats as of oct 5th, 2019:
@@ -288,39 +290,40 @@ public class MonteCarloMain {
 					&& playerI == Constants.CURRENT_PARTNER_INDEX) {
 				//For now, only tolerate an off-by-one error:
 				if(Math.abs(expectedResponse - response) >= 4) {
-					impact /= 8.0;
+					impact /= 130;
 		
 				} else if(Math.abs(expectedResponse - response) >= 3) {
-					impact /= 7.0;
+					impact /= 80;
 		
 				} else if(Math.abs(expectedResponse - response) >= 2) {
-					impact /= 6.0;
+					impact /= 50;
 	
 				} else if(Math.abs(expectedResponse - response) >= 1) {
-					impact /= 1.2;
+					impact /= 30;
 				}
 			} else if(response > 0 && expectedResponse > 0) {
 				if(Math.abs(expectedResponse - response) >= 4) {
-					impact /= 3.0;
+					impact /= 80;
 		
 				} else if(Math.abs(expectedResponse - response) >= 3) {
-					impact /= 2.0;
+					impact /= 50;
 		
 				} else if(Math.abs(expectedResponse - response) >= 2) {
-					impact /= 1.5;
+					impact /= 30;
 	
 				} else if(Math.abs(expectedResponse - response) >= 1) {
-					impact /= 1.2;
+					impact /= 20;
 				}
 			} else {
+				//TODO
 				if(Math.abs(expectedResponse - response) >= 3) {
-					impact /= 3.0;
+					impact /= 30;
 		
 				} else if(Math.abs(expectedResponse - response) >= 2) {
-					impact /= 1.5;
+					impact /= 15;
 	
 				} else if(Math.abs(expectedResponse - response) >= 1) {
-					impact /= 1.2;
+					impact /= 12;
 				}
 			}
 		}
