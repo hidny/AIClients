@@ -259,9 +259,11 @@ public class SimulationSetupWithMemBoost {
                              / numWaysToFillInCardsForCurrentPlayer;
 				
 				System.err.println("Reached the end of the line!");
-				System.err.println("This is probably almost never going to happen though... :(");
-				System.err.println("TODO: Don't error out when this happens next time. I errored out just to see if this condition is ever satisfied.");
-				System.exit(1);
+				System.err.println("I don't think this will happen without being rigged... :(");
+				System.err.println("I managed to force the issue with debug case testcase7014.txt, and it seems to work!");
+				System.err.println("To reach this code, I made the simulator test debug case testcase7014.txt, while rigging things in my favour.");
+				System.err.println("In other words, I gave current player no spade, made current player the first bidder, and rigged it so it distributes the last combination.");
+
 			}
 			
 			if(suitPartitionIterIndexToUse + 1 < curNumWaysDepth1.length
@@ -319,10 +321,12 @@ public class SimulationSetupWithMemBoost {
 						- curNumWaysDepth2[curIndexDepth1][suitPartitionIterIndexToUse]) 
                              / numWaysToFillInCardsForCurrentPlayer;
 				
-				System.err.println("Reached the end of the line 2!");
-				System.err.println("This is probably almost never going to happen though... :(");
-				System.err.println("TODO: Don't error out when this happens next time. I errored out just to see if this condition is ever satisfied.");
-				System.exit(1);
+				System.err.println("Reached the end of the line number 2!");
+				System.err.println("I don't think this will happen without being rigged... :(");
+				System.err.println("I managed to force the issue with debug case testcase7014.txt, and it seems to work!");
+				System.err.println("To reach this code, I made the simulator test debug case testcase7014.txt, while rigging things in my favour.");
+				System.err.println("In other words, I gave current player no spade, made LHS be void in Spade, made current player the first bidder, and rigged it so it distributes the last combination.");
+
 			}
 			
 			if(suitPartitionIterIndexToUse + 1 < curNumWaysDepth2[curIndexDepth1].length
