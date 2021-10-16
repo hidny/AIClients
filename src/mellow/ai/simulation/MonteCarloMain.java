@@ -139,10 +139,11 @@ public class MonteCarloMain {
 			//Distribute unknown cards for simulation:
 			String distCards[][];
 			if(isThorough) {
-				distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(i);
+				distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(i, numWaysOtherPlayersCouldHaveCards);
 			} else {
 				distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(
-						SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards));
+						SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards),
+						numWaysOtherPlayersCouldHaveCards);
 			}
 			
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try

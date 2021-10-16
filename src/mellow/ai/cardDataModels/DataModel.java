@@ -635,7 +635,7 @@ public class DataModel {
 		return SimulationSetupWithMemBoost.getNumberOfWaysToSimulate(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 	}
 	
-	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex) {
+	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex, long numWaysToSimulate) {
 		
 		String unknownCards[] = getUnknownCards();
 		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
@@ -643,7 +643,7 @@ public class DataModel {
 		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
 		
 		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
-				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex);
+				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex, numWaysToSimulate);
 		
 		return SimulationSetupWithMemBoost.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 		

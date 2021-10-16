@@ -60,7 +60,7 @@ public class SimulationSetupWithMemBoost {
 	
 	//Don't start at index_player_0, because that's the current player, and we know what's in the current player's hand
 	public static int START_INDEX_PLAYER = 1;
-	public static long curMult = 1;
+
 	public static long curNumWaysDepth1[];
 	public static int curIndexDepth1 = 0;
 	
@@ -195,14 +195,14 @@ public class SimulationSetupWithMemBoost {
 	
 
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
-	public static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber) {
-		return getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboIndexNumber, START_INDEX_PLAYER, new SelectedPartitionAndIndex());
+	public static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, long numWaysToSimulate) {
+		return getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboIndexNumber, START_INDEX_PLAYER, new SelectedPartitionAndIndex(), numWaysToSimulate);
 	}
 	
 	
 	
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
-	private static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int playerIndex, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn) {
+	private static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int playerIndex, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn, long numWaysToSimulate) {
 		
 		//System.err.println("... " + playerIndex);
 		
@@ -219,7 +219,7 @@ public class SimulationSetupWithMemBoost {
 			selectedPartitionAndIndexToFillIn.giveNoCardsToPlayer(playerIndex);
 
 			if(playerIndex + 1 < numSpacesAvailPerPlayer.length) {
-				return getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboIndexNumber, playerIndex+1, selectedPartitionAndIndexToFillIn);
+				return getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboIndexNumber, playerIndex+1, selectedPartitionAndIndexToFillIn, numWaysToSimulate);
 			} else {
 				return selectedPartitionAndIndexToFillIn;
 			}
@@ -258,7 +258,9 @@ public class SimulationSetupWithMemBoost {
 			//Will need to convert suitPartitionIterIndexToUse to bool array, but I've done that before.
 			
 			int suitArrayForEachNonVoidSuit[] = convertComboToArray(suitPartitionIterShortcut, Constants.NUM_SUITS - numVoids);
+			
 			int suitsTakenByPlayer[] = getNumCardsOfEachSuitTakenByPlayer(voidSuit, suitArrayForEachNonVoidSuit);
+			
 			int numCardsPerSuitAfterTake[] = getCardsPerSuitRemainingAfterTake(numUnknownCardsPerSuit, suitsTakenByPlayer);
 			
 			selectedPartitionAndIndexToFillIn.setSuitsTakenByPlayers(playerIndex, suitsTakenByPlayer);
@@ -267,13 +269,67 @@ public class SimulationSetupWithMemBoost {
 				
 				//Recursively fill in partition info for next player:
 				long indexFromStartOfCombo = (comboIndexNumber - curNumWaysDepth1[suitPartitionIterIndexToUse]);
-				long numWaysToSetupNextPlayers = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerIndex + 1);
-				long currentPlayerComboNumber = indexFromStartOfCombo / numWaysToSetupNextPlayers;
-				long nextComboIndexNumber = indexFromStartOfCombo % numWaysToSetupNextPlayers;
+
+				
+				long numWaysToFillInCardsForCurrentPlayer = 1;
+				for(int i=0; i<Constants.NUM_SUITS; i++) {
+					numWaysToFillInCardsForCurrentPlayer *= getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
+				}
+				
+				//totalNumberOfWaysToSimulate
+				//TODO: Add the last element for: curNumWaysDepth1
+				long numWaysToSetupNextPlayerShortCut = -1;
+				
+				//TODO: Get rid of this soon (It's slow)
+				
+				long numWaysToSetupNextPlayersSANITYCHECK = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerIndex + 1);
+				
+				//END TODO
+				
+				
+				if(suitPartitionIterIndexToUse + 1 < curNumWaysDepth1.length) {
+					numWaysToSetupNextPlayerShortCut = (curNumWaysDepth1[suitPartitionIterIndexToUse + 1]
+														- curNumWaysDepth1[suitPartitionIterIndexToUse]) 
+						                                     / numWaysToFillInCardsForCurrentPlayer;
+				} else {
+					numWaysToSetupNextPlayerShortCut = (numWaysToSimulate
+							- curNumWaysDepth1[suitPartitionIterIndexToUse]) 
+                                 / numWaysToFillInCardsForCurrentPlayer;
+					
+					System.err.println("Reached the end of the line!");
+					System.err.println("TODO: debug!");
+					System.err.println("This is probably almost never going to happen though... :(");
+					System.err.println("TODO: Don't error out when this happens next time. I errored out just to see if this condition is ever satisfied.");
+					System.exit(1);
+				}
+				
+				if(suitPartitionIterIndexToUse + 1 < curNumWaysDepth1.length
+						&& (curNumWaysDepth1[suitPartitionIterIndexToUse + 1]
+												- curNumWaysDepth1[suitPartitionIterIndexToUse]) % numWaysToFillInCardsForCurrentPlayer != 0) {
+					System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right (it doesn't divide cleanly)");
+					System.exit(1);
+				} else {
+					//System.err.println("GOOD: numWaysToSetupNextPlayerShortCut is right (it divides cleanly) (Num ways for current player: " + numWaysToFillInCardsForCurrentPlayer + ")");
+				}
+				
+				if(numWaysToSetupNextPlayerShortCut != numWaysToSetupNextPlayersSANITYCHECK) {
+					System.err.println(numWaysToSetupNextPlayerShortCut);
+					System.err.println(numWaysToSetupNextPlayersSANITYCHECK);
+					System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right");
+					System.exit(1);
+				} else {
+					//System.err.println("GOOD: numWaysToSetupNextPlayerShortCut is right");
+				}
+				
+				
+				long currentPlayerComboNumber = indexFromStartOfCombo / numWaysToSetupNextPlayerShortCut;
+				long nextComboIndexNumber = indexFromStartOfCombo % numWaysToSetupNextPlayerShortCut;
 				
 				selectedPartitionAndIndexToFillIn.setPlayerComboNumber(playerIndex, currentPlayerComboNumber);
 				
-				return getSelectedPartitionAndIndexBasedOnCombinationIndex(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, nextComboIndexNumber, playerIndex + 1, selectedPartitionAndIndexToFillIn);
+				curIndexDepth1 = suitPartitionIterIndexToUse;
+				
+				return getSelectedPartitionAndIndexBasedOnCombinationIndex(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, nextComboIndexNumber, playerIndex + 1, selectedPartitionAndIndexToFillIn, numWaysToSetupNextPlayerShortCut);
 
 			} else {
 				
@@ -368,7 +424,7 @@ public class SimulationSetupWithMemBoost {
 						
 						selectedPartitionAndIndexToFillIn.setPlayerComboNumber(playerIndex, currentPlayerComboNumber);
 						
-						return getSelectedPartitionAndIndexBasedOnCombinationIndex(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, nextComboIndexNumber, playerIndex + 1, selectedPartitionAndIndexToFillIn);
+						return getSelectedPartitionAndIndexBasedOnCombinationIndex(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, nextComboIndexNumber, playerIndex + 1, selectedPartitionAndIndexToFillIn, numWaysToSetupNextPlayers);
 	
 					} else {
 						
