@@ -54,7 +54,6 @@ public class SimulationSetup {
 	// You might get performance improvements by reordering which players get their cards first, but life's too short.
 
 	public static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
-		System.exit(1);
 		return getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, 0);
 	}
 
@@ -129,7 +128,6 @@ public class SimulationSetup {
 
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
 	public static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber) {
-		System.exit(1);
 		return getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboIndexNumber, 0, new SelectedPartitionAndIndex());
 	}
 	
