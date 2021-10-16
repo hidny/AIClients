@@ -241,7 +241,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 			
 		} else if(numActiveMellows == 2) {
-			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0) {
+			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
 				
 				
 				System.out.println("MELLOW TEST (double mellow)");
@@ -265,7 +265,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			System.err.println("Num active mellows: " + numActiveMellows);
 			
 			
-			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0) {
+			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
 				
 				
 				System.out.println("MELLOW TEST (double mellow)");

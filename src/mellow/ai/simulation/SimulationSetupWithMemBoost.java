@@ -64,10 +64,24 @@ public class SimulationSetupWithMemBoost {
 	public static long curNumWaysDepth1[];
 	public static int curIndexDepth1 = 0;
 	
-	//TODO: later:
 	public static long curNumWaysDepth2[][];
 	public static int curIndexDepth2 = 0;
 	
+	public static void initializeCurNumWaysArray(int playerIndex, int numWaysToChooseSuitPartition) {
+		
+		if(playerIndex == START_INDEX_PLAYER) {
+			curIndexDepth1 = 0;
+			curIndexDepth2 = 0;
+			curNumWaysDepth1 = new long[numWaysToChooseSuitPartition];
+			curNumWaysDepth2 = new long[numWaysToChooseSuitPartition][];
+
+		} else if(playerIndex == START_INDEX_PLAYER + 1) {
+			curIndexDepth2 = 0;
+			curNumWaysDepth2[curIndexDepth1] = new long[numWaysToChooseSuitPartition];
+			curNumWaysDepth2[curIndexDepth1][curIndexDepth2] = 0;
+		}
+		
+	}
 	
 	private static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], int playerIndex) {
 
@@ -77,30 +91,12 @@ public class SimulationSetupWithMemBoost {
 		int numUnknownCardsLeft = getSumOfElementsInArray(numUnknownCardsPerSuit);
 		int numCardsPlayerNeedsToPickup = numSpacesAvailPerPlayer[playerIndex];
 		
-		if(playerIndex == START_INDEX_PLAYER) {
-			curIndexDepth1 = 0;
-			curIndexDepth2 = 0;
-		} else if(playerIndex == START_INDEX_PLAYER + 1) {
-			curIndexDepth2 = 0;
-		}
-		
 	//Skipping conditions	
 		//Skip players with no unknown cards:
 		if(numCardsPlayerNeedsToPickup == 0) {
 			
-			//TODO: fix copy paste code
-			if(playerIndex == START_INDEX_PLAYER) {
-				curNumWaysDepth1 = new long[1];
-				curNumWaysDepth2 = new long[1][];
-				curNumWaysDepth1[curIndexDepth1] = 0;
-
-			//There's a bug with START_INDEX_PLAYER + 1. Will investigate later.
-			} else if(playerIndex == START_INDEX_PLAYER + 1) {
-				curNumWaysDepth2[curIndexDepth1] = new long[1];
-				curNumWaysDepth2[curIndexDepth1][curIndexDepth2] = 0;
-			}
+			initializeCurNumWaysArray(playerIndex, 1);
 			
-			//END TODO
 			if(playerIndex + 1 < numSpacesAvailPerPlayer.length) {
 				return getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, playerIndex + 1);
 			} else {
@@ -115,18 +111,7 @@ public class SimulationSetupWithMemBoost {
 		
 		//Pick up all cards if allowed and no other unknown cards:
 		if(numUnknownCardsLeft == numSpacesAvailPerPlayer[playerIndex]) {
-
-			//TODO: fix copy paste code
-			if(playerIndex == START_INDEX_PLAYER) {
-				curNumWaysDepth1 = new long[1];
-				curNumWaysDepth2 = new long[1][];
-				curNumWaysDepth1[curIndexDepth1] = 0;
-				
-			} else if(playerIndex == START_INDEX_PLAYER + 1) {
-				curNumWaysDepth2[curIndexDepth1] = new long[1];
-				curNumWaysDepth2[curIndexDepth1][curIndexDepth2] = 0;
-			}
-			//END TODO
+			initializeCurNumWaysArray(playerIndex, 1);
 			
 			return 1;
 		}
@@ -138,22 +123,7 @@ public class SimulationSetupWithMemBoost {
 		int numTrumpSeperators = Constants.NUM_SUITS - 1 - numVoids;
 		boolean suitPartitionIter[] = setupComboIterator(numTrumpSeperators, numCardsPlayerNeedsToPickup);
 
-
-		//TODO: fix copy paste code
-		if(playerIndex == START_INDEX_PLAYER) {
-			curNumWaysDepth1 = new long[(int)getCombination(numCardsPlayerNeedsToPickup + numTrumpSeperators, numTrumpSeperators)];
-			curNumWaysDepth2 = new long[(int)getCombination(numCardsPlayerNeedsToPickup + numTrumpSeperators, numTrumpSeperators)][];
-			curNumWaysDepth1[curIndexDepth1] = 0;
-			
-			
-		} else if(playerIndex == START_INDEX_PLAYER + 1) {
-			System.err.println("curIndexDepth1: " + curIndexDepth1);
-			curNumWaysDepth2[curIndexDepth1] = new long[(int)getCombination(numCardsPlayerNeedsToPickup + numTrumpSeperators, numTrumpSeperators)];
-			curNumWaysDepth2[curIndexDepth1][curIndexDepth2] = 0;
-			System.err.println("length: " + curNumWaysDepth2.length);
-			
-		}
-		//END TODO
+		initializeCurNumWaysArray(playerIndex, (int)getCombination(numCardsPlayerNeedsToPickup + numTrumpSeperators, numTrumpSeperators));
 		
 		while(suitPartitionIter != null) {
 			
@@ -170,7 +140,8 @@ public class SimulationSetupWithMemBoost {
 			}
 			
 
-			//TODO: There might be a way to skip bad suit partitions more quickly than this... but whatever
+			//There might be a way to skip bad suit partitions more quickly than this... but whatever
+			//I only call getNumberOfWaysToSimulate once per testcase. 
 			 if(! suitPartitionImpossibleToTake(numCardsPerSuitAfterTake, suitsTakenByPlayer, numUnknownCardsPerSuit) ) {
 				
 				long currentNumWays = 1;
@@ -251,10 +222,10 @@ public class SimulationSetupWithMemBoost {
 		
 		boolean suitPartitionIterShortcut[] = null;
 		
-		//TODO: shortcut for player index 1:
-		int suitPartitionIterIndexToUse = -1;
+		
+		
 		if(playerIndex == START_INDEX_PLAYER) {
-			suitPartitionIterIndexToUse = binarySearchForSuitComboForDepthN(curNumWaysDepth1, comboIndexNumber);
+			int suitPartitionIterIndexToUse = binarySearchForSuitComboForDepthN(curNumWaysDepth1, comboIndexNumber);
 		
 			suitPartitionIterShortcut = convertComboNumberToArray(numSpaceAvailable + numTrumpSeperators, numTrumpSeperators, suitPartitionIterIndexToUse);
 			
@@ -276,11 +247,7 @@ public class SimulationSetupWithMemBoost {
 				numWaysToFillInCardsForCurrentPlayer *= getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
 			}
 			
-			//totalNumberOfWaysToSimulate
-			//TODO: Add the last element for: curNumWaysDepth1
 			long numWaysToSetupNextPlayerShortCut = -1;
-			
-			
 			
 			if(suitPartitionIterIndexToUse + 1 < curNumWaysDepth1.length) {
 				numWaysToSetupNextPlayerShortCut = (curNumWaysDepth1[suitPartitionIterIndexToUse + 1]
@@ -292,7 +259,6 @@ public class SimulationSetupWithMemBoost {
                              / numWaysToFillInCardsForCurrentPlayer;
 				
 				System.err.println("Reached the end of the line!");
-				System.err.println("TODO: debug!");
 				System.err.println("This is probably almost never going to happen though... :(");
 				System.err.println("TODO: Don't error out when this happens next time. I errored out just to see if this condition is ever satisfied.");
 				System.exit(1);
@@ -303,8 +269,6 @@ public class SimulationSetupWithMemBoost {
 											- curNumWaysDepth1[suitPartitionIterIndexToUse]) % numWaysToFillInCardsForCurrentPlayer != 0) {
 				System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right (it doesn't divide cleanly)");
 				System.exit(1);
-			} else {
-				//System.err.println("GOOD: numWaysToSetupNextPlayerShortCut is right (it divides cleanly) (Num ways for current player: " + numWaysToFillInCardsForCurrentPlayer + ")");
 			}
 			
 			
@@ -321,7 +285,7 @@ public class SimulationSetupWithMemBoost {
 			
 		} else if(playerIndex == START_INDEX_PLAYER + 1) {
 			//This is almost copy/paste code compared to previous if case, but I'm too lazy to refactor...
-			suitPartitionIterIndexToUse = binarySearchForSuitComboForDepthN(curNumWaysDepth2[curIndexDepth1], comboIndexNumber);
+			int suitPartitionIterIndexToUse = binarySearchForSuitComboForDepthN(curNumWaysDepth2[curIndexDepth1], comboIndexNumber);
 		
 			suitPartitionIterShortcut = convertComboNumberToArray(numSpaceAvailable + numTrumpSeperators, numTrumpSeperators, suitPartitionIterIndexToUse);
 			
@@ -356,7 +320,6 @@ public class SimulationSetupWithMemBoost {
                              / numWaysToFillInCardsForCurrentPlayer;
 				
 				System.err.println("Reached the end of the line 2!");
-				System.err.println("TODO: debug!");
 				System.err.println("This is probably almost never going to happen though... :(");
 				System.err.println("TODO: Don't error out when this happens next time. I errored out just to see if this condition is ever satisfied.");
 				System.exit(1);
@@ -399,8 +362,6 @@ public class SimulationSetupWithMemBoost {
 		
 	}
 
-	//TODO: OMG TEST THIS...
-	//TODO 2: repeat but for depth 1.
 	public static int binarySearchForSuitComboForDepthN(long array[], long comboIndexNumber) {
 		return binarySearchForSuitComboForDepthN(array, comboIndexNumber, 0, array.length);
 	}
@@ -437,7 +398,6 @@ public class SimulationSetupWithMemBoost {
 		}
 		
 	}
-	//END TODO:
 	
 	private static int getSumOfElementsInArray(int array[]) {
 		int ret = 0;
