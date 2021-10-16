@@ -308,20 +308,6 @@ public class SimulationSetupWithMemBoost {
 			}
 			
 			
-			//Expensive sanity check:
-			/*
-			long numWaysToSetupNextPlayersSANITYCHECK = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerIndex + 1);
-			
-			if(numWaysToSetupNextPlayerShortCut != numWaysToSetupNextPlayersSANITYCHECK) {
-				System.err.println(numWaysToSetupNextPlayerShortCut);
-				System.err.println(numWaysToSetupNextPlayersSANITYCHECK);
-				System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right");
-				System.exit(1);
-			} else {
-				//System.err.println("GOOD: numWaysToSetupNextPlayerShortCut is right");
-			}
-			*/
-			
 			long currentPlayerComboNumber = indexFromStartOfCombo / numWaysToSetupNextPlayerShortCut;
 			long nextComboIndexNumber = indexFromStartOfCombo % numWaysToSetupNextPlayerShortCut;
 			
@@ -334,6 +320,7 @@ public class SimulationSetupWithMemBoost {
 			
 			
 		} else if(playerIndex == START_INDEX_PLAYER + 1) {
+			//This is almost copy/paste code compared to previous if case, but I'm too lazy to refactor...
 			suitPartitionIterIndexToUse = binarySearchForSuitComboForDepthN(curNumWaysDepth2[curIndexDepth1], comboIndexNumber);
 		
 			suitPartitionIterShortcut = convertComboNumberToArray(numSpaceAvailable + numTrumpSeperators, numTrumpSeperators, suitPartitionIterIndexToUse);
@@ -354,17 +341,10 @@ public class SimulationSetupWithMemBoost {
 			long numWaysToFillInCardsForCurrentPlayer = 1;
 			for(int i=0; i<Constants.NUM_SUITS; i++) {
 				numWaysToFillInCardsForCurrentPlayer *= getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
-				if(getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]) <= 0) {
-					System.err.println("PROBLEM. There's no way for player2 to pick up the cards!");
-					System.exit(1);
-				}
+				
 			}
 			
-			//totalNumberOfWaysToSimulate
-			//TODO: Add the last element for: curNumWaysDepth1
 			long numWaysToSetupNextPlayerShortCut = -1;
-			
-			
 			
 			if(suitPartitionIterIndexToUse + 1 < curNumWaysDepth2[curIndexDepth1].length) {
 				numWaysToSetupNextPlayerShortCut = (curNumWaysDepth2[curIndexDepth1][suitPartitionIterIndexToUse + 1]
@@ -387,28 +367,13 @@ public class SimulationSetupWithMemBoost {
 							- curNumWaysDepth2[curIndexDepth1][suitPartitionIterIndexToUse]) % numWaysToFillInCardsForCurrentPlayer != 0) {
 				System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right (it doesn't divide cleanly)");
 				System.exit(1);
-			} else {
-				//System.err.println("GOOD: numWaysToSetupNextPlayerShortCut is right (it divides cleanly) (Num ways for current player: " + numWaysToFillInCardsForCurrentPlayer + ")");
+			
 			}
-			
-			
-			//Expensive sanity check:
-			
-			/*long numWaysToSetupNextPlayersSANITYCHECK = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, playerIndex + 1);
-			
-			if(numWaysToSetupNextPlayerShortCut != numWaysToSetupNextPlayersSANITYCHECK) {
-				System.err.println(numWaysToSetupNextPlayerShortCut);
-				System.err.println(numWaysToSetupNextPlayersSANITYCHECK);
-				System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right");
-				System.exit(1);
-			} else {
-				//System.err.println("GOOD: numWaysToSetupNextPlayerShortCut is right");
-			}*/
-			//Assume max 4 player game:
+			//Assume max 4-player game:
 			if(numWaysToSetupNextPlayerShortCut != 1) {
 				System.err.println(numWaysToSetupNextPlayerShortCut);
 				System.err.println(1);
-				System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right when player index is 2");
+				System.err.println("ERROR: numWaysToSetupNextPlayerShortCut is not right when player index is 2 (assuming a 4-player game)");
 				System.exit(1);
 			}
 			
@@ -432,13 +397,8 @@ public class SimulationSetupWithMemBoost {
 		}
 		
 		
-		//END TODO SHORTCUT
-		
-		
 	}
 
-	//return index of 
-	
 	//TODO: OMG TEST THIS...
 	//TODO 2: repeat but for depth 1.
 	public static int binarySearchForSuitComboForDepthN(long array[], long comboIndexNumber) {
