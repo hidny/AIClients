@@ -260,9 +260,29 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 			
 		} else {
-			System.err.println("Really??? There's either more than 2 or less than 0 mellows.");
-			System.exit(1);
-			return "";
+			System.err.println("Really??? There's more than 2 mellow bids.");
+			System.err.println("I will need to debug the AIs so they know that 3 mellows in 1 round is insane");
+			System.err.println("Num active mellows: " + numActiveMellows);
+			
+			
+			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0) {
+				
+				
+				System.out.println("MELLOW TEST (double mellow)");
+				return SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
+
+			} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0){
+
+				//TODO: not quite right:
+				//This should be the most complicated logic of the game,
+				//but let's start simple!
+				return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
+				
+			} else {
+
+				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			}
+
 		}
 		
 	}
