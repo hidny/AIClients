@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S AH 9H 2H QC TC 6C 5C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS TS 8S 7S 6H 8C ")) {
 			System.out.println("Debug");
 		}
 
@@ -533,7 +533,15 @@ public class NoMellowPlaySituation {
 		//Just encourage partner to play high...
 		//if they signalled master S.
 		if(partnerSignalledHighCardOfSuit) {
+			
 			cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+			
+			//Play high anyways if you have lots of spade...
+			if(3 * numCardsOfSuitInHand > 
+					7 + dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
+				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			}
+			
 		}
 
 		return new CardAndValue(cardToPlay, curScore);

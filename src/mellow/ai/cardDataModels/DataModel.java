@@ -2050,6 +2050,18 @@ public class DataModel {
 		
 	}
 	
+	//Copy/paste of get ith lowest in suit...
+	//Really bad recursion, because why not?
+	public String getCardCurrentPlayerGetIthHighestInSuit(int i, int suitIndex) {
+		
+		if(i==0) {
+			return this.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+		} else {
+			return this.getCardInHandClosestUnderSameSuit(getCardCurrentPlayerGetIthHighestInSuit(i-1, suitIndex));
+		}
+		
+	}
+	
 	public boolean currentAgentHasSuit(int suitIndex) {
 		return isVoid(Constants.CURRENT_AGENT_INDEX, suitIndex) == false;
 	}

@@ -389,7 +389,15 @@ public class SeatedRightOfOpponentMellow {
 				
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					if(dataModel.signalHandler.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit) != null
+							&& dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.signalHandler.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit))) {
+						
+						//Might want to play higher and waste master so you can give lead to someone else, but that's complicated!
+						return dataModel.getCardInHandClosestOverSameSuit(
+							dataModel.signalHandler.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit));
+					} else {
+						return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+					}
 				} else {
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 				}

@@ -157,10 +157,26 @@ public class PlayerSaidMellowSignals {
 	
 	
 	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
-		for(int rank=dataModel.ACE; rank>=dataModel.RANK_TWO; rank--) {
-			if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE
+		for(int rank=dataModel.ACE; rank>=DataModel.RANK_TWO; rank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != DataModel.IMPOSSIBLE
 					&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
 				return DataModel.getCardString(rank, suitIndex);
+			}
+			
+		}
+		
+		return null;
+	}
+	
+	public String getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
+		int numFound = 0;
+		for(int rank=DataModel.ACE; rank>=DataModel.RANK_TWO; rank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != DataModel.IMPOSSIBLE
+					&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
+				numFound++;
+				if(numFound == 2) {
+					return DataModel.getCardString(rank, suitIndex);
+				}
 			}
 			
 		}
