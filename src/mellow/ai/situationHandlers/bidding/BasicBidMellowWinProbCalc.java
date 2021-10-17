@@ -82,6 +82,9 @@ public class BasicBidMellowWinProbCalc {
 			
 			double probLosingRank = rankProbs[DataModel.getRankIndex(card)];
 			
+			if(DataModel.getRankIndex(card) <= DataModel.RANK_FOUR) {
+				probLosingRank = 0.0;
+			}
 			ret *= (1 - probLosingRank);
 	
 		}
@@ -91,7 +94,7 @@ public class BasicBidMellowWinProbCalc {
 			
 			double probLosingRank = rankProbs[DataModel.getRankIndex(card)];
 			
-			if(DataModel.getRankIndex(card) < DataModel.RANK_FIVE) {
+			if(DataModel.getRankIndex(card) <= DataModel.RANK_SIX) {
 				probLosingRank = 0.0;
 				
 			} else if(DataModel.getRankIndex(card) <= DataModel.RANK_NINE) {
@@ -108,7 +111,7 @@ public class BasicBidMellowWinProbCalc {
 			
 			double probLosingRank = rankProbs[DataModel.getRankIndex(card) + (numOffsuits - 3)];
 			
-			if(DataModel.getRankIndex(card) < DataModel.RANK_SIX) {
+			if(DataModel.getRankIndex(card) <= DataModel.RANK_SEVEN) {
 				probLosingRank = 0.0;
 				
 			} else if(DataModel.getRankIndex(card) <= DataModel.RANK_TEN) {
@@ -150,7 +153,7 @@ public class BasicBidMellowWinProbCalc {
 	
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8H 7H 5H 3H 4C 2C AD QD TD 9D 6D 5D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 6S KH 6H 4H JC 9C 7C 6C 4C JD 5D 3D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -188,6 +191,10 @@ public class BasicBidMellowWinProbCalc {
 		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
 			if(suitIndex != Constants.SPADE) {
 				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 6S KH 6H 4H JC 9C 7C 6C 4C JD 5D 3D ")
+						&& suitIndex == 2) {
+					System.out.println("Debug");
+				}
 				double tmpWinOffsuitProb = getProbNoBurnOffsuit(dataModel, suitIndex);
 				
 				if((tmpWinOffsuitProb < 0.95 && dataModel.getNumberOfCardsOneSuit(suitIndex) > 1)

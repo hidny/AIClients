@@ -33,8 +33,8 @@ public class MonteCarloMain {
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -132,9 +132,19 @@ public class MonteCarloMain {
 		int numSkipped = 0;
 		int maxSkipped = 100 * num_simulations;
 		int i=0;
+		int lastestPost = -1;
+		
 		for(; i<num_simulations && numSkipped < maxSkipped; i++) {
-			if(i % 100 == 0) {
+			if(i % 100 == 0 && i > lastestPost) {
 				System.err.println(i+ " out of " + num_simulations);
+				lastestPost = i;
+				
+				if(i > 0) {
+					System.err.println("Skipped " + numSkipped+ " out of " + (numSkipped + i));
+					System.err.println("That's a " + String.format("%.2f", (100.0*numSkipped) /(1.0*(numSkipped + i))) + "% skip rate.");
+					System.err.println();
+					
+				}
 			}
 			//Distribute unknown cards for simulation:
 			String distCards[][];

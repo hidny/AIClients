@@ -258,9 +258,9 @@ public class BiddingSituation {
 		
 		
 		if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3) {
-			System.out.println("Mellow prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb1(dataModel));
-			System.out.println("Mellow prob2: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
-			System.out.println("int bid: " + intBid);
+			//System.out.println("Mellow prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb1(dataModel));
+			//System.out.println("Mellow prob2: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
+			//System.out.println("int bid: " + intBid);
 
 		}
 		
