@@ -550,7 +550,8 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S AH 9H 2H QC TC 6C 5C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 3S 2S KH 8H TC 7C 3C QD 4D ")
+				&& (suitIndex == 1 || suitIndex == 3)) {
 			System.out.println("Debug");
 		}
 		
@@ -580,21 +581,19 @@ public class NoMellowPlaySituation {
 			
 			if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0 &&
 					dataModel.currentAgentHasSuit(Constants.SPADE)) {
-				boolean dontLeadSuit = false;
 				
 				//If current play has Kequiv and nothing else, hope that another player will throw off Aequiv later:
 				if(   (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
 						&& numCardsOfSuitInHand == 1)
 					||
-					  (numCardsOfSuitInHand >= 2
-					    && numCardsOfSuitOtherPlayersHave >= 4
-					    && ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
-					    && ! NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+					  (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+						&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
+						&& numCardsOfSuitInHand >= 2
+					    && numCardsOfSuitOtherPlayersHave > 1
 					    )
 					) {
-					dontLeadSuit = true;
-				}
-				if(dontLeadSuit == false) {
+					//Do nothing
+				} else {
 					curScore += 50.0;
 				}
 			}
