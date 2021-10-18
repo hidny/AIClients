@@ -33,7 +33,8 @@ public class MonteCarloMain {
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Test case stats as of oct 5th, 2019:

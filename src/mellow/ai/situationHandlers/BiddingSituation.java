@@ -11,7 +11,7 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 4S 3S 2S 6H AC 7C 6C 3C KD TD 5D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS JS 9S 2S JH 9H 8H 6H KC QC KD 6D 2D ")) {
 			System.out.println("Debug");
 		}
 		double bid = 0.0;
@@ -159,8 +159,33 @@ public class BiddingSituation {
 			bid = bid  - 1;
 		}
 		
+		//END OF MEASURE OF STRENGTH OF HAND
+		
+		
 		System.out.println("Bid double: " + bid);
 		int intBid = (int) Math.floor(bid);
+
+		/*
+//Caused issues:
+ * Try: discounting kings if partner said mellow.
+		//Bid less because you want to attack the person who bid 0:
+		if(dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX
+				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0
+				&& intBid > 2) {
+			intBid = intBid - 1;
+			
+		} else if(dataModel.getDealerIndexAtStartOfRound() == Constants.CURRENT_AGENT_INDEX
+				&& (dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0 || dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0)
+				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0
+				&& intBid > 2) {
+					
+				while(dataModel.getBidTotalSoFar() + intBid >= Constants.NUM_STARTING_CARDS_IN_HAND - 1
+						&& intBid > 1) {
+					intBid--;
+				}
+		}
+		*/
 		
 		if (intBid < 0) {
 			intBid = 0;
@@ -170,7 +195,7 @@ public class BiddingSituation {
 		if(intBid == 0
 				&& (dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
 				    && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0)) {
-			intBid = 1;
+			return "1";
 		}
 		
 		//Don't bid mellow with KS
