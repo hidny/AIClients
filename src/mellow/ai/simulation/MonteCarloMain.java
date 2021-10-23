@@ -33,8 +33,8 @@ public class MonteCarloMain {
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Test case stats as of oct 5th, 2019:
@@ -131,6 +131,7 @@ public class MonteCarloMain {
 		double sum_impact_to_avg = 0.0;
 		
 		int numSkipped = 0;
+		//Don't be 1000. It takes too long!
 		int maxSkipped = 100 * num_simulations;
 		int i=0;
 		int lastestPost = -1;
@@ -164,7 +165,9 @@ public class MonteCarloMain {
 			
 			if(decisionImpact < 0.1) {
 				numSkipped++;
-				i--;
+				if(isThorough == false) {
+					i--;
+				}
 				continue;
 			}
 			
@@ -257,11 +260,7 @@ public class MonteCarloMain {
 	public static double getRelativeImpactOfSimulatedDistCards(DataModel dataModel, String distCards[][]) {
 		DataModel dataModelTmpForPlayer0 = dataModel.createHardCopy();
 		
-		String players[] = new String[Constants.NUM_PLAYERS];
-		players[0] = "Hero";
-		players[1] = "LHSOpponent";
-		players[2] = "Partner";
-		players[3] = "RHSOpponent";
+		
 		
 		
 		double impact = 1.0;
@@ -282,12 +281,32 @@ public class MonteCarloMain {
 			MellowBasicDecider tempDecider = new MellowBasicDecider();
 			tempDecider.resetStateForNewRound();
 			
-			tempDecider.setNameOfPlayers(players);
+			//Set names of players such that players[0] is the playerIndex:
+			String playersRelativeToPlayerI[] = new String[Constants.NUM_PLAYERS];
+			
+			for(int i=0; i<playersRelativeToPlayerI.length; i++) {
+				playersRelativeToPlayerI[i] = dataModel.getPlayers()[(playerI + i) % 4];
+			}
+			
+			tempDecider.setNameOfPlayers(playersRelativeToPlayerI);
 			tempDecider.setCardsForNewRound(hand);
 			
+			
+			int dealerIndexForPlayer = dataModel.getDealerIndexAtStartOfRound();
 			//Set dealer:
-			tempDecider.setDealer(players[(dataModel.getDealerIndexAtStartOfRound() - playerI + Constants.NUM_PLAYERS) % Constants.NUM_PLAYERS]);
-
+			tempDecider.setDealer(dataModel.getPlayers()[dealerIndexForPlayer]);
+			
+			
+			//System.err.println("Check this player's bid: " + dataModel.getPlayers()[playerI]);
+			//Set previous bids:
+			for(int curActionIndex=dataModel.getDealerIndexAtStartOfRound() + 1; curActionIndex % Constants.NUM_PLAYERS != playerI; curActionIndex++) {
+				
+				curActionIndex = curActionIndex % Constants.NUM_PLAYERS;
+				//System.err.println("Get Bid from " + dataModel.getPlayers()[curActionIndex]);
+				tempDecider.receiveBid(dataModel.getPlayers()[curActionIndex], dataModel.getBid(dataModel.getPlayers()[curActionIndex]));
+			}
+			
+			
 			int expectedResponse = dataModelTmpForPlayer0.getBid(playerI);
 			int response = 0;
 			try {
@@ -297,6 +316,9 @@ public class MonteCarloMain {
 				System.err.println("ERROR: could not parse bid in monte carlo simulation");
 				System.exit(1);
 			}
+			
+			//System.err.println("( Response from " + dataModel.getPlayers()[playerI] + ": " + response + ") ");
+			//System.err.println();
 			
 			if(response > 0 && expectedResponse > 0
 					&& playerI == Constants.CURRENT_PARTNER_INDEX) {

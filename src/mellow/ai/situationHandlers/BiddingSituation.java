@@ -11,9 +11,7 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS JS 9S 2S JH 9H 8H 6H KC QC KD 6D 2D ")) {
-			System.out.println("Debug");
-		}
+		
 		double bid = 0.0;
 		
 		//#Add number of aces:
@@ -24,8 +22,6 @@ public class BiddingSituation {
 		
 		//if trumping means losing a king or queen of spades, then it doesn't mean much
 		boolean trumpingIsSacrifice = false;
-		
-		
 		
 		//Add king of spades if 1 or 2 other spade
 		if (dataModel.hasCard("KS") && dataModel.getNumberOfCardsOneSuit(0) >= 2) {
@@ -279,6 +275,7 @@ public class BiddingSituation {
 				return BiddingNearEndOfGameFunctions.getFinalWildDealerBid(dataModel, intBid);
 			}
 		}
+		//TODO: make high bid as 3rd bidder
 		
 		
 		
