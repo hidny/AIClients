@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS TS 8S 7S 6H 8C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 7S 5S QH 5H 4H 3H 8C TD 9D 6D 3D 2D")) {
 			System.out.println("Debug");
 		}
 
@@ -475,7 +475,7 @@ public class NoMellowPlaySituation {
 				- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >= 2
 				/*&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE*/) {
 		//END TODO put in function
-			curScore += 25.0;
+			//curScore += 25.0;
 			curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 					- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) - 2);
 		}
@@ -550,8 +550,8 @@ public class NoMellowPlaySituation {
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 3S 2S KH 8H TC 7C 3C QD 4D ")
-				&& (suitIndex == 1 || suitIndex == 3)) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 2S JH 8H QC 5C 4C QD TD 7D 6D 4D ")
+				&& suitIndex == 3) {
 			System.out.println("Debug");
 		}
 		
@@ -1069,11 +1069,15 @@ public class NoMellowPlaySituation {
 						//and I want AI to decide to play master over playing queen
 						curScore += 5.0;
 					} else {
+						
 						curScore += 25.0;
 					}
-					
-					cardToPlay = DataModel.getCardString(DataModel.QUEEN, suitIndex);
 
+					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 7S 5S QH 5H 4H 3H 8C TD 9D 6D 3D 2D")) {
+						System.out.println("DEBUG");
+					}
+					
+					
 					if(dataModel.hasCard( DataModel.getCardString(DataModel.JACK, suitIndex))) {
 						curScore += 10.0;
 					}
@@ -1081,6 +1085,27 @@ public class NoMellowPlaySituation {
 				}
 				
 				
+			}
+			
+			
+			//Don't play Queen if opponents have less spade and you have lots of the suit:
+			if(DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
+				&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.ACE, suitIndex))
+				&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.KING, suitIndex))
+				&& ! dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))
+				&& dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 3
+				&& 
+				(
+					(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)  + 1 >
+				    dataModel.getBid(Constants.LEFT_PLAYER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX))
+				|| (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						)
+				|| (2 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE))
+				)
+			) {
+				//System.out.println("(DEBUG: DON'T PLAY QUEEN for suitindex = " + suitIndex + "!)");
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 			}
 			
 			//Like to play low offsuits when you have lots of spade...
@@ -1094,7 +1119,7 @@ public class NoMellowPlaySituation {
 		
 				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				
-				System.out.println("TEST");
+				//System.out.println("TEST");
 				//TEST
 
 				if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
