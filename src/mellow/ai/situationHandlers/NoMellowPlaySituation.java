@@ -5,7 +5,6 @@ import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.cardDataModels.normalPlaySignals.MellowSignalsBasedOnLackOfTricks;
 import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
-import mellow.ai.simulation.MonteCarloMain;
 import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
@@ -621,6 +620,11 @@ public class NoMellowPlaySituation {
 			curScore += 9.5;
 			partnerSignalledHighCardOfSuit = true;
 			
+			if(NonMellowBidHandIndicators.wantPartnerToLead(dataModel)) {
+				System.out.println("(DEBUG: WANT PARTNER TO LEAD BY PLAYING SUIT INDEX: " + suitIndex+ ")");
+				curScore += 15.0;
+			}
+			
 			//Don't want to setup our partner for failure:
 			if(numCardsOfSuitOtherPlayersHave - 1 == 0 && 
 					dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
@@ -943,7 +947,7 @@ public class NoMellowPlaySituation {
 			
 			//Play the ace so you back it up with a king:
 			if(numCardsOfSuitInHand > 1
-				&& dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == dataModel.KING) {
+				&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == DataModel.KING) {
 				curScore += 5.0;
 				
 			}

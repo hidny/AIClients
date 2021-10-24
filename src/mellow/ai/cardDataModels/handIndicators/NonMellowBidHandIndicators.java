@@ -556,27 +556,66 @@ public class NonMellowBidHandIndicators {
 
 	 
  
- 	public boolean wantPartnerToLead(DataModel dataModel) {
+ //October 24th, 2021: this only affects 2-4089
+ //Make it more complicated as new test cases get added.
+ 	public static boolean wantPartnerToLead(DataModel dataModel) {
  		
- 		if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
- 			
- 			for(int s = 0; s<Constants.NUM_SUITS; s++) {
- 				if(s == Constants.SPADE) {
+ 		
+ 		if(dataModel.currentAgentHasSuit(Constants.SPADE)
+ 			&& (dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) <
+ 					3 * dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+ 				||
+ 				dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) >= 4
+ 				)
+ 			) {
+
+ 			for(int suitIndex = 0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+ 				if(suitIndex == Constants.SPADE) {
  					continue;
  				}
  				
- 				if( ! dataModel.currentAgentHasSuit(s)
+ 				if( ! dataModel.currentAgentHasSuit(suitIndex)
  						&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
- 								(Constants.LEFT_PLAYER_INDEX, s)
+ 								(Constants.LEFT_PLAYER_INDEX, suitIndex)
  						 ||  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
  						 		(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
  						)
- 						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(s) >= 2
+ 						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 2
  					) {
  					return true;
- 				}
- 			}
- 		}
+ 				} 
+ 			}//End for
+ 			
+ 		}//End if
+ 		
+
+		for(int suitIndex = 0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			if(suitIndex == Constants.SPADE) {
+				continue;
+			}
+			
+			if(dataModel.getNumberOfCardsOneSuit(suitIndex) >= 2
+					&& dataModel.currentPlayerHasMasterInSuit(suitIndex)
+					&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+							(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					 ||  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					 		(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+					 	)
+					&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+							(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					 ||  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+					 		(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+					 	)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 4
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
+					(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex),
+							dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex))
+					== 1) {
+				return true;
+			}
+		}
+ 		
+ 		//TODO: give a bonus if you know that partner knows you're void. (optional)
  		
  		//TODO: make it better...
  		
