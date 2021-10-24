@@ -432,7 +432,7 @@ public class NonMellowBidHandIndicators {
 				continue;
 	
 			} else if(dataModel.isCardPlayedInRound(
-					dataModel.getCardString(curRank, suitIndex))
+					DataModel.getCardString(curRank, suitIndex))
 					) {
 				continue;
 	
@@ -450,6 +450,41 @@ public class NonMellowBidHandIndicators {
 			return false;
 		}
 	}
+	 
+	 
+	 public static boolean hasJEquiv(DataModel dataModel, int suitIndex) {
+			
+			if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+				return false;
+			}
+			
+			String cardA = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			
+			int numOver = 0;
+			
+			for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(cardA); curRank--) {
+				if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+					continue;
+		
+				} else if(dataModel.isCardPlayedInRound(
+						DataModel.getCardString(curRank, suitIndex))
+						) {
+					continue;
+		
+				} else {
+					numOver++;
+					if(numOver > 3) {
+						return false;
+					}
+				}
+			}
+		
+			if(numOver == 3) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	
 	 public static boolean has3PlusAndQJTEquivOrBetter(DataModel dataModel, int suitIndex) {
 		 
@@ -520,4 +555,31 @@ public class NonMellowBidHandIndicators {
 	//Just start with functions.
 
 	 
+ 
+ 	public boolean wantPartnerToLead(DataModel dataModel) {
+ 		
+ 		if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+ 			
+ 			for(int s = 0; s<Constants.NUM_SUITS; s++) {
+ 				if(s == Constants.SPADE) {
+ 					continue;
+ 				}
+ 				
+ 				if( ! dataModel.currentAgentHasSuit(s)
+ 						&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+ 								(Constants.LEFT_PLAYER_INDEX, s)
+ 						 ||  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+ 						 		(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+ 						)
+ 						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(s) >= 2
+ 					) {
+ 					return true;
+ 				}
+ 			}
+ 		}
+ 		
+ 		//TODO: make it better...
+ 		
+ 		return false;
+ 	}
 }

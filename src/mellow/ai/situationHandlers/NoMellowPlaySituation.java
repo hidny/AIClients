@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 7S 5S QH 5H 4H 3H 8C TD 9D 6D 3D 2D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 8S 5S 4S 3S JH 8H 4H KD ")) {
 			System.out.println("Debug");
 		}
 
@@ -549,8 +549,7 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 2S JH 8H QC 5C 4C QD TD 7D 6D 4D ")
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 8S 5S 4S 3S JH 8H 4H KD  ")
 				&& suitIndex == 3) {
 			System.out.println("Debug");
 		}
@@ -1089,11 +1088,14 @@ public class NoMellowPlaySituation {
 			
 			
 			//Don't play Queen if opponents have less spade and you have lots of the suit:
-			if(DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.QUEEN
-				&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.ACE, suitIndex))
-				&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.KING, suitIndex))
-				&& ! dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))
-				&& dataModel.getNumCardsCurrentUserStartedWithInSuit(suitIndex) > 3
+			if( !dataModel.currentPlayerHasMasterInSuit(suitIndex)
+				&&	! NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				&&	NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
+				&& dataModel.getNumberOfCardsOneSuit(suitIndex) >= 3
+				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
+						(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex),
+								dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex))
+					> 0
 				&& 
 				(
 					(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)  + 1 >
@@ -1104,8 +1106,11 @@ public class NoMellowPlaySituation {
 				|| (2 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE))
 				)
 			) {
-				//System.out.println("(DEBUG: DON'T PLAY QUEEN for suitindex = " + suitIndex + "!)");
-				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				//Don't play highest if you might be able to save it and use it later:
+				if(cardToPlay.equals(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex))) {
+					//System.out.println("(DEBUG: DON'T PLAY QUEEN for suitindex = " + suitIndex + "!)");
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+				}
 			}
 			
 			//Like to play low offsuits when you have lots of spade...
