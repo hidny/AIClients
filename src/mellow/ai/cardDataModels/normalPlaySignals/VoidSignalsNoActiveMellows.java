@@ -3,6 +3,7 @@ package mellow.ai.cardDataModels.normalPlaySignals;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
 
 
 //TODO
@@ -50,6 +51,8 @@ public class VoidSignalsNoActiveMellows {
 	public static int NO_KING_SACRIFICE = -1;
 	public static int DONT_KNOW_OR_PLAYED = -1;
 	
+	public boolean curTeamSignalledHighOffsuit[];
+	
 
 	
 	public void initSignalVars() {
@@ -63,6 +66,7 @@ public class VoidSignalsNoActiveMellows {
 		hardMaxBecauseSomeoneDidntPlayMaster = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 
 		didNotFollowSuit = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		
 		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
@@ -81,6 +85,11 @@ public class VoidSignalsNoActiveMellows {
 		
 		for(int i=0; i<playerIndexKingSacrificeForSuit.length; i++) {
 			playerIndexKingSacrificeForSuit[i] = NO_KING_SACRIFICE;
+		}
+		
+		curTeamSignalledHighOffsuit = new boolean[Constants.NUM_SUITS];
+		for(int i=0; i<curTeamSignalledHighOffsuit.length; i++) {
+			curTeamSignalledHighOffsuit[i] = false;
 		}
 	}
 	
@@ -101,6 +110,10 @@ public class VoidSignalsNoActiveMellows {
 			//Don't feel like tracking own signals yet...
 		//	return;
 		//}
+		
+		if(dataModel.isMasterCard(card)) {
+			this.curTeamSignalledHighOffsuit[suitIndex] = false;
+		}
 		
 		if(suitIndex != dataModel.getSuitOfLeaderThrow()) {
 			didNotFollowSuit[playerIndex][dataModel.getSuitOfLeaderThrow()] = true;
@@ -159,6 +172,8 @@ public class VoidSignalsNoActiveMellows {
 					System.out.println("KING UNSACRIFICE!");
 					playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
 				}
+				
+				
 				
 			} else if(throwerIndex > 0 ) {
 				
@@ -270,7 +285,7 @@ public class VoidSignalsNoActiveMellows {
 						//	System.out.println("SIGNALLED LOW CARD");
 						//}
 					}
-				}
+			}
 			
 				
 				//Signal when 3rd thrower doesn't play master spade
@@ -315,6 +330,33 @@ public class VoidSignalsNoActiveMellows {
 							hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)) - 1;
 						}
 				
+				}
+				
+				if(throwerIndex == 3
+						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()
+						&& dataModel.isMasterCard(curWinnerCard) == false
+						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+						&& dataModel.isMasterCard(card) == false) {
+					
+
+					int curWinnerIndex = -1;
+					if(dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
+						curWinnerIndex = (playerIndex + 1) % 4;
+					} else if(dataModel.getCardSecondThrow().equals(curWinnerCard)) {
+						curWinnerIndex = (playerIndex + 2) % 4;
+					} else if(dataModel.getCardThirdThrow().equals(curWinnerCard)) {
+						curWinnerIndex = (playerIndex + 3) % 4;
+					}
+					
+					if(dataModel.cardAGreaterThanCardBGivenLeadCard(card, curWinnerCard)) {
+						curWinnerIndex = playerIndex;
+					}
+					
+					if(curWinnerIndex ==Constants.CURRENT_AGENT_INDEX || curWinnerIndex == Constants.CURRENT_PARTNER_INDEX) {
+						this.curTeamSignalledHighOffsuit[suitIndex] = true;
+					}
+					
+					
 				}
 				
 				
@@ -633,6 +675,11 @@ public class VoidSignalsNoActiveMellows {
 		} else {
 			return false;
 		}
+	}
+	
+	
+	public boolean hasCurTeamSignalledHighOffsuit(int suitIndex) {
+		return curTeamSignalledHighOffsuit[suitIndex];
 	}
 
 }

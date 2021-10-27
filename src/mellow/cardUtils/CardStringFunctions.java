@@ -111,4 +111,18 @@ public class CardStringFunctions {
 		
 		return y*13 - x;
 	}
+	
+	public static String getSuitString(int index) {
+		if(index == 0) {
+			return "Spade";
+		} else if(index == 1) {
+			return "Heart";
+		} else if(index == 2) {
+			return "Club";
+		} else if(index == 3) {
+			return "Diamond";
+		} else {
+			return "(unknown suit index: " + index + ")";
+		}
+	}
 }

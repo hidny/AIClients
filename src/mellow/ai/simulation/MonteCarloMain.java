@@ -164,11 +164,28 @@ public class MonteCarloMain {
 			//double decisionImpact = 1.0;
 			
 			if(decisionImpact < 0.1) {
-				numSkipped++;
-				if(isThorough == false) {
-					i--;
+				
+				//Make sure bids are made by players that know what they are doing:
+				if( ! dataModel.stillInBiddingPhase()
+						&& (
+						(dataModel.getBidTotal() <= 8
+						&& ! dataModel.someoneBidMellow())
+						|| dataModel.getBidTotal() >= 15
+						)
+					){
+					
+					if(i % 1000 == 0) {
+						System.err.println("WARNING: Bids don't make sense! Monte will not be skipping any hands.");
+					}
+				} else {
+					
+					//For now, don't skip if thorough.... I don't know!
+					if(isThorough == false) {
+						numSkipped++;
+						i--;
+						continue;
+					}
 				}
-				continue;
 			}
 			
 			/*if(isThorough == false && decisionImpact < 0.001 && sum_impact_to_avg > 0.099) {

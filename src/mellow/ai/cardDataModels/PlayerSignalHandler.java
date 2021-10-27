@@ -183,5 +183,9 @@ public class PlayerSignalHandler {
 			
 	}
 		
+	
+	public boolean hasCurTeamSignalledHighOffsuit(int suitIndex) {
+		return this.mellowVoidSignalsNoActiveMellows.hasCurTeamSignalledHighOffsuit(suitIndex);
+	}
 		
 }

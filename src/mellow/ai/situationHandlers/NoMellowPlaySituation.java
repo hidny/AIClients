@@ -548,8 +548,8 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 8S 5S 4S 3S JH 8H 4H KD  ")
-				&& suitIndex == 3) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH 6H QC")
+				) {
 			System.out.println("Debug");
 		}
 		
@@ -596,7 +596,13 @@ public class NoMellowPlaySituation {
 				}
 			}
 		}
+
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)
+				&&	dataModel.signalHandler.hasCurTeamSignalledHighOffsuit(suitIndex)) {
+			System.out.println("(Opponents know they don't have my master of " + CardStringFunctions.getSuitString(suitIndex) + ")");
 			
+			curScore += 35.0;
+		}
 			
 		//End case where current play is only one with spade.
 
@@ -604,6 +610,7 @@ public class NoMellowPlaySituation {
 			//Made up a number to say having the master card to lead in partner's void suit is cool:
 			//TODO: refine later
 			curScore += 10.0;
+			
 			
 			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING) {
 
@@ -681,6 +688,32 @@ public class NoMellowPlaySituation {
 		//		&& dataModel.signalHandler.partnerDoesNotHaveMasterBasedOnSignals(suitIndex)) {
 		//	curScore -= 20.0;
 		//}
+		
+		//TODO: put into function
+		//Bonus: Dare opponents to use up last trump:
+
+		if(numCardsOfSuitOtherPlayersHave == 0
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 0) {
+
+			System.out.println("(No brainer lead!)");
+			curScore += 1040.0;
+			
+		} else if(
+				numCardsOfSuitOtherPlayersHave == 0
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) <= 1
+				&& (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 0
+					||
+					dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					== dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+					)
+			){
+			//TODO: try to give bonus for more conditions as they arrive
+		
+			System.out.println("(BONUS TIME)");
+			curScore += 40.0;
+		}
+		
+		//END BONUS DARE OPPONENT
 		
 				
 		//Leading in a suit where RHS prob has master could be a good idea sometimes...
@@ -818,7 +851,14 @@ public class NoMellowPlaySituation {
 			} else {
 
 				//Reduced from -100 to -30 because leading your only spade can be even worse than this.
-				curScore -= 30;
+				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1) {
+					//At this point, you're just feeding the opponent.
+					curScore -= 30;
+				} else {
+					//Dare opponents to use their last spade to trump it:
+					curScore += 30;
+					//TODO: maybe this bonus is only relevant if you have another master card a cards under.
+				}
 				
 				if(dataModel.currentAgentHasSuit(Constants.SPADE)
 						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) <= 2
@@ -2268,7 +2308,13 @@ public class NoMellowPlaySituation {
 				if(numCardsOfSuitInOtherHand <= 1
 						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) >= 1) {
-					return -10;
+					if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 1
+							&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 0) {
+						//don't mind daring opponent to trump with last spade:
+						return 20;		
+					} else {
+						return -10;
+					}
 				}
 				
 				rating += 10;
