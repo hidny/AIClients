@@ -548,7 +548,7 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH 6H QC")
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S QC 8C 6C 9D 6D ")
 				) {
 			System.out.println("Debug");
 		}
@@ -943,10 +943,7 @@ public class NoMellowPlaySituation {
 	
 			} else if(
 					! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
-					&& dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.LEFT_PLAYER_INDEX, suitIndex)
-					&& ! dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-					&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-						 || dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)	)			
+					&& dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.LEFT_PLAYER_INDEX, suitIndex)			
 				) {
 				//If LHS signalled high card or void, don't be eager to play suit:
 				curScore -= 30;

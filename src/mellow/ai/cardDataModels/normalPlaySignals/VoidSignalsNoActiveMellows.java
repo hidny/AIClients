@@ -670,7 +670,10 @@ public class VoidSignalsNoActiveMellows {
 			}
 		}
 		
-		if(numCardsFound <= 1) {
+		if(numCardsFound == 0) {
+			return true;
+		} else if(numCardsFound == 1
+				&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 			return true;
 		} else {
 			return false;
