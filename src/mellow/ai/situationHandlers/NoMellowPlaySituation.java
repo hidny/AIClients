@@ -917,7 +917,14 @@ public class NoMellowPlaySituation {
 						curScore += 3.0;
 					}
 				}
+			} else if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 0
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+							dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) <= dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE)
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+							==0) {
+				//Leading master to drain spade isn't a bad idea
 				
+				curScore += 20.0;
 			} else {
 				//Make leading master worse than leading last spade
 				//even though others have S.
