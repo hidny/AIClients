@@ -100,22 +100,40 @@ public class SingleActiveMellowPlayer {
 					cardToPlay = dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner);
 					
 					//TODO: check for the case where you'd rather play your 5 over the 4 even if you have a 2.
-
+					
 					int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 					
-					//Special case where mellow plays over lead
-					if(throwIndex == 1
-							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 6
+					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 7H 7C 6C 3C QD 9D 6D ")) {
+						System.out.println("DEBUG");
+					}
+					
+					/*if(throwIndex == 1
 							&& dataModel.getCardInHandClosestOverSameSuit(currentFightWinner) != null
 							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
 									dataModel.getCardInHandClosestOverSameSuit(currentFightWinner))
-								< 2
-							
+								<= 1) {
+						System.out.println("(DECISION TO GO OVER LEAD TIME)");
+					}*/
+					
+					//Special case where mellow plays over lead
+					if(throwIndex == 1
+							&& dataModel.getCardInHandClosestOverSameSuit(currentFightWinner) != null
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+									dataModel.getCardInHandClosestOverSameSuit(currentFightWinner))
+								<= 1
+							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 4
 							&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(throwIndex, leaderSuitIndex)
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(throwIndex, Constants.SPADE)
+							&& dataModel.getNumCardsInHandUnderCardSameSuit(currentFightWinner) <= 2
+							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) >= 6
+							&& dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) <= 2
 							) {
 
-						//TODO: if partner trumped twice, don't do this for spades
-						cardToPlay = dataModel.getCardInHandClosestOverSameSuit(currentFightWinner);
+						
+						//TODO: maybe if Num Cards Hidden for lead suit is high enough, forgive partner's lack of spade...
+						cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, 
+								dataModel.getCardInHandClosestOverSameSuit(currentFightWinner));
 					}
 					//END special case where mellows plays over lead
 				

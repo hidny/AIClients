@@ -1902,6 +1902,18 @@ public class DataModel {
 		return null;
 	}
 	
+	public int getNumCardsInHandUnderCardSameSuit(String card) {
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rankIndex = getRankIndex(card);
+		
+		int ret = 0;
+		for(int j=rankIndex-1; j >= RANK_TWO; j--) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][j] == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
 	
 	//Basic numbers:
 
