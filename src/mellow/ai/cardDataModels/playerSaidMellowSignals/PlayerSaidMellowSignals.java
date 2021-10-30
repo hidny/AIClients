@@ -184,6 +184,28 @@ public class PlayerSaidMellowSignals {
 		return null;
 	}
 	
+
+	public int getNumCardsMellowSignalledPossibleInSuit(int mellowPlayerIndex, int suitIndex) {
+		
+		if(dataModel.isVoid(mellowPlayerIndex, suitIndex)
+				||mellowPlayerSignalNoCardsOfSuit(mellowPlayerIndex, suitIndex)) {
+			return 0;
+		}
+		
+		int ret = 0;
+		for(int rank=DataModel.ACE; rank>=DataModel.RANK_TWO; rank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != DataModel.IMPOSSIBLE
+					&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][rank] != MELLOW_PLAYER_SIGNALED_NO) {
+				ret++;
+				
+			}
+		}
+	
+		return ret;
+		
+	}
+	
+	
 public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
 		
 		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard, true);

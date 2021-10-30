@@ -81,9 +81,16 @@ public class PlayerSignalHandler {
 		return this.playerSaidMellowSignals.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex);
 	}
 	
+	
+	
 	public String getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
 		return this.playerSaidMellowSignals.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex);
 		}
+	
+	public int getNumCardsMellowSignalledPossibleInSuit(int mellowPlayerIndex, int suitIndex) {
+		return this.playerSaidMellowSignals.getNumCardsMellowSignalledPossibleInSuit(mellowPlayerIndex, suitIndex);
+	}
+	
 	
 	public boolean mellowBidderSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
 		return this.playerSaidMellowSignals.mellowSignalledNoCardOverCardSameSuit(inputCard, mellowPlayerIndex);

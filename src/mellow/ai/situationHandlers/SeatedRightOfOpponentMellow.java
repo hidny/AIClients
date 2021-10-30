@@ -159,6 +159,9 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 5S 7D ")) {
+			System.out.println("Debug");
+		}
 
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
@@ -295,12 +298,13 @@ public class SeatedRightOfOpponentMellow {
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
-					if(       (numCardsInOtherPeoplesHandsForSuit >= 4)
+					if(      
+							(numCardsInOtherPeoplesHandsForSuit >= 4
+							&& dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(MELLOW_PLAYER_INDEX, leadSuit) > 1)
 							|| (numCardsInOtherPeoplesHandsForSuit >= 3 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit))
-							|| (2 + dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE)
-									>= dataModel.getNumCardsInCurrentPlayerHand())
 							)
 					{
+						
 						
 						//TODO: maybe save your highest trump and play a middle trump under certain conditions?
 						
