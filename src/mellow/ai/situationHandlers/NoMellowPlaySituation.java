@@ -548,7 +548,7 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S QC 8C 6C 9D 6D ")
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S AH 9H 2H QC TC 6C 5C ")
 				) {
 			System.out.println("Debug");
 		}
@@ -601,7 +601,14 @@ public class NoMellowPlaySituation {
 				&&	dataModel.signalHandler.hasCurTeamSignalledHighOffsuit(suitIndex)) {
 			System.out.println("(Opponents know they don't have my master of " + CardStringFunctions.getSuitString(suitIndex) + ")");
 			
-			curScore += 35.0;
+			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) 
+					- dataModel.getBid(Constants.LEFT_PLAYER_INDEX) 
+					- dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) > 0) {
+				
+				curScore += 10.0;
+			} else {
+				curScore += 35.0;
+			}
 		}
 			
 		//End case where current play is only one with spade.
