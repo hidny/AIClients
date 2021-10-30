@@ -36,7 +36,13 @@ public class SeatedLeftOfOpponentMellow {
 		} else if(throwIndex > 0 && 
 				dataModel.isPrevThrowWinningFight()) {
 			
+
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TS 9S 2S KH 5H KC JC 9C 3C 2C 9D 8D ")) {
+				System.out.println("Debug");
+			}
+			
 			String curWinningCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
+			
 			
 			if(CardStringFunctions.getIndexOfSuit(curWinningCard) 
 					!= dataModel.getSuitOfLeaderThrow()) {
@@ -79,7 +85,19 @@ public class SeatedLeftOfOpponentMellow {
 						}
 					
 					} else {
-						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						
+						if(throwIndex == 1 
+								//&& CardStringFunctions.getIndexOfSuit(curWinningCard) == Constants.SPADE
+								&& dataModel.currentPlayerHasMasterInSuit(dataModel.getSuitOfLeaderThrow()) == false
+								&& dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) >= 3) {
+							
+							
+							//If responding to the mellow lead, don't waste a high one...
+							//Maybe I'll have more cases later...
+							return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						} else {
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						}
 					}
 					
 				} else {
@@ -106,9 +124,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			//handle case where mellow is already safe:
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 5S 4S AH JH TH 6H 7D ")) {
-				System.out.println("DEBUG");
-			}
+
 			//TODO: the logic is completely messed up!
 		
 			if(dataModel.throwerMustFollowSuit()) {

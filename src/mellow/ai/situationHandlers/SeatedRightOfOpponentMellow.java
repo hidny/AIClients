@@ -159,9 +159,6 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 5S 7D ")) {
-			System.out.println("Debug");
-		}
 
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
@@ -269,10 +266,6 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 			
-
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS KH QH 8H 5H 3H AC KC 6C 5C 4C")) {
-				System.out.println("Debug");
-			}
 			
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
