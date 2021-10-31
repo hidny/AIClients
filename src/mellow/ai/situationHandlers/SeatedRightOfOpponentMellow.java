@@ -266,6 +266,10 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 			
+
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS TS 8S 6S 3S 6H AC QC 9C 8C 7C ")) {
+				System.out.println("Debug");
+			}
 			
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 

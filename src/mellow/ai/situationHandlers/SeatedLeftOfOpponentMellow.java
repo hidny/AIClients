@@ -374,7 +374,7 @@ public class SeatedLeftOfOpponentMellow {
 		
 
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 7S 7C 3C AD QD JD 5D 3D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS TS 8S 6S 3S 6H AC QC 9C 8C 7C ")) {
 			System.out.println("Debug");
 		}
 		
@@ -437,6 +437,33 @@ public class SeatedLeftOfOpponentMellow {
 			//2s and 3s don't really save a mellow:
 			if(dataModel.getRankIndex(curCard) <= DataModel.RANK_THREE) {
 				curValue -= 10.0;
+			}
+			
+			//Want to trump seated right of mellow case: (trump in front of mellow)
+			if(mellowPlayerIndex == 1
+				&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 0
+				) {
+				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(curSuitIndex) > 9
+						&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) <= 2
+						&& dataModel.getNumberOfCardsPlayerPlayedInSuit(mellowPlayerIndex, curSuitIndex) < 2) {
+					
+
+					curValue += 10.0;
+					if(dataModel.getNumberOfCardsPlayerPlayedInSuit(mellowPlayerIndex, curSuitIndex) == 0) {
+						curValue += 10.0;
+					}
+					
+					if(dataModel.getNumCardsInCurrentPlayerHand() <= 1) {
+						curValue += 10.0;
+					}
+					
+				}
+			
+			//Want to trump seated left of mellow case: (trump in front of mellow)
+			} else if(mellowPlayerIndex == 3
+					&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 0) {
+				//TODO: requirements should be more relaxed...
+				//TODO: fill this in when there's a relevant test case.
 			}
 			
 			

@@ -1373,10 +1373,6 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 2S 8D 4D")) {
-				System.out.println("Debug");
-				
-			}
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
@@ -1451,6 +1447,12 @@ public class NoMellowPlaySituation {
 						}
 						
 
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 5S 3S 2S TH 9H KC JC 9C 5C ")) {
+							System.out.println("Debug");
+							
+						}
+						
+
 						//Go big or go home:
 						if(
 						(
@@ -1472,14 +1474,33 @@ public class NoMellowPlaySituation {
 							//Go home...
 							cardToPlay = getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
 							
+							//Target another suit
+						} else if (   
+								//We have lots of spade:
+								(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 5
+									   || 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 5
+									   )
+								//LHS is a real threat:
+								&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) < 8
+								   || dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex) > 1)
+								&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+								
+									//There's probably a more inclusive way, but this works for the simple case:
+								&& dataModel.cardAGreaterThanCardBGivenLeadCard(DataModel.getCardString(dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX), Constants.SPADE),
+										dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
+								
+								//We could realistically clear another suit for trumping:
+								&& currentPlayerHasOffsuitToThrowOff(dataModel)
+								) {
 							
+							//TODO: what if you could just trump just because you have AKS?
+							// or you have all but 1 spade... it gets complicated.
+							//I'll deal with it when a new test case comes up
+							
+							//TODO: clear other suit...
+							cardToPlay = getOffsuitCardCurrentPlayerCouldThrowToClearSuit(dataModel);
 						} else {
 
-
-							//Play a spade:
-							if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 8S 9C 9D 6D 3D ")) {
-								System.out.println("Debug");
-							}
 							
 							//dataModel.getCardInHandClosestOverSameSuit(leaderCard)
 							
@@ -2373,4 +2394,74 @@ public class NoMellowPlaySituation {
 		
 		return true;
 	}
+	
+	public static boolean currentPlayerHasOffsuitToThrowOff(DataModel dataModel) {	
+		return getOffsuitCardCurrentPlayerCouldThrowToClearSuit(dataModel) != null;
+	}
+	
+	public static String getOffsuitCardCurrentPlayerCouldThrowToClearSuit(DataModel dataModel) {
+		
+		CardAndValue bestCardAndValue = null;
+		
+		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS;suitIndex++) {
+			if(suitIndex == Constants.SPADE
+					|| dataModel.getNumberOfCardsOneSuit(suitIndex) == 0) {
+				continue;
+			}
+			
+			
+			if(!dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+				&& 3* dataModel.getNumberOfCardsOneSuit(suitIndex) - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) < 0
+				) {
+				
+				//Don't throw off Ace alone
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)
+						&&  dataModel.getNumberOfCardsOneSuit(suitIndex) == 1) {
+					continue;
+				
+				
+				//Don't throw off Kequiv with a king...
+				} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+						&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.KING
+					) {
+					continue;
+				
+				//If no ace or king to bank on, feel free to throw off cards of offsuit:
+				} else {
+					
+					int curValue = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) - 3* dataModel.getNumberOfCardsOneSuit(suitIndex);
+					
+					if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
+						curValue -= 4;
+					}
+					
+					if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+						curValue -= 3;
+					}
+					
+					if(dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+							> dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex) ) {
+						
+						int diffNumCardsOfSuitPlayed = dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+								                     - dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex);
+						curValue -= 4 * diffNumCardsOfSuitPlayed;
+					}
+
+					String curCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					if(bestCardAndValue == null
+							|| curValue > bestCardAndValue.getValue()) {
+						bestCardAndValue = new CardAndValue(curCard, curValue);
+					}
+					
+				}
+			}
+		}
+		
+		
+		if(bestCardAndValue == null) {
+			return null;
+		}
+		return bestCardAndValue.getCard();
+	}
+	
 }
