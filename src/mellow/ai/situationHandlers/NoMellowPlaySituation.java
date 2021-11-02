@@ -1373,6 +1373,9 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS JS 2S KH JH KC TC ")) {
+				System.out.println("DEBUG");
+			}
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
@@ -1554,6 +1557,7 @@ public class NoMellowPlaySituation {
 						
 					}
 
+				//Lead player didn't play master:
 				//I guess we should trump if we don't have much spade?
 				} else if(
 						//Partner probably can't trump
@@ -1615,6 +1619,23 @@ public class NoMellowPlaySituation {
 					
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					
+					//Play master S
+				} else if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+						 //Check if willing to keep AS for later:
+						 && (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+								|| (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 2
+								    && dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(
+								    		dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE), 
+								    		dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE))
+								       == 0
+								    )
+							)
+						 && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+						 && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						 && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+						 && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 3
+						) {
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				} else {
 					cardToPlay = getJunkiestCardToFollowLead(dataModel);
 				}
@@ -1631,8 +1652,11 @@ public class NoMellowPlaySituation {
 					goBigOrGoHome = true;
 				}
 				
+				//Check if we want to risk playing high spade:
+				//If we currently want to play AS, then there's no risk, so don't worry about that case.
 				if(goBigOrGoHome
-						&& CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE) {
+						&& CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE
+						&& ! dataModel.isMasterCard(cardToPlay)) {
 					
 					int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 					

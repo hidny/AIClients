@@ -72,6 +72,10 @@ public class MonteCarloMain {
 	//Return number string for bid
 	//Return card for action
 	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations) {
+		return runMonteCarloMethod(dataModel, num_simulations, true);
+	}
+
+	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations, boolean skipSimulations) {
 		
 		System.out.println("RUN SIMULATION");
 		//in.nextLine();
@@ -180,7 +184,7 @@ public class MonteCarloMain {
 				} else {
 					
 					//For now, don't skip if thorough.... I don't know!
-					if(isThorough == false) {
+					if(isThorough == false && skipSimulations) {
 						numSkipped++;
 						i--;
 						continue;
@@ -260,10 +264,20 @@ public class MonteCarloMain {
 
 		int numSimulationsNotSkipped = i;
 		
+		
 		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, numSimulationsNotSkipped);
 
-		//in.next();
 		System.out.print("END OF SIMULATION  PLAY: ");
+
+		//Hack to avoid NaN answer after simulation:
+		if(numSimulationsNotSkipped == 0
+				|| numSimulationsNotSkipped * 1000 < num_simulations) {
+			skipSimulations = false;
+			System.err.println("RETRY without skipping any simulations:");
+			runMonteCarloMethod(dataModel, num_simulations, skipSimulations);
+		}
+		
+		//in.next();
 		
 		return actionString[getMaxIndex(actionUtil)];
 	}
