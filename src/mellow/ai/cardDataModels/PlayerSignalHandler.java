@@ -195,4 +195,8 @@ public class PlayerSignalHandler {
 		return this.mellowVoidSignalsNoActiveMellows.hasCurTeamSignalledHighOffsuit(suitIndex);
 	}
 		
+	
+	public int getMaxCardRankSignalForMellowProtector(int playerIndex, int suitIndex ) {
+		return this.mellowVoidSignalsNoActiveMellows.getMaxCardRankSignalForMellowProtector(playerIndex, suitIndex );
+	}
 }

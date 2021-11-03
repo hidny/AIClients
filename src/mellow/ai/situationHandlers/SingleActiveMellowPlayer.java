@@ -328,6 +328,37 @@ public class SingleActiveMellowPlayer {
 				int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider);
 				int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider);
 				
+				
+				//TODO: also consider 2nd lowest later. (I'll wait until there's practical examples)
+				if(i == 0) {
+					
+					//Check if partner can't guard you:
+					if( ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suit)
+							&& numUnder >= 2
+							&& dataModel.signalHandler.getMaxCardRankSignalForMellowProtector(Constants.CURRENT_PARTNER_INDEX, suit)
+							 <=  DataModel.getRankIndex(cardToConsider)) {
+						
+						if(numUnder >= 3
+								&& (!dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suit)
+										|| !dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suit))) {
+							
+							ret +=10;
+							
+						} else if(numUnder == 2
+								&& (!dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suit)
+										|| !dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suit))
+								&&
+									dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit) <= 5
+								)
+								{
+							
+							ret +=10;
+							
+						}
+					}
+				}
+				//END Check if partner can't guard you:
+				
 			//Lowest card logic:
 				if(i==0 && numUnder >=2) {
 					ret += (numUnder - 1.5);
