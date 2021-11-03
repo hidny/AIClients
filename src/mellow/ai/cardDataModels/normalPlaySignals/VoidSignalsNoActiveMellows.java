@@ -35,6 +35,12 @@ public class VoidSignalsNoActiveMellows {
 	public int hardMaxBecauseSomeoneElseSignalledMasterQueen[][];
 	public int hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[][];
 	
+	//Adding mellow signal because I'm starting to think all signals should be here.
+	//soft max = assume protector could have 1 higher??? Nah!
+	//OR: assume they might have master if they played 1 below master?
+	public int softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[][];
+	public int hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[][];
+	
 	//TODO
 	public int hardMaxBecauseSomeoneDidntPlayMaster[][];
 	
@@ -67,6 +73,8 @@ public class VoidSignalsNoActiveMellows {
 
 		didNotFollowSuit = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
+		softMaxBecauseMellowProtectorPlayedLowAtSecondThrow = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow  = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
@@ -78,6 +86,8 @@ public class VoidSignalsNoActiveMellows {
 				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = -1;
 				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = -1;
 				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = -1;
+				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = -1;
+				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = -1;
 				
 				didNotFollowSuit[i][j] = false;
 			}
@@ -338,19 +348,8 @@ public class VoidSignalsNoActiveMellows {
 						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
 						&& dataModel.isMasterCard(card) == false) {
 					
-
-					int curWinnerIndex = -1;
-					if(dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
-						curWinnerIndex = (playerIndex + 1) % 4;
-					} else if(dataModel.getCardSecondThrow().equals(curWinnerCard)) {
-						curWinnerIndex = (playerIndex + 2) % 4;
-					} else if(dataModel.getCardThirdThrow().equals(curWinnerCard)) {
-						curWinnerIndex = (playerIndex + 3) % 4;
-					}
+					int curWinnerIndex = getCurrentWinningIndex(card, playerIndex, throwerIndex);
 					
-					if(dataModel.cardAGreaterThanCardBGivenLeadCard(card, curWinnerCard)) {
-						curWinnerIndex = playerIndex;
-					}
 					
 					if(curWinnerIndex ==Constants.CURRENT_AGENT_INDEX || curWinnerIndex == Constants.CURRENT_PARTNER_INDEX) {
 						this.curTeamSignalledHighOffsuit[suitIndex] = true;
@@ -374,9 +373,124 @@ public class VoidSignalsNoActiveMellows {
 			}
 			
 		}
+
+		//Mellow protector signal TO BE MOVED... (or something)
+
+		//This covers the case where protector follows suit but doesn't play high enough to cover mellow player
+		//PROTECTOR SIGNAL BY PLAYING TOO LOW:
+		if(throwerIndex > 0) {
+			int partnerIndex = (playerIndex + 2) % Constants.NUM_PLAYERS;
+			
+			String curWinnerCard= getCurrentStrongestCardInFight(card);
+		
+			
+			if(dataModel.getBid(partnerIndex) == 0 
+					&& ! dataModel.burntMellow(partnerIndex)
+					&& CardStringFunctions.getIndexOfSuit(curWinnerCard) == dataModel.getSuitOfLeaderThrow()
+					
+					&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+					) {
+				
+				if(throwerIndex == 1) {
+					
+					if( ! mellowSignalledNoCardOverCardSameSuit(curWinnerCard, partnerIndex)) {
+						
+
+						System.out.println("DEBUG SOFT MAX PROTECTOR 2: " + curWinnerCard);
+						
+						//TODO: maybe this is a softer max...
+						//ex: what if protect has 5C 6C 7C and just plays the 5C? I don't know why they would do that though.
+						if(playerIndex != Constants.CURRENT_AGENT_INDEX
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) 
+								+ dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(curWinnerCard) <= 1) {
+							System.out.println("CANCEL SIGNAL!");
+							
+						} else if(playerIndex == Constants.CURRENT_AGENT_INDEX
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) <= 1) {
+							System.out.println("CANCEL! (SELF SIGNAL)");
+							
+						} else {
+							
+							softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][CardStringFunctions.getIndexOfSuit(curWinnerCard)] = dataModel.getRankIndex(curWinnerCard);
+						}
+						
+					}
+						
+					//if(mellowSignalledNoCardOverCardSameSuit(card))
+				} else if(throwerIndex == 2 && getCurrentWinningIndex(card, playerIndex, throwerIndex) == partnerIndex ) {
+					
+					System.out.println("DEBUG HARD MAX PROTECTOR 3: " + curWinnerCard);
+					hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][CardStringFunctions.getIndexOfSuit(curWinnerCard)] = dataModel.getRankIndex(curWinnerCard);
+					
+					if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curWinnerCard) == 0) {
+						System.out.println("DEBUG: maybe the protector is being cheeky (or bad)");
+					}
+				}
+			}
+			
+		}
+		//END PROTECTOR SIGNAL BY PLAYING TOO LOW
 	}
 	
 
+	public int getCurrentWinningIndex(String card, int curPlayerIndex, int throwerIndex) {
+		
+		String curWinnerCard= dataModel.getCurrentFightWinningCardBeforeAIPlays();
+		
+		int leadThrowerIndex = (curPlayerIndex - throwerIndex + Constants.NUM_PLAYERS) % Constants.NUM_PLAYERS;
+		
+		int curWinnerIndex = -1;
+		if(throwerIndex > 0 && dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
+			curWinnerIndex = leadThrowerIndex;
+		} else if(throwerIndex > 1 && dataModel.getCardSecondThrow().equals(curWinnerCard)) {
+			curWinnerIndex = (leadThrowerIndex + 1 ) % 4;
+		} else if(throwerIndex > 2 && dataModel.getCardThirdThrow().equals(curWinnerCard)) {
+			curWinnerIndex = (leadThrowerIndex + 2 ) % 4;
+		}
+		
+		if(dataModel.cardAGreaterThanCardBGivenLeadCard(card, curWinnerCard)) {
+			curWinnerIndex = curPlayerIndex;
+		}
+		
+		return curWinnerIndex;
+	}
+	
+	public String getCurrentStrongestCardInFight(String card) {
+		String curWinnerCard= dataModel.getCurrentFightWinningCardBeforeAIPlays();
+		
+		if(dataModel.cardAGreaterThanCardBGivenLeadCard(card, curWinnerCard)) {
+			return card;
+		} else {
+			return curWinnerCard;
+		}
+	}
+	//TODO THIS WAS COPY/PASTED
+	static final int MELLOW_PLAYER_SIGNALED_NO = 3;
+	
+	public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
+		
+		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard, true);
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
+		
+		for(int j=0; j<Constants.NUM_RANKS; j++) {
+			
+			if(cardsOverInputCard[suitIndex][j]) {
+
+				if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != dataModel.IMPOSSIBLE
+						&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
+					
+					//At this point, the mellow player signalled that they could have a card in between
+					//And you should feel nervous about playing over the currently winning card...
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	//END TODO THIS WAS COPY PASTED
 	
 	//TODO: implement later if it proves useful:
 	public boolean playerSoftSignaledNoCardsOfSuit(String playerName, int suitIndex) {
