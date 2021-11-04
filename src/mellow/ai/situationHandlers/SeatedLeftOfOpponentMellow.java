@@ -123,7 +123,11 @@ public class SeatedLeftOfOpponentMellow {
 				dataModel.isPrevThrowWinningFight() == false) {
 
 			//handle case where mellow is already safe:
+
 			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9S 2S KH 5H KC JC 9C 3C 2C 9D 8D")) {
+				System.out.println("Debug");
+			}
 
 			//TODO: the logic is completely messed up!
 		
@@ -242,8 +246,21 @@ public class SeatedLeftOfOpponentMellow {
 								return topCardInHand;
 							}
 							
+							
+							//fourthThrowMinCardToWin == null && minCardToPlayWithNoDamageToFutureMellowBurnOdds == null:
 						} else {
-							return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+							
+							//Consider not wasting a king:
+							if(! dataModel.currentPlayerHasMasterInSuit(leadSuitIndex)
+									&& dataModel.getNumberOfCardsOneSuit(leadSuitIndex) >= 4
+									&& NonMellowBidHandIndicators.hasKEquiv(dataModel, leadSuitIndex)) {
+								return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
+							
+							} else {
+								
+								//Just play the highest:
+								return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+							}
 							
 						}
 
@@ -373,10 +390,6 @@ public class SeatedLeftOfOpponentMellow {
 		String bestCard = null;
 		
 
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS TS 8S 6S 3S 6H AC QC 9C 8C 7C ")) {
-			System.out.println("Debug");
-		}
 		
 		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
 
