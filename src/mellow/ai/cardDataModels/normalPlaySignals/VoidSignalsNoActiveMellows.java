@@ -605,7 +605,7 @@ public class VoidSignalsNoActiveMellows {
 			}
 		}
 		if(ret < DataModel.RANK_TWO) {
-			return -1;
+			return DataModel.RANK_TWO;
 		}
 		//END TODO
 		
@@ -631,7 +631,7 @@ public class VoidSignalsNoActiveMellows {
 			}
 		}
 		if(ret > DataModel.ACE) {
-			return -1;
+			return DataModel.ACE;
 		}
 		//END TODO
 		
@@ -667,7 +667,7 @@ public class VoidSignalsNoActiveMellows {
 			}
 		}
 		if(ret < DataModel.RANK_TWO) {
-			return -1;
+			return DataModel.RANK_TWO;
 		}
 		//END TODO
 		
