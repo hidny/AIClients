@@ -157,6 +157,21 @@ public class BiddingSituation {
 		
 		//END OF MEASURE OF STRENGTH OF HAND
 		
+		//Start coasting:
+		if(dataModel.getDealerIndexAtStartOfRound() == Constants.CURRENT_AGENT_INDEX
+				|| dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
+			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 1) {
+				//bid -= 0.25;
+				//Didn't make it better :(
+				
+			} else if(dataModel.getOurScore() > 700
+					&& dataModel.getOurScore() - dataModel.getOpponentScore() > 100
+					&& dataModel.getOurScore() - dataModel.getOpponentScore() < 300) {
+				//bid -= 0.25;
+				//Didn't make it better :(
+				//Maybe if you don't have strong spade??? I don't know
+			}
+		}
 		
 		System.out.println("Bid double: " + bid);
 		int intBid = (int) Math.floor(bid);

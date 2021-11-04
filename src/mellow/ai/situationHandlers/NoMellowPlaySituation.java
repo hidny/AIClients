@@ -1869,6 +1869,9 @@ public class NoMellowPlaySituation {
 			//Could we take for a tram?
 			if(dataModel.throwerHasCardToBeatCurrentWinner()) {
 				
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH QC 8C 5C TD 3D 2D ")) {
+					System.out.println("DEBUG");
+				}
 				//TODO: don't steal if you have trump left and there's less than 3 cards... 
 				//if(dataModel.isVoid)
 				
@@ -1877,6 +1880,35 @@ public class NoMellowPlaySituation {
 					
 					System.out.println("4th thrower taking from partner to TRAM!");
 					return tramTrickTakingCard;
+				
+				
+				} else if(CardStringFunctions.getIndexOfSuit(dataModel.getCardInHandClosestOverCurrentWinner()) != Constants.SPADE
+						|| dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardInHandClosestOverCurrentWinner()) >= 3){
+					
+					//Check if taking the trick could setup current team for a good time:
+					//Only do this if you don't have to take with a high spade.
+					for(int offsuit = 1; offsuit <Constants.NUM_SUITS; offsuit++) {
+						if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, offsuit)
+						 && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, offsuit)
+						 && dataModel.currentPlayerHasMasterInSuit(offsuit)
+						 && ( 
+								(offsuit == dataModel.getSuitOfLeaderThrow() 
+							 	&& !dataModel.getCardInHandClosestOverCurrentWinner().equals(dataModel.getCardCurrentPlayerGetHighestInSuit(offsuit))
+						 	) ||
+								 offsuit != dataModel.getSuitOfLeaderThrow() 
+							)
+						 && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(offsuit) >= 1
+						 
+						 && (      (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1
+								 && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+							        )
+								 || (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+						     )
+						 ) {
+							return dataModel.getCardInHandClosestOverCurrentWinner();
+						}
+					}
+					
 				}
 			}
 
