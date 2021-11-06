@@ -59,7 +59,7 @@ public class VoidSignalsNoActiveMellows {
 	
 	public static int MAX_UNDER_RANK_2 = -2;
 	public static int NO_KING_SACRIFICE = -1;
-	public static int DONT_KNOW_OR_PLAYED = -1;
+	public static int DONT_KNOW = -1;
 	
 	public boolean curTeamSignalledHighOffsuit[];
 	
@@ -83,15 +83,15 @@ public class VoidSignalsNoActiveMellows {
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
 				
-				hardMinCardPlayedBecausePlayedUnderCurWinner[i][j] = -1;
-				//softMaxCardPlayed[i][j] = -1;
-				hardMinCardRankBecausePlayedOverPartner[i][j] = -1;
-				hardMaxCardPlayedBecauseLackOfTrump[i][j] = -1;
-				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = -1;
-				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = -1;
-				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = -1;
-				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = -1;
-				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = -1;
+				hardMinCardPlayedBecausePlayedUnderCurWinner[i][j] = DONT_KNOW;
+				//softMaxCardPlayed[i][j] = DONT_KNOW;
+				hardMinCardRankBecausePlayedOverPartner[i][j] = DONT_KNOW;
+				hardMaxCardPlayedBecauseLackOfTrump[i][j] = DONT_KNOW;
+				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = DONT_KNOW;
+				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = DONT_KNOW;
+				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = DONT_KNOW;
+				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = DONT_KNOW;
+				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = DONT_KNOW;
 				
 				didNotFollowSuit[i][j] = false;
 			}
@@ -534,7 +534,7 @@ public class VoidSignalsNoActiveMellows {
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {
 
 		int curMinRank = getMinCardRankSignal(playerIndex, suitIndex);
-		int curMaxRank = getMaxCardRankSignal(playerIndex, suitIndex);
+		int curMaxRank = getMaxCardRankSignal(playerIndex, suitIndex, false);
 		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
@@ -555,44 +555,52 @@ public class VoidSignalsNoActiveMellows {
 		return true;
 	}
 	
+
 	public int getMaxCardRankSignal(int playerIndex, int suitIndex ) {
+		return getMaxCardRankSignal(playerIndex, suitIndex, true );
+	}
+	
+	public int getMaxCardRankSignal(int playerIndex, int suitIndex, boolean printWarn ) {
 
 		int curMaxRank = DataModel.ACE;
 		
-		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex] != -1
+		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxCardPlayedBecauseLackOfTrump[playerIndex][suitIndex];
 		}
 		
-		if(hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex] != -1
+		if(hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex] != DONT_KNOW
 			&& curMaxRank > hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseSomeoneElseSignalledMasterQueen[playerIndex][suitIndex];
 		}
 		
-		if(hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex] != -1
+		if(hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[playerIndex][suitIndex];
 			
 		}
 		
-		if(hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex] != -1
+		if(hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex];
 
 		}
 		
 
-		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != -1
+		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex]) {
 			curMaxRank = softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex];
 
 		}
 
-		if(hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex] != -1
+		if(hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex];
 
 		}
+		
+		
+
 		
 		
 		//TODO: put in another function:
@@ -604,18 +612,30 @@ public class VoidSignalsNoActiveMellows {
 				break;
 			}
 		}
-		if(ret < DataModel.RANK_TWO) {
-			return DataModel.RANK_TWO;
-		}
 		//END TODO
+		
+		if(curMaxRank < DataModel.RANK_TWO) {
+			
+			if(printWarn) {
+				try {
+					throw new Exception("Warning: Max rank under two");
+				} catch(Exception e) {
+					e.printStackTrace();
+					System.err.println("Warning: Max rank under two");
+				}
+			}
+			
+			return MAX_UNDER_RANK_2;
+		}
 		
 		return curMaxRank;
 	}
 	
 	public int getMinCardRankSignal(int playerIndex, int suitIndex ) {
+		//TODO: don't be too clever:
 		int curMinRank = hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][suitIndex] + 1;
 		
-		if(hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex] != -1
+		if(hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex] != DONT_KNOW
 				&& curMinRank <  hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex]) {
 				
 			curMinRank = hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex];
@@ -644,13 +664,13 @@ public class VoidSignalsNoActiveMellows {
 		int curMaxRank = DataModel.ACE;
 		
 
-		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != -1
+		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex]) {
 			curMaxRank = softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex];
 
 		}
 
-		if(hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex] != -1
+		if(hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex]) {
 			curMaxRank = hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex];
 
@@ -677,7 +697,7 @@ public class VoidSignalsNoActiveMellows {
 	public int getMaxRankSpadeSignalled(int playerIndex) {
 		int curMaxRank = DataModel.ACE;
 		
-		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] != -1
+		if(hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] != DONT_KNOW
 				&& curMaxRank > hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE]) {
 			curMaxRank = hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE];
 		}
@@ -736,7 +756,7 @@ public class VoidSignalsNoActiveMellows {
 		
 		int masterCardRank = DataModel.getRankIndex(masterCard);
 		
-		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank) {
+		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex, false ) < masterCardRank) {
 			return true;
 		} else {
 			return false;
@@ -754,9 +774,9 @@ public class VoidSignalsNoActiveMellows {
 		
 		int masterCardRank = DataModel.getRankIndex(masterCard);
 		
-		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) >= masterCardRank
-			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) < masterCardRank
-			&& getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) < masterCardRank
+		if(getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex, false ) >= masterCardRank
+			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex, false) < masterCardRank
+			&& getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex, false ) < masterCardRank
 			&& ! playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex )
 				) {
 			return true;
@@ -776,9 +796,9 @@ public class VoidSignalsNoActiveMellows {
 		
 		int masterCardRank = DataModel.getRankIndex(masterCard);
 		
-		if(getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) >= masterCardRank
-			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
-			&& getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) < masterCardRank
+		if(getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex, false ) >= masterCardRank
+			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex, false ) < masterCardRank
+			&& getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex, false ) < masterCardRank
 			&& ! playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex )
 				) {
 			return true;
@@ -798,9 +818,9 @@ public class VoidSignalsNoActiveMellows {
 		
 		int masterCardRank = DataModel.getRankIndex(masterCard);
 		
-		if(getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex ) >= masterCardRank
-			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex ) < masterCardRank
-			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex ) < masterCardRank
+		if(getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex, false ) >= masterCardRank
+			&& getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex, false ) < masterCardRank
+			&& getMaxCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex, false ) < masterCardRank
 			&& ! playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex )
 				) {
 			return true;

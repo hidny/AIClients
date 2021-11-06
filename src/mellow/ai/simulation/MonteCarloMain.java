@@ -31,9 +31,14 @@ public class MonteCarloMain {
 	public static int LIMIT_THOROUGH_SEARCH = 2000;
 
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
+	//Do dishes and cook slow:
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+
+	//Watch TV slow:
 	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	
+	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	

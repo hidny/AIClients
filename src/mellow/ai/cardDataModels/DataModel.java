@@ -2088,38 +2088,47 @@ public class DataModel {
 	}
 
 	public static int getMellowCardIndex(String cardString) {
+			
 		int x = -1;
 		int y = -1;
-		if(cardString.charAt(0) >= '2' && cardString.charAt(0) <= '9') {
-			x = (int)cardString.charAt(0) - (int)('2');
-		} else if(cardString.charAt(0) == 'T') {
-			x = 8;
-		} else if(cardString.charAt(0) == 'J') {
-			x = 9;
-		} else if(cardString.charAt(0) == 'Q') {
-			x = 10;
-		} else if(cardString.charAt(0) == 'K') {
-			x = 11;
-		} else if(cardString.charAt(0) == 'A') {
-			x = 12;
-		} else {
+		try {
+			
+			if(cardString.charAt(0) >= '2' && cardString.charAt(0) <= '9') {
+				x = (int)cardString.charAt(0) - (int)('2');
+			} else if(cardString.charAt(0) == 'T') {
+				x = 8;
+			} else if(cardString.charAt(0) == 'J') {
+				x = 9;
+			} else if(cardString.charAt(0) == 'Q') {
+				x = 10;
+			} else if(cardString.charAt(0) == 'K') {
+				x = 11;
+			} else if(cardString.charAt(0) == 'A') {
+				x = 12;
+			} else {
+				throw new Exception("Number unknown! Uh oh!");
+				
+				
+			}
+			
+			if(cardString.charAt(1)=='S') {
+				y = 0;
+			} else if(cardString.charAt(1)=='H') {
+				y = 1;
+			} else if(cardString.charAt(1)=='C') {
+				y = 2;
+			} else if(cardString.charAt(1)=='D') {
+				y = 3;
+			} else {
+				System.err.println("Suit unknown! Uh oh!");
+				System.exit(1);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 			System.err.println("Number unknown! Uh oh!");
 			System.exit(1);
 		}
-		
-		if(cardString.charAt(1)=='S') {
-			y = 0;
-		} else if(cardString.charAt(1)=='H') {
-			y = 1;
-		} else if(cardString.charAt(1)=='C') {
-			y = 2;
-		} else if(cardString.charAt(1)=='D') {
-			y = 3;
-		} else {
-			System.err.println("Suit unknown! Uh oh!");
-			System.exit(1);
-		}
-		
 		return y*13 + x;
 	}
 	
@@ -2187,19 +2196,27 @@ public class DataModel {
 	public static int getRankIndex(String card) {
 		int x = 0;
 		
-		if(card.charAt(0) >= '2' && card.charAt(0) <= '9') {
-			x = (int)card.charAt(0) - (int)('2');
-		} else if(card.charAt(0) == 'T') {
-			x = 8;
-		} else if(card.charAt(0) == 'J') {
-			x = 9;
-		} else if(card.charAt(0) == 'Q') {
-			x = 10;
-		} else if(card.charAt(0) == 'K') {
-			x = 11;
-		} else if(card.charAt(0) == 'A') {
-			x = 12;
-		} else {
+		try {
+			if(card.charAt(0) >= '2' && card.charAt(0) <= '9') {
+				x = (int)card.charAt(0) - (int)('2');
+			} else if(card.charAt(0) == 'T') {
+				x = 8;
+			} else if(card.charAt(0) == 'J') {
+				x = 9;
+			} else if(card.charAt(0) == 'Q') {
+				x = 10;
+			} else if(card.charAt(0) == 'K') {
+				x = 11;
+			} else if(card.charAt(0) == 'A') {
+				x = 12;
+			} else {
+				throw new Exception("Number unknown! Uh oh!");
+				
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+
 			System.err.println("Number unknown! Uh oh!");
 			System.exit(1);
 		}
