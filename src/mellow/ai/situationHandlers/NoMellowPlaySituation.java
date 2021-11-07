@@ -1450,7 +1450,7 @@ public class NoMellowPlaySituation {
 						}
 						
 
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 5S 3S 2S TH 9H KC JC 9C 5C ")) {
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 3S 9C 7C QD ")) {
 							System.out.println("Debug");
 							
 						}
@@ -1645,21 +1645,41 @@ public class NoMellowPlaySituation {
 				//At this point, we might have decided to trump,
 				// but we might reconsider given LHS is also trumping...
 
+				
 				boolean goBigOrGoHome = false;
-				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+				boolean justGoBig = false;
+				
+				if(dataModel.isMasterCard(dataModel.getCardLeaderThrow())
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) > 1
+						//&& dataModel.signalHandler.
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
+					justGoBig = true;
+					
+				} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
 								&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 								&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
 					goBigOrGoHome = true;
 				}
 				
+				if(justGoBig
+						&& CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE
+						&& ! dataModel.isMasterCard(cardToPlay)) {
+					
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					
 				//Check if we want to risk playing high spade:
 				//If we currently want to play AS, then there's no risk, so don't worry about that case.
-				if(goBigOrGoHome
+				} else if(goBigOrGoHome
 						&& CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE
 						&& ! dataModel.isMasterCard(cardToPlay)) {
 					
 					int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 					
+					//Nov  7th, 2021 TODO: fix 2-4211
+					//This is too strict.
 					if((3 * numSpadesInHand >
 					dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 					      && numSpadesInHand > 1
@@ -1695,10 +1715,10 @@ public class NoMellowPlaySituation {
 						}
 						
 					}
-				}
-			}
+				} //END of go big or go home code.
+			}//END of Option to trump no need to go bid:
 			
-		}
+		}//END of play off code
 		
 	
 		return cardToPlay;
@@ -1869,9 +1889,6 @@ public class NoMellowPlaySituation {
 			//Could we take for a tram?
 			if(dataModel.throwerHasCardToBeatCurrentWinner()) {
 				
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH QC 8C 5C TD 3D 2D ")) {
-					System.out.println("DEBUG");
-				}
 				//TODO: don't steal if you have trump left and there's less than 3 cards... 
 				//if(dataModel.isVoid)
 				

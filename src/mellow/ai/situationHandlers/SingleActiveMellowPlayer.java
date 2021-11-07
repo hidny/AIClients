@@ -49,7 +49,9 @@ public class SingleActiveMellowPlayer {
 		int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 		if(numSpadesInHand > 0
 				&&  
-				   (numSpadesInHand == 1
+			DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) < DataModel.KING
+				&&
+			(numSpadesInHand == 1
 				||	DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) <
 					DataModel.JACK
 				|| dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4)
