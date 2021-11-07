@@ -355,7 +355,7 @@ public class BiddingSituation {
 			
 			return 0 + "";
 			
-		} else if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.4
+		} else if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.40
 				&& intBid == 0) {
 			return 1 + "";
 		} else {

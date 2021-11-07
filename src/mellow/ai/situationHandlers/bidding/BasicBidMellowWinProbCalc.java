@@ -70,7 +70,7 @@ public class BasicBidMellowWinProbCalc {
 	}
 	
 	public static double getProbNoBurnOffsuit(DataModel dataModel, int suitIndex) {
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8H 7H 5H 3H 4C 2C AD QD TD 9D 6D 5D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S JH TH 7H 6H 5H KC QC JC 9C 8C 5D 3D")) {
 			System.out.println("Debug");
 		}
 		double ret = 1.0;
@@ -188,6 +188,23 @@ public class BasicBidMellowWinProbCalc {
 			}
 		}
 		
+		//Let the previous bids bias you a little bit:
+		//Maybe the bias could be stronger in anticipation of partner sweeping spade...
+		if(Constants.CURRENT_AGENT_INDEX ==dataModel.getDealerIndexAtStartOfRound() ||
+				Constants.LEFT_PLAYER_INDEX == dataModel.getDealerIndexAtStartOfRound()) {
+			
+			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) > 3) {
+				//System.out.println("(MORE SPADE FORGIVENESS)");
+				numForgiveSpade += Math.max(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) - 3, 0);
+			}
+		} else if(Constants.CURRENT_PARTNER_INDEX ==dataModel.getDealerIndexAtStartOfRound()) {
+			if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 1) {
+				//System.out.println("(MORE SPADE FORGIVENESS 2)");
+				numForgiveSpade += 1;
+			}
+		}
+		//End let the previous bids bias you a little bit.
+		
 		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
 			if(suitIndex != Constants.SPADE) {
 				
@@ -202,9 +219,11 @@ public class BasicBidMellowWinProbCalc {
 					
 					
 					if(dataModel.getNumberOfCardsOneSuit(suitIndex) >= 3
-							&& numForgiveSpade + numForgiveOffsuit > 0) {
+							&& numForgiveSpade + numForgiveOffsuit > dataModel.getNumberOfCardsOneSuit(suitIndex) - 3) {
 						
-						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - 5.0 * (numForgiveSpade + numForgiveOffsuit))/100.0;
+						int numTimes = numForgiveSpade + numForgiveOffsuit - (dataModel.getNumberOfCardsOneSuit(suitIndex) - 3);
+						
+						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - 7.0 * (numTimes))/100.0;
 						ret *= adjustedWinProb;
 					
 					} else if(dataModel.getNumberOfCardsOneSuit(suitIndex) >= 2
