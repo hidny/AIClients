@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -192,7 +193,8 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
-		
+				
+				
 		//COPY
 		//At this point, you have to play under the mellow protector:
 			//TODO: put in function
@@ -204,9 +206,10 @@ public class SeatedRightOfOpponentMellow {
 					
 					//Find minimum card over highest card mellow signalled:
 					
-					String minCard = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					String highestCardInHand = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					String curCard = highestCardInHand;
 					
-					for(int rank = DataModel.ACE; rank>=DataModel.RANK_TWO; rank--) { 
+					for(int rank = DataModel.getRankIndex(highestCardInHand) - 1; rank>=DataModel.RANK_TWO; rank--) { 
 						
 						String tempCard = DataModel.getCardString(rank, leadSuit);
 						
@@ -218,16 +221,16 @@ public class SeatedRightOfOpponentMellow {
 									break;
 							}
 
-							minCard = tempCard;
+							curCard = tempCard;
 						}
 					}
 					
-					if(minCard == null) {
+					if(curCard == null) {
 						System.err.println("ERROR: minCard ==null in SeatedRightOfOpponentMellow. This isn't supposed to happen");
 						System.exit(1);
 					}
 					
-					String cardToUse = minCard;
+					String cardToUse = curCard;
 					if(dataModel.isMasterCard(cardToUse)) {
 						
 						//int numOther = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
@@ -248,7 +251,20 @@ public class SeatedRightOfOpponentMellow {
 						//TODO: Do a similar thing if you have 4 spades and the mellow played a spade?
 						
 						cardToUse= dataModel.getCardCurrentPlayergetFourthLowestInSuit(leadSuit);
+					
+					
+					//Don't play highest if it might become master:
+					} else if(curCard.equals(highestCardInHand) &&
+							(
+							(dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5 && NonMellowBidHandIndicators.hasJEquiv(dataModel, leadSuit))
+							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 4 && NonMellowBidHandIndicators.hasQEquiv(dataModel, leadSuit))
+							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && NonMellowBidHandIndicators.hasKEquiv(dataModel, leadSuit))
+							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && dataModel.currentPlayerHasMasterInSuit(leadSuit))
+							)
+						){
 						
+						//TODO: prioritize throwing away cards in groups like (789 or JQ)
+						cardToUse = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit);
 					}
 					
 					
@@ -381,9 +397,6 @@ public class SeatedRightOfOpponentMellow {
 		
 		String curStrongestCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5S 2S QH JH 3H KC QC JC JD 9D 7D 3D")) {
-			System.out.println("DEBUG");
-		}
 		
 		if(dataModel.throwerMustFollowSuit()) {
 

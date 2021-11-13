@@ -472,12 +472,17 @@ public class NoMellowPlaySituation {
 		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
 				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 				- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >= 2
-				/*&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE*/) {
+				//&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE
+				) {
 		//END TODO put in function
 			//curScore += 25.0;
 			curScore += 5.0 * (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 					- dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) - 2);
+			
+			
 		}
+		
+		
 		
 		if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
 				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
@@ -1373,7 +1378,8 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS JS 2S KH JH KC TC ")) {
+			// 2-1416
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6S 7D ")) {
 				System.out.println("DEBUG");
 			}
 			
@@ -1577,6 +1583,10 @@ public class NoMellowPlaySituation {
 						      
 						      	//OR: opponent only one that signalled master
 						      || (dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(leaderSuitIndex))
+						      
+						      	//OR: low throw-away card that doesn't support a King or Queen or Jack equiv:
+						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <= 2
+						      	&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE)) >= 3)
 						)
 
 						&& //No single master spade
