@@ -381,6 +381,10 @@ public class SeatedRightOfOpponentMellow {
 		
 		String curStrongestCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5S 2S QH JH 3H KC QC JC JD 9D 7D 3D")) {
+			System.out.println("DEBUG");
+		}
+		
 		if(dataModel.throwerMustFollowSuit()) {
 
 			//Handle being the third thrower and following suit...
@@ -412,7 +416,15 @@ public class SeatedRightOfOpponentMellow {
 						
 						//TODO: We may not want to lead every single time we can...
 						//HANDLE this complication LATER!
-						return cardInHandClosestOver;
+						
+						//Play high, but not master:
+						if(! dataModel.isMasterCard(SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,
+								cardInHandClosestOver))) {
+							return SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,
+									cardInHandClosestOver);
+						} else {
+							return cardInHandClosestOver;
+						}
 						
 					} else {
 						
@@ -421,11 +433,18 @@ public class SeatedRightOfOpponentMellow {
 							return dataModel.getCardInHandClosestUnderSameSuit(curStrongestCard);
 						} else {
 
-							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+							//Play high, but not master:
+							if(! dataModel.isMasterCard(SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,
+									cardInHandClosestOver))) {
+								return SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,
+										cardInHandClosestOver);
+							} else {
+								return cardInHandClosestOver;
+							}
 						}
 					}
 				} else {
-					//Play over protector if mellow is void:
+					//mellow is void in current suit, so play over protector if :
 
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
