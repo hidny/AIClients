@@ -1379,7 +1379,7 @@ public class NoMellowPlaySituation {
 		} else {
 			
 			// 2-1416
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6S 7D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 7S 5S 2S TC 9C KD")) {
 				System.out.println("DEBUG");
 			}
 			
@@ -1456,7 +1456,7 @@ public class NoMellowPlaySituation {
 						}
 						
 
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 3S 9C 7C QD ")) {
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 5S 3S JC 6C 5C JD 9D 6D 5D")) {
 							System.out.println("Debug");
 							
 						}
@@ -1486,7 +1486,7 @@ public class NoMellowPlaySituation {
 							//Target another suit
 						} else if (   
 								//We have lots of spade:
-								(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 5
+								(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 4
 									   || 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 5
 									   )
 								//LHS is a real threat:
@@ -1498,8 +1498,25 @@ public class NoMellowPlaySituation {
 								&& dataModel.cardAGreaterThanCardBGivenLeadCard(DataModel.getCardString(dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX), Constants.SPADE),
 										dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
 								
-								//We could realistically clear another suit for trumping:
-								&& currentPlayerHasOffsuitToThrowOff(dataModel)
+								&& (
+								    //We could realistically clear another suit for trumping without helping opponents too much:
+								        (
+								        currentPlayerHasOffsuitToThrowOff(dataModel)
+								        && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+								        && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+								        )
+								    
+								   //OR: We need to keep spade...
+								   ||    (
+								         dataModel.getNumberOfCardsOneSuit(Constants.SPADE)
+							             <= dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+									     )
+								   
+								   //OR: Partner could do it:
+								   ||    (  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+									     && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+									     )
+								   )
 								) {
 							
 							//TODO: what if you could just trump just because you have AKS?
@@ -1507,7 +1524,11 @@ public class NoMellowPlaySituation {
 							//I'll deal with it when a new test case comes up
 							
 							//TODO: clear other suit...
-							cardToPlay = getOffsuitCardCurrentPlayerCouldThrowToClearSuit(dataModel);
+							if(currentPlayerHasOffsuitToThrowOff(dataModel)) {
+								cardToPlay = getOffsuitCardCurrentPlayerCouldThrowToClearSuit(dataModel);
+							} else {
+								cardToPlay = getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
+							}
 						} else {
 
 							
