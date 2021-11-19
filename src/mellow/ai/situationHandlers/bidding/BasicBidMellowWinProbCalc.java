@@ -22,7 +22,8 @@ public class BasicBidMellowWinProbCalc {
 				0.30,   // J
 				0.55,   // Q
 				0.666,  // K
-				0.99};  // A
+				0.99   // A
+				};
 	
 	
 	public static double getMellowSuccessProb1(DataModel dataModel) {
@@ -49,7 +50,20 @@ public class BasicBidMellowWinProbCalc {
 		for(int i=0; i<dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE); i++) {
 			String card = dataModel.getCardCurrentPlayerGetIthLowestInSuit(i, Constants.SPADE);
 			
-			double probLosingRank = rankProbs[DataModel.getRankIndex(card)];
+			int numSpadesOver = numSpades - i - 1;
+			
+			//Acknowledge that saying mellow with 2 high spades is questionable:
+			int increaseRank = 0;
+			if(DataModel.getRankIndex(card) >= DataModel.RANK_TEN) {
+				increaseRank = 2* numSpadesOver;
+			} else if(DataModel.getRankIndex(card) >= DataModel.RANK_EIGHT) {
+				increaseRank = numSpadesOver;
+			}
+			//End Acknowledgement
+			
+			int rankToUse = Math.min(DataModel.getRankIndex(card) + increaseRank, DataModel.ACE);
+			
+			double probLosingRank = rankProbs[rankToUse];
 
 			if(DataModel.getRankIndex(card) == DataModel.ACE) {
 				probLosingRank = 1.0;
@@ -153,7 +167,7 @@ public class BasicBidMellowWinProbCalc {
 	
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 6S KH 6H 4H JC 9C 7C 6C 4C JD 5D 3D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 4S 3S 5H 4H 2H 4C AD 9D 7D 6D 3D 2D")) {
 			System.out.println("Debug");
 		}
 		

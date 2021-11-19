@@ -32,8 +32,12 @@ public class MonteCarloMain {
 
 	public static int NUM_SIMULATIONS_DEFAULT = 200;
 	
+
+	//Overnight slow
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;

@@ -229,9 +229,9 @@ public class SingleActiveMellowPlayer {
 	//Find the suit the mellow player wants to throw-off most:
 	public static String getBestOffSuitCardToThrowOffAsMellowPlayer(DataModel dataModel) {
 
-		/*if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH 3H AC QC JC TC 4C 2C TD 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H 8H TC 5C KD TD 9D 8D 2D")) {
 			System.out.println("Debug");
-		}*/
+		}
 		int NO_SUIT_FOUND = -1;
 		int chosenSuit = NO_SUIT_FOUND;
 		double bestScore = Double.MIN_VALUE;

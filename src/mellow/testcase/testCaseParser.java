@@ -16,18 +16,19 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 public class testCaseParser {
 
 	//folders:
-    public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2"};
+    
+	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2"};
 //
 	//public static String TEST_FOLDERS[] = {"Michael"};
 	//public static String TEST_FOLDERS[] = {"Michael2021"};
 	//public static String TEST_FOLDERS[] = {"Michael2021-2"};
 	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
-	//public static String TEST_FOLDERS[] = {"MonteCarloTests"};
+	public static String TEST_FOLDERS[] = {"MonteCarloTests"};
 	
 	//public static String TEST_FOLDERS[] = {"doubleMellowTests"};
 	//public static String TEST_FOLDERS[] = {"lastRoundWeirdness"};
-
+	//public static String TEST_FOLDERS[] = {"MichaelApril2020"};
 
 	public static int numLeadingPass = 0;
 	public static int numLeading = 0;

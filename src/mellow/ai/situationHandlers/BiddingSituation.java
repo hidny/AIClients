@@ -304,8 +304,26 @@ public class BiddingSituation {
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
 			System.out.println("Debug");
 		}
-		
-		if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05
+
+		if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3
+				&& dataModel.getOpponentScore() - dataModel.getOurScore() > 100 
+				&& dataModel.getOpponentScore() < 940 //don't let opponents win by saying 6.
+				&& ( dataModel.getOpponentScore() > 850
+						|| 1.5 * (1000 - dataModel.getOpponentScore()) < (1000 - dataModel.getOurScore())
+					)
+				//No double mellow:
+				&& ( ! dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
+					    || dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0
+					    //Make an exception:
+					    || BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.9)) {
+			
+			if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.55) {
+				System.out.println("(WHATEVER MELLOW) (" + dataModel.getOurScore() + " vs " + dataModel.getOpponentScore() + ")");
+				System.out.println("(PROB: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) + ")");
+			}
+			return 0 + "";
+			
+		} else	if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05
 				//No double mellow:
 				&& ( ! dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
 					    || dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0

@@ -695,6 +695,8 @@ public class DataModel {
 			//System.err.println("Assume LHS is void in hearts because of the play");
 			//System.err.println("TODO: make it auto-assume");
 			ret[Constants.LEFT_PLAYER_INDEX][Constants.HEART] = true;
+		} else if(DebugFunctions.currentPlayerHoldsHandDebug(this, "KS 6S 5S KH 9H 7H 2H ")) {
+			ret[Constants.LEFT_PLAYER_INDEX][Constants.DIAMOND] = true;
 		}
 		return ret;
 	}
