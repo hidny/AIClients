@@ -355,6 +355,16 @@ public class DataModel {
 		return false;
 	}
 	
+
+	public boolean someoneBidMellowSoFar() {
+		for(int i=0; i<bids.length; i++) {
+			if(playerMadeABidInRound(i) && bids[i] == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean stillActiveMellow() {
 		for(int i=0; i<bids.length; i++) {
 			if(bids[i] == 0 && tricks[i] == 0) {

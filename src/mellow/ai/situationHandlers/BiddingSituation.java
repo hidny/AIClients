@@ -11,7 +11,6 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		
 		double bid = 0.0;
 		
 		//#Add number of aces:
@@ -217,7 +216,20 @@ public class BiddingSituation {
 		} else if(intBid == 0 && dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit("9S") >= 2) {
 			intBid = 1;
 		}
+
+		if(dataModel.isDealer() 
+				&& dataModel.getBidTotalSoFar() <= 8
+				&& intBid > 0
+				&& ! dataModel.someoneBidMellowSoFar()) {
+			//At least put bid to 9... (This could be gamed.)
+			if(9 - dataModel.getBidTotalSoFar() > intBid) {
+				System.out.println("(Increase bid because bids are so low. I hope Monte doesn't game this)");
+				intBid = intBid + 1;
+			}
+		}
+		
 		System.out.println("Final bid " + intBid);
+		
 
 		
 		if(dataModel.getOurScore() > 800
