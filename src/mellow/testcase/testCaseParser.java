@@ -25,6 +25,7 @@ public class testCaseParser {
 	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
 	//public static String TEST_FOLDERS[] = {"MonteCarloTests"};
+	//public static String TEST_FOLDERS[] = {"tmp"};
 	
 	//public static String TEST_FOLDERS[] = {"doubleMellowTests"};
 	//public static String TEST_FOLDERS[] = {"lastRoundWeirdness"};
@@ -63,7 +64,10 @@ public class testCaseParser {
 		//MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
 
 		//Test monte carlo if we're using monte carlo folder:
-		if(TEST_FOLDERS.length == 1 && TEST_FOLDERS[0].toLowerCase().equals("montecarlotests")) {
+		if(TEST_FOLDERS.length == 1 
+				&& (TEST_FOLDERS[0].toLowerCase().equals("montecarlotests")
+				|| TEST_FOLDERS[0].toLowerCase().equals("tmp"))
+			) {
 			decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
 			//decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI);
 		}

@@ -691,6 +691,28 @@ public class DataModel {
 		return ret;
 	}
 	
+	public void printVoidArray() {
+		boolean voidArray[][] = createVoidArray();
+		
+		for(int p=0; p<voidArray.length; p++) {
+			System.out.print(players[p] + " is void in: ");
+			
+			int numFound =0;
+			for(int s=0; s<voidArray.length; s++) {
+				if(voidArray[p][s]) {
+					if(numFound == 0) {
+						System.out.print(CardStringFunctions.getSuitString(s));
+					} else {
+						System.out.print( ", " + CardStringFunctions.getSuitString(s));
+					}
+					numFound++;
+				}
+			}
+			System.out.println(".");
+			
+		}
+	}
+	//Making public for some debug function:
 	private boolean[][] createVoidArray() {
 		boolean ret[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		for(int i=0; i<ret.length; i++) {
@@ -711,7 +733,7 @@ public class DataModel {
 		return ret;
 	}
 	
-	private String[] getUnknownCards() {
+	public String[] getUnknownCards() {
 
 		int numUnknownCards = 0;
 		
@@ -741,6 +763,44 @@ public class DataModel {
 		}
 		
 		return unknownCards;
+	}
+	
+	public String[] getActiveCardsWithObviousOwnersInOtherHandsDebug() {
+
+		int numKnownCards = 0;
+		
+		NEXT_CARD:
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int player=0; player<Constants.NUM_PLAYERS; player++) {
+				if(player == Constants.CURRENT_AGENT_INDEX) {
+					continue;
+				}
+				if(cardsCurrentlyHeldByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS] == CERTAINTY) {
+					numKnownCards++;
+					continue NEXT_CARD;
+				}
+			}
+		}
+		
+		String knownCards[] = new String[numKnownCards];
+		int currentCardIndex = 0;
+		
+		NEXT_CARD:
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int player=0; player<Constants.NUM_PLAYERS; player++) {
+				if(player == Constants.CURRENT_AGENT_INDEX) {
+					continue;
+				}
+				if(cardsCurrentlyHeldByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS] == CERTAINTY) {
+
+					knownCards[currentCardIndex] = getCardString(i);
+					currentCardIndex++;
+					continue NEXT_CARD;
+				}
+			}
+		}
+		
+		return knownCards;
 	}
 	
 	private static boolean dontKnowIfPlayerHasCard(int statusNum) {

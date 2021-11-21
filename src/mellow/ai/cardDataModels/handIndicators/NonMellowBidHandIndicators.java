@@ -486,16 +486,16 @@ public class NonMellowBidHandIndicators {
 			}
 		}
 	
-	 public static boolean has3PlusAndQJTEquivOrBetter(DataModel dataModel, int suitIndex) {
+	 public static boolean has3PlusAndQJEquivOrBetter(DataModel dataModel, int suitIndex) {
 		 
 		 if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 3) {
 				return false;
 		 }
 		 
-		 String thirdHighest = dataModel.getCardCurrentPlayerGetThirdHighestInSuit(suitIndex);
+		 String secondHighest = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
 		 int numOver = 0;
 			
-		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(thirdHighest); curRank--) {
+		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(secondHighest); curRank--) {
 			
 			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
 				continue;

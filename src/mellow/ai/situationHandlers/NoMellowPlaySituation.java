@@ -553,7 +553,7 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S AH 9H 2H QC TC 6C 5C ")
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 6H 5H 3H 8C 3C 8D 7D 3D ")
 				) {
 			System.out.println("Debug");
 		}
@@ -1070,6 +1070,10 @@ public class NoMellowPlaySituation {
 			}
 			
 			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9H 9C 8C QD JD 3D 2D ")) {
+				System.out.println("DEBUG");
+			}
+			
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
@@ -1091,10 +1095,16 @@ public class NoMellowPlaySituation {
 						&& numCardsOfSuitInHand >= 3) {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 					
-				} else if(numCardsOfSuitInHand == 3
-						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 9) {
+				} else if(numCardsOfSuitInHand >= 3
+						/*&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 9*/
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 3) {
 					//Try to make the Queen maybe?
-					cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitIndex);
+					
+					if(NonMellowBidHandIndicators.has3PlusAndQJEquivOrBetter(dataModel, suitIndex)) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+					} else {
+						cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitIndex);
+					}
 					
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
@@ -1167,7 +1177,9 @@ public class NoMellowPlaySituation {
 				)
 			) {
 				//Don't play highest if you might be able to save it and use it later:
-				if(cardToPlay.equals(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex))) {
+				if(cardToPlay.equals(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex))
+						//You could play Q if you have the J equiv...
+						&& ! NonMellowBidHandIndicators.has3PlusAndQJEquivOrBetter(dataModel, suitIndex)) {
 					//System.out.println("(DEBUG: DON'T PLAY QUEEN for suitindex = " + suitIndex + "!)");
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				}

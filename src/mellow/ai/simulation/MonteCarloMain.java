@@ -10,6 +10,7 @@ import mellow.ai.aiDecider.MellowAIDeciderInterface;
 import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
+import mellow.cardUtils.CardStringFunctions;
 
 //TODO: maybe compliment this with a decision tree?
 //https://softwareengineering.stackexchange.com/questions/157324/decision-trees-vs-neural-networks
@@ -96,6 +97,25 @@ public class MonteCarloMain {
 		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
 				|| numWaysOtherPlayersCouldHaveCards <= 2 * num_simulations) {
 			isThorough = true;
+			
+			//DEBUG: print possibilities:
+			String unknownCards[] = dataModel.getUnknownCards();
+			String sortedUnknownCards[] = CardStringFunctions.sort(unknownCards);
+			
+			System.out.println("DEBUG: Unknown cards:");
+			for(int i=0; i<sortedUnknownCards.length; i++) {
+				System.out.print(sortedUnknownCards[i] + " ");
+			}
+			System.out.println();
+			
+			dataModel.printVoidArray();
+			
+			System.out.println("DEBUG: Obvious and active cards:");
+			String obviousCards[] = dataModel.getActiveCardsWithObviousOwnersInOtherHandsDebug();
+			for(int i=0; i<obviousCards.length; i++) {
+				System.out.print(obviousCards[i] + " ");
+			}
+			System.out.println();
 		}
 		
 		if(isThorough) {
