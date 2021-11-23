@@ -96,31 +96,32 @@ public class MonteCarloMain {
 		boolean isThorough = false;
 		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
 				|| numWaysOtherPlayersCouldHaveCards <= 2 * num_simulations) {
-			isThorough = true;
-			
-			//DEBUG: print possibilities:
-			String unknownCards[] = dataModel.getUnknownCards();
-			String sortedUnknownCards[] = CardStringFunctions.sort(unknownCards);
-			
-			System.out.println("DEBUG: Unknown cards:");
-			for(int i=0; i<sortedUnknownCards.length; i++) {
-				System.out.print(sortedUnknownCards[i] + " ");
-			}
-			System.out.println();
-			
-			dataModel.printVoidArray();
-			
-			System.out.println("DEBUG: Obvious and active cards:");
-			String obviousCards[] = dataModel.getActiveCardsWithObviousOwnersInOtherHandsDebug();
-			for(int i=0; i<obviousCards.length; i++) {
-				System.out.print(obviousCards[i] + " ");
-			}
-			System.out.println();
+			isThorough = true;	
 		}
 		
 		if(isThorough) {
 			num_simulations = (int)numWaysOtherPlayersCouldHaveCards;
 		}
+		
+		//DEBUG: print possibilities:
+		String unknownCards[] = dataModel.getUnknownCards();
+		String sortedUnknownCards[] = CardStringFunctions.sort(unknownCards);
+		
+		System.out.println("DEBUG: Unknown cards:");
+		for(int i=0; i<sortedUnknownCards.length; i++) {
+			System.out.print(sortedUnknownCards[i] + " ");
+		}
+		System.out.println();
+		
+		dataModel.printVoidArray();
+		
+		System.out.println("DEBUG: Obvious and active cards:");
+		String obviousCards[] = dataModel.getActiveCardsWithObviousOwnersInOtherHandsDebug();
+		for(int i=0; i<obviousCards.length; i++) {
+			System.out.print(obviousCards[i] + " ");
+		}
+		System.out.println();
+		//END DEBUG PRINT POSSIBILITIES
 		
 		//TODO: Make simulation handle bid simulations! (For now, I'm just worried about starting the monte carlo method from after the bids are made...)
 		//TODO: When handling bids: please dismiss unreasonable bids quickly!

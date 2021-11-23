@@ -553,8 +553,8 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 6H 5H 3H 8C 3C 8D 7D 3D ")
-				) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H 5H 8D 6D ")
+				&& suitIndex == 1) {
 			System.out.println("Debug");
 		}
 		
@@ -902,7 +902,13 @@ public class NoMellowPlaySituation {
 						(Constants.CURRENT_PARTNER_INDEX, suitIndex) == false
 
 					&& numCardsOfSuitOtherPlayersHave > 3) {
+				
+				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 2) {
 						curScore -= 5.0 * (numCardsOfSuitOtherPlayersHave);
+				} else {
+					//Dare LHS to trump...
+					curScore -= Math.min(10, 5.0 * (numCardsOfSuitOtherPlayersHave));
+				}
 			}
 			
 			
@@ -958,7 +964,15 @@ public class NoMellowPlaySituation {
 					(Constants.CURRENT_PARTNER_INDEX, suitIndex) == false
 					|| dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE))
 					) {
-				curScore -= 50;
+				
+				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 2) {
+					curScore -= 50;
+				} else {
+					//Dare LHS to trump:
+					curScore -= 10;
+				}
+				
+				
 	
 			} else if(
 					! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
