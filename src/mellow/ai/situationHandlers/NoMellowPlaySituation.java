@@ -1401,7 +1401,7 @@ public class NoMellowPlaySituation {
 		} else {
 			
 			// 2-1416
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 7S 5S 2S TC 9C KD")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 6S KH 9H ")) {
 				System.out.println("DEBUG");
 			}
 			
@@ -1436,8 +1436,14 @@ public class NoMellowPlaySituation {
 									
 							
 							//If you have more spades than the avg player, let partner trump
-							&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
+							&& (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
 					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					            ||
+					            	(
+						            NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+						            && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
+						            )
+					            )
 							
 						    //If you just have 1 small spade, just play it and don't let partner trump
 							&& (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1 

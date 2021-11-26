@@ -199,9 +199,20 @@ public class SeatedRightOfOpponentMellow {
 		//At this point, you have to play under the mellow protector:
 			//TODO: put in function
 
+
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 3S QH 6H 5H 2H QC JC 9C 7C 4C ")) {
+					System.out.println("Debug");
+				}
+				
 				//Example: If you have 4+ cards, maybe 2nd best is ok...
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false
-						&& dataModel.getBidTotal() < Constants.NUM_STARTING_CARDS_IN_HAND - 1) {
+						
+						&& (dataModel.getBidTotal() < Constants.NUM_STARTING_CARDS_IN_HAND - 1
+								//TODO: make this a util function:
+						    || dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) + dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >=
+						    		dataModel.getBid(Constants.CURRENT_AGENT_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+						)
+				) {
 					
 					
 					//Find minimum card over highest card mellow signalled:
@@ -273,7 +284,19 @@ public class SeatedRightOfOpponentMellow {
 			//END TODO: put in function
 					
 				} else {
-					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+					//In the case that we need tricks:
+					
+					if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(leadSuit) <= 3
+							|| dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) ) {
+						return  dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+						
+					} else {
+						//Feel free to play 3rd highest card because that shouldn't affect your
+						//ability to make tricks:
+						return PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+								dataModel.getCardCurrentPlayerGetThirdHighestInSuit(leadSuit)
+								);
+					}
 				}
 			}
 		
@@ -283,9 +306,6 @@ public class SeatedRightOfOpponentMellow {
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 			
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 7S 6S ")) {
-				System.out.println("Debug");
-			}
 			
 			//RANDOM TEST for mellowPlayerSignalNoCardsOfSuit
 			if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) 
