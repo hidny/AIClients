@@ -83,6 +83,7 @@ public class PlayerSignalHandler {
 	
 	
 	
+	//Not used anymore, but that's fine...
 	public String getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {
 		return this.playerSaidMellowSignals.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(mellowPlayerIndex, suitIndex);
 		}

@@ -283,7 +283,7 @@ public class SeatedRightOfOpponentMellow {
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 			
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS TS 8S 6S 3S 6H AC QC 9C 8C 7C ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 7S 6S ")) {
 				System.out.println("Debug");
 			}
 			
@@ -369,9 +369,26 @@ public class SeatedRightOfOpponentMellow {
 						&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 					
 					return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
-				} else {
-					//??
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+				} else if(dataModel.currentPlayerOnlyHasSpade()){
+					//Play 2nd lowest if you are stuck with lots of spade.
+					if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 2) {
+						return dataModel.getCardCurrentPlayergetSecondLowestInSuit(Constants.SPADE);
+					} else {
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					
+					}
+				} else if(dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
+					
+					if(dataModel.getNumCardsInCurrentPlayerHand() == dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) + 1
+							&& dataModel.isMasterCard(leaderThrow)
+							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+							&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+						//Fix a single test case:
+						return dataModel.getJunkiestCardToFollowLead();
+					} else {
+						return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					}
 				}
 			}
 			
@@ -397,6 +414,9 @@ public class SeatedRightOfOpponentMellow {
 		
 		String curStrongestCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS JS TS 9S 3S 2S KH TH JC 8C 5C QD 5D")) {
+			System.out.println("Debug");
+		}
 		
 		if(dataModel.throwerMustFollowSuit()) {
 
@@ -407,15 +427,9 @@ public class SeatedRightOfOpponentMellow {
 				
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
-					if(dataModel.signalHandler.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit) != null
-							&& dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.signalHandler.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit))) {
-						
-						//Might want to play higher and waste master so you can give lead to someone else, but that's complicated!
-						return dataModel.getCardInHandClosestOverSameSuit(
-							dataModel.signalHandler.getSecondHighestRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit));
-					} else {
-						return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
-					}
+					//Because only partner or mellow bidder can compete in this suit, feel free to play high:
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					
 				} else {
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 				}

@@ -553,10 +553,6 @@ public class NoMellowPlaySituation {
 
 	public static CardAndValue AILeaderThrowGetOffSuitValue(DataModel dataModel, int suitIndex) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H 5H 8D 6D ")
-				&& suitIndex == 1) {
-			System.out.println("Debug");
-		}
 		
 		int numCardsOfSuitInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 		int numCardsOfSuitOtherPlayersHave =
