@@ -382,6 +382,46 @@ public class NonMellowBidHandIndicators {
 		}
 	}
 
+
+	public static boolean hasQJEquivAndNoAORKEquiv(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 2) {
+			return false;
+		}
+		
+		String secondHighestCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+		
+		int numOver = 0;
+		
+		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(secondHighestCard); curRank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				if(numOver <= 1) {
+					//Has A or K equiv...
+					return false;
+				}
+				continue;
+	
+			} else if(dataModel.isCardPlayedInRound(
+					DataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+	
+			} else {
+				numOver++;
+				if(numOver > 2) {
+					return false;
+				}
+			}
+		}
+		
+		if(numOver == 2) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	
 	public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 		
 		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {

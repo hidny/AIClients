@@ -1400,10 +1400,6 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
-			// 2-1416
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 6S KH 9H ")) {
-				System.out.println("DEBUG");
-			}
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
@@ -1484,7 +1480,7 @@ public class NoMellowPlaySituation {
 						}
 						
 
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 5S 3S JC 6C 5C JD 9D 6D 5D")) {
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 6S 5S KH 9H 7H 2H ")) {
 							System.out.println("Debug");
 							
 						}
@@ -1714,8 +1710,27 @@ public class NoMellowPlaySituation {
 						//&& dataModel.signalHandler.
 						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
 						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
-					justGoBig = true;
+						&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+					) {
+					int numSpadesInHand = dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE);
+					
+					if(  (numSpadesInHand >= 2
+							&&	! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+							&&	 NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+							&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
+							)
+						|| (numSpadesInHand == 3
+								&& ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+								&& ! NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+								&& NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+								&& ! NonMellowBidHandIndicators.hasQJEquivAndNoAORKEquiv(dataModel, Constants.SPADE)
+							)
+						){
+						// Don't go big...
+						// you need to safeguard K or Q equiv.
+					} else {
+						justGoBig = true;
+					}
 					
 				} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
 								&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
@@ -1752,6 +1767,7 @@ public class NoMellowPlaySituation {
 							&& !dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
 							&& !NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
 							&& NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+							&& !NonMellowBidHandIndicators.hasQJEquivAndNoAORKEquiv(dataModel, Constants.SPADE)
 						)
 					) {
 						cardToPlay = getJunkiestCardToFollowLead(dataModel);
