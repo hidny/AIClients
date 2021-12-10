@@ -200,6 +200,14 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			
 			play = in.nextLine().toUpperCase();
 			
+			//Fat-finger avoidance strat:
+			play = play.replace("\\", "");
+			play = play.replace("}", "");
+			play = play.replace("{", "");
+			play = play.replace("]", "");
+			play = play.replace("[", "");
+			play = play.replace("|", "");
+			
 			System.out.println("Can you list alternative plays that aren't that bad?");
 			String alternative = in.nextLine();
 			
@@ -220,10 +228,18 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 		
 		String bid = in.nextLine();
 		
+		
 		if(bid.toLowerCase().startsWith("mellow")) { 
 			bid = "0";
 		}
-		
+
+		//Fat-finger avoidance strat:
+		bid = bid.replace("\\", "");
+		bid = bid.replace("}", "");
+		bid = bid.replace("{", "");
+		bid = bid.replace("]", "");
+		bid = bid.replace("[", "");
+		bid = bid.replace("|", "");
 		
 		System.out.println("Can you list alternative bids that aren't that bad?");
 		
