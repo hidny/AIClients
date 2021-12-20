@@ -559,6 +559,9 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS TH 7H 4H 3H JC 9C 8C 6C 5C 3C")) {
+			System.out.println("Debug");
+		}
 
 		
 		String cardToPlay = null;
@@ -1119,6 +1122,11 @@ public class NoMellowPlaySituation {
 				} else {
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				}
+			} else if(dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))
+					&& NonMellowBidHandIndicators.hasJEquiv(dataModel, suitIndex)
+					&& numCardsOfSuitInHand >= 4) {
+				cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
+				
 			} else {
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 			}

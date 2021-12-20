@@ -77,6 +77,15 @@ public class SeatedRightOfOpponentMellow {
 					
 				}
 
+				if(suit == Constants.SPADE
+						&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
+							>= DataModel.RANK_EIGHT
+						&& dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE) == false) {
+					//Don't lead spade if you don't have to...
+					//This fixes just one test case (2-4856)
+					continue;
+				}
+				
 				long numStartedWithInSuit = dataModel.getNumCardsCurrentUserStartedWithInSuit(suit);
 				
 				curLowestRankSuitScore += 2.0 * numStartedWithInSuit;
