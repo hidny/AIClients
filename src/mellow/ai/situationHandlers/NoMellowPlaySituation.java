@@ -1400,6 +1400,9 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6H 4H 7C")) {
+				System.out.println("Debug");
+			}
 			
 			//no trumping: play off:
 			if(leaderSuitIndex== Constants.SPADE || dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)) {
@@ -1431,15 +1434,17 @@ public class NoMellowPlaySituation {
 							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1
 									
 							
-							//If you have more spades than the avg player, let partner trump
-							&& (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
-					               dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
-					            ||
-					            	(
-						            NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-						            && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
+							//If you have more spades than the avg player, let partner trump or you have master S
+							&& (  (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 
+					                 dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					              ||
+					              	(
+						              NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+						              && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
 						            )
-					            )
+					              )
+								|| (dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))
+								)
 							
 						    //If you just have 1 small spade, just play it and don't let partner trump
 							&& (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1 
@@ -1480,11 +1485,6 @@ public class NoMellowPlaySituation {
 						}
 						
 
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 6S 5S KH 9H 7H 2H ")) {
-							System.out.println("Debug");
-							
-						}
-						
 
 						//Go big or go home:
 						if(

@@ -434,10 +434,6 @@ public class SeatedRightOfOpponentMellow {
 		
 		String curStrongestCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS JS TS 9S 3S 2S KH TH JC 8C 5C QD 5D")) {
-			System.out.println("Debug");
-		}
-		
 		if(dataModel.throwerMustFollowSuit()) {
 
 			//Handle being the third thrower and following suit...
@@ -599,6 +595,9 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 9S 7S 6S AC 6C 4C KD 7D")) {
+				System.out.println("Debug");
+			}
 			
 			if(CardStringFunctions.getIndexOfSuit(curStrongestCard) != leadSuit) {
 				
@@ -703,7 +702,23 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Mellow could be in danger: don't trump (unless there's no choice)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
-						return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+						
+						if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) > 9
+								&& dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.RIGHT_PLAYER_INDEX
+								&& DataModel.getRankIndex(dataModel.getCurrentFightWinningCardBeforeAIPlays()) > DataModel.RANK_EIGHT) {
+							
+							//Just trump on the mellow protector... whatever!
+							
+							if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) 
+									&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1) {
+								return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+							} else {
+								return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							}
+							
+						} else {
+							return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+						}
 					} else {
 
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
