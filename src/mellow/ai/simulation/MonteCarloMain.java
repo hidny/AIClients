@@ -35,10 +35,10 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -46,6 +46,9 @@ public class MonteCarloMain {
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	
+	//Quick useless test: (Maybe test the Monte Carlo Main function)
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -304,7 +307,7 @@ public class MonteCarloMain {
 				|| numSimulationsNotSkipped * 1000 < num_simulations) {
 			skipSimulations = false;
 			System.err.println("RETRY without skipping any simulations:");
-			runMonteCarloMethod(dataModel, num_simulations, skipSimulations);
+			return runMonteCarloMethod(dataModel, num_simulations, skipSimulations);
 		}
 		
 		//in.next();
@@ -341,6 +344,13 @@ public class MonteCarloMain {
 			
 			MellowBasicDecider tempDecider = new MellowBasicDecider();
 			tempDecider.resetStateForNewRound();
+			
+			
+			if(playerI % 2 == Constants.CURRENT_AGENT_INDEX) {
+				tempDecider.setNewScores(dataModel.getOurScore(), dataModel.getOpponentScore());
+			} else {
+				tempDecider.setNewScores(dataModel.getOpponentScore(), dataModel.getOurScore());
+			}
 			
 			//Set names of players such that players[0] is the playerIndex:
 			String playersRelativeToPlayerI[] = new String[Constants.NUM_PLAYERS];
