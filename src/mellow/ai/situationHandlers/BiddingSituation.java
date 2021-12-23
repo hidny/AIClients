@@ -228,6 +228,17 @@ public class BiddingSituation {
 			}
 		}
 		
+		if(dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX
+				&& dataModel.getBidTotalSoFar() + intBid >= 12) {
+			
+			//This only fixes testcase 2-4651, but whatever
+			System.out.println("Decrease bid because bids are so high");
+			while(intBid > 1 && dataModel.getBidTotalSoFar() + intBid >= 12) {
+				intBid = intBid - 1;
+			}
+			
+		}
+		
 		System.out.println("Final bid " + intBid);
 		
 
@@ -313,9 +324,6 @@ public class BiddingSituation {
 
 		}
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
-			System.out.println("Debug");
-		}
 
 		if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3
 				&& dataModel.getOpponentScore() - dataModel.getOurScore() > 100 
@@ -335,7 +343,13 @@ public class BiddingSituation {
 			}
 			return 0 + "";
 			
-		} else	if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05
+		} else	if(
+				//Expected value seems good:
+				(	(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05)
+					||
+					//This condition never happens :(... I'll leave it in just in case though.
+					(intBid == 0 && isMellowWarrentedIfYouDontHave1(dataModel, bid))
+				)
 				//No double mellow:
 				&& ( ! dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
 					    || dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0
@@ -394,6 +408,52 @@ public class BiddingSituation {
 		}
 	}
 	
+	
+	//TODO: maybe I should care if the bid is a fraction like 0.7
+	//This is a rough estimate that will hopefully be refined later.
+	//EX: I made up a few of the numbers.
+	
+	//This code doesn't fix anything!
+	//I'll leave it, but it doesn't do anything :(
+	public static boolean isMellowWarrentedIfYouDontHave1(DataModel dataModel, double bidDouble) {
+		double probMellowPass = BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel);
+		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 8H 7H 6H 2H JC TC 8C 3C QD JD TD 5D ")) {
+			System.out.println("Debug1");
+		}
+		//System.out.println("Prob mellow pass: " + probMellowPass);
+		int partnerBid = 3;
+		double oddsOfWinningOne = 0.85;
+		
+		double oddsOfPartnerMakingTricksAlone = 0.90;
+		
+		if(dataModel.isDealer() || dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
+			partnerBid = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
+			
+			//Partner can't bid lower for you because partner already bid,
+			// so lower the chances of making the tricks:
+			oddsOfWinningOne = 0.66;
+			oddsOfPartnerMakingTricksAlone = 0.85;
+		}
+		
+		if(bidDouble > 0.5) {
+			oddsOfWinningOne = 0.80;
+		} else if(bidDouble > 0.2) {
+			oddsOfWinningOne += 0.05;
+		}
+		
+		double estimatedExpectedValueMellow = 100 *  probMellowPass - 100 * (1 - probMellowPass) + oddsOfPartnerMakingTricksAlone * (10 * partnerBid) - (1 - oddsOfPartnerMakingTricksAlone) * (10 * partnerBid);
+		
+		//80% of winning when you bid 
+		double estimatedExpectedValueOne = 10 * (oddsOfWinningOne * (partnerBid + 1) - (1 - oddsOfWinningOne) * (partnerBid + 1));
+		
+		if(estimatedExpectedValueMellow > estimatedExpectedValueOne) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	//TODO: put below functions in their own class:
 	
