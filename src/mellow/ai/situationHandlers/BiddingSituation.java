@@ -418,6 +418,7 @@ public class BiddingSituation {
 	public static boolean isMellowWarrentedIfYouDontHave1(DataModel dataModel, double bidDouble) {
 		double probMellowPass = BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel);
 		
+		//TODO: maybe if you're the 3rd bidder, count on the 4th bidder saying mellow?
 
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 8H 7H 6H 2H JC TC 8C 3C QD JD TD 5D ")) {
 			System.out.println("Debug1");
@@ -444,7 +445,7 @@ public class BiddingSituation {
 		}
 		
 		double estimatedExpectedValueMellow = 100 *  probMellowPass - 100 * (1 - probMellowPass) + oddsOfPartnerMakingTricksAlone * (10 * partnerBid) - (1 - oddsOfPartnerMakingTricksAlone) * (10 * partnerBid);
-		
+		//ex: 100 * x - 100 * (1 - x) + 0.85 * 10 * 2 - 0.15 * 10 * 2
 		//80% of winning when you bid 
 		double estimatedExpectedValueOne = 10 * (oddsOfWinningOne * (partnerBid + 1) - (1 - oddsOfWinningOne) * (partnerBid + 1));
 		
