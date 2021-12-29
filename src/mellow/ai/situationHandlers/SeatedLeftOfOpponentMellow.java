@@ -103,14 +103,33 @@ public class SeatedLeftOfOpponentMellow {
 				} else {
 					
 					
-					//If can't follow suit:
+					//If can't follow suit, don't trump unless you only have spade, or mellow is safe.
 					if(dataModel.currentPlayerOnlyHasSpade()) {
 						//play biggest spade if have no choice:
 						//over simplified, but whatever...
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					} else {
-						//play big off suit to mess-up mellow play (Over-simplified, but whatever)
-						return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+						
+						//In some cases, trump on mellow anyways:
+						if(throwIndex == 2
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curWinningCard) == 0
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinningCard) > 0
+							&& dataModel.currentAgentHasSuit(Constants.SPADE)
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(
+									Constants.LEFT_PLAYER_INDEX, 
+									dataModel.getSuitOfLeaderThrow())) {
+							
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						//Later: Maybe add more cases later...
+						//Something like: protector wasn't forced to play high and 1 under and 6+ over...
+						
+						} else {
+							//Don't trump!
+							//play big off suit to mess-up mellow play (Over-simplified, but whatever)
+							return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+						}
+						
 					}
 				
 				}
