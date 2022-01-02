@@ -113,11 +113,12 @@ public class SeatedLeftOfOpponentMellow {
 						//In some cases, trump on mellow anyways:
 						if(throwIndex == 2
 							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curWinningCard) == 0
-							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinningCard) > 0
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinningCard) > 3
 							&& dataModel.currentAgentHasSuit(Constants.SPADE)
 							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(
 									Constants.LEFT_PLAYER_INDEX, 
-									dataModel.getSuitOfLeaderThrow())) {
+									dataModel.getSuitOfLeaderThrow())
+							) {
 							
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
@@ -408,6 +409,9 @@ public class SeatedLeftOfOpponentMellow {
 		double bestValue = 0.0;
 		String bestCard = null;
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 9S 5S 2S JC AD JD ")) {
+			System.out.println("Debug");
+		}
 
 		
 		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
@@ -443,8 +447,12 @@ public class SeatedLeftOfOpponentMellow {
 
 						curValue -=25.0;
 					}
-				} else {
+				} else if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) == 1){
+					//Clear suit...
 					curValue -=30.0;
+					
+				} else {
+					curValue -=20.0;
 				}
 				
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuitIndex)
@@ -469,7 +477,7 @@ public class SeatedLeftOfOpponentMellow {
 			
 			//Shouldn't like to throw off a high-card
 			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) < 3) {
-				curValue = -4 * (1.5) + 1.5 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
+				curValue += -4 * (1.5) + 1.5 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
 			}
 			
 			//Lower rank cards are less fun to throw:

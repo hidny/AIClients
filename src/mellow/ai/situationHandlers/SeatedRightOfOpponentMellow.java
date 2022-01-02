@@ -46,6 +46,10 @@ public class SeatedRightOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 4S KH 2C KD JD ")) {
+			System.out.println("Debug");
+		}
+		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
 				continue;
@@ -62,6 +66,16 @@ public class SeatedRightOfOpponentMellow {
 				//(Save 2C for the end)
 				
 				int curLowestRankSuitScore = DataModel.getRankIndex(tempLowest);
+				
+				String curHighestRankMellowSignal = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, suit);
+				
+				if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curHighestRankMellowSignal) == 0
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curHighestRankMellowSignal) >= 1
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(PROTECTOR_PLAYER_INDEX, suit)) {
+					continue;
+				}
+				
+				//String lowestInPlayNotInHand = dataModel.getcarno
 				
 				// pretend lowest spades have a higher rank to discourage use of spades:
 				if(suit == Constants.SPADE) {

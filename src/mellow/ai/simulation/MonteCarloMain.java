@@ -11,6 +11,8 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
+import mellow.testcase.testCaseParser;
 
 //TODO: maybe compliment this with a decision tree?
 //https://softwareengineering.stackexchange.com/questions/157324/decision-trees-vs-neural-networks
@@ -19,6 +21,13 @@ import mellow.cardUtils.CardStringFunctions;
 //https://stats.stackexchange.com/questions/285834/difference-between-random-forests-and-decision-tree
 
 public class MonteCarloMain {
+	
+	public static void main(String args[]) {
+		
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.main(args);
+		
+	}
 	//Guess at reason number of simulations to try
 	
 	//TODO: make # of simulation configurable...
@@ -38,10 +47,10 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
@@ -174,7 +183,9 @@ public class MonteCarloMain {
 		int lastestPost = -1;
 		
 		for(; i<num_simulations && numSkipped < maxSkipped; i++) {
-			if(i % 100 == 0 && i > lastestPost) {
+			
+			if( (i % Math.max(num_simulations/20, 100) == 0 || i == num_simulations - 1) 
+					&& i > lastestPost) {
 				System.err.println(i+ " out of " + num_simulations);
 				lastestPost = i;
 				
@@ -195,6 +206,7 @@ public class MonteCarloMain {
 						numWaysOtherPlayersCouldHaveCards);
 			}
 			
+		
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
 			//      to dampen the effect of unrealistic distributions of cards:
 			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
