@@ -223,7 +223,7 @@ public class SeatedRightOfOpponentMellow {
 			//TODO: put in function
 
 
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 3S QH 6H 5H 2H QC JC 9C 7C 4C ")) {
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 4S KH QC 8C 2C KD JD ")) {
 					System.out.println("Debug");
 				}
 				
@@ -274,6 +274,8 @@ public class SeatedRightOfOpponentMellow {
 						//I don't have enough test cases to know how to improve on this rule
 						if(numCardsInHand >= 4 ) {
 							cardToUse = dataModel.getCardCurrentPlayergetThirdLowestInSuit(leadSuit);
+						} else if(numCardsInHand >= 3 ) {
+							cardToUse = dataModel.getCardCurrentPlayergetSecondLowestInSuit(leadSuit);
 						}
 						
 					//Save highest spade if you have 5+ of them... (The rule isn't sophisticated, but at least it covers the obvious case)
