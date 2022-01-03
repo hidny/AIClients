@@ -346,8 +346,12 @@ public class SeatedRightOfOpponentMellow {
 						|| 
 						//Just assume mellow Bid doesn't have master card:
 						(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(leaderThrow) == 1
-						   && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) > 6)
-						
+						   && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 6)
+						||
+						//TODO: this is dangerous and untested:
+						(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(leaderThrow) == 2
+						   && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 7)
+						//END TODO
 						) {
 
 					
@@ -723,12 +727,12 @@ public class SeatedRightOfOpponentMellow {
 						
 						
 				} else {
-					//Mellow could be in danger: don't trump (unless there's no choice)
+					//Mellow could be in danger: don't trump (unless there's no choice, or just trump because...)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
 						
-						if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) > 9
+						if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 7
 								&& dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.RIGHT_PLAYER_INDEX
-								&& DataModel.getRankIndex(dataModel.getCurrentFightWinningCardBeforeAIPlays()) > DataModel.RANK_EIGHT) {
+								&& DataModel.getRankIndex(dataModel.getCurrentFightWinningCardBeforeAIPlays()) > DataModel.RANK_TEN) {
 							
 							//Just trump on the mellow protector... whatever!
 							

@@ -206,6 +206,31 @@ public class MonteCarloMain {
 						numWaysOtherPlayersCouldHaveCards);
 			}
 			
+			
+			//TODO: area to hack signals in
+			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 5S 2S 9H 5H AD JD TD")) {
+				boolean skip = false;
+				for(int j=0; j<distCards[1].length; j++) {
+					if(DataModel.getRankIndex(distCards[1][j]) > DataModel.RANK_SIX
+							&& CardStringFunctions.getIndexOfSuit(distCards[1][j]) == Constants.CLUB) {
+						//System.err.println("Skipping because " + distCards[1][j]);
+						numSkipped++;
+						skip = true;
+						break;
+					}
+				}
+				
+				if(skip) {
+					if(isThorough == false && skipSimulations) {
+						numSkipped++;
+						i--;
+					}
+					continue;
+				}
+			}
+			//END TODO
+			
 		
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
 			//      to dampen the effect of unrealistic distributions of cards:

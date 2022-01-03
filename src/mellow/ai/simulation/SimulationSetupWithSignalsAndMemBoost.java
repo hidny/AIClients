@@ -5,6 +5,7 @@ import java.util.Random;
 import mellow.Constants;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
+import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 
 public class SimulationSetupWithSignalsAndMemBoost {
@@ -21,7 +22,37 @@ public class SimulationSetupWithSignalsAndMemBoost {
 	//There's other cases where knowing signals are important too:
 		//like in a round during a mellow bid
 	
-	//Hack I use to fix the orig monte:
+	
+	//Improved version of hack to add signals in:
+	/*
+	 * 
+			//TODO: area to hack signals in
+			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 5S 2S 9H 5H AD JD TD")) {
+				boolean skip = false;
+				for(int j=0; j<distCards[1].length; j++) {
+					if(DataModel.getRankIndex(distCards[1][j]) > DataModel.RANK_EIGHT
+							&& CardStringFunctions.getIndexOfSuit(distCards[1][j]) == Constants.CLUB) {
+						//System.err.println("Skipping because " + distCards[1][j]);
+						numSkipped++;
+						skip = true;
+						break;
+					}
+				}
+				
+				if(skip) {
+					if(isThorough == false && skipSimulations) {
+						numSkipped++;
+						i--;
+					}
+					continue;
+				}
+			}
+			//END TODO
+			 */
+
+	
+	//Old Hack I use to fix the orig monte:
 	/*
 	 * 
 			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 3C QD 8D ")) {
