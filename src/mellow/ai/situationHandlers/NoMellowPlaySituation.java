@@ -1975,12 +1975,19 @@ public class NoMellowPlaySituation {
 				//TODO: don't steal if you have trump left and there's less than 3 cards... 
 				//if(dataModel.isVoid)
 				
+				int leadSuit = dataModel.getSuitOfLeaderThrow();
+				
 				String tramTrickTakingCard = dataModel.getCardInHandClosestOverCurrentWinner();
 				if(couldTRAMAfterPlayingCard(dataModel, tramTrickTakingCard)) {
 					
 					System.out.println("4th thrower taking from partner to TRAM!");
 					return tramTrickTakingCard;
 				
+				} else if(dataModel.currentAgentHasSuit(leadSuit)
+						&& dataModel.getNumCardsInHandUnderCardSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()) == 0) {
+					
+					//If you need to play over partner, pretend to play high over partner:
+					return SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit));
 				
 				} else if(CardStringFunctions.getIndexOfSuit(dataModel.getCardInHandClosestOverCurrentWinner()) != Constants.SPADE
 						|| dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardInHandClosestOverCurrentWinner()) >= 3){

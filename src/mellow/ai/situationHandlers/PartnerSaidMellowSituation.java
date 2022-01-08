@@ -711,15 +711,31 @@ public class PartnerSaidMellowSituation {
 		if(currentFightWinnerCard == dataModel.getCardLeaderThrow()) {
 
 			if(dataModel.throwerHasCardToBeatCurrentWinner()) {
-				//if mellow in danger:
+				//if mellow in danger (and it's the 1st round):
 				
-				//TODO: if 3rd and want to lead again: play master
+				if(  (dataModel.currentPlayerHasMasterInSuit(leadSuit)
+						|| NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, leadSuit))
+						&& 
+						dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(
+								dataModel.getCardLeaderThrow())
+							>= 2
+					) {
+					//Maybe we could get away with playing master (or lowest master equiv to confuse opponents)??
+					// If 3rd and want to lead again: play master
+					// Example: Say Mellow leads 5C and you have AC KC JC 7C... maybe play KC?
+					
+					if(leadSuit != Constants.SPADE) {
+						return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+								dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+					} else {
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+					}
+					
+				} else {
 				
-				//TODO: maybe we could get away with playing master??
-				//Say Mellow leads 5C and you have AC KC QC 7C... maybe play AC?
-
-				//play just above to protect
-				return dataModel.getCardInHandClosestOverCurrentWinner();
+					//play just above to protect
+					return dataModel.getCardInHandClosestOverCurrentWinner();
+				}
 				
 			} else {
 				
