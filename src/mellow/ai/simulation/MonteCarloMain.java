@@ -24,7 +24,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		testCaseParser.main(args);
 		
 	}
@@ -44,10 +45,10 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -184,7 +185,7 @@ public class MonteCarloMain {
 		
 		for(; i<num_simulations && numSkipped < maxSkipped; i++) {
 			
-			if( (i % Math.max(num_simulations/20, 100) == 0 || i == num_simulations - 1) 
+			if( (i % Math.max(num_simulations/20, 100) == 0) 
 					&& i > lastestPost) {
 				System.err.println(i+ " out of " + num_simulations);
 				lastestPost = i;
@@ -276,6 +277,7 @@ public class MonteCarloMain {
 			DataModel dataModelTmpForPlayer0;
 			MellowBasicDecider playersInSimulation[];
 			
+			//System.err.println("---------");
 			
 			for(int a=0; a<actionString.length; a++) {
 
@@ -288,7 +290,11 @@ public class MonteCarloMain {
 				}
 				
 				System.out.println("Possible action: " + actionString[a]);
-
+				
+				//System.err.println();
+				//System.err.println();
+				//System.err.println("Possible action: " + actionString[a]);
+				
 				//Create a tmp data model for current player to keep track of everything:
 				dataModelTmpForPlayer0 = dataModel.createHardCopy();
 				
@@ -314,6 +320,8 @@ public class MonteCarloMain {
 				//Make monte carlos sims more readable:
 				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmpForPlayer0);
 				
+				//System.err.println("Score at end with card " + actionString[a] + ": " + endOfRoundPointDiffStats.getAIScore());
+				
 				//Get Util at the end of the simulated round:
 					//Util is a function of scoreA, scoreB, isDealer
 					//TODO: this is just getting the point difference after the round and isn't the most useful measure of how well we're doing.
@@ -328,6 +336,8 @@ public class MonteCarloMain {
 			//TESTING DISTRIBUTION:
 			//testPrintUnknownCardDistribution(in, distCards, i);
 		}
+		
+		System.err.println(i+ " out of " + num_simulations);
 		
 		//Allow print statements now that the simulation is over:
 		System.setOut(originalStream);
@@ -506,7 +516,9 @@ public class MonteCarloMain {
 		
 		int numCardsPlayed = dataModelTmpForPlayer0.getCardsPlayedThisRound();
 		String players[] = dataModelTmpForPlayer0.getPlayers();
-		
+
+		//System.err.println();
+		//System.err.println("TEST: ");
 		//Get whose turn it is:
 		int actionIndex = dataModelTmpForPlayer0.getCurrentActionIndex();
 		
@@ -532,6 +544,8 @@ public class MonteCarloMain {
 			if(j % Constants.NUM_PLAYERS == 0) {
 				//figure out who leads
 				actionIndex = dataModelTmpForPlayer0.getCurrentActionIndex();
+				//System.err.println("New round");
+
 			}
 			
 			
@@ -540,7 +554,8 @@ public class MonteCarloMain {
 			for(int k=0; k<Constants.NUM_PLAYERS; k++) {
 				playerInSimulation[k].receiveCardPlayed(players[actionIndex], card);
 			}
-				
+
+			//System.err.println(playerInSimulation[actionIndex].getCopyOfDataModel().getPlayers()[0] + ": " + card);
 
 			actionIndex = (actionIndex + 1) % Constants.NUM_PLAYERS;
 			

@@ -356,7 +356,7 @@ public class SimulationSetupWithMemBoost {
 
 			
 		} else {
-			System.err.println("At this point,you're playing a 5+ player game!");
+			System.err.println("At this point, you're playing a 5+ player game!");
 			System.err.println("And I don't feel like supporting it!");
 			System.exit(1);
 			

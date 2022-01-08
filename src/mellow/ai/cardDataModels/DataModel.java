@@ -652,6 +652,11 @@ public class DataModel {
 		boolean originalIsVoidList[][] = createVoidArray();
 		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
 		
+		if(numSpacesAvailPerPlayer[0] > 0) {
+			System.err.println("ERROR: unknown card for currrent player");
+			System.exit(1);
+		}
+		
 		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
 				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex, numWaysToSimulate);
 		
