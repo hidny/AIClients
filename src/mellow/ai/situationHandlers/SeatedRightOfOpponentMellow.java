@@ -816,8 +816,28 @@ public class SeatedRightOfOpponentMellow {
 			if(dataModel.throwerMustFollowSuit()) {
 				
 				//TODO: don't always throw highest...
-				return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+				if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+					//Play highest to win:
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 				
+				} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCardLeaderThrow())
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(
+								dataModel.getCardLeaderThrow(), dataModel.getCardInHandClosestUnderSameSuit(dataModel.getCardLeaderThrow()))
+							== 0) {
+					
+					//Play barely under mellow lead...
+					//maybe don't play the 2 and make it obvious that mellow is void? Whatever!
+					return dataModel.getCardInHandClosestUnderSameSuit(dataModel.getCardLeaderThrow());
+					
+					
+				} else if(dataModel.couldPlayCardInHandOverCardInSameSuit(dataModel.getCardLeaderThrow())) {
+					//Play barely over mellow if losing
+					return dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
+				
+				} else {
+					//play highest(still under mellow card)
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+				}
 				
 			} else {
 				

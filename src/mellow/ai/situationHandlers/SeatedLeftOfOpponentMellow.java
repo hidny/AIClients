@@ -292,16 +292,23 @@ public class SeatedLeftOfOpponentMellow {
 				String maxMellowSpade =dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
 				
 				if( maxMellowSpade == null) {
-					
+					//return lowest spade because mellow signalled no spade:
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
-					
-				} else if(DataModel.getRankIndex(maxMellowSpade) < DataModel.QUEEN
-						&& dataModel.couldPlayCardInHandOverCardInSameSuit(maxMellowSpade)) {
 				
+				} else if(DataModel.getRankIndex(maxMellowSpade) < DataModel.QUEEN
+						&& dataModel.couldPlayCardInHandOverCardInSameSuit(maxMellowSpade)
+						&& dataModel.getNumCardsInHandUnderCardSameSuit(maxMellowSpade) <= 3) {
+
+					//return closest over max mellow spade:
 					return dataModel.getCardInHandClosestOverSameSuit(maxMellowSpade);
 					
-				} else {
+				} else if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 5) {
 
+					//return 4th lowest if you have tons of spade:
+					return dataModel.getCardCurrentPlayergetFourthLowestInSuit(Constants.SPADE);
+					
+				} else {
+					//return the highest spade so it won't protect mellow:
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 					
 				}
