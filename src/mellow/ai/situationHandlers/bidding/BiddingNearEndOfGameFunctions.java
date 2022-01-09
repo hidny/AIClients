@@ -244,8 +244,17 @@ public class BiddingNearEndOfGameFunctions {
 				- dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
 				- origBid);
 	}
-	
+
 	public static int[] getProjectedScoresAssumingTheWorst(DataModel dataModel, int origBid) {
+		return getProjectedScoresAssumingTheWorst(dataModel, origBid, true);
+	}
+	
+
+	public static int[] getProjectedScoresAssumingTheWorstAndLHSDoesntGoMellow(DataModel dataModel, int origBid) {
+		return getProjectedScoresAssumingTheWorst(dataModel, origBid, false);
+	}
+	
+	private static int[] getProjectedScoresAssumingTheWorst(DataModel dataModel, int origBid, boolean lhsCouldSayMellow) {
 		
 
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS TS 8S 7S 5S 2S TH 7H 2H 6C 3C")) {
@@ -276,12 +285,18 @@ public class BiddingNearEndOfGameFunctions {
 		
 		if(dealerIndex == Constants.CURRENT_AGENT_INDEX) {
 			leftHandOppBid = dataModel.getBid(Constants.LEFT_PLAYER_INDEX);
-		} else {
+		
+		} else if(lhsCouldSayMellow) {
 			if(rightHandOppBid > 0) {
 				leftHandOppBid = 0;
 			} else {
-				leftHandOppBid = Math.max(Constants.NUM_STARTING_CARDS_IN_HAND - partnerBid - origBid, 1);
+				leftHandOppBid = Math.max(Constants.NUM_STARTING_CARDS_IN_HAND - partnerBid - origBid - rightHandOppBid, 1);
 			}
+		
+			
+		} else {
+			//Assume lhs can't say mellow (maybe they can't...)
+			leftHandOppBid = Math.max(Constants.NUM_STARTING_CARDS_IN_HAND - partnerBid - origBid - rightHandOppBid, 1);
 		}
 		
 		boolean OUR_TEAM = true;

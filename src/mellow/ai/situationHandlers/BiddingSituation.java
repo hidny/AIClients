@@ -216,6 +216,7 @@ public class BiddingSituation {
 		} else if(intBid == 0 && dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit("9S") >= 2) {
 			intBid = 1;
 		}
+		
 
 		if(dataModel.isDealer() 
 				&& dataModel.getBidTotalSoFar() <= 8
@@ -329,6 +330,90 @@ public class BiddingSituation {
 				
 				//TODO: If opponents said mellow, say mellow if it means your team may win
 				return BiddingNearEndOfGameFunctions.getFinalWildDealerBid(dataModel, intBid);
+			}
+		} else if(dataModel.getOpponentScore() > 800
+				&& dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
+			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 5S 4S 3S AH QH 6H 3H QC 9C 5C AD 8D ")) {
+				System.out.println("Debug");
+			}
+			if(intBid > 0) {
+				int tempBid = intBid;
+				
+				boolean treatningToWinIfBidsSum13 = false;
+				boolean currentlyLosing = false;
+				do {
+					int scoresProjectedWorstCaseNoMellow[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorstAndLHSDoesntGoMellow(dataModel, tempBid);
+					
+					int oppScore = scoresProjectedWorstCaseNoMellow[1];
+					int ourScore = scoresProjectedWorstCaseNoMellow[0];
+					
+					if(oppScore > ourScore
+							&& oppScore >= Constants.GOAL_SCORE) {
+						tempBid++;
+						//We're losing if we keep this bid...
+						currentlyLosing = true;
+						
+					} else if(ourScore > oppScore
+							&& ourScore >= Constants.GOAL_SCORE) {
+						
+						treatningToWinIfBidsSum13 = true;
+						break;
+					} else {
+						break;
+					}
+					//
+				} while(tempBid <= Constants.NUM_RANKS - 
+						  (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) + 1)
+						);
+				
+				//BiddingNearEndOfGameFunctions.opponentsDidntSayMellow(dataModel)
+				
+				if(treatningToWinIfBidsSum13 || currentlyLosing) {
+					// Consider saying mellow:
+					
+					int scoresProjectedWorstCaseNoMellow[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorstAndLHSDoesntGoMellow(dataModel, 0);
+					
+					int oppScore = scoresProjectedWorstCaseNoMellow[1];
+					int ourScore = scoresProjectedWorstCaseNoMellow[0];
+
+					int oppScoreHope2Less = oppScore - 20;
+					int ourScoreHope2Extra = ourScore + 2;
+					
+					
+					if(ourScoreHope2Extra > oppScoreHope2Less
+							&& ourScoreHope2Extra >= Constants.GOAL_SCORE) {
+						int stretchAmount = tempBid - intBid;
+						
+						if(stretchAmount >= 0) {
+							
+
+							if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+									&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3) {
+								//TODO: maybe copying RHS isn't always a good idea?
+								return "0";
+								
+							}
+							
+							
+							if(stretchAmount == 0 && BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.7) {
+								return "0";
+							} else if(stretchAmount == 1 && BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5) {
+								return "0";
+								
+							} else if(stretchAmount == 2 && BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3) {
+								return "0";
+							} else if(stretchAmount == 3 && BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.1) {
+								return "0";
+							} else if(stretchAmount >= 4 && BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.01) {
+								return "0";
+							}
+						}
+					}
+					
+					return tempBid + "";
+					
+				}
 			}
 		}
 		//TODO: make high bid as 3rd bidder
