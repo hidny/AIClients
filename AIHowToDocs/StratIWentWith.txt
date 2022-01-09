@@ -1,0 +1,6 @@
+
+/*https://gamedev.stackexchange.com/questions/17904/how-should-i-approach-ai-for-spades-game
+ * My implementation uses several heuristics, Monte-Carlo sampling and Supervised learning. My agent is stronger than recreational humans, but weaker than professional players.
+
+I describe it in this paper: https://ecai2020.eu/papers/235_paper.pdf
+ */

@@ -1,0 +1,94 @@
+Bid history:
+Doris bid 1.
+Michael2021-2 bid 4.
+Phil bid 2.
+Richard bid 4.
+
+
+Play history:
+--new round--
+Doris played the 5C.
+Michael2021-2 played the 6C.
+Phil played the QC.
+Richard played the AC.
+--new round--
+Richard played the AD.
+Doris played the 6D.
+Michael2021-2 played the 9D.
+Phil played the 3D.
+--new round--
+Richard played the KD.
+Doris played the 8D.
+Michael2021-2 played the TD.
+Phil played the 5D.
+--new round--
+Richard played the TC.
+Doris played the 4C.
+Michael2021-2 played the KC.
+Phil played the 2C.
+--new round--
+Michael2021-2 played the 4S.
+Phil played the 9S.
+Richard played the AS.
+Doris played the 7S.
+--new round--
+Richard played the 8H.
+Doris played the 9H.
+Michael2021-2 played the 5S.
+Phil played the KH.
+--new round--
+Michael2021-2 played the KS.
+Phil played the 2S.
+Richard played the 3S.
+Doris played the 8S.
+--new round--
+Michael2021-2 played the QS.
+Phil played the JS.
+Richard played the 2H.
+Doris played the TS.
+--new round--
+Michael2021-2 played the 6S.
+Phil played the 3C.
+Richard played the 4H.
+Doris played the 3H.
+--new round--
+Michael2021-2 played the QD.
+Phil played the 7D.
+Richard played the 2D.
+Doris played the 7H.
+--new round--
+Michael2021-2 played the JC.
+Phil played the 8C.
+Richard played the 4D.
+Doris played the TH.
+--new round--
+Michael2021-2 played the 9C.
+Phil played the JD.
+Richard played the 5H.
+Doris played the JH.
+--new round--
+Michael2021-2 played the 7C.
+Phil played the AH.
+Richard played the 6H.
+Doris played the QH.
+
+Cards in hand:
+
+
+Did Phil and Doris even make 1 trick?
+Answer: no!
+Phil:
+Sorted cards:
+JS 9S 2S AH KH QC 8C 3C 2C JD 7D 5D 3D 
+
+Doris:
+Sorted cards:
+TS 8S 7S QH JH TH 9H 7H 3H 5C 4C 8D 6D 
+
+LOL! Those hands can straight from hell!
+
+I bet they were just really really unlucky!
+
+Sad game score at the end:
+Mellow ack received: From Game(public): 1002    251
+Maybe if they didn't burn as many mellows and hands, they would've been ok?
