@@ -240,11 +240,13 @@ public class BiddingSituation {
 		}
 		
 		System.out.println("Final bid " + intBid);
-		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9S TC 6C 5C 2C TH 7H 5H 4H 2H JD 9D")) {
+			System.out.println("Debug");
+		}
 
 		
-		if(dataModel.getOurScore() > 800
-				&& intBid > 0) {
+		if(dataModel.getOurScore() > 800) {
 			
 
 			int scoresProjectedWorstCase[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorst(dataModel, intBid);
@@ -252,20 +254,34 @@ public class BiddingSituation {
 			int theirScoreWorstCaseNoBurn = scoresProjectedWorstCase[1];
 			
 			
-			int temp1 = intBid;
-			if(dataModel.isDealer()) {
-				temp1 = BiddingNearEndOfGameFunctions.OLDadjustDealerBidBecauseGameIsCloseToOver(dataModel, intBid);
-			} else if(dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
-				temp1 = BiddingNearEndOfGameFunctions.OLDadjust3rdBidBecauseGameIsCloseToOver(dataModel, intBid);
+			if(intBid > 0) {
+				int temp2 = BiddingNearEndOfGameFunctions.getPossiblyLowerBidBecauseItsNearEndOfGameAssumeWorst(dataModel, intBid, scoresProjectedWorstCase);
+			
+				System.out.println("TEST scores " + dataModel.getOurScore() + " vs " + dataModel.getOpponentScore());
+			
+				if(temp2 > 0) {
+					intBid = temp2;
+				}
+				
+				//return temp2 + "";
+			} else {
+				int temp2 = BiddingNearEndOfGameFunctions.getPossiblyLowerBidBecauseItsNearEndOfGameAssumeWorst(dataModel, 2, scoresProjectedWorstCase);
+				
+				if(temp2 == 1 
+						&& dataModel.getOpponentScore() < 750
+						&& (        BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.6
+								|| 
+							       (BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.5
+									&& dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
+								    && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4)
+							)
+						
+					) {
+					System.out.println("JAN 9th: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
+					return temp2 + "";
+				}
+				
 			}
-			
-			int temp2 = BiddingNearEndOfGameFunctions.getPossiblyLowerBidBecauseItsNearEndOfGameAssumeWorst(dataModel, intBid, scoresProjectedWorstCase);
-			
-			System.out.println("TEST scores " + dataModel.getOurScore() + " vs " + dataModel.getOpponentScore());
-			
-			System.out.println("Test near end bid: " + temp1 + " vs " + temp2);
-			
-			intBid = temp2;
 			
 			//TODO:
 			//int scoresProjectedWorstCaseButOpponentsDontSayMellow[] = getProjectedScoresAssumingTheWorst(dataModel, intBid);
@@ -273,7 +289,9 @@ public class BiddingSituation {
 			
 			
 			//Stop thinking if we are projected to win if we win our tricks:
-			if(ourScoreWorstCaseNoBurn >= Constants.GOAL_SCORE
+			// (But only if that bid isn't mellow)
+			if(intBid > 0
+					&& ourScoreWorstCaseNoBurn >= Constants.GOAL_SCORE
 					&& ourScoreWorstCaseNoBurn > theirScoreWorstCaseNoBurn) {
 				
 				return intBid + "";
