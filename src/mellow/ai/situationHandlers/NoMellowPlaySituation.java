@@ -117,7 +117,7 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 8S 5S 4S 3S JH 8H 4H KD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TH ")) {
 			System.out.println("Debug");
 		}
 
@@ -559,7 +559,8 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS TH 7H 4H 3H JC 9C 8C 6C 5C 3C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TH ")
+				&& suitIndex == Constants.HEART) {
 			System.out.println("Debug");
 		}
 
@@ -670,10 +671,10 @@ public class NoMellowPlaySituation {
 		} else if(MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.CURRENT_PARTNER_INDEX, suitIndex)
 				  && ! MellowSignalsBasedOnLackOfTricks.playerCouldHaveAorKBasedOnTrickCount(dataModel, Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
 			
-			if(! dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, suitIndex))
-			&& ! dataModel.hasCard(dataModel.getCardString(DataModel.ACE, suitIndex))
-			&& ! dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.KING, suitIndex))
-			&& ! dataModel.hasCard(dataModel.getCardString(DataModel.KING, suitIndex))
+			if(! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.ACE, suitIndex))
+			&& ! dataModel.hasCard(DataModel.getCardString(DataModel.ACE, suitIndex))
+			&& ! dataModel.isCardPlayedInRound(DataModel.getCardString(DataModel.KING, suitIndex))
+			&& ! dataModel.hasCard(DataModel.getCardString(DataModel.KING, suitIndex))
 					) {
 				//Don't risk losing partner's K
 				curScore -= 2.0;
@@ -894,6 +895,7 @@ public class NoMellowPlaySituation {
 				
 		} else {
 			
+			//LHS void cases:
 			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 					(Constants.LEFT_PLAYER_INDEX, suitIndex)
 
@@ -910,6 +912,27 @@ public class NoMellowPlaySituation {
 				}
 			}
 			
+			//Don't feed LHS when there's few spade left and partner is probably following suit
+			//(This fixes debug-8015)
+			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+				&& numCardsOfSuitOtherPlayersHave > 1
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) <= 3
+				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
+				
+				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+					curScore -= 20.0;
+				} else {
+					curScore -= 40.0;
+				}
+				
+				
+			}
+				
+			
+			//END LHS void cases
 			
 			
 			if( (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
@@ -950,6 +973,7 @@ public class NoMellowPlaySituation {
 			
 			//System.out.println(dataModel.signalHandler.getMinCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex));
 			//System.out.println("VS: " + DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)));
+			
 			//Don't lead into suit that is going to be trumped by LHS
 			//Unless there's only 2 unknown cards or less
 			//Or the partner is void too
@@ -2200,7 +2224,9 @@ public class NoMellowPlaySituation {
 			if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
 					&& numUnderLowest == 0 
 					&& (numOverHighest >= 1 || dataModel.getNumCardsInCurrentPlayerHand() <=2)
-					&& numberOfCardsInSuit == 1) {
+					&& numberOfCardsInSuit == 1
+					/*&& !(partnerVoid
+							&& partnerTrumping)*/) {
 				
 				System.out.println("Nothing lower...");
 				
