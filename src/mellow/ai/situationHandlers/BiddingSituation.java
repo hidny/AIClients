@@ -242,7 +242,7 @@ public class BiddingSituation {
 		
 		System.out.println("Final bid " + intBid);
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9S TC 6C 5C 2C TH 7H 5H 4H 2H JD 9D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AC TC 8C 6C 4C 3C 2C QH 8H 5H 2H JD 4D")) {
 			System.out.println("Debug");
 		}
 
@@ -310,6 +310,8 @@ public class BiddingSituation {
 			}
 		}
 		
+		
+		//NEAR end of game for opponent logic.
 		//TODO: put into function (make it 5 lines instead of 15)
 		if(dataModel.getOpponentScore() > 800
 				&& dataModel.getDealerIndexAtStartOfRound() == Constants.CURRENT_AGENT_INDEX) {
@@ -415,7 +417,23 @@ public class BiddingSituation {
 					
 				}
 			}
+		} else if(dataModel.getOpponentScore() > 800
+				&& (dataModel.getDealerIndexAtStartOfRound() == Constants.RIGHT_PLAYER_INDEX
+						||
+					dataModel.getDealerIndexAtStartOfRound() == Constants.CURRENT_PARTNER_INDEX)
+			) {
+			
+			if(dataModel.getOpponentScore() > 940
+					&& dataModel.getOurScore() < 830) {
+				
+				if(intBid == 0) {
+					intBid = 1;
+				}
+				
+				return intBid +"";
+			}
 		}
+		//END NEAR end of game for opponent logic.
 		//TODO: make high bid as 3rd bidder
 		
 		
