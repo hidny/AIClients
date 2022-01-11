@@ -35,6 +35,8 @@ public class VoidSignalsNoActiveMellows {
 	public int hardMaxBecauseSomeoneElseSignalledMasterQueen[][];
 	public int hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[][];
 	
+	public int hardMaxBecauseThirdDidntPlayAboveSecond[][];
+	
 	//Adding mellow signal because I'm starting to think all signals should be here.
 	//soft max = assume protector could have 1 higher??? Nah!
 	//OR: assume they might have master if they played 1 below master?
@@ -75,6 +77,8 @@ public class VoidSignalsNoActiveMellows {
 		hardMaxBecauseSomeoneDidntMakeATrickas4thThrower = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxBecauseSomeoneDidntPlayMaster = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 
+		hardMaxBecauseThirdDidntPlayAboveSecond = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		
 		didNotFollowSuit = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
 		softMaxBecauseMellowProtectorPlayedLowAtSecondThrow = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
@@ -90,6 +94,7 @@ public class VoidSignalsNoActiveMellows {
 				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = DONT_KNOW;
 				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = DONT_KNOW;
 				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = DONT_KNOW;
+				hardMaxBecauseThirdDidntPlayAboveSecond[i][j] = DONT_KNOW;
 				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = DONT_KNOW;
 				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = DONT_KNOW;
 				
@@ -254,6 +259,21 @@ public class VoidSignalsNoActiveMellows {
 				//what if you go over, but it's not master?? ...
 
 				String curWinnerCard= dataModel.getCurrentFightWinningCardBeforeAIPlays();
+				
+				if(throwerIndex == 2
+						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE
+						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) == dataModel.getSuitOfLeaderThrow()
+						&& ! dataModel.isMasterCard(curWinnerCard)
+						&& curWinnerCard.equals(dataModel.getCardSecondThrow())
+						&& dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card)) {
+					
+					//System.out.println("DEBUG: SIGNAL!");
+
+					//For now, only consider for non-spades (with spades, the signal is weaker)
+					hardMaxBecauseThirdDidntPlayAboveSecond[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(curWinnerCard);
+				}
+				//hardMaxBecauseThirdDidntPlayAboveSecond
 				
 				// When 4th player fails to trump to make an easy trick, that means something:
 				//TODO: make another one for the 3rd player...
@@ -599,7 +619,13 @@ public class VoidSignalsNoActiveMellows {
 
 		}
 		
-		
+		if(hardMaxBecauseThirdDidntPlayAboveSecond[playerIndex][suitIndex] != DONT_KNOW
+				&& curMaxRank > hardMaxBecauseThirdDidntPlayAboveSecond[playerIndex][suitIndex]) {
+
+			//System.out.println("DEBUG: SIGNAL 2!");
+			curMaxRank = hardMaxBecauseThirdDidntPlayAboveSecond[playerIndex][suitIndex];
+
+		}
 
 		
 		

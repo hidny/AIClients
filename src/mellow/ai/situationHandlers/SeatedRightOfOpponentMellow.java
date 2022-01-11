@@ -223,9 +223,6 @@ public class SeatedRightOfOpponentMellow {
 			//TODO: put in function
 
 
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 4S KH QC 8C 2C KD JD ")) {
-					System.out.println("Debug");
-				}
 				
 				//Example: If you have 4+ cards, maybe 2nd best is ok...
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false

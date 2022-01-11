@@ -17,13 +17,13 @@ public class testCaseParser {
 
 	//folders:
     
-	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2", "Michael2022-3"};
+	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2", "Michael2022-3"};
 //
 	//public static String TEST_FOLDERS[] = {"Michael"};
 	//public static String TEST_FOLDERS[] = {"Michael2021"};
 	//public static String TEST_FOLDERS[] = {"Michael2021-2"};
 	//public static String TEST_FOLDERS[] = {"Michael2022-3"};
-	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
+	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
 	//public static String TEST_FOLDERS[] = {"MonteCarloTests"};
 	//public static String TEST_FOLDERS[] = {"tmp"};

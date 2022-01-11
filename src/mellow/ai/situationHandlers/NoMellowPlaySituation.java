@@ -559,8 +559,8 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TH ")
-				&& suitIndex == Constants.HEART) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 6S JH TC 4C 2C 4D 2D ")
+				&& (suitIndex == Constants.HEART)) {
 			System.out.println("Debug");
 		}
 
@@ -606,14 +606,7 @@ public class NoMellowPlaySituation {
 				&&	dataModel.signalHandler.hasCurTeamSignalledHighOffsuit(suitIndex)) {
 			System.out.println("(Opponents know they don't have my master of " + CardStringFunctions.getSuitString(suitIndex) + ")");
 			
-			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) 
-					- dataModel.getBid(Constants.LEFT_PLAYER_INDEX) 
-					- dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) > 0) {
-				
-				curScore += 10.0;
-			} else {
-				curScore += 35.0;
-			}
+			curScore += 35.0;
 		}
 			
 		//End case where current play is only one with spade.
