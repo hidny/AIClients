@@ -641,7 +641,9 @@ public class SeatedLeftOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
-
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6S 5S 2S TH 9H KC")) {
+			System.out.println("Debug");
+		}
 		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
@@ -683,13 +685,13 @@ public class SeatedLeftOfOpponentMellow {
 				
 				// pretend lowest spades have a higher rank to discourage use of spades:
 				if(suit == Constants.SPADE) {
-					curLowestRankSuitScore += 9.5;
+					curLowestRankSuitScore += 9.0;
 					
 					int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE));
 					
 					if(numOver >= 0) {
 						//This is over-simplified, but whatever
-						curLowestRankSuitScore += 50.0;
+						//curLowestRankSuitScore += 50.0;
 					}
 					
 				}
@@ -747,7 +749,7 @@ public class SeatedLeftOfOpponentMellow {
 		
 		//TODO: I should Play higher before protect than before mellow...
 		if(dataModel.getRankIndex(consideredCard) <= dataModel.RANK_FOUR
-				&& dataModel.getNumCardsPlayedForSuit(suitToPlay) <= 2
+				&& dataModel.getNumCardsPlayedForSuit(suitToPlay) <= 6
 				&& numCardsCurPlayerHasOfSuit >= 2) {
 			
 			String consideredCard2 = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitToPlay);
