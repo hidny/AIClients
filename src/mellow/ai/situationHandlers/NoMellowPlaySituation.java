@@ -1684,7 +1684,17 @@ public class NoMellowPlaySituation {
 					      && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)){ 
 
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
-				
+
+					
+				//Just play spade because why not? You have all spade and masters but 1 card
+				//TODO: maybe allow for 2 exceptions later?	
+				} else if (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+						 && getNumberOfNonSpadesAndNonMasters(dataModel) <= 1){ 
+ 
+					
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					
+					
 				//LHS probably has master and no spade, and partner has to follow suit, so just trump it
 				} else if(
 						dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 4
@@ -2646,4 +2656,30 @@ public class NoMellowPlaySituation {
 		return bestCardAndValue.getCard();
 	}
 	
+	public static int getNumberOfNonSpadesAndNonMasters(DataModel dataModel) {
+		
+		int ret = dataModel.getNumCardsInCurrentPlayerHand();
+		
+		ret -= dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+		
+		for(int suitIndex=0; suitIndex < Constants.NUM_SUITS; suitIndex++) {
+			if(suitIndex == Constants.SPADE) {
+				continue;
+			}
+			
+			for(int rank = DataModel.ACE; rank >=DataModel.RANK_TWO; rank--) {
+				String tmpCard = DataModel.getCardString(rank, suitIndex);
+				if(dataModel.hasCard(tmpCard)) {
+					ret--;
+				} else if(dataModel.isCardPlayedInRound(tmpCard)) {
+					continue;
+				} else {
+					break;
+				}
+			}
+		}
+		
+		
+		return ret;
+	}
 }
