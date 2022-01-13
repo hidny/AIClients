@@ -1689,9 +1689,29 @@ public class NoMellowPlaySituation {
 				//Just play spade because why not? You have all spade and masters but 1 card
 				//TODO: maybe allow for 2 exceptions later?	
 				} else if (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
-						 && getNumberOfNonSpadesAndNonMasters(dataModel) <= 1){ 
+						 && getNumberOfNonSpadesAndNonMasters(dataModel) <= 1
+						 ){ 
  
 					
+					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(leaderSuitIndex, Constants.SPADE)) {
+						
+						int lhsMaxRank = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
+						
+						
+						if(lhsMaxRank == VoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
+
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						
+						}
+						
+						String tmpCard = DataModel.getCardString(lhsMaxRank, Constants.SPADE);
+						
+						if(dataModel.couldPlayCardInHandOverCardInSameSuit(tmpCard)) {
+							cardToPlay = dataModel.getCardInHandClosestOverSameSuit(tmpCard);
+						}
+						
+					}
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					
 					
