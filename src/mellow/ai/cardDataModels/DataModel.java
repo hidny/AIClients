@@ -2191,7 +2191,7 @@ public class DataModel {
 			} else if(cardString.charAt(0) == 'A') {
 				x = 12;
 			} else {
-				throw new Exception("Number unknown! Uh oh!");
+				throw new Exception("Number unknown! Uh oh! " + cardString.charAt(0));
 				
 				
 			}
@@ -2205,13 +2205,12 @@ public class DataModel {
 			} else if(cardString.charAt(1)=='D') {
 				y = 3;
 			} else {
-				System.err.println("Suit unknown! Uh oh!");
+				System.err.println("Suit unknown! Uh oh! " + cardString.charAt(1));
 				System.exit(1);
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Number unknown! Uh oh!");
 			System.exit(1);
 		}
 		return y*13 + x;

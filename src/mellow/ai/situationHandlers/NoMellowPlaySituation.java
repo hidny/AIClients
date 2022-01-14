@@ -1690,16 +1690,19 @@ public class NoMellowPlaySituation {
 				//TODO: maybe allow for 2 exceptions later?	
 				} else if (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 						 && getNumberOfNonSpadesAndNonMasters(dataModel) <= 1
+						 && ! dataModel.signalHandler.partnerHasMasterBasedOnSignals(leaderSuitIndex)
 						 ){ 
  
-					
-					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+					//Try to play over LHS if possible...
+					if((dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+							
+							)
 							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(leaderSuitIndex, Constants.SPADE)) {
 						
 						int lhsMaxRank = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
 						
 						
-						if(lhsMaxRank == VoidSignalsNoActiveMellows.MAX_UNDER_RANK_2) {
+						if(lhsMaxRank <= DataModel.RANK_TWO) {
 
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 						
