@@ -24,8 +24,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		testCaseParser.main(args);
 		
 	}
@@ -45,10 +45,10 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;

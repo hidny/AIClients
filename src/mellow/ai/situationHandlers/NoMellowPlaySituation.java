@@ -1691,6 +1691,7 @@ public class NoMellowPlaySituation {
 				} else if (3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 						 && getNumberOfNonSpadesAndNonMasters(dataModel) <= 1
 						 && ! dataModel.signalHandler.partnerHasMasterBasedOnSignals(leaderSuitIndex)
+						 && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 0
 						 ){ 
  
 					//Try to play over LHS if possible...
@@ -1700,23 +1701,25 @@ public class NoMellowPlaySituation {
 							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(leaderSuitIndex, Constants.SPADE)) {
 						
 						int lhsMaxRank = dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX);
+						String tmpCard = DataModel.getCardString(Math.max(lhsMaxRank, DataModel.RANK_TWO), Constants.SPADE);
 						
-						
-						if(lhsMaxRank <= DataModel.RANK_TWO) {
+						if(lhsMaxRank >= DataModel.RANK_TWO
+								&& dataModel.couldPlayCardInHandOverCardInSameSuit(tmpCard)) {
 
-							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
-						
-						}
-						
-						String tmpCard = DataModel.getCardString(lhsMaxRank, Constants.SPADE);
-						
-						if(dataModel.couldPlayCardInHandOverCardInSameSuit(tmpCard)) {
+							//Play above LHS:
 							cardToPlay = dataModel.getCardInHandClosestOverSameSuit(tmpCard);
+						} else {
+							//just trump low:
+							
+							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 						}
 						
+					} else {
+						//just trump low:
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					}
-					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					
+					//return cardToPlay;
 					
 				//LHS probably has master and no spade, and partner has to follow suit, so just trump it
 				} else if(
