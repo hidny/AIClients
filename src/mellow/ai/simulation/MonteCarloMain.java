@@ -10,6 +10,7 @@ import mellow.ai.aiDecider.MellowAIDeciderInterface;
 import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
+import mellow.ai.situationHandlers.bidding.BasicBidMellowWinProbCalc;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 import mellow.testcase.testCaseParser;
@@ -24,8 +25,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		testCaseParser.main(args);
 		
 	}
@@ -151,9 +152,20 @@ public class MonteCarloMain {
 			//TODO: Might not need as many simulations for bids...
 			num_simulations /= 2;
 			
-			actionString = new String[maxBidThatIsRealistic + 1];
-			for(int i=0; i<actionString.length; i++) {
-				actionString[i] = i + "";
+			if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.1) {
+				
+				//Skip trying mellow when it's a clear loser:
+				//Do this to stop triple mellows from happening...
+				actionString = new String[maxBidThatIsRealistic];
+				for(int i=0; i<actionString.length; i++) {
+					actionString[i] = (i+1) + "";
+				}
+				
+			} else {
+				actionString = new String[maxBidThatIsRealistic + 1];
+				for(int i=0; i<actionString.length; i++) {
+					actionString[i] = i + "";
+				}
 			}
 			
 		} else {

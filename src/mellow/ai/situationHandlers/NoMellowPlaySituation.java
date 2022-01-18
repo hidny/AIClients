@@ -2515,6 +2515,11 @@ public class NoMellowPlaySituation {
 		//Take care of an edge-case:
 		if(bestSuit == -1) {
 			System.err.println("WARNING: Called get junkiest card while only having spade...");
+			try {
+				throw new Exception();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 			return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 		}
 		

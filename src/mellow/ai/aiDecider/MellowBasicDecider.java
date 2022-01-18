@@ -216,8 +216,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 									//Play lowest of suit
 									return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 								} else {
-									//Play lowest offsuit
-									return NoMellowPlaySituation.getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
+									if( ! dataModel.currentPlayerOnlyHasSpade()) {
+										//Play lowest offsuit
+										return NoMellowPlaySituation.getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
+									} else {
+										//Added condition to play lowest spade because monte carlo wouldn't stop
+										//sending warning messages about this.
+										return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+									}
 								}
 							}
 						}

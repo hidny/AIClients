@@ -251,7 +251,7 @@ public class testCaseParser {
 			
 			String players[] = new String[4];
 			for(int i =0; i<players.length; i++) {
-				players[i] = "test" + i;
+				players[i] = "test_player_" + i;
 			}
 			
 			
