@@ -1743,6 +1743,18 @@ public class DataModel {
 		
 	}
 	
+	//pre: the suit isn't completely empty...
+	public String getCurrentMasterCardInSuit(int suitIndex) {
+		
+		for(int rank=DataModel.ACE; rank >= DataModel.RANK_TWO; rank--) {
+			if(cardsUsed[suitIndex][rank] == false) {
+					return DataModel.getCardString(rank, suitIndex);
+			}
+		}
+		
+		return null;
+	}
+	
 	
 	//(Ignore the cards in playerIndex's hand)
 	public boolean isEffectivelyMasterCardForPlayer(int playerIndex, String card) {

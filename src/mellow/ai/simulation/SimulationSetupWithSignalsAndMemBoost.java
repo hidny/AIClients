@@ -11,7 +11,9 @@ import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 public class SimulationSetupWithSignalsAndMemBoost {
 
 	//TODO:
-	//Make an improved monte that takes signals into account
+	//Make an improved monte that takes signals into account before it randomly distributes the cards
+	// to the players.
+	
 	//Here's a sample of test cases the current monte doesn't calculate well because it doesn't understand signals:
 	// 0-1657 (By pure chance, it still gets this one right...)
 	// 2-1045

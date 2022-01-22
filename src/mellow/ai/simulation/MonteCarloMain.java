@@ -232,15 +232,19 @@ public class MonteCarloMain {
 			//TODO: area to hack signals in:
 			if(processSignals) {
 				//3rd arg is just for debug
-				boolean realistic = isCardDistRealistic(dataModel, distCards, (numSkipped < 1000));
+				boolean realistic = isCardDistRealistic(dataModel, distCards, (numSkipped < 40));
 				
 				//System.err.println("Is it realistic?");
 				if( ! realistic) {
-					if(isThorough == false && skipSimulations) {
+					
+					if(skipSimulations) {
+						if(isThorough == false) {
+							i--;
+						}
+						//System.err.println("SKIP");
 						numSkipped++;
-						i--;
+						continue;
 					}
-					continue;
 				}
 			}
 			
@@ -269,9 +273,12 @@ public class MonteCarloMain {
 				} else {
 					
 					//For now, don't skip if thorough.... I don't know!
-					if(isThorough == false && skipSimulations) {
+					if(skipSimulations) {
+						if(isThorough == false) {
+							i--;
+						}
+						//System.err.println("SKIP");
 						numSkipped++;
-						i--;
 						continue;
 					}
 				}
@@ -366,9 +373,18 @@ public class MonteCarloMain {
 		//Hack to avoid NaN answer after simulation:
 		if(numSimulationsNotSkipped == 0
 				|| numSimulationsNotSkipped * 1000 < num_simulations) {
-			skipSimulations = false;
-			System.err.println("RETRY without skipping any simulations:");
-			return runMonteCarloMethod(dataModel, num_simulations, skipSimulations, false);
+			
+			if(processSignals) {
+				processSignals = false;
+				System.err.println("RETRY without processing any signals:");
+				return runMonteCarloMethod(dataModel, num_simulations, skipSimulations, processSignals);
+				
+			} else {
+				skipSimulations = false;
+				System.err.println("RETRY without skipping any simulations:");
+				return runMonteCarloMethod(dataModel, num_simulations, skipSimulations, false);
+				
+			}
 		}
 		
 		//in.next();
@@ -727,6 +743,11 @@ public class MonteCarloMain {
 	
 	//TODO: this function needs a lot of work...
 	//TODO: add non-mellow bidder signals to this when the need arises:
+	
+	//TODO: Make another version of monte carlo 
+	//that doesn't need to skip 99% of hands it generates...
+	//You just need to tweak the design to something less silly.
+		//See SimulationSetupWithSignalsAndMemBoost
 	 public static boolean isCardDistRealistic(DataModel dataModel, String distCards[][], boolean debug) {
 
 		 //Signals happen during the play, so don't worry about signals before the play.
@@ -748,7 +769,8 @@ public class MonteCarloMain {
 			 if( ! dataModel.stillInBiddingPhase()
 					&& dataModel.getBid(i) == 0) {
 				 
-				 for(int j=0; j<distCards.length; j++) {
+				 for(int j=0; j<distCards[i].length; j++) {
+
 					 if(dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
 						 
 						 int suitIndex = CardStringFunctions.getIndexOfSuit(distCards[i][j]);
@@ -760,7 +782,7 @@ public class MonteCarloMain {
 								== VoidSignalsNoActiveMellows.MELLOW_PLAYER_SIGNALED_NO) {
 							 
 							 if(debug) {
-								 System.err.println("NOPE! Mellow doesn't have the " + distCards[i][j] + ".");
+								 System.err.println("NOPE! Mellow bidder (" + dataModel.getPlayers()[i] + ") doesn't have the " + distCards[i][j] + ".");
 							 }
 							 return false;
 						 }
@@ -768,6 +790,52 @@ public class MonteCarloMain {
 					 }
 						
 				 }
+			 } else if( ! dataModel.stillInBiddingPhase() ) {
+				 
+				 
+				 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+					 
+					 String master = dataModel.getCurrentMasterCardInSuit(suitIndex);
+					 
+					 if(master == null) {
+						 continue;
+					 }
+					 
+					 if(   (i == Constants.LEFT_PLAYER_INDEX
+							 && dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(suitIndex))
+						|| (i == Constants.CURRENT_PARTNER_INDEX
+							 && dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex))
+						|| (i == Constants.RIGHT_PLAYER_INDEX
+							 && dataModel.signalHandler.rightHandSideHasMasterBasedOnSignals(suitIndex))
+						) {
+						 boolean foundMaster = false;
+						 
+						 for(int j=0; j<distCards[i].length; j++) {
+							 if(master.equals(distCards[i][j])) {
+								 foundMaster = true;
+								 break;
+							 }
+						 }
+						 
+						 if(foundMaster == false) {
+							 if(debug) {
+								 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have the master " + master + ".");
+							 }
+
+							 return false;
+							
+						 }
+						 
+					 }
+					 
+				 }
+				 
+				 /*for(int j=0; j<distCards.length; j++) {
+					 if(j != Constants.CURRENT_AGENT_INDEX
+							 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
+						 
+					 }
+				 }*/
 			 }
 		 }
 		 
