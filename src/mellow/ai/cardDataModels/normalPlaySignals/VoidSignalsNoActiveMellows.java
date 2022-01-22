@@ -487,7 +487,7 @@ public class VoidSignalsNoActiveMellows {
 		}
 	}
 	//TODO THIS WAS COPY/PASTED
-	static final int MELLOW_PLAYER_SIGNALED_NO = 3;
+	public static final int MELLOW_PLAYER_SIGNALED_NO = 3;
 	
 	public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
 		

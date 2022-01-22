@@ -10,6 +10,7 @@ import mellow.ai.aiDecider.MellowAIDeciderInterface;
 import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
+import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
 import mellow.ai.situationHandlers.bidding.BasicBidMellowWinProbCalc;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
@@ -26,7 +27,9 @@ public class MonteCarloMain {
 	public static void main(String args[]) {
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
+		
 		testCaseParser.main(args);
 		
 	}
@@ -49,10 +52,10 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
@@ -96,10 +99,16 @@ public class MonteCarloMain {
 	//Return number string for bid
 	//Return card for action
 	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations) {
-		return runMonteCarloMethod(dataModel, num_simulations, true);
+		
+		boolean testWithSignals = false;
+		if(testCaseParser.TEST_FOLDERS[0].equals("MonteCarloSignals")) {
+			System.err.println("Running with a basic signal filter!");
+			testWithSignals = true;
+		}
+		return runMonteCarloMethod(dataModel, num_simulations, true, testWithSignals);
 	}
 
-	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations, boolean skipSimulations) {
+	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations, boolean skipSimulations, boolean processSignals) {
 		
 		System.out.println("RUN SIMULATION");
 		//in.nextLine();
@@ -220,21 +229,13 @@ public class MonteCarloMain {
 			}
 			
 			
-			//TODO: area to hack signals in
-			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 5S 2S 9H 5H AD JD TD")) {
-				boolean skip = false;
-				for(int j=0; j<distCards[1].length; j++) {
-					if(DataModel.getRankIndex(distCards[1][j]) > DataModel.RANK_SIX
-							&& CardStringFunctions.getIndexOfSuit(distCards[1][j]) == Constants.CLUB) {
-						//System.err.println("Skipping because " + distCards[1][j]);
-						numSkipped++;
-						skip = true;
-						break;
-					}
-				}
+			//TODO: area to hack signals in:
+			if(processSignals) {
+				//3rd arg is just for debug
+				boolean realistic = isCardDistRealistic(dataModel, distCards, (numSkipped < 1000));
 				
-				if(skip) {
+				//System.err.println("Is it realistic?");
+				if( ! realistic) {
 					if(isThorough == false && skipSimulations) {
 						numSkipped++;
 						i--;
@@ -242,6 +243,7 @@ public class MonteCarloMain {
 					continue;
 				}
 			}
+			
 			//END TODO
 			
 		
@@ -366,7 +368,7 @@ public class MonteCarloMain {
 				|| numSimulationsNotSkipped * 1000 < num_simulations) {
 			skipSimulations = false;
 			System.err.println("RETRY without skipping any simulations:");
-			return runMonteCarloMethod(dataModel, num_simulations, skipSimulations);
+			return runMonteCarloMethod(dataModel, num_simulations, skipSimulations, false);
 		}
 		
 		//in.next();
@@ -722,4 +724,53 @@ public class MonteCarloMain {
 		System.out.println("Sum of impact of simulation: " + sum_impact_to_avg + " out of a possible " + numSimulations + " (" + String.format("%.2f", (100*sum_impact_to_avg)/(1.0*numSimulations)) + "%)");
 	}
 	
+	
+	//TODO: this function needs a lot of work...
+	//TODO: add non-mellow bidder signals to this when the need arises:
+	 public static boolean isCardDistRealistic(DataModel dataModel, String distCards[][], boolean debug) {
+
+		 //Signals happen during the play, so don't worry about signals before the play.
+		 if(dataModel.stillInBiddingPhase()
+				 || (dataModel.getNumCardsInCurrentPlayerHand() == Constants.NUM_STARTING_CARDS_IN_HAND
+						 && dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX)
+				) {
+			 return true;
+		 }
+		 
+		 boolean ret = true;
+		 
+		 for(int i=0; i<distCards.length; i++) {
+			 if(i == Constants.CURRENT_AGENT_INDEX) {
+				 //Don't question your own hand.
+				 continue;
+			 }
+			 
+			 if( ! dataModel.stillInBiddingPhase()
+					&& dataModel.getBid(i) == 0) {
+				 
+				 for(int j=0; j<distCards.length; j++) {
+					 if(dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
+						 
+						 int suitIndex = CardStringFunctions.getIndexOfSuit(distCards[i][j]);
+						 int rankIndex = DataModel.getRankIndex(distCards[i][j]);
+						 
+						 if( dataModel.getCardsCurrentlyHeldByPlayers()[i]
+								 [suitIndex]
+								 [rankIndex]
+								== VoidSignalsNoActiveMellows.MELLOW_PLAYER_SIGNALED_NO) {
+							 
+							 if(debug) {
+								 System.err.println("NOPE! Mellow doesn't have the " + distCards[i][j] + ".");
+							 }
+							 return false;
+						 }
+						 
+					 }
+						
+				 }
+			 }
+		 }
+		 
+		 return ret;
+	 }
 }
