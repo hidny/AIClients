@@ -140,6 +140,11 @@ public class VoidSignalsNoActiveMellows {
 		
 		if(playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
 			playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
+
+			//Strong queen signal:
+			//(EX: If player lead KDs and has a 5D later, it's pretty clear that player also has the QD)
+			//Unless queen was played...
+			
 			if( ! dataModel.isCardPlayedInRound("Q" + card.substring(1) )) {
 				
 				boolean partnerHasAce = false;
@@ -161,11 +166,7 @@ public class VoidSignalsNoActiveMellows {
 					){
 				System.out.println("DEBUG: WEIRD CASE! Why would the player do a king sacrifice??");
 			}
-			//TODO: add strong queen signal here...
-			//(EX: If player lead KD and has a 5D later, it's pretty clear that player also has the QD)
-			//Unless queen was played...
 		}
-		
 		
 		//I'm going to start with the normal no mellow situation for now...
 		if(dataModel.someoneBidMellow() == false

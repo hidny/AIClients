@@ -633,6 +633,9 @@ public class PartnerSaidMellowSituation {
 		
 		} else if(dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, leadSuit) == false) {
 
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 9S KH 5H JC TC 7C 6C 4C ")) {
+				System.out.println("Debug");
+			}
 			//if you need to follow suit
 				
 				//Get highest (I know this isn't always a good idea, but whatever man!)
@@ -656,9 +659,25 @@ public class PartnerSaidMellowSituation {
 						if(dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(highestProtector, MELLOW_PLAYER_INDEX)) {
 							return highestProtector;
 						
-						//} else if
-							//it's fine to play high...
+						} else if(dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(
+									dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit))
+								 >= 2) {
+
+							//Just play over if you got the cards:
+							return highestProtector;
 							
+						} else if(
+								 dataModel.isMasterCard(
+										 dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit)
+								 )
+								 ) {
+							
+							//TODO: maybe only do this if you have a good 2nd support card?
+							
+							//Play over so you can change the subject... (Mellow may have the master card.)
+							//This is risky, but LHS probably doesn't know you trying to pull this stunt...
+							return highestProtector;
+						
 						} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCardPlayed)) {
 							
 							

@@ -416,7 +416,7 @@ public class SeatedLeftOfOpponentMellow {
 		double bestValue = 0.0;
 		String bestCard = null;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 9S 5S 2S JC AD JD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH KC JC TC 8C")) {
 			System.out.println("Debug");
 		}
 
@@ -482,8 +482,32 @@ public class SeatedLeftOfOpponentMellow {
 				}
 			}
 			
+			if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(curSuitIndex) == 0) {
+
+				//Save last of suit to mess with protector and mellow. 
+				if(mellowPlayerIndex == Constants.LEFT_PLAYER_INDEX) {
+					//This only really works if mellow bidder is left of current player
+					curValue -= 15.0;
+					
+					//TODO: make functions to do this:
+				} else if(dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) + dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX)
+									< dataModel.getBid(Constants.CURRENT_AGENT_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+						|| dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX) <  dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)) {
+					//OR: tricks are still contested.
+					//(I didn't test it.)
+				
+					curValue -= 10.0;
+				}
+				
+			} else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(curSuitIndex) > 0
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, curSuitIndex)
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)) {
+
+				//Keep cards of suit that you only share with mellow player. This could help partner or protector drain spade.
+				curValue -= 20.0;
+				
 			//Shouldn't like to throw off a high-card
-			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) < 3) {
+			} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) < 3) {
 				curValue += -4 * (1.5) + 1.5 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
 			}
 			
