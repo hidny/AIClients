@@ -26,9 +26,9 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		
 		testCaseParser.main(args);
 		
@@ -49,10 +49,10 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -101,20 +101,20 @@ public class MonteCarloMain {
 	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations) {
 		
 		boolean testWithSignals = false;
-		if(testCaseParser.TEST_FOLDERS[0].equals("MonteCarloSignals")) {
+		//if(testCaseParser.TEST_FOLDERS[0].equals("MonteCarloSignals")) {
 			System.err.println("Running with a basic signal filter!");
 			testWithSignals = true;
-		}
+		//}
 		return runMonteCarloMethod(dataModel, num_simulations, true, testWithSignals);
 	}
 
-	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations, boolean skipSimulations, boolean processSignals) {
+	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations, boolean skipSimulationsBasedOnBids, boolean processSignals) {
 		
 		System.out.println("RUN SIMULATION");
 		//in.nextLine();
 		
 
-		long numWaysOtherPlayersCouldHaveCards = dataModel.getCurrentNumWaysOtherPlayersCouldHaveCards();
+		long numWaysOtherPlayersCouldHaveCards = dataModel.getCurrentNumWaysOtherPlayersCouldHaveCards(processSignals);
 		
 		boolean isThorough = false;
 		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
@@ -136,7 +136,7 @@ public class MonteCarloMain {
 		}
 		System.out.println();
 		
-		dataModel.printVoidArray();
+		dataModel.printVoidArray(processSignals);
 		
 		System.out.println("DEBUG: Obvious and active cards:");
 		String obviousCards[] = dataModel.getActiveCardsWithObviousOwnersInOtherHandsDebug();
@@ -146,11 +146,7 @@ public class MonteCarloMain {
 		System.out.println();
 		//END DEBUG PRINT POSSIBILITIES
 		
-		//TODO: Make simulation handle bid simulations! (For now, I'm just worried about starting the monte carlo method from after the bids are made...)
-		//TODO: When handling bids: please dismiss unreasonable bids quickly!
 		
-		//TODO: test bid:
-		//Create mapping from index to action (card or bid)
 		String actionString[];
 		int maxBidThatIsRealistic = -1;
 		
@@ -199,10 +195,16 @@ public class MonteCarloMain {
 		double sum_impact_to_avg = 0.0;
 		
 		int numSkipped = 0;
-		//Don't be 1000. It takes too long!
+		
+		//In my experience, skipping more than 100 X num_simulations makes it too slow.
 		int maxSkipped = 100 * num_simulations;
 		int i=0;
 		int lastestPost = -1;
+		
+		boolean voidArray[][] = dataModel.createVoidArray(processSignals);
+		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
+		int numSpacesAvailPerPlayer[] = dataModel.getNumUnknownSpaceAvailablePerPlayer();
+		
 		
 		for(; i<num_simulations && numSkipped < maxSkipped; i++) {
 			
@@ -220,37 +222,44 @@ public class MonteCarloMain {
 			}
 			//Distribute unknown cards for simulation:
 			String distCards[][];
+			
+			long randomDistributionNumber = -1;
+			
 			if(isThorough) {
-				distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(i, numWaysOtherPlayersCouldHaveCards);
+				randomDistributionNumber = i;
 			} else {
-				distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(
-						SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards),
-						numWaysOtherPlayersCouldHaveCards);
+				randomDistributionNumber = 
+					SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards);
 			}
+
+			distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(
+					randomDistributionNumber,
+					numWaysOtherPlayersCouldHaveCards,
+					processSignals,
+					voidArray,
+					unknownCards,
+					curNumUnknownCardsPerSuit,
+					numSpacesAvailPerPlayer);
 			
-			
-			//TODO: area to hack signals in:
+			//Check if distCards happen to line up with what the signals are saying:
 			if(processSignals) {
-				//3rd arg is just for debug
-				boolean realistic = isCardDistRealistic(dataModel, distCards, (numSkipped < 40));
 				
-				//System.err.println("Is it realistic?");
+				//3rd arg is just for debug
+				boolean realistic = isCardDistRealistic(dataModel, distCards, numSkipped < 50);
+				
 				if( ! realistic) {
 					
-					if(skipSimulations) {
-						if(isThorough == false) {
-							i--;
-						}
-						//System.err.println("SKIP");
-						numSkipped++;
-						continue;
+					if(isThorough == false) {
+						i--;
 					}
+					
+					numSkipped++;
+					continue;
 				}
 			}
+			//END check distribution of cards against signals.
 			
-			//END TODO
-			
-		
+
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
 			//      to dampen the effect of unrealistic distributions of cards:
 			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
@@ -273,7 +282,7 @@ public class MonteCarloMain {
 				} else {
 					
 					//For now, don't skip if thorough.... I don't know!
-					if(skipSimulations) {
+					if(skipSimulationsBasedOnBids) {
 						if(isThorough == false) {
 							i--;
 						}
@@ -283,14 +292,7 @@ public class MonteCarloMain {
 					}
 				}
 			}
-			
-			/*if(isThorough == false && decisionImpact < 0.001 && sum_impact_to_avg > 0.099) {
-				i--;
-				continue;
-			}*/
 
-			//TODO: check how realistic the distribution of cards is compared to what has been played
-			//If it's unrealistic, make the simulation count for less.
 			
 			sum_impact_to_avg +=  decisionImpact;
 			
@@ -358,12 +360,19 @@ public class MonteCarloMain {
 			//testPrintUnknownCardDistribution(in, distCards, i);
 		}
 		
-		System.err.println(i+ " out of " + num_simulations);
 		
 		//Allow print statements now that the simulation is over:
 		System.setOut(originalStream);
 
-		int numSimulationsNotSkipped = i;
+		int numSimulationsNotSkipped = 0;
+		if(isThorough) {
+			numSimulationsNotSkipped = num_simulations - numSkipped;
+			System.err.println(numSimulationsNotSkipped + " out of " + num_simulations);
+			
+		} else {
+			System.err.println(i+ " out of " + num_simulations);
+			numSimulationsNotSkipped = i;
+		}
 		
 		
 		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, numSimulationsNotSkipped);
@@ -374,15 +383,15 @@ public class MonteCarloMain {
 		if(numSimulationsNotSkipped == 0
 				|| numSimulationsNotSkipped * 1000 < num_simulations) {
 			
-			if(processSignals) {
+			if(skipSimulationsBasedOnBids) {
+				skipSimulationsBasedOnBids = false;
+				System.err.println("RETRY without skipping any simulations because of bids:");
+				return runMonteCarloMethod(dataModel, num_simulations, skipSimulationsBasedOnBids, processSignals);
+				
+			} else if(processSignals) {
 				processSignals = false;
 				System.err.println("RETRY without processing any signals:");
-				return runMonteCarloMethod(dataModel, num_simulations, skipSimulations, processSignals);
-				
-			} else {
-				skipSimulations = false;
-				System.err.println("RETRY without skipping any simulations:");
-				return runMonteCarloMethod(dataModel, num_simulations, skipSimulations, false);
+				return runMonteCarloMethod(dataModel, num_simulations, skipSimulationsBasedOnBids, processSignals);
 				
 			}
 		}
@@ -497,7 +506,7 @@ public class MonteCarloMain {
 					impact /= 20;
 				}
 			} else {
-				//TODO
+				//TODO I don't know I'm dividing by less than the previous case, but whatever. 
 				if(Math.abs(expectedResponse - response) >= 3) {
 					impact /= 30;
 		
@@ -830,6 +839,44 @@ public class MonteCarloMain {
 					 
 				 }
 				 
+				 
+				 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+					
+					 if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(i, suitIndex)) {
+						 continue;
+					 }
+					 
+					 int max = dataModel.signalHandler.getMaxCardRankSignal(i, suitIndex);
+					 
+					 //I don't trust the min signal...
+					 //int min = dataModel.signalHandler.getMinCardRankSignal(i, suitIndex);
+					 int min = DataModel.RANK_TWO;
+					 
+					 for(int j=0; j<distCards[i].length; j++) {
+						 
+
+						 if(CardStringFunctions.getIndexOfSuit(distCards[i][j]) == suitIndex
+								 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
+							 
+							 if(DataModel.getRankIndex(distCards[i][j]) < min) {
+
+								 if(debug) {
+									 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have higher card than " + distCards[i][j] + ".");
+								 }
+								 
+								 return false;
+							 } else if(DataModel.getRankIndex(distCards[i][j]) > max) {
+								
+								 if(debug) {
+									 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have lower card than " + distCards[i][j] + ".");
+								 }
+								 
+								 return false;
+							 }
+						 }
+					 }
+					 
+				 }
 				 /*for(int j=0; j<distCards.length; j++) {
 					 if(j != Constants.CURRENT_AGENT_INDEX
 							 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {

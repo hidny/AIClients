@@ -813,7 +813,7 @@ public class VoidSignalsNoActiveMellows {
 	}
 	
 	
-	public boolean letfHandSideHasMasterBasedOnSignals(int suitIndex) {
+	public boolean leftHandSideHasMasterBasedOnSignals(int suitIndex) {
 		
 		String masterCard = dataModel.getHighestCardOfSuitNotPlayed(suitIndex);
 		

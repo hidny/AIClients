@@ -54,7 +54,8 @@ public class PlayerSignalHandler {
 
 
 		
-		if(dataModel.getBid(playerIndex) == 0) {
+		if(dataModel.getBid(playerIndex) == 0
+				&& dataModel.getNumTricks(playerIndex) == 0) {
 			//Deal with mellow signals:
 			this.playerSaidMellowSignals.handleSignalsFromActiveMellow(playerIndex, card);
 			
@@ -163,11 +164,11 @@ public class PlayerSignalHandler {
 	}
 
 	public boolean leftHandSideHasMasterBasedOnSignals(int suitIndex) {
-		return this.mellowVoidSignalsNoActiveMellows.letfHandSideHasMasterBasedOnSignals(suitIndex);
+		return this.mellowVoidSignalsNoActiveMellows.leftHandSideHasMasterBasedOnSignals(suitIndex);
 	}
 	
 	public boolean rightHandSideHasMasterBasedOnSignals(int suitIndex) {
-		return this.mellowVoidSignalsNoActiveMellows.letfHandSideHasMasterBasedOnSignals(suitIndex);
+		return this.mellowVoidSignalsNoActiveMellows.rightHandSideHasMasterBasedOnSignals(suitIndex);
 	}
 	
 	public boolean playerAlwaysFollowedSuit(int playerIndex, int suitIndex) {
@@ -183,6 +184,10 @@ public class PlayerSignalHandler {
 	
 	public int getMinCardRankSignal(int playerIndex, int suitIndex ) {
 		return this.mellowVoidSignalsNoActiveMellows.getMinCardRankSignal(playerIndex, suitIndex);
+	}
+	
+	public int getMaxCardRankSignal(int playerIndex, int suitIndex ) {
+		return this.mellowVoidSignalsNoActiveMellows.getMaxCardRankSignal(playerIndex, suitIndex);
 	}
 	
 	

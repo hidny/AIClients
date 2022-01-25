@@ -632,25 +632,21 @@ public class DataModel {
 	public static final long NEED_TO_RECALCULATE = -1;
 	private long numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
 
-	public long getCurrentNumWaysOtherPlayersCouldHaveCards() {
+	public long getCurrentNumWaysOtherPlayersCouldHaveCards(boolean useSignals) {
 		if(numWaysOthersPlayersCouldHaveCards != NEED_TO_RECALCULATE) {
 			return numWaysOthersPlayersCouldHaveCards;
 		}
 		
 		String unknownCards[] = getUnknownCards();
 		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
-		boolean originalIsVoidList[][] = createVoidArray();
+		boolean originalIsVoidList[][] = createVoidArray(useSignals);
 		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
 
 		return SimulationSetupWithMemBoost.getNumberOfWaysToSimulate(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 	}
 	
-	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex, long numWaysToSimulate) {
-		
-		String unknownCards[] = getUnknownCards();
-		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
-		boolean originalIsVoidList[][] = createVoidArray();
-		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
+	
+	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex, long numWaysToSimulate, boolean useSignals, boolean voidArray[][], String unknownCards[], int curNumUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[]) {
 		
 		if(numSpacesAvailPerPlayer[0] > 0) {
 			System.err.println("ERROR: unknown card for currrent player");
@@ -658,7 +654,7 @@ public class DataModel {
 		}
 		
 		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
-				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, combinationIndex, numWaysToSimulate);
+				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray, combinationIndex, numWaysToSimulate);
 		
 		return SimulationSetupWithMemBoost.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 		
@@ -696,8 +692,8 @@ public class DataModel {
 		return ret;
 	}
 	
-	public void printVoidArray() {
-		boolean voidArray[][] = createVoidArray();
+	public void printVoidArray(boolean useSignals) {
+		boolean voidArray[][] = createVoidArray(useSignals);
 		
 		for(int p=0; p<voidArray.length; p++) {
 			System.out.print(players[p] + " is void in: ");
@@ -718,14 +714,34 @@ public class DataModel {
 		}
 	}
 	//Making public for some debug function:
-	private boolean[][] createVoidArray() {
+	public boolean[][] createVoidArray(boolean useSignals) {
 		boolean ret[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		for(int i=0; i<ret.length; i++) {
 			for(int j=0; j<ret[0].length; j++) {
-				ret[i][j] = isVoid(i, j);
+				
+				if(useSignals) {
+					ret[i][j] = this.signalHandler.playerStrongSignaledNoCardsOfSuit(i, j);
+					if(this.signalHandler.playerStrongSignaledNoCardsOfSuit(i, j)
+							!= isVoid(i, j)) {
+						
+						if(this.signalHandler.playerStrongSignaledNoCardsOfSuit(i, j)) {
+							//DEBUG notes for context:
+							System.err.println(players[i] + " is void in " + CardStringFunctions.getSuitString(j) + " based on signals.");
+						} else {
+							//This shouldn't happen:
+							System.err.println("ERROR: " + players[i] + " is not void in " + CardStringFunctions.getSuitString(j) + " based on signals???");
+							System.exit(1);
+						}
+						
+					}
+				} else {
+					ret[i][j] = isVoid(i, j);
+				}
+				
 			}
 		}
-		//Rig it for some test cases:
+		
+		/*//Rig it for some test cases:
 		if(DebugFunctions.currentPlayerHoldsHandDebug(this, "JS 8S 5S 3S JC 6C 5C JD 9D 6D 5D")
 				|| DebugFunctions.currentPlayerHoldsHandDebug(this, "TS 8S 5S 3S JC 6C 5C JD 9D 6D 5D")
 				|| DebugFunctions.currentPlayerHoldsHandDebug(this, "9S 8S 5S 3S JC 6C 5C JD 9D 6D 5D")) {
@@ -734,7 +750,7 @@ public class DataModel {
 			ret[Constants.LEFT_PLAYER_INDEX][Constants.HEART] = true;
 		} else if(DebugFunctions.currentPlayerHoldsHandDebug(this, "KS 6S 5S KH 9H 7H 2H ")) {
 			ret[Constants.LEFT_PLAYER_INDEX][Constants.DIAMOND] = true;
-		}
+		}*/
 		return ret;
 	}
 	
