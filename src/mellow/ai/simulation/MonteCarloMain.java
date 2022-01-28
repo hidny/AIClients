@@ -26,8 +26,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		
 		testCaseParser.main(args);
@@ -848,9 +848,9 @@ public class MonteCarloMain {
 					 
 					 int max = dataModel.signalHandler.getMaxCardRankSignal(i, suitIndex);
 					 
-					 //I don't trust the min signal...
-					 //int min = dataModel.signalHandler.getMinCardRankSignal(i, suitIndex);
-					 int min = DataModel.RANK_TWO;
+					 int min = dataModel.signalHandler.getMinCardRankSignal(i, suitIndex);
+					 //Alt if min signal is not trust-worthy:
+					 //int min = DataModel.RANK_TWO;
 					 
 					 for(int j=0; j<distCards[i].length; j++) {
 						 

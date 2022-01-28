@@ -719,7 +719,7 @@ public class DataModel {
 		for(int i=0; i<ret.length; i++) {
 			for(int j=0; j<ret[0].length; j++) {
 				
-				if(useSignals) {
+				if(useSignals && i != Constants.CURRENT_AGENT_INDEX) {
 					ret[i][j] = this.signalHandler.playerStrongSignaledNoCardsOfSuit(i, j);
 					if(this.signalHandler.playerStrongSignaledNoCardsOfSuit(i, j)
 							!= isVoid(i, j)) {
@@ -1319,6 +1319,23 @@ public class DataModel {
 		}
 		return ret;
 	}
+	
+
+	public int getNumCardsInCurrentPlayersHandUnderCardSameSuit(String card) {
+
+		int rankStart = getRankIndex(card) - 1;
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		
+		int ret = 0;
+		
+		for(int i=rankStart; i>=RANK_TWO; i--) {
+			if(cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+	
 	
 	public int getRankNotPlayedCardClosestOverCurrentWinnerSameSuit(String card) {
 

@@ -208,9 +208,28 @@ public class VoidSignalsNoActiveMellows {
 						//System.out.println();
 		
 						//What if you don't want to go over partner?
-						
-						hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
-					
+						//Answer: That doesn't matter!
+
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(card)
+								+ dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(card)
+								<= 4
+								&& 
+							dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(card)
+								+ dataModel.getNumCardsInCurrentPlayersHandUnderCardSameSuit(card)
+								>= 2) {
+							// Only consider the low card lowest if it has a hope of winning:
+							// I added this logic, so that monte won't take someone throwing a 5C too seriously
+							// I made the margin wide enough that the AI won't dismiss the signals.
+							
+							//Later: maybe figure out if player wants to hide signal or not...
+							//This could be really deep.
+
+							hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+							
+						}// else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0) {
+						//	System.out.println("Never mind " + card + "!");
+						//	
+						//}
 						
 						//TODO: 
 					//Less obvious: player goes 1 over partner... could be strategic though...
