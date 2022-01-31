@@ -11,11 +11,23 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TS 5S 4S 2S AH KH 9H 7H 2H 8C 6C 6D")) {
+			System.out.println("Debug");
+		}
 		double bid = 0.0;
 		
 		//#Add number of aces:
 		//bid = bid + getNumberOfAces(hand)
 		bid += dataModel.getNumberOfAces();
+		
+		for(int suitIndex = 0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			if(suitIndex != Constants.SPADE
+					&& dataModel.currentPlayerHasMasterInSuit(suitIndex)
+					&& dataModel.getNumberOfCardsOneSuit(suitIndex) >= 8) {
+				//Don't count bid if you have 8 of them...
+				bid -= 0.5;
+			}
+		}
 		
 		System.out.println("Number of aces: " + dataModel.getNumberOfAces());
 		
@@ -91,12 +103,14 @@ public class BiddingSituation {
 			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) > 5) {
 				bid = bid - 0.65;
 			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) > 4) {
-				bid = bid - 0.25;
+				bid = bid - 0.27;
 			} else if(dataModel.hasCard("K" + off) && dataModel.getNumberOfCardsOneSuit(i + 1) > 3) {
 				bid = bid - 0.20;
 			}
 			
-			if(dataModel.hasCard("K" + off) && (dataModel.hasCard("Q" + off) || dataModel.hasCard("A" + off))) {
+			if(dataModel.hasCard("K" + off) && (dataModel.hasCard("Q" + off)) ) {
+				bid = bid + 0.27;
+			} else if(dataModel.hasCard("K" + off) && dataModel.hasCard("A" + off)) {
 				bid = bid + 0.26;
 			}
 		}
@@ -215,7 +229,10 @@ public class BiddingSituation {
 		// Just don't say mellow if 2 cards are over the 9S...
 		} else if(intBid == 0 && dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit("9S") >= 2) {
 			intBid = 1;
+		} else if(intBid == 0 && ! partnerDidntSayMellow(dataModel)) {
+			intBid = 1;
 		}
+		
 		
 
 		if(dataModel.isDealer() 
@@ -452,11 +469,10 @@ public class BiddingSituation {
 				&& ( dataModel.getOpponentScore() > 850
 						|| 1.5 * (1000 - dataModel.getOpponentScore()) < (1000 - dataModel.getOurScore())
 					)
-				//No double mellow:
-				&& ( ! dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
-					    || dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0
-					    //Make an exception:
-					    || BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.9)) {
+				&& (partnerDidntSayMellow(dataModel)
+						//Make an exception:
+					    || BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.9)
+				) {
 			
 			if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.55) {
 				System.out.println("(WHATEVER MELLOW) (" + dataModel.getOurScore() + " vs " + dataModel.getOpponentScore() + ")");
@@ -518,17 +534,103 @@ public class BiddingSituation {
 			}
 			//END TODO
 			
-			return 0 + "";
+			if(partnerDidntSayMellow(dataModel)) {
+				return 0 + "";
+			} else {
+				return 1 + "";
+			}
 			
 		} else if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.40
 				&& intBid == 0) {
 			return 1 + "";
+
+		} else if(
+				partnerDidntSayMellow(dataModel)
+				&& dataModel.playerMadeABidInRound(Constants.RIGHT_PLAYER_INDEX)
+				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+				&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.10
+				&& intBid > 0) {
+			//Lower requirements for double mellow:
+			System.out.println("Double mellow with prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
+			
+			if(playerHasTwoPermBadSuits( dataModel)) {
+				return intBid +"";
+			} else {
+				return 0 + "";
+			}
+			
+		} else if(partnerDidntSayMellow(dataModel)
+				&& dataModel.playerMadeABidInRound(Constants.LEFT_PLAYER_INDEX)
+				&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0
+				&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.08
+				&& intBid > 0) {
+			
+			System.out.println("Special Position double mellow with prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
+			//Lower requirements for double mellow with special position:
+			//TODO: maybe have an extra spade consideration...
+			
+			if(playerHasTwoPermBadSuits( dataModel)) {
+				return intBid +"";
+			} else {
+				return 0 + "";
+			}
+			
 		} else {
 			
 			return intBid + "";
 		}
 	}
 	
+	public static boolean partnerDidntSayMellow(DataModel dataModel) {
+		if(dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX) == false) {
+			return true;
+		} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) != 0){
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+	
+	public static boolean playerHasTwoPermBadSuits(DataModel dataModel) {
+		
+		int numBad = 0;
+		for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+			
+			if(dataModel.getNumberOfCardsOneSuit(suit) >= 3
+				&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+					dataModel.getCardCurrentPlayergetThirdLowestInSuit(suit))
+				<= 1
+				&& dataModel.getNumberOfCardsOneSuit(suit) <= 7
+				) {
+				numBad++;
+				
+			} else if(dataModel.getNumberOfCardsOneSuit(suit) >= 2
+					&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+					dataModel.getCardCurrentPlayergetSecondLowestInSuit(suit))
+					== 0
+				&& dataModel.getNumberOfCardsOneSuit(suit) <= 10
+				) {
+				numBad++;
+				
+			} else if(dataModel.getNumberOfCardsOneSuit(suit) >= 1
+					&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+					dataModel.getCardCurrentPlayerGetLowestInSuit(suit))
+					== 0
+				) {
+				numBad++;
+				
+			}
+			
+		}
+		
+		if(numBad == 2) {
+			System.out.println("Rejected!");
+			return true;
+		}
+		
+		return false;
+	}
 	
 	//TODO: maybe I should care if the bid is a fraction like 0.7
 	//This is a rough estimate that will hopefully be refined later.
