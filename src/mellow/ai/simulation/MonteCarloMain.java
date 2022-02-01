@@ -277,7 +277,7 @@ public class MonteCarloMain {
 					){
 					
 					if(i % 1000 == 0) {
-						System.err.println("WARNING: Bids don't make sense! Monte will not be skipping any hands.");
+						System.err.println("WARNING: Bids don't make sense! Monte will not be skipping any hands because of bids.");
 					}
 				} else {
 					

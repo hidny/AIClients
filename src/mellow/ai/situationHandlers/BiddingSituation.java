@@ -11,9 +11,6 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TS 5S 4S 2S AH KH 9H 7H 2H 8C 6C 6D")) {
-			System.out.println("Debug");
-		}
 		double bid = 0.0;
 		
 		//#Add number of aces:

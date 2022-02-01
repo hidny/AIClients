@@ -1326,7 +1326,27 @@ public class NoMellowPlaySituation {
 				} else if(thirdVoid == false && fourthProbVoid == false){
 					
 					if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
+						
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 7S JH 6H QC 3C KD")) {
+							System.out.println("Debug");
+						}
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+						
+						//I'm still not ready to do Queen tricks :(
+						/*
+						if(leaderSuitIndex == Constants.SPADE
+								&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) >= 2
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+										dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex)) == 1
+								//TODO: implement a "deserved" tricks counter.
+								&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) <= dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX)
+								&& dataModel.signalHandler.getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
+									> DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex))) {
+							//Play for tricks:
+							//Play Q equiv instead of master in the hopes of making an extra trick:
+							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+						}*/
+						
 					} else {
 						
 						String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
@@ -2103,6 +2123,8 @@ public class NoMellowPlaySituation {
 			return cardToPlay;
 			
 		} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+			
+			//cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, dataModel.getCardInHandClosestOverCurrentWinner());
 			cardToPlay = dataModel.getCardInHandClosestOverCurrentWinner();
 			
 		} else {
