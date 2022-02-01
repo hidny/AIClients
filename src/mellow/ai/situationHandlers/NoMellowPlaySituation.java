@@ -2124,8 +2124,7 @@ public class NoMellowPlaySituation {
 			
 		} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
 			
-			//cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, dataModel.getCardInHandClosestOverCurrentWinner());
-			cardToPlay = dataModel.getCardInHandClosestOverCurrentWinner();
+			cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, dataModel.getCardInHandClosestOverCurrentWinner());
 			
 		} else {
 			cardToPlay = getJunkiestCardToFollowLead(dataModel);
