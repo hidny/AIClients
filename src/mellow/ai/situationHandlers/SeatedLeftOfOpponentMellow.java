@@ -668,19 +668,18 @@ public class SeatedLeftOfOpponentMellow {
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6S 5S 2S TH 9H KC")) {
 			System.out.println("Debug");
 		}
+
 		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
 				continue;
 			}
 			
-			
 			//TODO: should I treat the other off-suits differently than spades?
-		
+
 			String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
-	
+
 			if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
-				
 
 				//TODO: FROM DEBUG TESTCASE:
 				// IF PARTNER AND PROTECTOR VOID:
@@ -700,13 +699,12 @@ public class SeatedLeftOfOpponentMellow {
 				// AND PROTECTOR VOID IN SPADE:
 				//...
 				
-				
 				//TODO: instead of just returning, try grading the options!
 				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
 				//(Save 2C for the end)
 				
 				int curLowestRankSuitScore = DataModel.getRankIndex(tempLowest);
-				
+
 				// pretend lowest spades have a higher rank to discourage use of spades:
 				if(suit == Constants.SPADE) {
 					curLowestRankSuitScore += 9.0;
@@ -748,12 +746,53 @@ public class SeatedLeftOfOpponentMellow {
 			
 			return leadLowButAvoidWastingLowestCardInSuit(dataModel, bestSuitIndex);
 			
-			
 		} else {
-		
-			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+
+			int bestValue = -1;
+			for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
+				if(suit == Constants.SPADE) {
+					continue;
+				}
+				
+				if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
+					continue;
+				}
+				
+				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit) == 0) {
+					continue;
+				}
+				
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(MELLOW_PLAYER_INDEX, suit)) {
+					continue;
+				}
+				
+				int curValue = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit);
+				
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suit)) {
+					curValue += 2;
+				}
+				
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(PROTECTOR_PLAYER_INDEX, suit)) {
+					curValue += 2;
+				}
+				
+				if(curValue > bestValue) {
+					bestValue = curValue;
+					bestSuitIndex = suit;
+				}
+			}
+			if(bestSuitIndex != -1) {
+				if(dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndex))) {
+					return dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndex);
+				} else {
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndex);
+				}
+			} else {
+				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			}
 		}
 	}
+	
 	
 	
 
@@ -844,5 +883,77 @@ public class SeatedLeftOfOpponentMellow {
 			return true;
 		}
 		
+	}
+	
+	
+
+	//TODO: actually use this eventually:
+	public static boolean suitLeadCouldGivePartnerChanceToTrump(DataModel dataModel, int suit) {
+		if(suit == Constants.SPADE
+				|| dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
+			return false;
+		}
+		//TODO: put in function
+		String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, suit);
+		int maxRankUnder = -1;
+		
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suit)) {
+			boolean upperBound = true;
+			boolean forgetIt = false;
+			if(maxRankCardMellow == null) {
+				forgetIt = true;
+			} else if(DataModel.getRankIndex(maxRankCardMellow) == DataModel.ACE) {
+				upperBound = false;
+			} else {
+				maxRankUnder = 1 + DataModel.getRankIndex(maxRankCardMellow);
+			}
+			
+			int numPotentialCards = 0;
+			
+			if(! forgetIt && upperBound ) {
+				numPotentialCards = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+						DataModel.getCardString(maxRankUnder, suit));
+				
+			} else if( !forgetIt && !upperBound) {
+				
+				numPotentialCards = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit);
+				
+			}
+			
+			boolean retCard = false;
+			if(numPotentialCards > 0 && dataModel.isVoid(PROTECTOR_PLAYER_INDEX, suit)) {
+				//curLowestRankSuitScore -= 10;
+				//curLowestRankSuitScore -= 100;
+				retCard = true;
+			} else if(numPotentialCards > 0 && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(PROTECTOR_PLAYER_INDEX, suit)) {
+				//curLowestRankSuitScore -= 10*(numPotentialCards + 1)*numPotentialCards/2;
+				//curLowestRankSuitScore -= 100;
+				retCard = true;
+				
+			} else if(numPotentialCards > 1) {
+				//curLowestRankSuitScore -= 10*(numPotentialCards + 1)*numPotentialCards/2;
+				//curLowestRankSuitScore -= 100;
+				retCard = true;
+				
+			}
+			
+			if(retCard) {
+				String curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(suit);
+				String lowestCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
+				
+				if(maxRankCardMellow != null
+						&& DataModel.getRankIndex(lowestCard) < DataModel.getRankIndex(maxRankCardMellow)) {
+					//return lowestCard;
+					return true;
+				} else {
+					return true;
+					//return dataModel.getCardCurrentPlayerGetHighestInSuit(suit);
+				}
+			}
+			
+		}
+		
+		return false;
+		//End TODO put in function
 	}
 }
