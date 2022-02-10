@@ -283,10 +283,10 @@ public class BiddingSituation {
 				int temp2 = BiddingNearEndOfGameFunctions.getPossiblyLowerBidBecauseItsNearEndOfGameAssumeWorst(dataModel, 2, scoresProjectedWorstCase);
 				
 				if(temp2 == 1 
-						&& dataModel.getOpponentScore() < 750
-						&& (        BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.6
+						&& dataModel.getOpponentScore() < 800
+						&& (        BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.80
 								|| 
-							       (BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.5
+							       (BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.60
 									&& dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
 								    && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4)
 							)
@@ -550,7 +550,11 @@ public class BiddingSituation {
 			//Lower requirements for double mellow:
 			System.out.println("Double mellow with prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
 			
-			if(playerHasTwoPermBadSuits( dataModel)) {
+			if(playerHasTwoPermBadSuits(dataModel)) {
+				return intBid +"";
+			} else if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 4
+					&& !dataModel.hasCard("2S")) {
+				//Don't tempt fate:
 				return intBid +"";
 			} else {
 				return 0 + "";
