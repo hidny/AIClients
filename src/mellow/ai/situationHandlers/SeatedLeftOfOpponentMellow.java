@@ -13,7 +13,6 @@ public class SeatedLeftOfOpponentMellow {
 	public static int MELLOW_PLAYER_INDEX = 3;
 	public static int PROTECTOR_PLAYER_INDEX = 1;
 	
-	//TODO
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
 		
 

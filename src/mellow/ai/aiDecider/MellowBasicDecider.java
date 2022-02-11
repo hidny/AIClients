@@ -11,6 +11,8 @@ import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
 import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
 import mellow.ai.situationHandlers.SingleActiveMellowPlayer;
+import mellow.ai.situationHandlers.doubleMellow.SeatedLeftOfDoubleMellow;
+import mellow.ai.situationHandlers.doubleMellow.SeatedRightOfDoubleMellow;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -67,7 +69,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		this.dataModel = dataModelInput;
 	}
 	
-	public static final int SPADE = 0;
+	/*public static final int SPADE = 0;
 	public static final int HEART = 1;
 	public static final int CLUB = 2;
 	public static final int DIAMOND = 3;
@@ -77,7 +79,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	//1: west cards
 	//2: north cards
 	//3: east cards
-	
+	*/
 	
 	public void resetStateForNewRound() {
 		dataModel.resetStateForNewRound();
@@ -247,21 +249,36 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 			
 		} else if(numActiveMellows == 2) {
-			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
+			
+			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0
+					&& ! dataModel.burntMellow(Constants.CURRENT_PARTNER_INDEX)) {
+				
+				if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0
+						&& ! dataModel.burntMellow(Constants.LEFT_PLAYER_INDEX)) {
+					return SeatedRightOfDoubleMellow.playMoveSeatedRightOfDoubleMellow(dataModel);
+					
+				} else if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+						&& ! dataModel.burntMellow(Constants.RIGHT_PLAYER_INDEX)) {
+
+					return SeatedLeftOfDoubleMellow.playMoveSeatedLeftOfDoubleMellow(dataModel);
+				
+				} else if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0
+						&& ! dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX)) {
+
+					return SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
+					
+				} else {
+					return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
+				}
+				
+			} else if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
 				
 				
 				System.out.println("MELLOW TEST (double mellow)");
 				return SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
 
-			} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0){
-
-				//TODO: not quite right:
-				//This should be the most complicated logic of the game,
-				//but let's start simple!
-				return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
-				
 			} else {
-
+				System.out.println("Both opponents said mellow");
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
 			
