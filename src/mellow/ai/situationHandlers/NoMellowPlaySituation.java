@@ -573,6 +573,33 @@ public class NoMellowPlaySituation {
 			}
 			
 		}
+		
+		//Avoid leading spade if partner is trumping:
+		
+		if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+			) {
+			for(int suitIndex = 0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+				if(suitIndex == Constants.SPADE) {
+					continue;
+				}
+				
+				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) <= 4
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_AGENT_INDEX, suitIndex)
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 5) {
+					
+					curScore -= 5 * dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+				
+				} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 5) {
+					
+					curScore += 5 * dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
+				}
+			}
+			
+		}
+		//End avoid leading spade if partner is trumping.
 
 		return new CardAndValue(cardToPlay, curScore);
 	}
