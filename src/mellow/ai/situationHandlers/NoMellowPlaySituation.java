@@ -117,7 +117,8 @@ public class NoMellowPlaySituation {
 		int numCardsOfSuitOtherPlayersHave =
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 5S 4S 2S JH 6H 2H KC TC 9C 4D 3D")) {
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5C ")) {
 			System.out.println("Debug");
 		}
 
@@ -486,55 +487,78 @@ public class NoMellowPlaySituation {
 			System.out.println("Debug");
 		}
 		
-
-		int bidDiff = (dataModel.getBid(Constants.CURRENT_PLAYER_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX))
-		- (dataModel.getBid(Constants.LEFT_PLAYER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
-		//Rough way to look at the bids to decide whether or not to play spade
 		
-		if((dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
-				&& (dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
-					- dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX) >= 2
-				    && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-				    && bidDiff <= -2
-			    )
-			)
-				||	(  ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
-						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE))
-		
-				) {
+		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE) 
+				&& ((dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) <= 2
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) >= 0)
+					||
+					dataModel.playerCouldSweepSpades(Constants.SPADE)
+					)
+				&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
 			
-			//Don't feed RHS.
-			curScore -= 40.0;
-		}
-		
+			//If you could pretty much sweep spade:
+			curScore += 20.0;
+			
+			if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) == 1) {
 
-		if((dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
-				&& (
-						(dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
-						- dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) >= 2
-						&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-						//&& ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
-						&& bidDiff <= -2
-						)
-				)
-			)
-					||	
-						( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-								&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
-								&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-					 )
-			 ) {
-			//Don't feed LHS.
-			curScore -= 40.0;
-		}
-		
-		
-		if(bidDiff > 0) {
-			//Limit how much of a benefit this is because it's covered elsewheres:
-			curScore += 5.0 * Math.min(4, bidDiff);
+				curScore += 20.0;
+			}
+			
 		} else {
-			curScore += 5.0 * Math.max(-3, bidDiff);
+
+			//Maybe leading spade helps opponents?
+			
+			int bidDiff = (dataModel.getBid(Constants.CURRENT_PLAYER_INDEX) + dataModel.getBid(Constants.CURRENT_PARTNER_INDEX))
+			- (dataModel.getBid(Constants.LEFT_PLAYER_INDEX) + dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
+			//Rough way to look at the bids to decide whether or not to play spade
+			
+			
+			if((dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >= 5
+					&& (dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
+						- dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX) >= 2
+					    && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+					    && bidDiff <= -2
+				    )
+				)
+					||	(  ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+							&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE))
+			
+					) {
+				
+				//Don't feed RHS.
+				curScore -= 40.0;
+			}
+			
+	
+			if((dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 5
+					&& (
+							(dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+							- dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) >= 2
+							&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+							//&& ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+							&& bidDiff <= -2
+							)
+					)
+				)
+						||	
+							( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+									&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+									&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						 )
+				 ) {
+				//Don't feed LHS.
+				curScore -= 40.0;
+			}
+			
+			
+			if(bidDiff > 0) {
+				//Limit how much of a benefit this is because it's covered elsewheres:
+				curScore += 5.0 * Math.min(4, bidDiff);
+			} else {
+				curScore += 5.0 * Math.max(-3, bidDiff);
+			}
+			
 		}
 		
 		//Check if we're wasting spades we can trump with:
@@ -612,8 +636,8 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 6S JH TC 4C 2C 4D 2D ")
-				&& (suitIndex == Constants.HEART)) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5C ")
+				&& (suitIndex == Constants.CLUB)) {
 			System.out.println("Debug");
 		}
 
