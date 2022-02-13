@@ -46,7 +46,7 @@ public class SeatedRightOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 4S KH 2C KD JD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH AC KC JC 8C KD TD 8D")) {
 			System.out.println("Debug");
 		}
 		
@@ -103,6 +103,11 @@ public class SeatedRightOfOpponentMellow {
 				long numStartedWithInSuit = dataModel.getNumCardsCurrentUserStartedWithInSuit(suit);
 				
 				curLowestRankSuitScore += 2.0 * numStartedWithInSuit;
+				
+				//Let the num cards under and over affect the decision:
+				int numUnder = dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, suit));
+				int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, suit));
+				curLowestRankSuitScore += (1.0 + numUnder) / (1.0 + numOver);
 				
 				
 				if(curLowestRankSuitScore < lowestRankScore) {

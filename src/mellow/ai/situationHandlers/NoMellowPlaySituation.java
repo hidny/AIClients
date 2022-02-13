@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S 4H QD 9D 7D 4D ")) {
 			System.out.println("Debug");
 		}
 
@@ -636,8 +636,8 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 5C ")
-				&& (suitIndex == Constants.CLUB)) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S 4H QD 9D 7D 4D")
+				&& suitIndex == Constants.DIAMOND) {
 			System.out.println("Debug");
 		}
 
