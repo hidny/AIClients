@@ -208,7 +208,7 @@ public class PlayerSaidMellowSignals {
 	
 public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mellowPlayerIndex) {
 		
-		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard, true);
+		boolean cardsOverInputCard[][] = dataModel.getCardsStrictlyMorePowerfulThanCard(inputCard, false);
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(inputCard);
 		
