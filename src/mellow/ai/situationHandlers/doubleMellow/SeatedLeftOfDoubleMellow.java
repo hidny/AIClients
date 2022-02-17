@@ -125,7 +125,14 @@ public class SeatedLeftOfDoubleMellow {
 					
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 					
+				} else if(dataModel.getSuitOfSecondThrow() == leadSuit
+						&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(dataModel.getCardSecondThrow()) >= 3 ){
+					
+					//Save low ones for later...
+					return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit);
+					
 				} else {
+				
 					return defaultProtectCard;
 				}
 			 

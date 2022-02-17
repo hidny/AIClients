@@ -71,4 +71,7 @@ public class SeatedRightOfDoubleMellow {
 			return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
 		}
 	}
+	
+	//TODO: code to handle 2nd throw
+	//Implement code once you have test cases for it.
 }
