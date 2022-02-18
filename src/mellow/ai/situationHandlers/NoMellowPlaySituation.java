@@ -590,13 +590,30 @@ public class NoMellowPlaySituation {
 			
 			cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 			
-			//Play high anyways if you have lots of spade...
 			if(3 * numCardsOfSuitInHand > 
 					7 + dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
+
+				//Play high anyways if you have lots of spade...
+				
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			
 			}
 			
 		}
+
+		//Play high anyways if you partner has lots of spade:
+		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
+				&& ! NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+				&& ! (NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 3)
+				&& numCardsOfSuitInHand <= 3
+				&& numCardsOfSuitOtherPlayersHave >= 8
+			) {
+			
+			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			//Play high anyways if you partner has lots of spade...
+		}
+		
 		
 		//Avoid leading spade if partner is trumping:
 		
