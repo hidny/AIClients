@@ -301,11 +301,23 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 		} else if(itsYourTurn) {
 			itsYourBid = false;
 			itsYourTurn = false;
-			String cardToPlay = gameAIAgent.getCardToPlay();
 			
+			String cardToPlay ="";
+			boolean mightBeGoodCard = false;
+			do {
+				cardToPlay = gameAIAgent.getCardToPlay();
+				
+				mightBeGoodCard = !(cardToPlay == null || cardToPlay.trim().equals(""));
+				
+				if(mightBeGoodCard == false) {
+					System.out.println("Invalid card! Try again:");
+				}
+				
+			} while(mightBeGoodCard == false);
 			
 			if(cardToPlay == null || cardToPlay.trim().equals("")) {
-				System.out.println("ERROR: DIDNT FIND A CARD");
+				System.out.println("ERROR: DIDNT FIND A CARD!");
+				System.out.println("Sending invalid card, so the server will decide what to play.");
 				return "/move 1";
 			} else {
 				return "/move " + cardToPlay;

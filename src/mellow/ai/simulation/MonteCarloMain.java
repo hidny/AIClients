@@ -157,20 +157,11 @@ public class MonteCarloMain {
 			//TODO: Might not need as many simulations for bids...
 			num_simulations /= 2;
 			
-			if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.1) {
-				
-				//Skip trying mellow when it's a clear loser:
-				//Do this to stop triple mellows from happening...
-				actionString = new String[maxBidThatIsRealistic];
-				for(int i=0; i<actionString.length; i++) {
-					actionString[i] = (i+1) + "";
-				}
-				
-			} else {
-				actionString = new String[maxBidThatIsRealistic + 1];
-				for(int i=0; i<actionString.length; i++) {
-					actionString[i] = i + "";
-				}
+			
+			//Always try to mellow because it's fun!
+			actionString = new String[maxBidThatIsRealistic + 1];
+			for(int i=0; i<actionString.length; i++) {
+				actionString[i] = i + "";
 			}
 			
 		} else {
@@ -270,7 +261,8 @@ public class MonteCarloMain {
 				//Make sure bids are made by players that know what they are doing:
 				if( ! dataModel.stillInBiddingPhase()
 						&& (
-						(dataModel.getBidTotal() <= 8
+								//<= 8 is possible sometimes... Especially when I accidentally bid too low.
+						(dataModel.getBidTotal() <= 7
 						&& ! dataModel.someoneBidMellow())
 						|| dataModel.getBidTotal() >= 15
 						)
