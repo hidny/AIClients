@@ -50,7 +50,7 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
@@ -60,7 +60,7 @@ public class MonteCarloMain {
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
@@ -247,21 +247,7 @@ public class MonteCarloMain {
 			if(processSignals) {
 				
 				//3rd arg is just for debug
-				boolean realistic = isCardDistRealistic(dataModel, distCards, numSkipped < 50);
-				boolean realistic2 = isCardDistRealistic2(dataModel, distCards, numSkipped < 50);
-				
-				//TODO: test 3-1078: (Burnt mellow signals)
-				//TODO: test that there's no discrepancy except for AS...
-				if(realistic != realistic2 && numSkipped < 300) {
-					System.err.println("ERROR: isCardDistRealistic returned " + realistic + " while isCardDistRealistic2 returned " + realistic2);
-					
-					boolean realisticDebug = isCardDistRealistic(dataModel, distCards, true);
-					boolean realisticDebug2 = isCardDistRealistic2(dataModel, distCards, true);
-					if(realisticDebug != realisticDebug2) {
-						System.err.println("ERROR2: isCardDistRealistic returned " + realistic + " while isCardDistRealistic2 returned " + realistic2);
-					}
-					
-				}
+				boolean realistic = isCardDistRealistic2(dataModel, distCards, numSkipped < 50);
 				
 				if( ! realistic) {
 					
@@ -774,109 +760,6 @@ public class MonteCarloMain {
 	//that doesn't need to skip 99% of hands it generates...
 	//You just need to tweak the design to something less silly.
 		//See SimulationSetupWithSignalsAndMemBoost
-	 public static boolean isCardDistRealistic(DataModel dataModel, String distCards[][], boolean debug) {
-
-		 //Signals happen during the play, so don't worry about signals before the play.
-		 if(dataModel.stillInBiddingPhase()
-				 || (dataModel.getNumCardsInCurrentPlayerHand() == Constants.NUM_STARTING_CARDS_IN_HAND
-						 && dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX)
-				) {
-			 //WRONG: AS signalled no by mellow player....
-			 return true;
-		 }
-		 
-		 boolean ret = true;
-		 
-		 for(int i=0; i<distCards.length; i++) {
-			 if(i == Constants.CURRENT_AGENT_INDEX) {
-				 //Don't question your own hand.
-				 continue;
-			 }
-			 
-			 if( ! dataModel.stillInBiddingPhase()
-						&& dataModel.getBid(i) == 0) {
-					 
-					 for(int j=0; j<distCards[i].length; j++) {
-
-						 if(! isSignalledCardGoodForMellowBidder(dataModel, i, distCards[i][j], debug)) {
-							 return false;
-						 }
-							
-					 }
-				 } else if( ! dataModel.stillInBiddingPhase() ) {
-					 
-					 
-					 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
-						 
-						 String master = dataModel.getCurrentMasterCardInSuit(suitIndex);
-						 
-						 if(master == null) {
-							 continue;
-						 }
-						 
-						 if(   (i == Constants.LEFT_PLAYER_INDEX
-								 && dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(suitIndex))
-							|| (i == Constants.CURRENT_PARTNER_INDEX
-								 && dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex))
-							|| (i == Constants.RIGHT_PLAYER_INDEX
-								 && dataModel.signalHandler.rightHandSideHasMasterBasedOnSignals(suitIndex))
-							) {
-							 boolean foundMaster = false;
-							 
-							 for(int j=0; j<distCards[i].length; j++) {
-								 if(master.equals(distCards[i][j])) {
-									 foundMaster = true;
-									 break;
-								 }
-							 }
-							 
-							 if(foundMaster == false) {
-								 if(debug) {
-									 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have the master " + master + ".");
-								 }
-
-								 return false;
-								
-							 }
-							 
-						 }
-						 
-					 }
-					 
-					 
-					 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
-						
-						 if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(i, suitIndex)) {
-							 continue;
-						 }
-						 
-						 int max = dataModel.signalHandler.getMaxCardRankSignal(i, suitIndex);
-						 
-						 int min = dataModel.signalHandler.getMinCardRankSignal(i, suitIndex);
-						 //Alt if min signal is not trust-worthy:
-						 //int min = DataModel.RANK_TWO;
-						 
-						 for(int j=0; j<distCards[i].length; j++) {
-							 
-
-							 if(CardStringFunctions.getIndexOfSuit(distCards[i][j]) == suitIndex
-									 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
-								 
-								 
-								 if( ! isCardSignalledGoodForNonMellowBidder(dataModel, distCards[i][j], i, min, max, debug)) {
-									 return false;
-								 }
-							 }
-						 }
-						 
-					 }
-					
-				 }
-		 }
-		 
-		 return ret;
-	 }
-	 
 	 public static boolean isCardDistRealistic2(DataModel dataModel, String distCards[][], boolean debug) {
 		 
 		 for(int playerIndex=0; playerIndex<Constants.NUM_PLAYERS; playerIndex++) {
