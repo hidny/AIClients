@@ -2,6 +2,7 @@ package mellow.ai.simulation;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import mellow.Constants;
@@ -49,7 +50,7 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
@@ -62,7 +63,7 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -144,7 +145,17 @@ public class MonteCarloMain {
 			System.out.print(obviousCards[i] + " ");
 		}
 		System.out.println();
+		
+		System.out.println("DEBUG: obvious and active cards base on void signals:");
+		String signalledCard[] = dataModel.getActiveCardsWithSignalledOwnersInOtherHandsDebug();
+		for(int i=0; i<signalledCard.length; i++) {
+			System.out.print(signalledCard[i] + " ");
+		}
+		System.out.println();
 		//END DEBUG PRINT POSSIBILITIES
+		System.out.println("DEBUG getCardPossibilities:");
+		getCardPossibilities(dataModel);
+		System.out.println("END DEBUG getCardPossibilities:");
 		
 		
 		String actionString[];
@@ -768,116 +779,230 @@ public class MonteCarloMain {
 			 }
 			 
 			 if( ! dataModel.stillInBiddingPhase()
-					&& dataModel.getBid(i) == 0) {
-				 
-				 for(int j=0; j<distCards[i].length; j++) {
-
-					 if(dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
-						 
-						 int suitIndex = CardStringFunctions.getIndexOfSuit(distCards[i][j]);
-						 int rankIndex = DataModel.getRankIndex(distCards[i][j]);
-						 
-						 if( dataModel.getCardsCurrentlyHeldByPlayers()[i]
-								 [suitIndex]
-								 [rankIndex]
-								== VoidSignalsNoActiveMellows.MELLOW_PLAYER_SIGNALED_NO) {
-							 
-							 if(debug) {
-								 System.err.println("NOPE! Mellow bidder (" + dataModel.getPlayers()[i] + ") doesn't have the " + distCards[i][j] + ".");
-							 }
-							 return false;
-						 }
-						 
-					 }
-						
-				 }
-			 } else if( ! dataModel.stillInBiddingPhase() ) {
-				 
-				 
-				 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
-					 
-					 String master = dataModel.getCurrentMasterCardInSuit(suitIndex);
-					 
-					 if(master == null) {
-						 continue;
-					 }
-					 
-					 if(   (i == Constants.LEFT_PLAYER_INDEX
-							 && dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(suitIndex))
-						|| (i == Constants.CURRENT_PARTNER_INDEX
-							 && dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex))
-						|| (i == Constants.RIGHT_PLAYER_INDEX
-							 && dataModel.signalHandler.rightHandSideHasMasterBasedOnSignals(suitIndex))
-						) {
-						 boolean foundMaster = false;
-						 
-						 for(int j=0; j<distCards[i].length; j++) {
-							 if(master.equals(distCards[i][j])) {
-								 foundMaster = true;
-								 break;
-							 }
-						 }
-						 
-						 if(foundMaster == false) {
-							 if(debug) {
-								 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have the master " + master + ".");
-							 }
-
-							 return false;
-							
-						 }
-						 
-					 }
-					 
-				 }
-				 
-				 
-				 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
-					
-					 if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(i, suitIndex)) {
-						 continue;
-					 }
-					 
-					 int max = dataModel.signalHandler.getMaxCardRankSignal(i, suitIndex);
-					 
-					 int min = dataModel.signalHandler.getMinCardRankSignal(i, suitIndex);
-					 //Alt if min signal is not trust-worthy:
-					 //int min = DataModel.RANK_TWO;
+						&& dataModel.getBid(i) == 0) {
 					 
 					 for(int j=0; j<distCards[i].length; j++) {
-						 
 
-						 if(CardStringFunctions.getIndexOfSuit(distCards[i][j]) == suitIndex
-								 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
-							 
-							 if(DataModel.getRankIndex(distCards[i][j]) < min) {
-
-								 if(debug) {
-									 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have higher card than " + distCards[i][j] + ".");
-								 }
-								 
-								 return false;
-							 } else if(DataModel.getRankIndex(distCards[i][j]) > max) {
-								
-								 if(debug) {
-									 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have lower card than " + distCards[i][j] + ".");
-								 }
-								 
-								 return false;
-							 }
+						 if(! isSignalledCardGoodForMellowBidder(dataModel, i, distCards[i][j], debug)) {
+							 return false;
 						 }
+							
+					 }
+				 } else if( ! dataModel.stillInBiddingPhase() ) {
+					 
+					 
+					 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+						 
+						 String master = dataModel.getCurrentMasterCardInSuit(suitIndex);
+						 
+						 if(master == null) {
+							 continue;
+						 }
+						 
+						 if(   (i == Constants.LEFT_PLAYER_INDEX
+								 && dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(suitIndex))
+							|| (i == Constants.CURRENT_PARTNER_INDEX
+								 && dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex))
+							|| (i == Constants.RIGHT_PLAYER_INDEX
+								 && dataModel.signalHandler.rightHandSideHasMasterBasedOnSignals(suitIndex))
+							) {
+							 boolean foundMaster = false;
+							 
+							 for(int j=0; j<distCards[i].length; j++) {
+								 if(master.equals(distCards[i][j])) {
+									 foundMaster = true;
+									 break;
+								 }
+							 }
+							 
+							 if(foundMaster == false) {
+								 if(debug) {
+									 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[i] + ") should have the master " + master + ".");
+								 }
+
+								 return false;
+								
+							 }
+							 
+						 }
+						 
 					 }
 					 
-				 }
-				 /*for(int j=0; j<distCards.length; j++) {
-					 if(j != Constants.CURRENT_AGENT_INDEX
-							 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
+					 
+					 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+						
+						 if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(i, suitIndex)) {
+							 continue;
+						 }
+						 
+						 int max = dataModel.signalHandler.getMaxCardRankSignal(i, suitIndex);
+						 
+						 int min = dataModel.signalHandler.getMinCardRankSignal(i, suitIndex);
+						 //Alt if min signal is not trust-worthy:
+						 //int min = DataModel.RANK_TWO;
+						 
+						 for(int j=0; j<distCards[i].length; j++) {
+							 
+
+							 if(CardStringFunctions.getIndexOfSuit(distCards[i][j]) == suitIndex
+									 && dataModel.isCardPlayedInRound(distCards[i][j]) == false) {
+								 
+								 
+								 if( ! isCardSignalledGoodForNonMellowBidder(dataModel, distCards[i][j], i, min, max, debug)) {
+									 return false;
+								 }
+							 }
+						 }
 						 
 					 }
-				 }*/
-			 }
+					
+				 }
 		 }
 		 
 		 return ret;
 	 }
+	 
+	 
+	 //TODO: make isCardDistRealistic just 
+	 // refer to playerPos and streamline this!
+	 //For now, I'm just going to run monte and make sure I didn't mess it up.
+	 
+	 public static HashSet<String> playerPos[] = new HashSet[Constants.NUM_PLAYERS];
+	 
+	 public static void getCardPossibilities(DataModel dataModel) {
+		 
+		 playerPos = new HashSet[Constants.NUM_PLAYERS];
+		 
+		 for(int playerIndex = 0; playerIndex<Constants.NUM_PLAYERS; playerIndex++) {
+			 
+			 playerPos[playerIndex] = new HashSet<String>();
+					 
+			 if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
+				 continue;
+			 }
+			 
+			 
+			 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+				 
+				 if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(playerIndex, suitIndex)) {
+					 continue;
+				 }
+				 
+				 boolean mellowBidderSignalledNo[] = new boolean[Constants.NUM_RANKS];
+				 boolean nonMellowBidderSignalledNo[] = new boolean[Constants.NUM_RANKS];
+				 
+				 //Mellow bidder signals:
+				 if(dataModel.playerMadeABidInRound(playerIndex)
+						 && dataModel.getBid(playerIndex) == 0) {
+
+					 for(int rankIndex = 0; rankIndex<=Constants.NUM_RANKS; rankIndex++) {
+						 
+						
+						 if( ! isSignalledCardGoodForMellowBidder(dataModel, playerIndex, DataModel.getCardString(rankIndex, suitIndex), false)) {
+							 mellowBidderSignalledNo[rankIndex] = true;
+						 }
+							 
+					 }
+				 }
+				 
+				 if(dataModel.playerMadeABidInRound(playerIndex)
+						 && (dataModel.getBid(playerIndex) > 0
+						|| dataModel.burntMellow(playerIndex))) {
+					
+					int max = dataModel.signalHandler.getMaxCardRankSignal(playerIndex, suitIndex);
+				 	int min = dataModel.signalHandler.getMinCardRankSignal(playerIndex, suitIndex);
+				 	
+
+				 	for(int rankIndex = DataModel.RANK_TWO; rankIndex< Math.max(min, DataModel.RANK_TWO) - 1; rankIndex++) {
+				 		nonMellowBidderSignalledNo[rankIndex] = true;
+				 	}
+				 	
+				 	
+				 	for(int rankIndex = Math.min(max, DataModel.ACE) + 1; rankIndex<= DataModel.ACE; rankIndex++) {
+				 		nonMellowBidderSignalledNo[rankIndex] = true;
+				 	}
+				 }
+				 
+				 for(int rankIndex = 0; rankIndex<Constants.NUM_RANKS; rankIndex++) {
+
+					 String card = DataModel.getCardString(rankIndex, suitIndex);
+					 
+					 if(mellowBidderSignalledNo[rankIndex] == false
+						&& nonMellowBidderSignalledNo[rankIndex] == false
+						&& dataModel.isCardPlayedInRound(card) == false
+						&& dataModel.hasCard(card) == false) {
+						 playerPos[playerIndex].add(card);
+					 }
+				 }
+				 
+			 }
+		 }
+		 
+		 for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			 if(i == Constants.CURRENT_AGENT_INDEX) {
+				 continue;
+			 }
+			System.out.println("Possible cards for " + dataModel.getPlayers()[i] + ": ");
+			
+			Object array[] = playerPos[i].toArray();
+			
+			String array2[] = new String[array.length];
+			
+			for(int j=0; j<array2.length; j++) {
+				array2[j] = array[j].toString();
+			}
+			
+			String sortedArray[] = CardStringFunctions.sort(array2);
+			for(int j=0; j<playerPos[i].size(); j++) {
+				System.out.print(sortedArray[j] + " ");
+			}
+		 }
+		 
+	 }
+	 
+	 public static boolean isSignalledCardGoodForMellowBidder(DataModel dataModel, int playerIndex, String card, boolean debug) {
+		 if(dataModel.isCardPlayedInRound(card) == false) {
+			 
+			 int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+			 int rankIndex = DataModel.getRankIndex(card);
+			 
+			 if( dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex]
+					 [suitIndex]
+					 [rankIndex]
+					== VoidSignalsNoActiveMellows.MELLOW_PLAYER_SIGNALED_NO) {
+				 
+				 if(debug) {
+					 System.err.println("NOPE! Mellow bidder (" + dataModel.getPlayers()[playerIndex] + ") doesn't have the " + card + ".");
+				 }
+				 return false;
+			 }
+			 
+		 }
+		 
+		 return true;
+	 }
+	 
+	 public static boolean isCardSignalledGoodForNonMellowBidder(DataModel dataModel, String card, int playerIndex, int minRank, int maxRank, boolean debug) {
+		 
+		 
+		 if(DataModel.getRankIndex(card) < minRank) {
+
+			 if(debug) {
+				 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[playerIndex] + ") should have higher card than " + card + ".");
+			 }
+			 
+			 return false;
+		 } else if(DataModel.getRankIndex(card) > maxRank) {
+			
+			 if(debug) {
+				 System.err.println("NOPE! Mellow player (" + dataModel.getPlayers()[playerIndex] + ") should have lower card than " + card + ".");
+			 }
+			 
+			 return false;
+		 }
+		 
+
+		 return true;
+	 }
+	 
 }

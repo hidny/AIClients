@@ -1,5 +1,7 @@
 package mellow.ai.cardDataModels;
 
+import java.util.ArrayList;
+
 import mellow.Constants;
 import mellow.ai.simulation.SimulationSetupWithMemBoost;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
@@ -822,6 +824,75 @@ public class DataModel {
 		}
 		
 		return knownCards;
+	}
+	
+	public String[] getActiveCardsWithSignalledOwnersInOtherHandsDebug() {
+
+		
+		ArrayList<String> knownCards = new ArrayList<String>();
+		
+		boolean useSignals = true;
+		
+		boolean voidArray[][] = this.createVoidArray(useSignals);
+		
+		NEXT_CARD:
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int player=0; player<Constants.NUM_PLAYERS; player++) {
+				if(player == Constants.CURRENT_AGENT_INDEX) {
+					continue;
+				}
+				
+				int suitIndex = i/Constants.NUM_RANKS;
+				int rankIndex = i%Constants.NUM_RANKS;
+				
+				if(this.cardsUsed[suitIndex][rankIndex]) {
+					continue NEXT_CARD;
+				} else if(cardsCurrentlyHeldByPlayer[player][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS] == CERTAINTY) {
+
+					knownCards.add(getCardString(i));
+					continue NEXT_CARD;
+				
+				} else if(otherTwoSignalledVoidInSuit(player, suitIndex, voidArray)) {
+					knownCards.add(getCardString(i));
+					continue NEXT_CARD;
+				}
+				//TODO: use isCardDistRealistic to deduce more?
+				//Pretty hard...
+				// OR: change isCardDistRealistic to have helper functions that could figure this out for me.
+			}
+		}
+		
+		
+		String knownCardsRet[] = new String[knownCards.size()];
+		
+		for(int i=0; i<knownCardsRet.length; i++) {
+			knownCardsRet[i] = knownCards.get(i);
+		}
+		return knownCardsRet;
+	}
+	
+	private static boolean otherTwoSignalledVoidInSuit(int playerIndex, int suitIndex, boolean voidArray[][]) {
+		if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
+			System.out.println("ERROR: not meant to called this with index 0 (current player)");
+			System.exit(1);
+			return false;
+		}
+		
+		if(playerIndex <= 0 || playerIndex >= Constants.NUM_PLAYERS) {
+			System.out.println("Error: bad input to otherTwoSignalled");
+			System.exit(1);
+		}
+		
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			if(playerIndex == Constants.CURRENT_AGENT_INDEX || playerIndex == i) {
+				continue;
+			} else if(voidArray[i][suitIndex] == false) {
+				return false;
+			}
+		}
+		
+		
+		return true;
 	}
 	
 	private static boolean dontKnowIfPlayerHasCard(int statusNum) {
