@@ -130,6 +130,10 @@ public class VoidSignalsNoActiveMellows {
 		//	return;
 		//}
 		
+		//TODO: Maybe bring move following condition here instead of 50 lines below HERE.
+		//if(dataModel.someoneBidMellow() == false
+				//|| dataModel.stillActiveMellow() == false) {
+		
 		if(dataModel.isMasterCard(card)) {
 			this.curTeamSignalledHighOffsuit[suitIndex] = false;
 		}
@@ -407,9 +411,7 @@ public class VoidSignalsNoActiveMellows {
 			if(throwerIndex == 0 
 					&& dataModel.isMasterCard(card) == false
 					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 3) {
-				//hard max base on lead TODO
-				//TODO
-				//System.out.println("BOOM 2");
+				
 				hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)) - 1;
 				
 			}

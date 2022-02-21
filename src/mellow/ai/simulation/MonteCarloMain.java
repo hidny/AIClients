@@ -27,8 +27,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		
 		testCaseParser.main(args);
@@ -60,10 +60,10 @@ public class MonteCarloMain {
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -154,7 +154,7 @@ public class MonteCarloMain {
 		System.out.println();
 		//END DEBUG PRINT POSSIBILITIES
 		System.out.println("DEBUG getCardPossibilities:");
-		getCardPossibilities(dataModel);
+		setupCardPossibilities(dataModel);
 		System.out.println("END DEBUG getCardPossibilities:");
 		
 		
@@ -248,6 +248,20 @@ public class MonteCarloMain {
 				
 				//3rd arg is just for debug
 				boolean realistic = isCardDistRealistic(dataModel, distCards, numSkipped < 50);
+				boolean realistic2 = isCardDistRealistic2(dataModel, distCards, numSkipped < 50);
+				
+				//TODO: test 3-1078: (Burnt mellow signals)
+				//TODO: test that there's no discrepancy except for AS...
+				if(realistic != realistic2 && numSkipped < 300) {
+					System.err.println("ERROR: isCardDistRealistic returned " + realistic + " while isCardDistRealistic2 returned " + realistic2);
+					
+					boolean realisticDebug = isCardDistRealistic(dataModel, distCards, true);
+					boolean realisticDebug2 = isCardDistRealistic2(dataModel, distCards, true);
+					if(realisticDebug != realisticDebug2) {
+						System.err.println("ERROR2: isCardDistRealistic returned " + realistic + " while isCardDistRealistic2 returned " + realistic2);
+					}
+					
+				}
 				
 				if( ! realistic) {
 					
@@ -767,6 +781,7 @@ public class MonteCarloMain {
 				 || (dataModel.getNumCardsInCurrentPlayerHand() == Constants.NUM_STARTING_CARDS_IN_HAND
 						 && dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX)
 				) {
+			 //WRONG: AS signalled no by mellow player....
 			 return true;
 		 }
 		 
@@ -862,6 +877,27 @@ public class MonteCarloMain {
 		 return ret;
 	 }
 	 
+	 public static boolean isCardDistRealistic2(DataModel dataModel, String distCards[][], boolean debug) {
+		 
+		 for(int playerIndex=0; playerIndex<Constants.NUM_PLAYERS; playerIndex++) {
+			 if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
+				 continue;
+			 }
+			 
+			 for(int j=0; j<distCards[playerIndex].length; j++) {
+				 if( ! playerPos[playerIndex].contains(distCards[playerIndex][j])) {
+					 
+					 if(debug) {
+						 System.err.println(dataModel.getPlayers()[playerIndex] + " should not have the " + distCards[playerIndex][j]);
+					 }
+					 
+					 return false;
+				 }
+			 }
+		 }
+		 
+		 return true;
+	 }
 	 
 	 //TODO: make isCardDistRealistic just 
 	 // refer to playerPos and streamline this!
@@ -869,7 +905,7 @@ public class MonteCarloMain {
 	 
 	 public static HashSet<String> playerPos[] = new HashSet[Constants.NUM_PLAYERS];
 	 
-	 public static void getCardPossibilities(DataModel dataModel) {
+	 public static void setupCardPossibilities(DataModel dataModel) {
 		 
 		 playerPos = new HashSet[Constants.NUM_PLAYERS];
 		 
@@ -895,7 +931,7 @@ public class MonteCarloMain {
 				 if(dataModel.playerMadeABidInRound(playerIndex)
 						 && dataModel.getBid(playerIndex) == 0) {
 
-					 for(int rankIndex = 0; rankIndex<=Constants.NUM_RANKS; rankIndex++) {
+					 for(int rankIndex = 0; rankIndex<Constants.NUM_RANKS; rankIndex++) {
 						 
 						
 						 if( ! isSignalledCardGoodForMellowBidder(dataModel, playerIndex, DataModel.getCardString(rankIndex, suitIndex), false)) {
@@ -953,9 +989,7 @@ public class MonteCarloMain {
 			}
 			
 			String sortedArray[] = CardStringFunctions.sort(array2);
-			for(int j=0; j<playerPos[i].size(); j++) {
-				System.out.print(sortedArray[j] + " ");
-			}
+			CardStringFunctions.printCards(sortedArray);
 		 }
 		 
 	 }
