@@ -142,48 +142,49 @@ public class VoidSignalsNoActiveMellows {
 		//TODO: Maybe bring move following condition here instead of 50 lines below HERE.
 		//if(dataModel.someoneBidMellow() == false
 				//|| dataModel.stillActiveMellow() == false) {
-		
-		if(dataModel.isMasterCard(card)) {
-			this.curTeamSignalledHighOffsuit[suitIndex] = false;
-		}
-		
-		if(suitIndex != dataModel.getSuitOfLeaderThrow()) {
-			didNotFollowSuit[playerIndex][dataModel.getSuitOfLeaderThrow()] = true;
-		}
-		
-		if(playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
-			playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
 
-			//Strong queen signal:
-			//(EX: If player lead KDs and has a 5D later, it's pretty clear that player also has the QD)
-			//Unless queen was played...
-			
-			if( ! dataModel.isCardPlayedInRound("Q" + card.substring(1) )) {
-				
-				boolean partnerHasAce = false;
-				if(	dataModel.isMasterCard("Q" + card.substring(1)) == false) {
-					partnerHasAce = true;
-				}
-				
-				for(int pIndexTmp=0; pIndexTmp<Constants.NUM_PLAYERS; pIndexTmp++) {
-					if(pIndexTmp != playerIndex
-							&& (partnerHasAce == false
-							    || pIndexTmp != (playerIndex + 2) % Constants.NUM_PLAYERS)) {
-						hardMaxBecauseSomeoneElseSignalledMasterQueen[pIndexTmp][suitIndex] = DataModel.JACK;
-					}
-				}
-				
-			} else if(! card.equals("Q" + card.substring(1))
-					&& dataModel.getSuitOfLeaderThrow() == suitIndex
-					&& throwerIndex > 0
-					){
-				System.out.println("DEBUG: WEIRD CASE! Why would the player do a king sacrifice??");
-			}
-		}
-		
 		//I'm going to start with the normal no mellow situation for now...
 		if(dataModel.someoneBidMellow() == false
 				|| dataModel.stillActiveMellow() == false) {
+
+			if(dataModel.isMasterCard(card)) {
+				this.curTeamSignalledHighOffsuit[suitIndex] = false;
+			}
+			
+			if(suitIndex != dataModel.getSuitOfLeaderThrow()) {
+				didNotFollowSuit[playerIndex][dataModel.getSuitOfLeaderThrow()] = true;
+			}
+			
+			if(playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
+				playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
+	
+				//Strong queen signal:
+				//(EX: If player lead KDs and has a 5D later, it's pretty clear that player also has the QD)
+				//Unless queen was played...
+				
+				if( ! dataModel.isCardPlayedInRound("Q" + card.substring(1) )) {
+					
+					boolean partnerHasAce = false;
+					if(	dataModel.isMasterCard("Q" + card.substring(1)) == false) {
+						partnerHasAce = true;
+					}
+					
+					for(int pIndexTmp=0; pIndexTmp<Constants.NUM_PLAYERS; pIndexTmp++) {
+						if(pIndexTmp != playerIndex
+								&& (partnerHasAce == false
+								    || pIndexTmp != (playerIndex + 2) % Constants.NUM_PLAYERS)) {
+							hardMaxBecauseSomeoneElseSignalledMasterQueen[pIndexTmp][suitIndex] = DataModel.JACK;
+						}
+					}
+					
+				} else if(! card.equals("Q" + card.substring(1))
+						&& dataModel.getSuitOfLeaderThrow() == suitIndex
+						&& throwerIndex > 0
+						){
+					System.out.println("DEBUG: WEIRD CASE! Why would the player do a king sacrifice??");
+				}
+			}
+			
 			
 			//System.out.println("TEST: updateDataModelSignalsWithPlayedCard: ");
 			
