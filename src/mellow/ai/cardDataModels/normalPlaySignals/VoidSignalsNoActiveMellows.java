@@ -48,7 +48,14 @@ public class VoidSignalsNoActiveMellows {
 	//public int softMaxPLUS2BecauseMellowProtectorPlayedLowAtSecondThrow[][];
 	
 	
+	
+	
 	public int hardMaxBecauseSomeoneDidntPlayMaster[][];
+
+	//TODO: maybe extend this concept to other cards just to say that it's probably missing
+	// from player's hand?
+	public int hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[][];
+	
 	
 	//TODO
 	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
@@ -76,6 +83,7 @@ public class VoidSignalsNoActiveMellows {
 		
 		hardMaxBecauseSomeoneDidntMakeATrickas4thThrower = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxBecauseSomeoneDidntPlayMaster = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		hardMaxBecauseSomeonePlayedDirectlyUnderQequiv = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 
 		hardMaxBecauseThirdDidntPlayAboveSecond = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
@@ -94,6 +102,7 @@ public class VoidSignalsNoActiveMellows {
 				hardMaxBecauseSomeoneElseSignalledMasterQueen[i][j] = DONT_KNOW;
 				hardMaxBecauseSomeoneDidntMakeATrickas4thThrower[i][j] = DONT_KNOW;
 				hardMaxBecauseSomeoneDidntPlayMaster[i][j] = DONT_KNOW;
+				hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[i][j] = DONT_KNOW;
 				hardMaxBecauseThirdDidntPlayAboveSecond[i][j] = DONT_KNOW;
 				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = DONT_KNOW;
 				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = DONT_KNOW;
@@ -365,14 +374,7 @@ public class VoidSignalsNoActiveMellows {
 						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()
 						&& dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card) ) {
 					
-						boolean letPartnerWin = false;
-						if(throwerIndex == 2
-								&& dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
-							letPartnerWin = true;
-						} else if(throwerIndex == 3
-								&& dataModel.getCardSecondThrow().equals(curWinnerCard)) {
-							letPartnerWin = true;
-						}
+						boolean letPartnerWin = letPartnerWin(dataModel, throwerIndex, curWinnerCard);
 						
 						if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE
 									&& throwerIndex == 1
@@ -384,6 +386,8 @@ public class VoidSignalsNoActiveMellows {
 					
 						if( !letPartnerWin ) {
 							hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(dataModel.getHighestCardOfSuitNotPlayed(suitIndex)) - 1;
+							
+							
 						}
 				
 				}
@@ -405,6 +409,18 @@ public class VoidSignalsNoActiveMellows {
 				}
 				
 				
+				//hardMaxBecauseSomeonePlayedDirectlyUnderQequiv
+				//This is a strong void signal that should not be ignored!
+				if(  dataModel.isMasterCard(curWinnerCard) == false
+						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()
+						&& dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card)
+						&& dataModel.getNumCardsInPlayBetweenCardSameSuit(curWinnerCard, card) == 0
+						&& dataModel.getNumCardsInPlayOverCardSameSuit(curWinnerCard) <= 2
+						&& ! letPartnerWin(dataModel, throwerIndex, curWinnerCard)
+						) {
+					hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][dataModel.getSuitOfLeaderThrow()] = DataModel.getRankIndex(card) - 1;
+				}
 			}
 			
 			
@@ -627,7 +643,6 @@ public class VoidSignalsNoActiveMellows {
 			curMaxRank = hardMaxBecauseSomeoneDidntPlayMaster[playerIndex][suitIndex];
 
 		}
-		
 
 		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex]) {
@@ -649,6 +664,13 @@ public class VoidSignalsNoActiveMellows {
 
 		}
 
+		if(hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex] != DONT_KNOW
+				&& curMaxRank > hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex]) {
+			System.out.println("TEST: hardMaxBecauseSomeonePlayedDirectlyUnderQequiv for " + dataModel.getPlayers()[playerIndex] 
+					+ " = " + DataModel.getCardString(hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex], suitIndex));
+			curMaxRank = hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex];
+
+		}
 		
 		
 		//TODO: put in another function:
@@ -919,6 +941,20 @@ public class VoidSignalsNoActiveMellows {
 	
 	public boolean hasCurTeamSignalledHighOffsuit(int suitIndex) {
 		return curTeamSignalledHighOffsuit[suitIndex];
+	}
+	
+	public static boolean letPartnerWin(DataModel dataModel, int throwerIndex, String curWinnerCard) {
+		
+		if(throwerIndex == 2
+				&& dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
+			return true;
+		} else if(throwerIndex == 3
+				&& dataModel.getCardSecondThrow().equals(curWinnerCard)) {
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 
 }
