@@ -2844,5 +2844,7 @@ public class DataModel {
 	//			&& isVoid((playerIndex + 3)%Constants.NUM_PLAYERS, suitIndex);
 	//}
 	
-	
+	public String toString() {
+		return DebugFunctions.DebugGetCurrentPlayerHand(this);
+	}
 }

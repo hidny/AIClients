@@ -1978,6 +1978,9 @@ public class NoMellowPlaySituation {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS 7S 5S AC TC 3C JD TD 7D 3D 2D ")) {
+			System.out.println("Debug");
+		}
 		
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
@@ -2308,7 +2311,7 @@ public class NoMellowPlaySituation {
 		double valueOfBestSuit = 0;
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KH JH 4H 2H JC AD 6D 4D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS 7S 5S AC TC 3C JD TD 7D 3D 2D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -2395,6 +2398,7 @@ public class NoMellowPlaySituation {
 				//TODO: what if throwing off a card signals that opponent could TRAM suit?
 				//Shouldn't we be careful about that?
 				currentValue += 5 * (numOverHighest - numberOfCardsInSuit);
+				
 			
 			} else if(numberOfCardsInSuit == numOverHighest) {
 				
@@ -2405,6 +2409,80 @@ public class NoMellowPlaySituation {
 
 			//End easy for throwing off
 
+			boolean shouldSave = false;
+			
+			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				
+				if(numberOfCardsInSuit == 1) {
+					shouldSave = true;
+				} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) <=1 ){
+
+					shouldSave = true;
+				}
+			} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
+				
+				if(numberOfCardsInSuit == 2) {
+					shouldSave = true;
+				} else if(numberOfCardsInSuit == 3
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) <= 2 ){
+
+					shouldSave = true;
+				}
+				
+			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+					) {
+				
+				if(numberOfCardsInSuit == 2) {
+					shouldSave = true;
+				} else if(numberOfCardsInSuit == 3
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) <= 2 ){
+
+					shouldSave = true;
+				}
+				
+			} else if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+
+				if(numberOfCardsInSuit == 3
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 4) {
+					shouldSave = true;
+				}
+			}
+			if(numberOfCardsInSuit == 3
+					//Num inplay includes the card in your hand...
+					&& dataModel.getNumCardsInPlayOverCardSameSuit(
+							dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex)) == 2
+				) {
+				shouldSave = true;
+			}
+
+			if(numberOfCardsInSuit == 4
+					&& dataModel.getNumCardsInPlayOverCardSameSuit(
+							dataModel.getCardCurrentPlayerGetThirdHighestInSuit(suitIndex)) == 3
+				) {
+				shouldSave = true;
+			}
+		
+			//Try to trump later:
+			if(shouldSave == false
+				//&& dataModel.getNumCardsInPlayOverCardSameSuit(dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex)) > 3
+				
+				&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >= 3
+				&& (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+				) {
+				
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					//never mind
+				} else {
+					currentValue += 40 - 10 * numberOfCardsInSuit;
+				}
+			}
+			//End try to trump later
+
+			
+			
 			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 			
 			
