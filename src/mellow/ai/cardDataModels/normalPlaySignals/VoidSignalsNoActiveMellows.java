@@ -47,6 +47,7 @@ public class VoidSignalsNoActiveMellows {
 	//public int softMaxPLUS1BecauseMellowProtectorPlayedLowAtSecondThrow[][];
 	//public int softMaxPLUS2BecauseMellowProtectorPlayedLowAtSecondThrow[][];
 	
+	public int softMinBecauseMellowProtectorTrumpedHigh[][];
 	
 	
 	
@@ -91,6 +92,7 @@ public class VoidSignalsNoActiveMellows {
 		
 		softMaxBecauseMellowProtectorPlayedLowAtSecondThrow = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow  = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		softMinBecauseMellowProtectorTrumpedHigh = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
@@ -106,6 +108,8 @@ public class VoidSignalsNoActiveMellows {
 				hardMaxBecauseThirdDidntPlayAboveSecond[i][j] = DONT_KNOW;
 				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = DONT_KNOW;
 				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = DONT_KNOW;
+				softMinBecauseMellowProtectorTrumpedHigh[i][j] = DONT_KNOW;
+				
 				
 				didNotFollowSuit[i][j] = false;
 			}
@@ -444,49 +448,64 @@ public class VoidSignalsNoActiveMellows {
 			
 			String curWinnerCard= getCurrentStrongestCardInFight(card);
 		
+			String winningCardBeforePlayerIndex = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			
 			if(dataModel.getBid(partnerIndex) == 0 
-					&& ! dataModel.burntMellow(partnerIndex)
-					&& CardStringFunctions.getIndexOfSuit(curWinnerCard) == dataModel.getSuitOfLeaderThrow()
-					
+					&& ! dataModel.burntMellow(partnerIndex)) {
+				
+				if( CardStringFunctions.getIndexOfSuit(curWinnerCard) == dataModel.getSuitOfLeaderThrow()
 					&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
 					) {
 				
-				if(throwerIndex == 1) {
-					
-					if( ! mellowSignalledNoCardOverCardSameSuit(curWinnerCard, partnerIndex)) {
+					if(throwerIndex == 1) {
 						
-
-						//System.out.println("DEBUG SOFT MAX PROTECTOR 2: " + curWinnerCard);
-						
-						//TODO: maybe this is a softer max...
-						//ex: what if protect has 5C 6C 7C and just plays the 5C? I don't know why they would do that though.
-						if(playerIndex != Constants.CURRENT_AGENT_INDEX
-								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) 
-								+ dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(curWinnerCard) <= 1) {
-							//System.out.println("CANCEL SIGNAL!");
+						if( ! mellowSignalledNoCardOverCardSameSuit(curWinnerCard, partnerIndex)) {
 							
-						} else if(playerIndex == Constants.CURRENT_AGENT_INDEX
-								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) <= 1) {
-							//System.out.println("CANCEL! (SELF SIGNAL)");
+	
+							//System.out.println("DEBUG SOFT MAX PROTECTOR 2: " + curWinnerCard);
 							
-						} else {
+							//TODO: maybe this is a softer max...
+							//ex: what if protect has 5C 6C 7C and just plays the 5C? I don't know why they would do that though.
+							if(playerIndex != Constants.CURRENT_AGENT_INDEX
+									&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) 
+									+ dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(curWinnerCard) <= 1) {
+								//System.out.println("CANCEL SIGNAL!");
+								
+							} else if(playerIndex == Constants.CURRENT_AGENT_INDEX
+									&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curWinnerCard) <= 1) {
+								//System.out.println("CANCEL! (SELF SIGNAL)");
+								
+							} else {
+								
+								softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][CardStringFunctions.getIndexOfSuit(curWinnerCard)] = dataModel.getRankIndex(curWinnerCard);
+							}
 							
-							softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][CardStringFunctions.getIndexOfSuit(curWinnerCard)] = dataModel.getRankIndex(curWinnerCard);
 						}
+							
+						//if(mellowSignalledNoCardOverCardSameSuit(card))
+					} else if(throwerIndex == 2 && getCurrentWinningIndex(card, playerIndex, throwerIndex) == partnerIndex ) {
 						
-					}
+						//System.out.println("DEBUG HARD MAX PROTECTOR 3: " + curWinnerCard);
+						hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][CardStringFunctions.getIndexOfSuit(curWinnerCard)] = dataModel.getRankIndex(curWinnerCard);
 						
-					//if(mellowSignalledNoCardOverCardSameSuit(card))
-				} else if(throwerIndex == 2 && getCurrentWinningIndex(card, playerIndex, throwerIndex) == partnerIndex ) {
-					
-					//System.out.println("DEBUG HARD MAX PROTECTOR 3: " + curWinnerCard);
-					hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][CardStringFunctions.getIndexOfSuit(curWinnerCard)] = dataModel.getRankIndex(curWinnerCard);
-					
-					if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curWinnerCard) == 0) {
-						//System.out.println("DEBUG: maybe the protector is being cheeky (or bad)");
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curWinnerCard) == 0) {
+							//System.out.println("DEBUG: maybe the protector is being cheeky (or bad)");
+						}
 					}
+					
+				//Protector trump signals:
+				} else if(CardStringFunctions.getIndexOfSuit(winningCardBeforePlayerIndex) == dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(card) != dataModel.getSuitOfLeaderThrow()
+						&& CardStringFunctions.getIndexOfSuit(card) == Constants.SPADE
+						&& dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(partnerIndex, Constants.SPADE)
+						&& (throwerIndex == 1
+								|| dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == partnerIndex)
+						) {
+							//System.out.println("Protector trump!");
+							softMinBecauseMellowProtectorTrumpedHigh[playerIndex][Constants.SPADE] = DataModel.getRankIndex(card) + 1;							
+
 				}
+				
 			}
 			
 		}
@@ -679,6 +698,8 @@ public class VoidSignalsNoActiveMellows {
 		for(; ret>=DataModel.RANK_TWO; ret--) {
 			if(dataModel.isCardPlayedInRound(DataModel.getCardString(ret, suitIndex))) {
 				continue;
+			} else if(playerIndex != Constants.CURRENT_PLAYER_INDEX && dataModel.hasCard(DataModel.getCardString(ret, suitIndex))) {
+				continue;
 			} else {
 				break;
 			}
@@ -704,7 +725,9 @@ public class VoidSignalsNoActiveMellows {
 	
 	public int getMinCardRankSignal(int playerIndex, int suitIndex ) {
 		//TODO: don't be too clever:
-		int curMinRank = hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][suitIndex] + 1;
+		int curMinRank = Math.max
+				(hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][suitIndex],
+				DataModel.RANK_TWO);
 		
 		if(hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex] != DONT_KNOW
 				&& curMinRank <  hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex]) {
@@ -712,10 +735,19 @@ public class VoidSignalsNoActiveMellows {
 			curMinRank = hardMinCardRankBecausePlayedOverPartner[playerIndex][suitIndex];
 		}
 		
+		if(softMinBecauseMellowProtectorTrumpedHigh[playerIndex][suitIndex] != DONT_KNOW
+				&& curMinRank <  softMinBecauseMellowProtectorTrumpedHigh[playerIndex][suitIndex]) {
+
+			curMinRank = softMinBecauseMellowProtectorTrumpedHigh[playerIndex][suitIndex];
+		}
+		
+		
 		//TODO: put in another function:
 		int ret=curMinRank;
 		for(; ret<DataModel.ACE; ret++) {
 			if(dataModel.isCardPlayedInRound(DataModel.getCardString(ret, suitIndex))) {
+				continue;
+			} else if(playerIndex != Constants.CURRENT_PLAYER_INDEX && dataModel.hasCard(dataModel.getCardString(ret, suitIndex))) {
 				continue;
 			} else {
 				break;

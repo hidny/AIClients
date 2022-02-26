@@ -1539,7 +1539,7 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 6S JC 8C 4C 3C 6D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 8S 7S 5H AC 9C 5C 3C AD KD QD 9D ")) {
 				System.out.println("Debug");
 			}
 			

@@ -42,9 +42,10 @@ public class SeatedLeftOfOpponentMellow {
 			
 			String curWinningCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			
+			int leadSuit = dataModel.getSuitOfLeaderThrow(); 
 			
 			if(CardStringFunctions.getIndexOfSuit(curWinningCard) 
-					!= dataModel.getSuitOfLeaderThrow()) {
+					!= leadSuit) {
 				//Mellow player winning and is trumping:
 				
 				if(dataModel.throwerMustFollowSuit()) {
@@ -87,13 +88,38 @@ public class SeatedLeftOfOpponentMellow {
 						
 						if(throwIndex == 1 
 								//&& CardStringFunctions.getIndexOfSuit(curWinningCard) == Constants.SPADE
-								&& dataModel.currentPlayerHasMasterInSuit(dataModel.getSuitOfLeaderThrow()) == false
-								&& dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) >= 3) {
+								&& dataModel.currentPlayerHasMasterInSuit(leadSuit) == false
+								&& dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3) {
 							
 							
 							//If responding to the mellow lead, don't waste a high one...
 							//Maybe I'll have more cases later...
+							return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit);
+						
+							/*
+						//Speculative code that works for 3-1958, but fails for 0-473
+						} else if(throwIndex == 2
+								&& dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3
+								&& (dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit) != null
+										&&
+										dataModel.getNumCardsInPlayBetweenCardSameSuit(
+										dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit),
+										dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit))
+												>= 3)
+								&& dataModel.getNumCardsInPlayBetweenCardSameSuit(
+										dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit),
+										dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit))
+												> 1
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit))
+												>= 3
+								) {
+							
+							//In some cases, dare mellow protector to play over you:
+								
 							return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
+									
+						*/
+
 						} else {
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 						}
@@ -664,10 +690,11 @@ public class SeatedLeftOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6S 5S 2S TH 9H KC")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6S 3S AD TD 3D ")) {
 			System.out.println("Debug");
 		}
 
+		boolean wantToDrainSpade = false;
 		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
@@ -678,7 +705,8 @@ public class SeatedLeftOfOpponentMellow {
 
 			String tempLowest = dataModel.getCardCurrentPlayerGetLowestInSuit(suit);
 
-			if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false) {
+			if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false
+					|| wantToDrainSpade ) {
 
 				//TODO: FROM DEBUG TESTCASE:
 				// IF PARTNER AND PROTECTOR VOID:
@@ -708,6 +736,21 @@ public class SeatedLeftOfOpponentMellow {
 				if(suit == Constants.SPADE) {
 					curLowestRankSuitScore += 9.0;
 					
+					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(MELLOW_PLAYER_INDEX, suit)) {
+						curLowestRankSuitScore += 3.0;
+					}
+				}
+				
+
+				if(suit == Constants.SPADE
+						&& wantToDrainSpade) {
+					curLowestRankSuitScore -= 12;
+				}
+				/*
+				if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, MELLOW_PLAYER_INDEX) == false
+						&& suit == Constants.SPADE) {
+					curLowestRankSuitScore += 9.0;
+					
 					int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE));
 					
 					if(numOver >= 0) {
@@ -716,6 +759,7 @@ public class SeatedLeftOfOpponentMellow {
 					}
 					
 				}
+				}*/
 				
 				//Don't want to lead low if you have master and are left of mellow.
 				if(dataModel.currentPlayerHasMasterInSuit(suit)
@@ -727,7 +771,18 @@ public class SeatedLeftOfOpponentMellow {
 				//TODO: This isn't good if mellow is void in some offsuit and we don't want the protector to lead it
 				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, suit)
 					 && suit != Constants.SPADE) {
-						 curLowestRankSuitScore -= 3.0;
+						 if(
+								 ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+								&& (dataModel.getBid(Constants.LEFT_PLAYER_INDEX) <= 3
+								 || dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX)
+								 )
+								&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+								&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) > 1
+								&& dataModel.signalHandler.getMinCardRankSignal(Constants.LEFT_PLAYER_INDEX, Constants.SPADE) < DataModel.RANK_NINE){
+							 wantToDrainSpade = true;
+						 } else {
+							 curLowestRankSuitScore -= 3.0;
+						 }
 				 }
 				
 				if(curLowestRankSuitScore < lowestRankScore) {
