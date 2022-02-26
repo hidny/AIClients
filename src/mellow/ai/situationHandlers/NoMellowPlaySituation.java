@@ -1538,8 +1538,8 @@ public class NoMellowPlaySituation {
 			
 			//No following suit:
 		} else {
-			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 6H 4H 7C")) {
+
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 6S JC 8C 4C 3C 6D ")) {
 				System.out.println("Debug");
 			}
 			
@@ -1771,6 +1771,10 @@ public class NoMellowPlaySituation {
 						      	//OR: low throw-away card that doesn't support a King or Queen or Jack equiv:
 						      || (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) <= 2
 						      	&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE)) >= 3)
+						      
+						       //OR: partner bid high and there's still tricks to be made
+						      || ( dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5 && 
+						    		  dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) - dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) >= 2)
 						)
 
 						&& //No single master spade
@@ -2310,14 +2314,6 @@ public class NoMellowPlaySituation {
 		int bestSuit = -1;
 		double valueOfBestSuit = 0;
 		
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS 7S 5S AC TC 3C JD TD 7D 3D 2D ")) {
-			System.out.println("Debug");
-		}
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KC QC TC 8C")) {
-			System.out.println("Debug");
-		}
 		
 		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
 			if(suitIndex == Constants.SPADE || dataModel.currentAgentHasSuit(suitIndex) == false) {
