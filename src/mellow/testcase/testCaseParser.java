@@ -307,11 +307,15 @@ public class testCaseParser {
 			int ourScore = 0;
 			int theirScore = 0;
 			
+			//Default it to 0 vs 0:
+			decider.setNewScores(0, 0);
+			
 			boolean getScoreNextLines = false;
 			do {
 				cur = in.nextLine();
 				if(cur.toLowerCase().contains("your score")) {
 					getScoreNextLines = true;
+					
 				} else if(getScoreNextLines) {
 					String scores = cur.trim();
 					Scanner score = new Scanner(scores);
@@ -330,6 +334,7 @@ public class testCaseParser {
 				
 			} while(cur.startsWith("Cards dealt:") == false);
 			cur = in.nextLine();
+			
 			
 			System.out.println("Cards dealt: \n" + cur);
 

@@ -401,6 +401,9 @@ public class DataModel {
 	//Resets everything except for the scores and the deal indexes.
 	public void resetStateForNewRound() {
 		
+		AIScore = 0;
+		OpponentScore = 0;
+		
 		//dealerIndex will be set properly after the first bid
 		//Before the bid, assume dealer is such that current player is first to bid... just in case it is first to bid
 		dealerIndexAtStartOfRound = INDEX_SUCH_THAT_CURRENT_PLAYER_BIDS_FIRST;
@@ -408,14 +411,17 @@ public class DataModel {
 		cardsUsed = new boolean[Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsCurrentlyHeldByPlayer = new byte[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 		cardsUsedByPlayer = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
+		
 		bidsMadeThisRound =0;
-		cardsPlayedThisRound =0;
-		cardsPlayedThisRound = 0;
-		cardStringsPlayed = new String[Constants.NUM_CARDS];
-		playerWhoPlayedCard = new int[Constants.NUM_CARDS];
+		
 		
 		bids = new int[Constants.NUM_PLAYERS];
 		tricks = new int[Constants.NUM_PLAYERS];
+
+		cardsPlayedThisRound =0;
+		
+		cardStringsPlayed = new String[Constants.NUM_CARDS];
+		playerWhoPlayedCard = new int[Constants.NUM_CARDS];
 		
 		
 		for(int i=0; i<bids.length; i++) {

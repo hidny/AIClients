@@ -208,6 +208,10 @@ public class BiddingSituation {
 		}
 		*/
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 4S QH TH 6H 5H JC TC 7C 3C 2C 7D 3D ")) {
+			System.out.println("Debug");
+		}
+		
 		if (intBid < 0) {
 			intBid = 0;
 		}
