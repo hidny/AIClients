@@ -640,7 +640,7 @@ public class DataModel {
 	public static final long NEED_TO_RECALCULATE = -1;
 	private long numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
 
-	public long getCurrentNumWaysOtherPlayersCouldHaveCards(boolean useSignals) {
+	public long getCurrentNumWaysOtherPlayersCouldHaveCardsAndSetupDataModelForSimulations(boolean useSignals) {
 		if(numWaysOthersPlayersCouldHaveCards != NEED_TO_RECALCULATE) {
 			return numWaysOthersPlayersCouldHaveCards;
 		}
