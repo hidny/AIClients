@@ -706,7 +706,7 @@ public class VoidSignalsNoActiveMellows {
 		}
 		//END TODO
 		
-		if(curMaxRank < DataModel.RANK_TWO) {
+		if(ret < DataModel.RANK_TWO) {
 			
 			if(printWarn) {
 				try {
@@ -720,7 +720,7 @@ public class VoidSignalsNoActiveMellows {
 			return MAX_UNDER_RANK_2;
 		}
 		
-		return curMaxRank;
+		return ret;
 	}
 	
 	public int getMinCardRankSignal(int playerIndex, int suitIndex ) {
@@ -758,7 +758,7 @@ public class VoidSignalsNoActiveMellows {
 		}
 		//END TODO
 		
-		return curMinRank;
+		return ret;
 	}
 	
 
@@ -794,7 +794,7 @@ public class VoidSignalsNoActiveMellows {
 		}
 		//END TODO
 		
-		return curMaxRank;
+		return ret;
 	}
 	
 	public int getMaxRankSpadeSignalled(int playerIndex) {
@@ -943,14 +943,12 @@ public class VoidSignalsNoActiveMellows {
 		}
 		
 		
-		boolean ret = false;
-		
 		int minRank = getMinCardRankSignal(playerIndex, suitIndex);
 	
 		int numCardsFound = 0;
 		
 		for(int r = minRank; r<=dataModel.ACE; r++) {
-			String tmpCard = dataModel.getCardString(r, suitIndex);
+			String tmpCard = DataModel.getCardString(r, suitIndex);
 			
 			if(dataModel.hasCard(tmpCard)) {
 				continue;

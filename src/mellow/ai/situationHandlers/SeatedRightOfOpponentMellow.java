@@ -188,7 +188,6 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
-
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
@@ -399,6 +398,7 @@ public class SeatedRightOfOpponentMellow {
 				} else {
 					//Mellow could be in danger: don't trump (unless there's no choice)
 					if(dataModel.currentPlayerOnlyHasSpade() == false) {
+						
 						//return dataModel.getHighestOffSuitCardAnySuitButSpade();
 						return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 						
@@ -417,9 +417,26 @@ public class SeatedRightOfOpponentMellow {
 				
 				//TODO: make sure we have offsuit! (unless there's no choice but to trump)
 				if(dataModel.currentPlayerOnlyHasSpade() == false
-						&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
+						&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)
+						) {
 					
-					return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+					if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+							&& dataModel.signalHandler.getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+									<= DataModel.getRankIndex(leaderThrow)
+							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 2
+							&& 
+							dataModel.getNumCardsInPlayOverCardSameSuit(
+								dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE)
+							) > 5
+									
+								) {
+						//Fixes a debug case:
+						//Just trump, so you can take lead away from protector (partner can't help here)
+						return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					} else {
+					
+						return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+					}
 				
 				} else if(dataModel.currentPlayerOnlyHasSpade()){
 					//Play 2nd lowest if you are stuck with lots of spade.
