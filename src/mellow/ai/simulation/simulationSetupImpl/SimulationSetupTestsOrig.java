@@ -1,4 +1,4 @@
-package mellow.ai.simulation;
+package mellow.ai.simulation.simulationSetupImpl;
 
 import java.util.Random;
 
@@ -7,7 +7,7 @@ import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 import mellow.cardUtils.CardStringFunctions;
 
-public class SimulationTests {
+public class SimulationSetupTestsOrig {
 
 	public static void main(String[] args) {
 		System.out.println("start");

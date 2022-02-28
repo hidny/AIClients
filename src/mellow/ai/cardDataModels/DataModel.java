@@ -3,9 +3,9 @@ package mellow.ai.cardDataModels;
 import java.util.ArrayList;
 
 import mellow.Constants;
-import mellow.ai.simulation.SimSetupUtils;
-import mellow.ai.simulation.SimulationSetupWithMemBoost;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
+import mellow.ai.simulation.simulationSetupImpl.SimSetupUtils;
+import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithMemBoost;
 import mellow.cardUtils.*;
 
 //TODO: randomize suit choice with pseudo random # generator of adding up card indexes.... (plus a seed?)

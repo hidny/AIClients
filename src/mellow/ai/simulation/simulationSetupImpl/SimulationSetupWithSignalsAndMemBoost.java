@@ -1,4 +1,4 @@
-package mellow.ai.simulation;
+package mellow.ai.simulation.simulationSetupImpl;
 
 import java.util.Random;
 
