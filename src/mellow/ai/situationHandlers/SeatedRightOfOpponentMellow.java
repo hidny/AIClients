@@ -424,10 +424,12 @@ public class SeatedRightOfOpponentMellow {
 							&& dataModel.signalHandler.getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, leadSuit)
 									<= DataModel.getRankIndex(leaderThrow)
 							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 2
-							&& 
-							dataModel.getNumCardsInPlayOverCardSameSuit(
-								dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE)
-							) > 5
+							&& (
+								dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(MELLOW_PLAYER_INDEX,  Constants.SPADE)
+								|| dataModel.getNumCardsInPlayOverCardSameSuit(
+									dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE)
+								) > 5
+							)
 									
 								) {
 						//Fixes a debug case:

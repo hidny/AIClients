@@ -3,6 +3,7 @@ package mellow.ai.simulation;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import mellow.Constants;
@@ -50,7 +51,7 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
@@ -60,7 +61,7 @@ public class MonteCarloMain {
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
@@ -787,7 +788,8 @@ public class MonteCarloMain {
 	 //For now, I'm just going to run monte and make sure I didn't mess it up.
 	 
 	 public static HashSet<String> playerPos[] = new HashSet[Constants.NUM_PLAYERS];
-	 
+
+
 	 public static void setupCardPossibilities(DataModel dataModel) {
 		 
 		 playerPos = new HashSet[Constants.NUM_PLAYERS];
@@ -875,7 +877,146 @@ public class MonteCarloMain {
 			CardStringFunctions.printCards(sortedArray);
 		 }
 		 
+		 setupPossibilitySets();
 	 }
+	 
+	 public static int NUM_POSSIBILITIES = 3;
+	 // 0 = no
+	 // 1 = yes
+	 // 2 = doesn't matter.
+	 
+	 //First index is for current player, but current player always knows what's in his hand, so whatever!
+	 //Second index is for LHS player
+	 //Third index is for PARTNER player
+	 //Fourth index is for RHS player
+	 //Last index is for an array of actual cards:
+	 public static String otherPlayerPosSet[][][][][] = new String[1][NUM_POSSIBILITIES][NUM_POSSIBILITIES][NUM_POSSIBILITIES][];
+	 
+	 public static int NO_INDEX = 0;
+	 public static int YES_INDEX = 1;
+	 public static int ANY_INDEX = 2;
+	 
+
+	 public static HashSet<String> playerNOTPossibleAndNotCurPlayer[] = new HashSet[Constants.NUM_PLAYERS];
+	 
+	 //pre: HashSet<String> playerPos is defined
+	 //post: 
+	 public static void setupPossibilitySets() {
+		 
+		 //HashSet<String> playerPos[] 
+		 
+		 HashSet<String> allCardsInPlayNoCurPlayer = new HashSet<String>();
+		 
+		 for(int i=0; i<playerPos.length; i++) {
+			 Iterator<String> it = playerPos[i].iterator();
+			 
+			 while(it.hasNext()) {
+				 
+				 String tmpCard = it.next();
+				 
+				 if( ! allCardsInPlayNoCurPlayer.contains(tmpCard) ) {
+					 allCardsInPlayNoCurPlayer.add(tmpCard);
+				 }
+			 }
+			 //TODO
+		 }
+		 
+		 for(int i=0; i<playerNOTPossibleAndNotCurPlayer.length; i++) {
+			 if(i == 0) {
+				 playerNOTPossibleAndNotCurPlayer[0] = allCardsInPlayNoCurPlayer;
+			 }
+			 
+			 playerNOTPossibleAndNotCurPlayer[i] = new HashSet<String>();
+			 
+			 Iterator<String> it = allCardsInPlayNoCurPlayer.iterator();
+			 
+			 while(it.hasNext()) {
+				 
+				 String tmpCard = it.next();
+				 
+				 if( ! playerPos[i].contains(tmpCard) ) {
+					 playerNOTPossibleAndNotCurPlayer[i].add(tmpCard);
+				 }
+			 }
+		 }
+		 
+		 
+		 for(int j=0; j<otherPlayerPosSet[0].length; j++) {
+			 for(int k=0; k<otherPlayerPosSet[0][0].length; k++) {
+				 for(int m=0; m<otherPlayerPosSet[0][0][0].length; m++) {
+					 
+					 HashSet<String> ret = allCardsInPlayNoCurPlayer;
+					 
+					 if(j == NO_INDEX) {
+						 ret = Intersection(ret, playerNOTPossibleAndNotCurPlayer[1]);
+						 
+					 } else if(j == YES_INDEX) {
+						 ret = Intersection(ret, playerPos[1]);
+						 
+					 }
+					 
+
+					 if(k == NO_INDEX) {
+						 ret = Intersection(ret, playerNOTPossibleAndNotCurPlayer[2]);
+						 
+					 } else if(k == YES_INDEX) {
+						 ret = Intersection(ret, playerPos[2]);
+						 
+					 }
+
+					 if(m == NO_INDEX) {
+						 ret = Intersection(ret, playerNOTPossibleAndNotCurPlayer[3]);
+						 
+					 } else if(m == YES_INDEX) {
+						 ret = Intersection(ret, playerPos[3]);
+						 
+					 }
+					 
+					 //otherPlayerPosSet[0][j][k][m] = ret;
+					
+					Object array[] = ret.toArray();
+					
+					otherPlayerPosSet[0][j][k][m] = new String[array.length];
+					
+					for(int p=0; p<otherPlayerPosSet[0][j][k][m].length; p++) {
+						otherPlayerPosSet[0][j][k][m][p] = array[p].toString();
+					}
+					
+					//Might as well sort the cards for readability:
+					otherPlayerPosSet[0][j][k][m] = CardStringFunctions.sort(otherPlayerPosSet[0][j][k][m]);
+
+					System.out.println("(0 " + "," + j +", " + k + ", " + m + "):");
+					if(otherPlayerPosSet[0][j][k][m].length > 0) {
+						CardStringFunctions.printCards(otherPlayerPosSet[0][j][k][m]);
+					} else {
+						System.out.println("(empty)");
+					}
+					
+				 }
+			}
+		 }
+	 }
+	 
+	 public static HashSet<String> Intersection(HashSet<String> a, HashSet<String> b) {
+		 HashSet<String> ret = new HashSet<String>();
+		 
+		 Iterator<String> it = a.iterator();
+		 
+		 while(it.hasNext()) {
+			 
+			 String tmpCard = it.next();
+			 
+			 if( b.contains(tmpCard) ) {
+				 ret.add(tmpCard);
+			 }
+		 }
+		 
+		 
+		 return ret;
+	 }
+	 
+	 
+	 
 	 
 	 public static boolean isSignalledCardGoodForMellowBidder(DataModel dataModel, int playerIndex, String card, boolean debug) {
 		 if(dataModel.isCardPlayedInRound(card) == false) {
