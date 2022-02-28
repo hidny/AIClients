@@ -3,6 +3,7 @@ package mellow.ai.cardDataModels;
 import java.util.ArrayList;
 
 import mellow.Constants;
+import mellow.ai.simulation.SimSetupUtils;
 import mellow.ai.simulation.SimulationSetupWithMemBoost;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
 import mellow.cardUtils.*;
@@ -664,7 +665,7 @@ public class DataModel {
 		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
 				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray, combinationIndex, numWaysToSimulate);
 		
-		return SimulationSetupWithMemBoost.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
+		return SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 		
 	}
 	

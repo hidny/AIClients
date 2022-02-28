@@ -233,7 +233,7 @@ public class MonteCarloMainWithSignalsBakedIn {
 				randomDistributionNumber = i;
 			} else {
 				randomDistributionNumber = 
-					SimulationSetup.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards);
+					SimSetupUtils.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards);
 			}
 
 			//TODO: replace:
