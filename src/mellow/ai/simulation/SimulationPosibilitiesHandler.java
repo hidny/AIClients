@@ -17,7 +17,7 @@ public class SimulationPosibilitiesHandler {
 	// and VoidSignalsNoActiveMellows
 	
 	 public HashSet<String> playerPos[] = new HashSet[Constants.NUM_PLAYERS];
-
+	
 
 	 public SimulationPosibilitiesHandler(DataModel dataModel) {
 		 setupCardPossibilities(dataModel);

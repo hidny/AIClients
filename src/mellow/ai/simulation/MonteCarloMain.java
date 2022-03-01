@@ -16,6 +16,7 @@ import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
 import mellow.ai.simulation.simulationSetupImpl.SimSetupUtils;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetup;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithMemBoost;
+import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithSignalsAndMemBoost;
 import mellow.ai.situationHandlers.bidding.BasicBidMellowWinProbCalc;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
@@ -57,7 +58,7 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -67,7 +68,7 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -111,7 +112,10 @@ public class MonteCarloMain {
 		//SimulationSetup simulationSetup = new SimulationSetup(dataModel, testWithSignals);
 		
 		//Faster:
-		SimulationSetupInterface simulationSetup = new SimulationSetupWithMemBoost(dataModel, testWithSignals);
+		//SimulationSetupInterface simulationSetup = new SimulationSetupWithMemBoost(dataModel, testWithSignals);
+		
+		//Better design and doesn't have the signal hack:
+		SimulationSetupWithSignalsAndMemBoost simulationSetup = new SimulationSetupWithSignalsAndMemBoost(dataModel);
 		
 		//TODO: replace it here!
 		
