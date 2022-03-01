@@ -263,7 +263,19 @@ public class MonteCarloMain {
 					numSkipped++;
 					continue;
 				}
+
+			//SANITY TEST
+			//TODO: delete this once you are confident
+			} else if(simulationSetup.hasSignalsBakedIn()) {
+				boolean realistic = isCardDistRealistic2(dataModel, distCards, simulationPossibilities, numSkipped < 50);
+				
+				if( ! realistic) {
+					System.err.println("ERROR: card distribution not realistic according to signals even though the signals are baked-in!");
+					System.exit(1);
+				}
 			}
+			//END SANITY TEST
+			
 			//END check distribution of cards against signals.
 			
 
