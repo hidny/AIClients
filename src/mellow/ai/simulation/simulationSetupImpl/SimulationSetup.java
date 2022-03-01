@@ -2,21 +2,54 @@ package mellow.ai.simulation.simulationSetupImpl;
 
 
 import mellow.Constants;
+import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.simulation.SimulationSetupInterface;
 import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
+import mellow.cardUtils.CardStringFunctions;
 
-public class SimulationSetup {
+public class SimulationSetup implements SimulationSetupInterface{
 
+	
+	private boolean voidArray[][];
+	private int curNumUnknownCardsPerSuit[];
+	private int numSpacesAvailPerPlayer[];
+	
+	private String unknownCards[];
+	
+	public SimulationSetup(DataModel dataModel, boolean useSignals) {
+		
+		System.out.println("Preparing SimulationSetup for monte carlo simulations");
+		voidArray = dataModel.createVoidArray(useSignals);
+
+		unknownCards = dataModel.getUnknownCards();
+		unknownCards = CardStringFunctions.sort(unknownCards);
+		
+		curNumUnknownCardsPerSuit = CardStringFunctions.organizeCardsBySuit(unknownCards);
+		numSpacesAvailPerPlayer = dataModel.getNumUnknownSpaceAvailablePerPlayer();
+		
+		
+	}
+	
+	public SimulationSetup() {
+		
+	}
 	
 	//pre: As long as the answer is less than 2^63, it should get the right answer.
 	// All calculations in Euchre and Mellow will be less than 2^63, but other cards games with 5 players may overflow the return value.
 	// You might get performance improvements by reordering which players get their cards first, but life's too short.
 
-	public static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
-		return getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, 0);
+
+	
+	public long initSimulationSetupAndRetNumWaysOtherPlayersCouldHaveCards() {
+		return initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray);
+	}
+
+	public long initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
+		return initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, 0);
 	}
 
 	
-	private static long getNumberOfWaysToSimulate(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], int depth) {
+	private long initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], int depth) {
 
 		//Setup basic vars:
 		boolean voidSuit[] = SimSetupUtils.getVoidSuitArrayForPlayer(numUnknownCardsPerSuit, originalIsVoidList, depth);
@@ -28,7 +61,7 @@ public class SimulationSetup {
 		//Skip players with no unknown cards:
 		if(numSpaceAvailable == 0) {
 			if(depth + 1 < numSpacesAvailPerPlayer.length) {
-				return getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
+				return initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
 			} else {
 				return 1;
 			}
@@ -71,7 +104,7 @@ public class SimulationSetup {
 			
 			//Setup next players recursively if it's not the last player:
 			if(depth + 1 < numSpacesAvailPerPlayer.length && currentNumWays > 0) {
-				currentNumWays *= getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
+				currentNumWays *= initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
 			}
 			
 			ret += currentNumWays;
@@ -79,18 +112,36 @@ public class SimulationSetup {
 			suitPartitionIter = SimSetupUtils.getNextCombination(suitPartitionIter);
 		}
 		
+		
 		return ret;
 		
 	}
 	
 
+
+
+	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex) {
+		
+		if(numSpacesAvailPerPlayer[0] > 0) {
+			System.err.println("ERROR: unknown card for currrent player");
+			System.exit(1);
+		}
+
+		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
+				getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray, combinationIndex);
+		
+		return SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
+		
+	}
+	
+	
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
-	public static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber) {
+	public SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber) {
 		return getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboIndexNumber, 0, new SelectedPartitionAndIndex());
 	}
 	
 	//pre: there's always at least 1 way to do it and randIndexNumber < number Of Combinations
-	private static SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int depth, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn) {
+	private SelectedPartitionAndIndex getSelectedPartitionAndIndexBasedOnCombinationIndex(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][], long comboIndexNumber, int depth, SelectedPartitionAndIndex selectedPartitionAndIndexToFillIn) {
 		//Setup basic vars:
 		boolean voidSuit[] = SimSetupUtils.getVoidSuitArrayForPlayer(numUnknownCardsPerSuit, originalIsVoidList, depth);
 		int numVoids = SimSetupUtils.getSumOfElementsInArray(voidSuit);
@@ -148,7 +199,7 @@ public class SimulationSetup {
 			}
 			
 			if(depth + 1 < numSpacesAvailPerPlayer.length && currentNumWays > 0) {
-				currentNumWays *= getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
+				currentNumWays *= initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
 				
 			}
 			
@@ -163,7 +214,7 @@ public class SimulationSetup {
 					
 					//Recursively fill in partition info for next player:
 					long indexFromStartOfCombo = (comboIndexNumber - prevNumCombosSkippedThru);
-					long numWaysToSetupNextPlayers = getNumberOfWaysToSimulate(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
+					long numWaysToSetupNextPlayers = initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numCardsPerSuitAfterTake, numSpacesAvailPerPlayer, originalIsVoidList, depth + 1);
 					long currentPlayerComboNumber = indexFromStartOfCombo / numWaysToSetupNextPlayers;
 					long nextComboIndexNumber = indexFromStartOfCombo % numWaysToSetupNextPlayers;
 					
@@ -201,6 +252,14 @@ public class SimulationSetup {
 		
 		
 	}
-	
-	
+
+
+
+	@Override
+	public boolean hasSignalsBakedIn() {
+		return false;
+	}
+
+
+
 }

@@ -49,6 +49,8 @@ public class SimulationSetupTestsOrig {
 		
 	}
 	
+	public static SimulationSetup simulationSetup = new SimulationSetup();
+	
 	public static void setupSimulationTest1(DataModel dataModel) {
 		
 		//Goal: return a possible arrangement of the original cards given what the current AI knows.
@@ -76,7 +78,7 @@ public class SimulationSetupTestsOrig {
 		
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
-		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long answer = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("answer (prediction: 6): " + answer);
 		
@@ -123,7 +125,7 @@ public class SimulationSetupTestsOrig {
 		
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
-		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long answer = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("answer (prediction: (39 choose 26) times (26 choose 13): (84 478 098 072 866 400) " + answer);
 	}
@@ -166,7 +168,7 @@ public class SimulationSetupTestsOrig {
 		//step 3: get # of voids per player
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
-		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long answer = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("answer (prediction: (30 choose 11) times (19 choose 10): (5 046 360 719 400) " + answer);
 		
@@ -212,7 +214,7 @@ public class SimulationSetupTestsOrig {
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		originalIsVoidList[1][0] = true;
 		
-		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long answer = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("answer (prediction: 4) " + answer);
 		
@@ -258,7 +260,7 @@ public class SimulationSetupTestsOrig {
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		originalIsVoidList[2][1] = true;
 		
-		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long answer = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("answer (prediction: (26 choose 13) * (26 choose 13) = 108172480360000) " + answer);
 		
@@ -293,7 +295,7 @@ public class SimulationSetupTestsOrig {
 		originalIsVoidList[1][0] = true;
 		originalIsVoidList[2][1] = true;
 		
-		long answer = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long answer = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("answer (prediction: 3): " + answer);
 		
@@ -326,8 +328,8 @@ public class SimulationSetupTestsOrig {
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
 		
-		for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
-			SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
+		for(int i=0; i<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
+			SelectedPartitionAndIndex test = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
 			
 			System.out.println("Suits for combo #" + i);
 			for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
@@ -340,8 +342,8 @@ public class SimulationSetupTestsOrig {
 			
 		}
 		
-		for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
-			SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
+		for(int i=0; i<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
+			SelectedPartitionAndIndex test = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
 			
 			System.out.println("Suits for combo #" + i);
 			for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
@@ -376,11 +378,11 @@ public class SimulationSetupTestsOrig {
 		originalIsVoidList[2][0] = true;
 		
 
-		int numWays = (int)(SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
+		int numWays = (int)(simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
 		
 		System.out.println("Num ways found: " + numWays);
 		for(int i=0; i<numWays; i++) {
-			SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
+			SelectedPartitionAndIndex test = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
 			
 			System.out.println("Suits for combo #" + i);
 			for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
@@ -581,8 +583,8 @@ public class SimulationSetupTestsOrig {
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		originalIsVoidList[2][0] = true;
 		
-		for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
-			SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
+		for(int i=0; i<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
+			SelectedPartitionAndIndex test = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
 			
 			System.out.println("Suits for combo #" + i);
 			for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
@@ -595,8 +597,8 @@ public class SimulationSetupTestsOrig {
 			
 		}
 		
-		for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
-			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+		for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 			
 			String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 			System.out.println("Unknown card distribution for combo #" + comboInd);
@@ -632,8 +634,8 @@ public class SimulationSetupTestsOrig {
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		originalIsVoidList[2][0] = true;
 		
-		for(int i=0; i<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
-			SelectedPartitionAndIndex test = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
+		for(int i=0; i<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); i++) {
+			SelectedPartitionAndIndex test = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, i);
 			
 			System.out.println("Suits for combo #" + i);
 			for(int j=0; j<test.suitsTakenByPlayer.length; j++) {
@@ -647,11 +649,11 @@ public class SimulationSetupTestsOrig {
 		}
 		
 		System.out.println("TEST");
-		System.out.println("Number of ways to do this (expected: 6): " + SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
+		System.out.println("Number of ways to do this (expected: 6): " + simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
 		System.out.println("Make sure everything found is diffent");
 		
-		for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
-			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+		for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 			
 			String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 			System.out.println("Unknown card distribution for combo #" + comboInd);
@@ -689,10 +691,10 @@ public class SimulationSetupTestsOrig {
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		originalIsVoidList[2][0] = true;
 		
-		System.out.println("Number of ways to do this (expected: 1): " + SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
+		System.out.println("Number of ways to do this (expected: 1): " + simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
 		
-		for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
-			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+		for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 			
 			String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 			System.out.println("Unknown card distribution for combo #" + comboInd);
@@ -737,10 +739,10 @@ public class SimulationSetupTestsOrig {
 		originalIsVoidList[2][3] = true;
 		originalIsVoidList[0][3] = true;
 		
-		System.out.println("Number of ways to do this (expected: 1): " + SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
+		System.out.println("Number of ways to do this (expected: 1): " + simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
 		
-		for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
-			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+		for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 			
 			String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 			System.out.println("Unknown card distribution for combo #" + comboInd);
@@ -778,11 +780,11 @@ public class SimulationSetupTestsOrig {
 		originalIsVoidList[1][2] = true;
 		originalIsVoidList[3][2] = true;
 		
-		System.out.println("Number of ways to do this (expected: (13 choose 5)* (8 choose 5) = 72072): " + SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
+		System.out.println("Number of ways to do this (expected: (13 choose 5)* (8 choose 5) = 72072): " + simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
 		
 		//TODO: Make sure every combination obtained thru the algorithm is different!
-		for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
-			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+		for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 			
 			String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 			//System.out.println("Unknown card distribution for combo #" + comboInd);
@@ -823,12 +825,12 @@ public class SimulationSetupTestsOrig {
 		originalIsVoidList[0][Constants.HEART] = true;
 		originalIsVoidList[2][Constants.CLUB] = true;
 
-		System.out.println("Number of ways to do this (expected: 3): " + SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
+		System.out.println("Number of ways to do this (expected: 3): " + simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList));
 		
-		for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+		for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
 			
 			
-			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+			SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 			String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 			System.out.println("Unknown card distribution for combo #" + comboInd);
 			
@@ -871,7 +873,7 @@ public class SimulationSetupTestsOrig {
 		
 		boolean originalIsVoidList[][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
-		long totalNumWays = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long totalNumWays = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("Number of ways to distribute cards (expected: (39 choose 13)* (26 choose 13) = 84 478 098 072 866 400): " + totalNumWays);
 		
@@ -887,7 +889,7 @@ public class SimulationSetupTestsOrig {
 		//step 2: Get available spaces by player
 		numSpacesAvailPerPlayer[2] = 12;
 		
-		long totalNumWaysAS = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long totalNumWaysAS = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		//Case where partner has AS and KS:
 		//Same as unknownCards1 minus AS and KS
@@ -903,7 +905,7 @@ public class SimulationSetupTestsOrig {
 		//step 2: Get available spaces by player
 		numSpacesAvailPerPlayer[2] = 11;
 		
-		long totalNumWaysASKS = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+		long totalNumWaysASKS = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 		
 		System.out.println("Number of ways to distribute cards when partner has AS and KS (expected: (37 choose 11)* (26 choose 13) = 8 892 431 376 091 200): " + totalNumWaysASKS);
 		
@@ -956,16 +958,16 @@ public class SimulationSetupTestsOrig {
 				expected += (long)Math.pow(SimSetupUtils.getCombination(i, j), 3);
 			}
 			
-			long actual = SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
+			long actual = simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
 	
 			System.out.println("Number of ways to do this (expected: " + expected + "): " + actual);
 			
 			if(i < 3) {
 				//TODO: Make sure every combination obtained thru the algorithm is different!
-				for(int comboInd=0; comboInd<SimulationSetup.getNumberOfWaysToSimulate(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
+				for(int comboInd=0; comboInd<simulationSetup.initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList); comboInd++) {
 					
 					
-					SelectedPartitionAndIndex suitPartitionsAndComboNumbers = SimulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
+					SelectedPartitionAndIndex suitPartitionsAndComboNumbers = simulationSetup.getSelectedPartitionAndIndexBasedOnCombinationIndex(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, comboInd);
 					String ret[][] = SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 					System.out.println("Unknown card distribution for combo #" + comboInd);
 					

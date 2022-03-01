@@ -16,10 +16,22 @@ public class SimulationPosibilitiesHandler {
 	// MellowLetPartnerWinSignals
 	// and VoidSignalsNoActiveMellows
 	
-	 public static HashSet<String> playerPos[] = new HashSet[Constants.NUM_PLAYERS];
+	 public HashSet<String> playerPos[] = new HashSet[Constants.NUM_PLAYERS];
 
 
-	 public static void setupCardPossibilities(DataModel dataModel) {
+	 public SimulationPosibilitiesHandler(DataModel dataModel) {
+		 setupCardPossibilities(dataModel);
+	}
+
+	public HashSet<String>[] getPlayerPos() {
+		return playerPos;
+	}
+
+	public String[][][][][] getOtherPlayerPosSet() {
+		return otherPlayerPosSet;
+	}
+
+	public void setupCardPossibilities(DataModel dataModel) {
 		 
 		 playerPos = new HashSet[Constants.NUM_PLAYERS];
 		 
@@ -109,7 +121,7 @@ public class SimulationPosibilitiesHandler {
 		 setupPossibilitySets();
 	 }
 	 
-	 public static int NUM_POSSIBILITIES = 3;
+	 public static final int NUM_POSSIBILITIES = 3;
 	 // 0 = no
 	 // 1 = yes
 	 // 2 = doesn't matter.
@@ -119,18 +131,18 @@ public class SimulationPosibilitiesHandler {
 	 //Third index is for PARTNER player
 	 //Fourth index is for RHS player
 	 //Last index is for an array of actual cards:
-	 public static String otherPlayerPosSet[][][][][] = new String[1][NUM_POSSIBILITIES][NUM_POSSIBILITIES][NUM_POSSIBILITIES][];
+	 public String otherPlayerPosSet[][][][][] = new String[1][NUM_POSSIBILITIES][NUM_POSSIBILITIES][NUM_POSSIBILITIES][];
 	 
-	 public static int NO_INDEX = 0;
-	 public static int YES_INDEX = 1;
-	 public static int ANY_INDEX = 2;
+	 public static final int NO_INDEX = 0;
+	 public static final int YES_INDEX = 1;
+	 public static final int ANY_INDEX = 2;
 	 
 
-	 public static HashSet<String> playerNOTPossibleAndNotCurPlayer[] = new HashSet[Constants.NUM_PLAYERS];
+	 private HashSet<String> playerNOTPossibleAndNotCurPlayer[] = new HashSet[Constants.NUM_PLAYERS];
 	 
 	 //pre: HashSet<String> playerPos is defined
 	 //post: 
-	 public static void setupPossibilitySets() {
+	 public void setupPossibilitySets() {
 		 
 		 //HashSet<String> playerPos[] 
 		 

@@ -14,6 +14,8 @@ import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
 import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
 import mellow.ai.simulation.simulationSetupImpl.SimSetupUtils;
+import mellow.ai.simulation.simulationSetupImpl.SimulationSetup;
+import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithMemBoost;
 import mellow.ai.situationHandlers.bidding.BasicBidMellowWinProbCalc;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
@@ -103,21 +105,31 @@ public class MonteCarloMain {
 	//Return card for action
 	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations) {
 		
-		boolean testWithSignals = false;
-		//if(testCaseParser.TEST_FOLDERS[0].equals("MonteCarloSignals")) {
-			System.err.println("Running with a basic signal filter!");
-			testWithSignals = true;
-		//}
-		return runMonteCarloMethod(dataModel, num_simulations, true, testWithSignals);
+		boolean testWithSignals = true;
+		
+		//Slow
+		//SimulationSetup simulationSetup = new SimulationSetup(dataModel, testWithSignals);
+		
+		//Faster:
+		SimulationSetupInterface simulationSetup = new SimulationSetupWithMemBoost(dataModel, testWithSignals);
+		
+		//TODO: replace it here!
+		
+		return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, true, testWithSignals);
 	}
 
-	public static String runMonteCarloMethod(DataModel dataModel, int num_simulations, boolean skipSimulationsBasedOnBids, boolean processSignals) {
+	public static String runMonteCarloMethod(DataModel dataModel, SimulationSetupInterface simulationSetup, int num_simulations, boolean skipSimulationsBasedOnBids, boolean processSignals) {
 		
 		System.out.println("RUN SIMULATION");
 		//in.nextLine();
-		
 
-		long numWaysOtherPlayersCouldHaveCards = dataModel.getCurrentNumWaysOtherPlayersCouldHaveCardsAndSetupDataModelForSimulations(processSignals);
+		if(processSignals == false
+				&& simulationSetup.hasSignalsBakedIn()) {
+			System.out.println("ERROR: Trying to not process signals while using a simulation Setup with signals baked in.");
+			System.exit(1);
+		}
+
+		long numWaysOtherPlayersCouldHaveCards = simulationSetup.initSimulationSetupAndRetNumWaysOtherPlayersCouldHaveCards();
 		
 		boolean isThorough = false;
 		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
@@ -155,8 +167,9 @@ public class MonteCarloMain {
 		}
 		System.out.println();
 		//END DEBUG PRINT POSSIBILITIES
+		
 		System.out.println("DEBUG getCardPossibilities:");
-		SimulationPosibilitiesHandler.setupCardPossibilities(dataModel);
+		SimulationPosibilitiesHandler simulationPossibilities = new SimulationPosibilitiesHandler(dataModel);
 		System.out.println("END DEBUG getCardPossibilities:");
 		
 		
@@ -205,10 +218,6 @@ public class MonteCarloMain {
 		int i=0;
 		int lastestPost = -1;
 		
-		boolean voidArray[][] = dataModel.createVoidArray(processSignals);
-		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
-		int numSpacesAvailPerPlayer[] = dataModel.getNumUnknownSpaceAvailablePerPlayer();
-		
 		
 		for(; i<num_simulations && numSkipped < maxSkipped; i++) {
 			
@@ -236,20 +245,14 @@ public class MonteCarloMain {
 					SimSetupUtils.getRandNumberFrom0ToN(numWaysOtherPlayersCouldHaveCards);
 			}
 
-			distCards = dataModel.getPossibleDistributionOfUnknownCardsBasedOnIndex(
-					randomDistributionNumber,
-					numWaysOtherPlayersCouldHaveCards,
-					processSignals,
-					voidArray,
-					unknownCards,
-					curNumUnknownCardsPerSuit,
-					numSpacesAvailPerPlayer);
+			distCards = simulationSetup.getPossibleDistributionOfUnknownCardsBasedOnIndex(randomDistributionNumber);
 			
 			//Check if distCards happen to line up with what the signals are saying:
-			if(processSignals) {
+			if(processSignals
+				&& ! simulationSetup.hasSignalsBakedIn()) {
 				
 				//3rd arg is just for debug
-				boolean realistic = isCardDistRealistic2(dataModel, distCards, numSkipped < 50);
+				boolean realistic = isCardDistRealistic2(dataModel, distCards, simulationPossibilities, numSkipped < 50);
 				
 				if( ! realistic) {
 					
@@ -391,12 +394,13 @@ public class MonteCarloMain {
 			if(skipSimulationsBasedOnBids) {
 				skipSimulationsBasedOnBids = false;
 				System.err.println("RETRY without skipping any simulations because of bids:");
-				return runMonteCarloMethod(dataModel, num_simulations, skipSimulationsBasedOnBids, processSignals);
+				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
 				
-			} else if(processSignals) {
+			} else if(processSignals 
+					&& ! simulationSetup.hasSignalsBakedIn()) {
 				processSignals = false;
 				System.err.println("RETRY without processing any signals:");
-				return runMonteCarloMethod(dataModel, num_simulations, skipSimulationsBasedOnBids, processSignals);
+				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
 				
 			}
 		}
@@ -755,14 +759,17 @@ public class MonteCarloMain {
 	}
 	
 	
-	//TODO: this function needs a lot of work...
-	//TODO: add non-mellow bidder signals to this when the need arises:
 	
-	//TODO: Make another version of monte carlo 
-	//that doesn't need to skip 99% of hands it generates...
-	//You just need to tweak the design to something less silly.
+	//TODO: add MellowLetPartnerWinSignals to this when need arises
+	//TODO: add VoidSignalsNoActiveMellows signals to the when need arises.
+	
+	//This filters out card distributions that are in conflict with the signals.
+	// When there's lots of signals, this function filters out a lot of possible hand distributions.
+	//TODO: Make another version of monte carlo
+	// that doesn't need to skip 99% of hands it generates... (I'm working on it) 
+	//You just need to change the design to something less silly.
 		//See SimulationSetupWithSignalsAndMemBoost
-	 public static boolean isCardDistRealistic2(DataModel dataModel, String distCards[][], boolean debug) {
+	 public static boolean isCardDistRealistic2(DataModel dataModel, String distCards[][], SimulationPosibilitiesHandler simulationPosibilities, boolean debug) {
 		 
 		 for(int playerIndex=0; playerIndex<Constants.NUM_PLAYERS; playerIndex++) {
 			 if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
@@ -770,7 +777,7 @@ public class MonteCarloMain {
 			 }
 			 
 			 for(int j=0; j<distCards[playerIndex].length; j++) {
-				 if( ! SimulationPosibilitiesHandler.playerPos[playerIndex].contains(distCards[playerIndex][j])) {
+				 if( ! simulationPosibilities.playerPos[playerIndex].contains(distCards[playerIndex][j])) {
 					 
 					 if(debug) {
 						 System.err.println(dataModel.getPlayers()[playerIndex] + " should not have the " + distCards[playerIndex][j]);
