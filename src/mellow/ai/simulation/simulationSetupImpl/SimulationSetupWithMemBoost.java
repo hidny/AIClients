@@ -258,9 +258,6 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 			for(int i=0; i<Constants.NUM_SUITS; i++) {
 				numWaysToFillInCardsForCurrentPlayer *= SimSetupUtils.getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
 				
-				if(numUnknownCardsPerSuit[i] < suitsTakenByPlayer[i]) {
-					System.err.println("Debug!");
-				}
 			}
 			
 			long numWaysToSetupNextPlayerShortCut = -1;
@@ -324,9 +321,6 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 			for(int i=0; i<Constants.NUM_SUITS; i++) {
 				numWaysToFillInCardsForCurrentPlayer *= SimSetupUtils.getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
 
-				if(numUnknownCardsPerSuit[i] < suitsTakenByPlayer[i]) {
-					System.err.println("Debug!");
-				}
 			}
 			
 			long numWaysToSetupNextPlayerShortCut = -1;
