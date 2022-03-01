@@ -10,7 +10,7 @@ import mellow.cardUtils.CardStringFunctions;
 public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 
 
-	private long numWaysToSimulate = -1;
+	private long totalNumWaysToSimulate = -1;
 	private boolean voidArray[][];
 	private String unknownCards[];
 	
@@ -36,7 +36,10 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 	}
 
 	public long initSimulationSetupAndRetNumWaysOtherPlayersCouldHaveCards() {
-		return initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray);
+		
+		this.totalNumWaysToSimulate = initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray);
+		
+		return totalNumWaysToSimulate;
 	}
 	
 	//pre: As long as the answer is less than 2^63, it should get the right answer.
@@ -44,7 +47,9 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 	// You might get performance improvements by reordering which players get their cards first, but life's too short.
 
 	public long initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(int numUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[], boolean originalIsVoidList[][]) {
-		return initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, START_INDEX_PLAYER);
+		this.totalNumWaysToSimulate = initSimulationSetupAndGetNumWaysOtherPlayersCouldHaveCards(numUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList, START_INDEX_PLAYER);
+		
+		return totalNumWaysToSimulate;
 	}
 
 	
@@ -158,6 +163,10 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 			suitPartitionIter = SimSetupUtils.getNextCombination(suitPartitionIter);
 		}
 		
+		if(playerIndex == START_INDEX_PLAYER) {
+			this.totalNumWaysToSimulate = ret;
+		}
+		
 		return ret;
 		
 	}
@@ -171,7 +180,7 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 		}
 
 		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
-				getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray, combinationIndex, numWaysToSimulate);
+				getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray, combinationIndex, totalNumWaysToSimulate);
 		
 		return SimSetupUtils.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
 		
@@ -248,6 +257,10 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 			long numWaysToFillInCardsForCurrentPlayer = 1;
 			for(int i=0; i<Constants.NUM_SUITS; i++) {
 				numWaysToFillInCardsForCurrentPlayer *= SimSetupUtils.getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
+				
+				if(numUnknownCardsPerSuit[i] < suitsTakenByPlayer[i]) {
+					System.err.println("Debug!");
+				}
 			}
 			
 			long numWaysToSetupNextPlayerShortCut = -1;
@@ -310,7 +323,10 @@ public class SimulationSetupWithMemBoost implements SimulationSetupInterface {
 			long numWaysToFillInCardsForCurrentPlayer = 1;
 			for(int i=0; i<Constants.NUM_SUITS; i++) {
 				numWaysToFillInCardsForCurrentPlayer *= SimSetupUtils.getCombination(numUnknownCardsPerSuit[i], suitsTakenByPlayer[i]);
-				
+
+				if(numUnknownCardsPerSuit[i] < suitsTakenByPlayer[i]) {
+					System.err.println("Debug!");
+				}
 			}
 			
 			long numWaysToSetupNextPlayerShortCut = -1;

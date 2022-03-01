@@ -245,6 +245,7 @@ public class SimSetupUtils {
 		if(m >= n && n>=0 && m < triangle.length) {
 			return triangle[m][n];
 		} else {
+			System.err.println("WARNING: getCombination returns 0 (" + m + ", " + n +")");
 			return 0;
 		}
 	}
