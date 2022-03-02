@@ -418,7 +418,15 @@ public class MonteCarloMain {
 				System.err.println("RETRY without processing any signals:");
 				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
 				
+			} else if(simulationSetup.hasSignalsBakedIn()) {
+				
+					processSignals = false;
+					System.out.println("RETRY running simulation without signals:");
+					SimulationSetupInterface simulationSetup2 = new SimulationSetupWithMemBoost(dataModel, processSignals);
+					return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
+					
 			}
+
 		}
 		
 		//in.next();

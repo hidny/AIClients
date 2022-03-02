@@ -241,7 +241,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			System.err.println("ERROR: Failed to get the correct indexLookup! (" + indexLookup + ")");
 			System.exit(1);
 			
-		} else if(combinationIndex == playerALookup.length - 1) {
+		} else if(indexLookup == playerALookup.length - 1) {
 
 			//if last index, something is wrong!
 			System.err.println("ERROR: Found the last index number that's meant to mark the end! (" + indexLookup + ")");

@@ -926,7 +926,7 @@ public class SimulationSetupTestsOrig {
 	public static void testServeCarsdsBasedOnPartitionAndIndexInfo7() {
 		
 		System.out.println("Test case where 3 players have N cards each of 3 different suits, and each player is void in a suit different than the other 2:");
-		System.out.println("The number of ways to do this is equal to the Franel numbers a(n) = Sum_{k = 0..n} binomial(n,k)^3. (A000172)");
+		System.out.println("The number of ways to do this is equal to the Franel numbers a(n) = Sum_{k = 0..n} binomial(n,k)^3. (A000172) (This actually makes sense!)");
 		
 		int PLAYERS_UNKNOWN = 3;
 		//getCombination(2*i, i)
