@@ -238,8 +238,6 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 		// Binary search correct combo index number:
 		int indexLookup = getRelevantIndexToLookup(playerALookup, combinationIndex);
 		
-		//Get Combo index for current playerALookup table:
-		combinationIndex -= playerALookup[indexLookup].getCurSumWaysSoFar();
 		
 		//Sanity Checks:
 		if(combinationIndex < playerALookup[indexLookup].getCurSumWaysSoFar()
@@ -253,6 +251,10 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			System.err.println("ERROR: Found the last index number that's meant to mark the end! (" + indexLookup + ")");
 			System.exit(1);
 		}
+		
+		//Get cur Combo index for current playerALookup table:
+		long curCombinationIndex = combinationIndex - playerALookup[indexLookup].getCurSumWaysSoFar();
+				
 		
 		//Initialize output:
 		int outputCurIndex[] = new int[4];
@@ -277,8 +279,8 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 		}
 		
 		//Insert AB NOT C into A and B
-		long indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysAGroupABNotC();
-		combinationIndex /= playerALookup[indexLookup].getNumWaysAGroupABNotC();
+		long indexToUseForCurrentGroup = curCombinationIndex % playerALookup[indexLookup].getNumWaysAGroupABNotC();
+		curCombinationIndex /= playerALookup[indexLookup].getNumWaysAGroupABNotC();
 		
 		addCardsIntoTwoPlayer(
 				this.simPossibilities.otherPlayerPosSet[0][1][1][0],
@@ -290,8 +292,8 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				indexToUseForCurrentGroup);
 		
 		//Insert A NOT B AND C into A and C
-		indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysAGroupANotBC();
-		combinationIndex /= playerALookup[indexLookup].getNumWaysAGroupANotBC();
+		indexToUseForCurrentGroup = curCombinationIndex % playerALookup[indexLookup].getNumWaysAGroupANotBC();
+		curCombinationIndex /= playerALookup[indexLookup].getNumWaysAGroupANotBC();
 
 		addCardsIntoTwoPlayer(
 				this.simPossibilities.otherPlayerPosSet[0][1][0][1],
@@ -303,8 +305,8 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				indexToUseForCurrentGroup);
 		
 		//Insert ABC into A and mark those taken by A with a hashset
-		indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysAGroupABC();
-		combinationIndex /= playerALookup[indexLookup].getNumWaysAGroupABC();
+		indexToUseForCurrentGroup = curCombinationIndex % playerALookup[indexLookup].getNumWaysAGroupABC();
+		curCombinationIndex /= playerALookup[indexLookup].getNumWaysAGroupABC();
 		
 		HashSet<String> taken = 
 			addCardsIntoPlayerMarkRestAsTaken(
@@ -316,8 +318,8 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				indexToUseForCurrentGroup);
 				
 		//Insert B AND C into B and C while ignoring cards taken by B
-		indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysBGroupBC();
-		combinationIndex /= playerALookup[indexLookup].getNumWaysBGroupBC();
+		indexToUseForCurrentGroup = curCombinationIndex % playerALookup[indexLookup].getNumWaysBGroupBC();
+		curCombinationIndex /= playerALookup[indexLookup].getNumWaysBGroupBC();
 		
 		addCardsIntoTwoPlayerIgnoreTaken(
 				taken,
@@ -329,7 +331,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				INDEX_PLAYER_C,
 				indexToUseForCurrentGroup);
 		
-		if(combinationIndex > 0) {
+		if(curCombinationIndex > 0) {
 			System.out.println("ERROR: at this point, the combination Index should be 0");
 			System.exit(1);
 		}
