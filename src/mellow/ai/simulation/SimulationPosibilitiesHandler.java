@@ -120,6 +120,15 @@ public class SimulationPosibilitiesHandler {
 		 
 		 setupPossibilitySets();
 	 }
+	
+	
+	//Constructor for debug purposes:
+	//TODO: test
+	public void setupCardPossibilities(HashSet<String> playerPos[]) {
+		this.playerPos = playerPos;
+
+		 setupPossibilitySets();
+	}
 	 
 	 public static final int NUM_POSSIBILITIES = 3;
 	 // 0 = no
@@ -225,12 +234,16 @@ public class SimulationPosibilitiesHandler {
 					//Might as well sort the cards for readability:
 					otherPlayerPosSet[0][j][k][m] = CardStringFunctions.sort(otherPlayerPosSet[0][j][k][m]);
 
+					//These print statements describe what's in the sets for debug purposes:
+					//(But they clutter the output, so I commented them out.)
+					/*
 					System.out.println("(0 " + "," + j +", " + k + ", " + m + "):");
 					if(otherPlayerPosSet[0][j][k][m].length > 0) {
 						CardStringFunctions.printCards(otherPlayerPosSet[0][j][k][m]);
 					} else {
 						System.out.println("(empty)");
 					}
+					*/
 					
 				 }
 			}
