@@ -383,7 +383,7 @@ public class SimSetupUtils {
 			ret[i] = false;
 		}
 		
-		int numCombosPassed = 0;
+		long numCombosPassed = 0L;
 		
 		for(int i=0; numCardsToTake > 0; i++) {
 			int numSpacesLeft = numCardsToChooseFrom - i;

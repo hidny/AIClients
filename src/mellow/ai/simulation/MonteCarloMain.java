@@ -32,8 +32,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		
 		testCaseParser.main(args);
@@ -236,6 +236,8 @@ public class MonteCarloMain {
 					System.err.println();
 					
 				}
+				
+				//sanityCheckPrintCardSuitFreq();
 			}
 			//Distribute unknown cards for simulation:
 			String distCards[][];
@@ -250,6 +252,8 @@ public class MonteCarloMain {
 			}
 
 			distCards = simulationSetup.getPossibleDistributionOfUnknownCardsBasedOnIndex(randomDistributionNumber);
+			
+			//sanityCheckUpdateCardSuitFreq(distCards);
 			
 			//Check if distCards happen to line up with what the signals are saying:
 			if(processSignals
@@ -815,5 +819,37 @@ public class MonteCarloMain {
 		 return true;
 	 }
 	 
+
+	 //Sanity check function to make sure everything is random:
+	 public static int debugCount[][] = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
+		
+	 public static void sanityCheckUpdateCardSuitFreq(String distCards[][]) {
+
+			for(int j=0; j<distCards.length; j++) {
+				for(int k=0; k<distCards[j].length; k++) {
+					debugCount[j][CardStringFunctions.getIndexOfSuit(distCards[j][k])]++;
+				}
+			}
+	 }
 	 
+	 public static void sanityCheckPrintCardSuitFreq() {
+
+			System.err.println("Count Cards taken by player:");
+			for(int k=0; k<debugCount[0].length; k++) {
+				String out = "suit #" + k;
+				System.err.print(out + "          ".substring(out.length()));
+			}
+			System.err.println();
+			
+			for(int j=0; j<debugCount.length; j++) {
+				
+				for(int k=0; k<debugCount[j].length; k++) {
+					String out = debugCount[j][k] + "";
+					System.err.print(out + "          ".substring(out.length()));
+				}
+				System.err.println();
+			}
+			System.err.println();
+	 }
+	 //END Sanity check function to make sure everything is random
 }

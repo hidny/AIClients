@@ -51,6 +51,22 @@ public class PlayerACombinationInfo {
 		this.numCardsAGroupABC = numCardsAGroupABC;
 		this.numWaysBGroupBC = numWaysBGroupBC;
 		this.numCardsBGroupBC = numCardsBGroupBC;
+		
+		
+	}
+	
+	public void sanityCheckNumWays(long numWays) {
+		
+		long internalCount = 
+				this.numWaysAGroupABNotC 
+				* this.numWaysAGroupANotBC
+				* this.numWaysAGroupABC
+				* this.numWaysBGroupBC;
+		
+		if(numWays != internalCount) {
+			System.err.println("ERROR: the count of the number of ways to setup the combination info doesn't match!");
+			System.exit(1);
+		}
 	}
 
 	public int getComboIndexNumber() {

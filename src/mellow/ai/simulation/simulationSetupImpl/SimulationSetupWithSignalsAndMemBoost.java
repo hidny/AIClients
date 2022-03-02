@@ -169,6 +169,9 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				
 
 				curSumBeforeCurrentComboIndexNumWays += numWays;
+				
+				//Sanity check:
+				playerALookupBuilder.get(playerALookupBuilder.size() - 1).sanityCheckNumWays(numWays);
 			}
 			
 			cardOwnershipPartitionIter = SimSetupUtils.getNextCombination(cardOwnershipPartitionIter);
@@ -234,6 +237,9 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 		
 		// Binary search correct combo index number:
 		int indexLookup = getRelevantIndexToLookup(playerALookup, combinationIndex);
+		
+		//Get Combo index for current playerALookup table:
+		combinationIndex -= playerALookup[indexLookup].getCurSumWaysSoFar();
 		
 		//Sanity Checks:
 		if(combinationIndex < playerALookup[indexLookup].getCurSumWaysSoFar()
@@ -322,6 +328,11 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				playerALookup[indexLookup].getNumCardsBGroupBC(),
 				INDEX_PLAYER_C,
 				indexToUseForCurrentGroup);
+		
+		if(combinationIndex > 0) {
+			System.out.println("ERROR: at this point, the combination Index should be 0");
+			System.exit(1);
+		}
 		
 		//Sanity check:
 		for(int i=0; i<outputCurIndex.length; i++) {
