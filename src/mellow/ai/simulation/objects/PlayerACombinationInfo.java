@@ -10,7 +10,7 @@ public class PlayerACombinationInfo {
 	// num combos for each type of relevant set. (See notes for details)
 	
 	
-	//combo index number
+	//combo index number (Only for debug, I guess)
 	private int comboIndexNumber = -1;
 	
 	//curSumSoFar

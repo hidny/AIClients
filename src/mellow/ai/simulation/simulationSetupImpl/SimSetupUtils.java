@@ -371,14 +371,14 @@ public class SimSetupUtils {
 	
 
 	//Converts index number of of combination into the bool array representing the combination.
-	public static boolean[] convertComboNumberToArray(int numUnknownCardsInSuit, int numCardsToTake, int comboNumber) {
+	public static boolean[] convertComboNumberToArray(int numCardsToChooseFrom, int numCardsToTake, long comboNumber) {
 
-		if(numUnknownCardsInSuit < numCardsToTake) {
+		if(numCardsToChooseFrom < numCardsToTake) {
 			System.err.println("ERROR: trying to create impossible combo in convertComboNumberToArray");
 			System.exit(1);
 		}
 
-		boolean ret[] = new boolean[numUnknownCardsInSuit];
+		boolean ret[] = new boolean[numCardsToChooseFrom];
 		for(int i=0; i<ret.length; i++) {
 			ret[i] = false;
 		}
@@ -386,7 +386,7 @@ public class SimSetupUtils {
 		int numCombosPassed = 0;
 		
 		for(int i=0; numCardsToTake > 0; i++) {
-			int numSpacesLeft = numUnknownCardsInSuit - i;
+			int numSpacesLeft = numCardsToChooseFrom - i;
 			
 			if(numSpacesLeft == numCardsToTake) {
 				ret[i] = true;

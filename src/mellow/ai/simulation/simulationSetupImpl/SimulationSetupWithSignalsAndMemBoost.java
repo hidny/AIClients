@@ -2,6 +2,7 @@ package mellow.ai.simulation.simulationSetupImpl;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.simulation.SimulationPosibilitiesHandler;
@@ -10,12 +11,9 @@ import mellow.ai.simulation.objects.PlayerACombinationInfo;
 
 public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInterface {
 
-	
-	
-
 	private int numSpacesAvailPerPlayer[];
-	SimulationPosibilitiesHandler simPossibilities;
 	
+	SimulationPosibilitiesHandler simPossibilities;
 	
 	private PlayerACombinationInfo playerALookup[];
 	
@@ -116,29 +114,6 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			
 			if(worksSoFar) {
 
-				//TODO: 
-				//Add to the num ways.
-				//Add an element to playerALookupBuilder.
-				
-				//TODO: Add curSumNumWays to playerALookupBuilder
-			//What to record (if numWays > 0)
-				//combo index number
-				
-				//curSumSoFar
-				
-				//Num ways group A AND B AND (Not C)
-				//Num A cards group  A AND B AND (Not C)
-				
-				//Num ways group A AND (NOT B) AND C
-				//Num A cards group A AND (NOT B) AND C
-				
-				//Num ways group A AND B AND C
-				//Num A cards group A AND B AND C
-				
-				//Num ways group B AND C with A taken
-				//Num B cards group B AND C
-				
-			//End what to record	
 				long numWays = 1L;
 				
 				//For i=0 to 3:
@@ -220,10 +195,11 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 		
 		System.out.println("Sum of the number of ways: " + curSumBeforeCurrentComboIndexNumWays);
 		
+		// num ways others could have cards at beginning of the round:
 		//84478098072866400
+		//Looks good!
 		
 		
-		// TODO Auto-generated method stub
 		return curSumBeforeCurrentComboIndexNumWays;
 	}
 	
@@ -255,16 +231,214 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 
 	@Override
 	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		// Binary search correct combo index number:
+		int indexLookup = getRelevantIndexToLookup(playerALookup, combinationIndex);
+		
+		//Sanity Checks:
+		if(combinationIndex < playerALookup[indexLookup].getCurSumWaysSoFar()
+				|| combinationIndex >= playerALookup[indexLookup + 1].getCurSumWaysSoFar()) {
+			System.err.println("ERROR: Failed to get the correct indexLookup! (" + indexLookup + ")");
+			System.exit(1);
+			
+		} else if(combinationIndex == playerALookup.length - 1) {
+
+			//if last index, something is wrong!
+			System.err.println("ERROR: Found the last index number that's meant to mark the end! (" + indexLookup + ")");
+			System.exit(1);
+		}
+		
+		//Initialize output:
+		int outputCurIndex[] = new int[4];
+		
+		String output[][] = new String[4][];
+		for(int i=0; i<output.length; i++) {
+			output[i] = new String[numSpacesAvailPerPlayer[i]];
+		}
+		
+		//Insert forced cards:
+		String forced[][] = new String[4][];
+		forced[0] = new String[0];
+		forced[1] = this.simPossibilities.otherPlayerPosSet[0][1][0][0];
+		forced[2] = this.simPossibilities.otherPlayerPosSet[0][0][1][0];
+		forced[3] = this.simPossibilities.otherPlayerPosSet[0][0][0][1];
+		
+		for(int i=0; i<forced.length; i++) {
+			for(int j=0; j<forced[i].length; j++) {
+				output[i][j] = forced[i][j];
+			}
+			outputCurIndex[i] += forced[i].length;
+		}
+		
+		//Insert AB NOT C into A and B
+		long indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysAGroupABNotC();
+		combinationIndex /= playerALookup[indexLookup].getNumWaysAGroupABNotC();
+		
+		addCardsIntoTwoPlayer(
+				this.simPossibilities.otherPlayerPosSet[0][1][1][0],
+				output,
+				outputCurIndex,
+				INDEX_PLAYER_A,
+				playerALookup[indexLookup].getNumCardsAGroupABNotC(),
+				INDEX_PLAYER_B,
+				indexToUseForCurrentGroup);
+		
+		//Insert A NOT B AND C into A and C
+		indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysAGroupANotBC();
+		combinationIndex /= playerALookup[indexLookup].getNumWaysAGroupANotBC();
+
+		addCardsIntoTwoPlayer(
+				this.simPossibilities.otherPlayerPosSet[0][1][0][1],
+				output,
+				outputCurIndex,
+				INDEX_PLAYER_A,
+				playerALookup[indexLookup].getNumCardsAGroupANotBC(),
+				INDEX_PLAYER_C,
+				indexToUseForCurrentGroup);
+		
+		//Insert ABC into A and mark those taken by A with a hashset
+		indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysAGroupABC();
+		combinationIndex /= playerALookup[indexLookup].getNumWaysAGroupABC();
+		
+		HashSet<String> taken = 
+			addCardsIntoPlayerMarkRestAsTaken(
+				this.simPossibilities.otherPlayerPosSet[0][1][1][1],
+				output,
+				outputCurIndex,
+				INDEX_PLAYER_A,
+				playerALookup[indexLookup].getNumCardsAGroupABC(),
+				indexToUseForCurrentGroup);
+				
+		//Insert B AND C into B and C while ignoring cards taken by B
+		indexToUseForCurrentGroup = combinationIndex % playerALookup[indexLookup].getNumWaysBGroupBC();
+		combinationIndex /= playerALookup[indexLookup].getNumWaysBGroupBC();
+		
+		addCardsIntoTwoPlayerIgnoreTaken(
+				taken,
+				this.simPossibilities.otherPlayerPosSet[0][2][1][1],
+				output,
+				outputCurIndex,
+				INDEX_PLAYER_B,
+				playerALookup[indexLookup].getNumCardsBGroupBC(),
+				INDEX_PLAYER_C,
+				indexToUseForCurrentGroup);
+		
+		//Sanity check:
+		for(int i=0; i<outputCurIndex.length; i++) {
+			if(outputCurIndex[i] != output[i].length) {
+				System.err.println("ERROR: not the right number of cards for player index " + i);
+				System.exit(1);
+			}
+		}
+		
+		return output;
 	}
+	
+	public void addCardsIntoTwoPlayer(String groupOfCards[], String output[][], int outputCurIndex[], int playerIndex1, int player1AmountTaken, int playerIndex2, long comboIndex) {
+		boolean combo[] = SimSetupUtils.convertComboNumberToArray(groupOfCards.length, player1AmountTaken, comboIndex);
+		
+		int indexToGive = -1;
+		for(int i=0; i<groupOfCards.length; i++) {
+			if(combo[i]) {
+				indexToGive = playerIndex1;
+			} else {
+				indexToGive = playerIndex2;
+				
+			}
+			output[indexToGive][outputCurIndex[indexToGive]] = groupOfCards[i];
+			outputCurIndex[indexToGive]++;
+			
+		}
+	}
+
+	public HashSet<String> addCardsIntoPlayerMarkRestAsTaken(String groupOfCards[], String output[][], int outputCurIndex[], int playerIndex1, int player1AmountTaken, long comboIndex) {
+		boolean combo[] = SimSetupUtils.convertComboNumberToArray(groupOfCards.length, player1AmountTaken, comboIndex);
+		
+		HashSet<String> taken = new HashSet<String>();
+		
+		for(int i=0; i<groupOfCards.length; i++) {
+			if(combo[i]) {
+				output[playerIndex1][outputCurIndex[playerIndex1]] = groupOfCards[i];
+				outputCurIndex[playerIndex1]++;
+				
+				taken.add(groupOfCards[i]);
+			}
+			
+		}
+		
+		
+		return taken;
+	}
+	
+	//pre: Assumes taken cards are all within String groupOfCards[]
+	// I'm assuming this to make it ever so slightly faster... but it's a bad assumption in general.
+	public void addCardsIntoTwoPlayerIgnoreTaken(HashSet<String> taken, String groupOfCards[], String output[][], int outputCurIndex[], int playerIndex1, int player1AmountTaken, int playerIndex2, long comboIndex) {
+		
+		//Get num taken:
+		//Could be replaced with taken.size(), but lets be extra safe:
+		//taken.size()
+		int numTaken = 0;
+		for(int i=0; i<groupOfCards.length; i++) {
+			if(taken.contains(groupOfCards[i])) {
+				numTaken++;
+			}
+		}
+		//End get num taken
+		
+		boolean combo[] = SimSetupUtils.convertComboNumberToArray(groupOfCards.length - numTaken, player1AmountTaken, comboIndex);
+		
+		
+		
+		int indexToGive = -1;
+		
+		int curComboI =0;
+		
+		for(int i=0; i<groupOfCards.length; i++) {
+			if(taken.contains(groupOfCards[i])) {
+				continue;
+			}
+			
+			
+			if(combo[curComboI]) {
+				indexToGive = playerIndex1;
+			} else {
+				indexToGive = playerIndex2;
+				
+			}
+			output[indexToGive][outputCurIndex[indexToGive]] = groupOfCards[i];
+			outputCurIndex[indexToGive]++;
+
+			curComboI++;
+		}
+	}
+	
 
 	@Override
 	public boolean hasSignalsBakedIn() {
 		return true;
 	}
 
-	//TODO:
+	public static int getRelevantIndexToLookup(PlayerACombinationInfo playerALookup[], long combinationIndex) {
+		return getRelevantIndexToLookup(playerALookup, combinationIndex, 0, playerALookup.length);
+	}
+	
+	public static int getRelevantIndexToLookup(PlayerACombinationInfo playerALookup[], long combinationIndex, int min, int max) {
+		
+		int mid = (min+max)/2;
+		
+		if(min == mid) {
+			return mid;
+			
+		} else if(combinationIndex < playerALookup[mid].getCurSumWaysSoFar()) {
+			return getRelevantIndexToLookup(playerALookup, combinationIndex, min, mid);
+			
+		} else {
+			return getRelevantIndexToLookup(playerALookup, combinationIndex, mid, max);
+			
+		}
+	}
+	
+	//Old description of this class before it was built:
 	//Make an improved monte that takes signals into account before it randomly distributes the cards
 	// to the players.
 	
