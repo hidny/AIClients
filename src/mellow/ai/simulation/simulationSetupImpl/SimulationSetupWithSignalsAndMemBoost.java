@@ -74,7 +74,9 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 		ArrayList<PlayerACombinationInfo> playerALookupBuilder = new ArrayList<PlayerACombinationInfo>();
 		
 
-		long curSumNumWays = 0L;
+		long curSumBeforeCurrentComboIndexNumWays = 0L;
+		
+		int comboIndex = 0;
 		
 		while(cardOwnershipPartitionIter != null) {
 
@@ -119,9 +121,24 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				//Add an element to playerALookupBuilder.
 				
 				//TODO: Add curSumNumWays to playerALookupBuilder
+			//What to record (if numWays > 0)
+				//combo index number
 				
+				//curSumSoFar
 				
+				//Num ways group A AND B AND (Not C)
+				//Num A cards group  A AND B AND (Not C)
 				
+				//Num ways group A AND (NOT B) AND C
+				//Num A cards group A AND (NOT B) AND C
+				
+				//Num ways group A AND B AND C
+				//Num A cards group A AND B AND C
+				
+				//Num ways group B AND C with A taken
+				//Num B cards group B AND C
+				
+			//End what to record	
 				long numWays = 1L;
 				
 				//For i=0 to 3:
@@ -159,26 +176,55 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				}
 				
 				
-				curSumNumWays += numWays;
+
+				PlayerACombinationInfo comboInfo = 
+						new PlayerACombinationInfo(
+								comboIndex,
+								curSumBeforeCurrentComboIndexNumWays,
+								SimSetupUtils.getCombination(maxGroupCountA[0], groupCardCountPlayerA[0]),
+								groupCardCountPlayerA[0],
+								SimSetupUtils.getCombination(maxGroupCountA[1], groupCardCountPlayerA[1]),
+								groupCardCountPlayerA[1],
+								SimSetupUtils.getCombination(maxGroupCountA[2], groupCardCountPlayerA[2]),
+								groupCardCountPlayerA[2],
+								SimSetupUtils.getCombination(m, n),
+								n);
 				
+				playerALookupBuilder.add(comboInfo);
 				
+
+				curSumBeforeCurrentComboIndexNumWays += numWays;
 			}
 			
 			cardOwnershipPartitionIter = SimSetupUtils.getNextCombination(cardOwnershipPartitionIter);
+			comboIndex++;
 			
 		}
 		
-		//TODO: and a last element to the playerALookupBuilder array, so we can knwo the total number
+		//ADD a last element to the playerALookupBuilder array, so we can know the total number
 		// of combinations.
-		System.out.println("Sum of the number of ways: " + curSumNumWays);
+		PlayerACombinationInfo comboInfo = 
+				new PlayerACombinationInfo(
+						comboIndex,
+						curSumBeforeCurrentComboIndexNumWays,
+						-1,-1,-1,-1,-1,-1,-1,-1);
+		
+		playerALookupBuilder.add(comboInfo);
+
+		// Turn playerALookupBuilder to playerALookup:
+		playerALookup = new PlayerACombinationInfo[playerALookupBuilder.size()];
+
+		for(int i=0; i<playerALookupBuilder.size(); i++) {
+			playerALookup[i] = playerALookupBuilder.get(i);
+		}
+		
+		System.out.println("Sum of the number of ways: " + curSumBeforeCurrentComboIndexNumWays);
 		
 		//84478098072866400
 		
-		//TODO:
-		// Turn playerALookupBuilder to playerALookup
 		
 		// TODO Auto-generated method stub
-		return curSumNumWays;
+		return curSumBeforeCurrentComboIndexNumWays;
 	}
 	
 	public int[] getGroupCardSizesFromComboAssume3Groups(boolean cardOwnershipPartitionIter[]) {
