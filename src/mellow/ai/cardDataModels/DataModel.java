@@ -667,6 +667,32 @@ public class DataModel {
 		return ret;
 	}
 	
+	public String[] getCardsThatDataModelIsCertainAbout() {
+		
+		ArrayList <String> cur = new ArrayList<String>();
+		
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int playerIndex = 0; playerIndex < Constants.NUM_PLAYERS; playerIndex++) {
+				
+				if(cardsUsedByPlayer[playerIndex][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS]) {
+					cur.add(DataModel.getCardString(i%Constants.NUM_RANKS, i/Constants.NUM_RANKS));
+				
+				} else if(cardsCurrentlyHeldByPlayer[playerIndex][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS] == CERTAINTY) {		
+					cur.add(DataModel.getCardString(i%Constants.NUM_RANKS, i/Constants.NUM_RANKS));
+				}
+			}
+			
+		}
+		String ret[] = new String[cur.size()];
+		
+		for(int i=0; i<ret.length; i++) {
+			ret[i] = cur.get(i);
+		}
+
+		return ret;
+		
+	}
+	
 	public void printVoidArray(boolean useSignals) {
 		boolean voidArray[][] = createVoidArray(useSignals);
 		

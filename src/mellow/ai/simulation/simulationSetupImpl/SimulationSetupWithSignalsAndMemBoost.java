@@ -17,18 +17,26 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 	
 	private PlayerACombinationInfo playerALookup[];
 	
+	private String cardsDataModelIsCertainAbout[];
+	
 	public SimulationSetupWithSignalsAndMemBoost(DataModel dataModel) {
 		
 		this(new SimulationPosibilitiesHandler(dataModel), 
-			dataModel.getNumUnknownSpaceAvailablePerPlayer());
+			dataModel.getNumUnknownSpaceAvailablePerPlayer(),
+			dataModel.getCardsThatDataModelIsCertainAbout());
+	}
+
+	public SimulationSetupWithSignalsAndMemBoost( SimulationPosibilitiesHandler simPossibilities, int numSpacesAvailPerPlayer[]) {
+		this(simPossibilities, numSpacesAvailPerPlayer, new String[0]);
 	}
 	
-	public SimulationSetupWithSignalsAndMemBoost( SimulationPosibilitiesHandler simPossibilities, int numSpacesAvailPerPlayer[]) {
+	public SimulationSetupWithSignalsAndMemBoost( SimulationPosibilitiesHandler simPossibilities, int numSpacesAvailPerPlayer[], String cardsDataModelIsCertainAbout[]) {
 
 		System.out.println("Preparing SimulationSetupWithSignalsAndMemBoost for monte carlo simulations");
 		
 		this.simPossibilities = simPossibilities;
 		this.numSpacesAvailPerPlayer = numSpacesAvailPerPlayer;
+		this.cardsDataModelIsCertainAbout = cardsDataModelIsCertainAbout;
 	}
 	
 	
@@ -36,20 +44,21 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 	private final int INDEX_PLAYER_B = 2;
 	private final int INDEX_PLAYER_C = 3;
 	
-	private static String forcedA[];
-	private static String forcedB[];
-	private static String forcedC[];
+	private static String forcedBySignalsA[];
+	private static String forcedBySignalsB[];
+	private static String forcedBySignalsC[];
 	
 	private final int NUM_UNKNOWN_PLAYERS = 3;
 	
 	@Override
 	public long initSimulationSetupAndRetNumWaysOtherPlayersCouldHaveCards() {
 		
-		forcedA = this.simPossibilities.otherPlayerPosSet[0][1][0][0];
-		forcedB = this.simPossibilities.otherPlayerPosSet[0][0][1][0];
-		forcedC = this.simPossibilities.otherPlayerPosSet[0][0][0][1];
+		//Only consider cards the dataModel isn't 100% sure about:
+		forcedBySignalsA = minusSet(this.simPossibilities.otherPlayerPosSet[0][1][0][0], this.cardsDataModelIsCertainAbout);
+		forcedBySignalsB = minusSet(this.simPossibilities.otherPlayerPosSet[0][0][1][0], this.cardsDataModelIsCertainAbout);
+		forcedBySignalsC = minusSet(this.simPossibilities.otherPlayerPosSet[0][0][0][1], this.cardsDataModelIsCertainAbout);
 		
-		int numALeftToFill = numSpacesAvailPerPlayer[INDEX_PLAYER_A] - forcedA.length;
+		int numALeftToFill = numSpacesAvailPerPlayer[INDEX_PLAYER_A] - forcedBySignalsA.length;
 		
 		
 		//TODO: Go through every way player A can choose from 3 groups:
@@ -91,7 +100,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			
 			int numBToFill = numSpacesAvailPerPlayer[INDEX_PLAYER_B];
 			
-			int maxPlayerBCouldFill = forcedB.length
+			int maxPlayerBCouldFill = forcedBySignalsB.length
 			+ (this.simPossibilities.otherPlayerPosSet[0][1][1][0].length - groupCardCountPlayerA[0]) // A AND B AND (NOT C)
 			+ (this.simPossibilities.otherPlayerPosSet[0][1][1][1].length - groupCardCountPlayerA[2]) // A AND B AND C
 			+ (this.simPossibilities.otherPlayerPosSet[0][0][1][1].length); // B AND C
@@ -102,7 +111,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			
 			int numCToFill = numSpacesAvailPerPlayer[INDEX_PLAYER_C];
 			
-			int maxPlayerCCouldFill = forcedC.length
+			int maxPlayerCCouldFill = forcedBySignalsC.length
 			+ (this.simPossibilities.otherPlayerPosSet[0][1][0][1].length - groupCardCountPlayerA[1]) // A AND (NOT B) AND C
 			+ (this.simPossibilities.otherPlayerPosSet[0][1][1][1].length - groupCardCountPlayerA[2]) // A AND B AND C
 			+ (this.simPossibilities.otherPlayerPosSet[0][0][1][1].length); // B AND C
@@ -131,7 +140,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				//Choose:
 				//BNUM = NumBToFill - forcedB - CARDINALITY(notTakenByAOf(A AND B)))
 				
-				int n = numBToFill - forcedB.length 
+				int n = numBToFill - forcedBySignalsB.length 
 						- (this.simPossibilities.otherPlayerPosSet[0][1][1][0].length - groupCardCountPlayerA[0]);
 				
 				//ALT:
@@ -142,7 +151,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 				numWays *= SimSetupUtils.getCombination(m, n);
 				
 				//SANITY
-				int n2 = numCToFill - forcedC.length 
+				int n2 = numCToFill - forcedBySignalsC.length 
 						- (this.simPossibilities.otherPlayerPosSet[0][1][0][1].length - groupCardCountPlayerA[1]);
 				
 				if(n + n2 != m) {
@@ -264,18 +273,18 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			output[i] = new String[numSpacesAvailPerPlayer[i]];
 		}
 		
-		//Insert forced cards:
-		String forced[][] = new String[4][];
-		forced[0] = new String[0];
-		forced[1] = this.simPossibilities.otherPlayerPosSet[0][1][0][0];
-		forced[2] = this.simPossibilities.otherPlayerPosSet[0][0][1][0];
-		forced[3] = this.simPossibilities.otherPlayerPosSet[0][0][0][1];
+		//Insert forced cards that are unknown to dataModel:
+		String forcedBySignals[][] = new String[4][];
+		forcedBySignals[0] = new String[0];
+		forcedBySignals[1] = forcedBySignalsA;
+		forcedBySignals[2] = forcedBySignalsB;
+		forcedBySignals[3] = forcedBySignalsC;
 		
-		for(int i=0; i<forced.length; i++) {
-			for(int j=0; j<forced[i].length; j++) {
-				output[i][j] = forced[i][j];
+		for(int i=0; i<forcedBySignals.length; i++) {
+			for(int j=0; j<forcedBySignals[i].length; j++) {
+				output[i][j] = forcedBySignals[i][j];
 			}
-			outputCurIndex[i] += forced[i].length;
+			outputCurIndex[i] += forcedBySignals[i].length;
 		}
 		
 		//Insert AB NOT C into A and B
@@ -450,6 +459,34 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 			
 		}
 	}
+	
+	public static String[] minusSet(String a[], String b[]) {
+		
+		ArrayList<String> cur = new ArrayList<String>();
+		
+		for(int i=0; i<a.length; i++) {
+			boolean skip = false;
+			for(int j=0; j<b.length; j++) {
+				if(a[i].equals(b[j])) {
+					skip = true;
+					break;
+				}
+			}
+			
+			if(skip == false) {
+				cur.add(a[i]);
+			}
+		}
+		
+		String ret[] = new String[cur.size()];
+		
+		for(int i=0; i<ret.length; i++) {
+			ret[i] = cur.get(i);
+		}
+		
+		return ret;
+	}
+	
 	
 	//Old description of this class before it was built:
 	//Make an improved monte that takes signals into account before it randomly distributes the cards
