@@ -37,6 +37,11 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 		this.simPossibilities = simPossibilities;
 		this.numSpacesAvailPerPlayer = numSpacesAvailPerPlayer;
 		this.cardsDataModelIsCertainAbout = cardsDataModelIsCertainAbout;
+		
+		if(this.numSpacesAvailPerPlayer[0] > 0) {
+			System.err.println("ERROR: SimulationSetupWithSignalsAndMemBoost assumes cards in current player hand are known.");
+			System.exit(1);
+		}
 	}
 	
 	
@@ -508,6 +513,7 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 	
 	//INPUT;
 	//Player pos and num empty positions per player.
+	
 	
 	
 	

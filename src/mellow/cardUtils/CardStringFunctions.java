@@ -74,7 +74,7 @@ public class CardStringFunctions {
 
         return cardList;
 }
-		 
+	
 	
 	private static int getMellowCardNumber(String cardString) {
 		int x = -1;
@@ -132,4 +132,41 @@ public class CardStringFunctions {
 		}
 		System.out.println();
 	}
+	
+
+	 public static boolean listContainsFakeCards(String list[]) {
+		 
+		 for(int i=0; i<list.length; i++) {
+			 if(list[i].length() != 2) {
+				 return true;
+			 }
+			 
+			 char firstChar = list[i].charAt(0);
+			 char secondChar = list[i].charAt(1);
+			 
+			 if((firstChar >= '2' && firstChar <= '9')
+					 || firstChar == 'T'
+					 || firstChar == 'J'
+					 || firstChar == 'Q'
+					 || firstChar == 'K'
+					 || firstChar == 'A'
+					 
+					) {
+				 //pass
+			 } else {
+				 return true;
+			 }
+			 
+			 if(secondChar == 'S'
+					 || secondChar == 'H'
+					 || secondChar == 'C'
+					 || secondChar == 'D') {
+				 //pass
+			 } else {
+				 return true;
+			 }
+		 }
+		 return false;
+	 }
+	 
 }

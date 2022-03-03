@@ -23,6 +23,11 @@ public class SimulationPosibilitiesHandler {
 		 setupCardPossibilities(dataModel);
 	}
 
+	 public SimulationPosibilitiesHandler(HashSet<String> playerPos[]) {
+		 this.playerPos = playerPos;
+		 setupPossibilitySets();
+	}
+
 	public HashSet<String>[] getPlayerPos() {
 		return playerPos;
 	}
@@ -232,8 +237,13 @@ public class SimulationPosibilitiesHandler {
 					}
 					
 					//Might as well sort the cards for readability:
-					otherPlayerPosSet[0][j][k][m] = CardStringFunctions.sort(otherPlayerPosSet[0][j][k][m]);
-
+					if(! CardStringFunctions.listContainsFakeCards(otherPlayerPosSet[0][j][k][m])) {
+						otherPlayerPosSet[0][j][k][m] = CardStringFunctions.sort(otherPlayerPosSet[0][j][k][m]);
+					} else {
+						
+						otherPlayerPosSet[0][j][k][m] = sortTestHand(otherPlayerPosSet[0][j][k][m]);
+					}
+					
 					//These print statements describe what's in the sets for debug purposes:
 					//(But they clutter the output, so I commented them out.)
 					/*
@@ -315,4 +325,31 @@ public class SimulationPosibilitiesHandler {
 
 		 return true;
 	 }
+	 
+	 public static String[] sortTestHand(String array[]) {
+			
+		String ret[] = new String[array.length];
+		
+		for(int i=0; i<ret.length; i++) {
+			ret[i] = array[i];
+		}
+		
+		for(int i=0; i<ret.length; i++) {
+			
+			int tmpBestIndex = i;
+			
+			for(int j=i+1; j<ret.length; j++) {
+				
+				if(ret[tmpBestIndex].compareTo(ret[j]) > 0) {
+					tmpBestIndex = j;
+				}
+				
+			}
+			String tmp = ret[i];
+			ret[i] = ret[tmpBestIndex];
+			ret[tmpBestIndex] = tmp;
+		}
+		
+		return ret;
+	}
 }
