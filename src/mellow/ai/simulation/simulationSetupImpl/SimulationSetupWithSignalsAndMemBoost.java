@@ -54,6 +54,8 @@ public class SimulationSetupWithSignalsAndMemBoost implements SimulationSetupInt
 	public long initSimulationSetupAndRetNumWaysOtherPlayersCouldHaveCards() {
 		
 		//Only consider cards the dataModel isn't 100% sure about:
+		//(For some reason, the dataModel is only expecting cards it's not 100% sure about
+		// instead of all cards currently in other player's hands)
 		forcedBySignalsA = minusSet(this.simPossibilities.otherPlayerPosSet[0][1][0][0], this.cardsDataModelIsCertainAbout);
 		forcedBySignalsB = minusSet(this.simPossibilities.otherPlayerPosSet[0][0][1][0], this.cardsDataModelIsCertainAbout);
 		forcedBySignalsC = minusSet(this.simPossibilities.otherPlayerPosSet[0][0][0][1], this.cardsDataModelIsCertainAbout);
