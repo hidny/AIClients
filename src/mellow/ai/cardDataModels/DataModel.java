@@ -3,8 +3,7 @@ package mellow.ai.cardDataModels;
 import java.util.ArrayList;
 
 import mellow.Constants;
-import mellow.ai.simulation.SimulationSetupWithMemBoost;
-import mellow.ai.simulation.objects.SelectedPartitionAndIndex;
+
 import mellow.cardUtils.*;
 
 //TODO: randomize suit choice with pseudo random # generator of adding up card indexes.... (plus a seed?)
@@ -515,7 +514,6 @@ public class DataModel {
 		 
 		cardsPlayedThisRound++;
 		
-		numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
 		do {
 			logicallyDeduceWhoHasCardsByProcessOfElimination();
 		} while(logicallyDeduceEntireOpponentHandFoundSomething());
@@ -637,37 +635,6 @@ public class DataModel {
 	}
 	
 	
-	public static final long NEED_TO_RECALCULATE = -1;
-	private long numWaysOthersPlayersCouldHaveCards = NEED_TO_RECALCULATE;
-
-	public long getCurrentNumWaysOtherPlayersCouldHaveCards(boolean useSignals) {
-		if(numWaysOthersPlayersCouldHaveCards != NEED_TO_RECALCULATE) {
-			return numWaysOthersPlayersCouldHaveCards;
-		}
-		
-		String unknownCards[] = getUnknownCards();
-		int curNumUnknownCardsPerSuit[] = CardStringFunctions.organizeCardsBySuit(unknownCards);
-		boolean originalIsVoidList[][] = createVoidArray(useSignals);
-		int numSpacesAvailPerPlayer[] = getNumUnknownSpaceAvailablePerPlayer();
-
-		return SimulationSetupWithMemBoost.getNumberOfWaysToSimulate(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, originalIsVoidList);
-	}
-	
-	
-	public String[][] getPossibleDistributionOfUnknownCardsBasedOnIndex(long combinationIndex, long numWaysToSimulate, boolean useSignals, boolean voidArray[][], String unknownCards[], int curNumUnknownCardsPerSuit[], int numSpacesAvailPerPlayer[]) {
-		
-		if(numSpacesAvailPerPlayer[0] > 0) {
-			System.err.println("ERROR: unknown card for currrent player");
-			System.exit(1);
-		}
-		
-		SelectedPartitionAndIndex suitPartitionsAndComboNumbers = 
-				SimulationSetupWithMemBoost.getSelectedPartitionAndIndexBasedOnCombinationIndex(curNumUnknownCardsPerSuit, numSpacesAvailPerPlayer, voidArray, combinationIndex, numWaysToSimulate);
-		
-		return SimulationSetupWithMemBoost.serveCarsdsBasedOnPartitionAndIndexInfo(suitPartitionsAndComboNumbers, unknownCards, numSpacesAvailPerPlayer);
-		
-	}
-	
 	public int[] getNumUnknownSpaceAvailablePerPlayer() {
 		int ret[] = new int[Constants.NUM_PLAYERS];
 		
@@ -698,6 +665,32 @@ public class DataModel {
 		}
 		
 		return ret;
+	}
+	
+	public String[] getCardsThatDataModelIsCertainAbout() {
+		
+		ArrayList <String> cur = new ArrayList<String>();
+		
+		for(int i=0; i<Constants.NUM_CARDS; i++) {
+			for(int playerIndex = 0; playerIndex < Constants.NUM_PLAYERS; playerIndex++) {
+				
+				if(cardsUsedByPlayer[playerIndex][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS]) {
+					cur.add(DataModel.getCardString(i%Constants.NUM_RANKS, i/Constants.NUM_RANKS));
+				
+				} else if(cardsCurrentlyHeldByPlayer[playerIndex][i/Constants.NUM_RANKS][i%Constants.NUM_RANKS] == CERTAINTY) {		
+					cur.add(DataModel.getCardString(i%Constants.NUM_RANKS, i/Constants.NUM_RANKS));
+				}
+			}
+			
+		}
+		String ret[] = new String[cur.size()];
+		
+		for(int i=0; i<ret.length; i++) {
+			ret[i] = cur.get(i);
+		}
+
+		return ret;
+		
 	}
 	
 	public void printVoidArray(boolean useSignals) {
