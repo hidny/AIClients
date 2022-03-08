@@ -120,7 +120,9 @@ public class ServerRequestHandler {
     
    
     //This will make the client transition through states.
-    public String dealWithServerInput(String currentMsgFromServer) throws IOException {
+    //Make this synchronized, so that the messages will get received in the right order:
+    
+    public synchronized String dealWithServerInput(String currentMsgFromServer) throws IOException {
     	
     	
     	while (currentMsgFromServer.contains(EOT)) {
