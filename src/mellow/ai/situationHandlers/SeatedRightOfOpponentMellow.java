@@ -487,6 +487,9 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(dataModel.throwerMustFollowSuit()) {
 
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AC QD 5D")) {
+				System.out.println("Debug");
+			}
 			//Handle being the third thrower and following suit...
 
 			//see if protector trumped:
@@ -501,12 +504,30 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 				}
 			
-			} else if(dataModel.couldPlayCardInHandOverCardInSameSuit(curStrongestCard)) {
+			} else if(CardStringFunctions.getIndexOfSuit(curStrongestCard) == dataModel.getSuitOfLeaderThrow()
+					&& dataModel.couldPlayCardInHandOverCardInSameSuit(curStrongestCard)) {
 				
 				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 					String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(curStrongestCard);
 					
 					if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(curStrongestCard, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
+						
+
+						if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.CURRENT_PARTNER_INDEX
+								&& dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCard)
+								&& 
+								(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+										||
+										gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
+								)
+						) {
+							
+							//Don't steal from partner if partner just ran out of the lead suit
+							// or you have nothing to lead.
+							//Play over partner to show that mellow is safe in suit otherwise...
+							
+							return dataModel.getCardInHandClosestUnderSameSuit(curStrongestCard);
+						}
 						
 						//TODO: We may not want to lead every single time we can...
 						//HANDLE this complication LATER!
@@ -877,6 +898,23 @@ public class SeatedRightOfOpponentMellow {
 				
 	}
 	
+
+	//gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
+	public static boolean gotNothingThreatningMellowToLead(DataModel dataModel, int mellowIndex) {
+		
+		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			
+			if(dataModel.currentAgentHasSuit(suitIndex)
+					&& dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowIndex, suitIndex) != null
+					&& 
+					DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex))
+					< DataModel.getRankIndex(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(mellowIndex, suitIndex))) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	//Try not to waste the killer small cards 1st time out.
 	//This is a rough imitation of how I lead as a mellow attacker...
