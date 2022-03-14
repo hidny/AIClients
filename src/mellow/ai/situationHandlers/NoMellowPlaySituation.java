@@ -1364,6 +1364,9 @@ public class NoMellowPlaySituation {
 	
 
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4S QC 6C 5C ")) {
+			System.out.println("Debug");
+		}
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
@@ -1395,9 +1398,6 @@ public class NoMellowPlaySituation {
 					
 					if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 						
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 7S JH 6H QC 3C KD")) {
-							System.out.println("Debug");
-						}
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 						
 						//I'm still not ready to do Queen tricks :(
@@ -1789,13 +1789,19 @@ public class NoMellowPlaySituation {
 						) {		
 
 					
-					//if(dataModel.)
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 
+				} else if(
+						//Partner probably can't trump
+						(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						      || ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex))
+						&& 
+						//opponent only one that signalled master
+					      dataModel.signalHandler.leftHandSideHasMasterBasedOnSignals(leaderSuitIndex)
+					 ) {
 					
-					//if(dataModel.isEffectivelyMasterCardForPlayer(Constants.CURRENT_AGENT_INDEX, cardToPlay)) {
-					//	cardToPlay = getJunkiestCardToFollowLead(dataModel);
-					//}
+					//Trumping standards should be lowered if it's just a free trick:
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					
 				//Partner is useless, so trump
 				} else if (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
