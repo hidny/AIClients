@@ -7,6 +7,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
 import mellow.cardUtils.CardStringFunctions;
+import mellow.cardUtils.DebugFunctions;
 
 public class SimulationPosibilitiesHandler {
 
@@ -103,6 +104,26 @@ public class SimulationPosibilitiesHandler {
 				 }
 				 
 			 }
+			 
+			 //Hack to manually remove some possibilities:
+			 /*
+			 //Once done with hack, incorporate it in the signals handler...
+			 if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 7S 2S JC TD 8D ")
+					 && playerIndex == 2) {
+				 
+				 String tmpCard = "JH";
+				 System.out.println("Debug HACK!");
+				 if(playerPos[playerIndex].contains(tmpCard)) {
+					 playerPos[playerIndex].remove(tmpCard);
+					 System.out.println("Removed " + tmpCard + "!");
+				 } else {
+					 System.err.println("TmpCard did not need to be removed!");
+					 System.exit(1);
+				 }
+				 
+			 }*/
+			 //End Hack to manually remove some possibilities
+			 
 		 }
 		 
 		 for(int i=0; i<Constants.NUM_PLAYERS; i++) {

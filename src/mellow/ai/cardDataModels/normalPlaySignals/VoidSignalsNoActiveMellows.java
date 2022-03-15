@@ -2,6 +2,7 @@ package mellow.ai.cardDataModels.normalPlaySignals;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -57,6 +58,7 @@ public class VoidSignalsNoActiveMellows {
 	// from player's hand?
 	public int hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[][];
 	
+	public int softMaxBecauseSomeoneLeadKequiv[][];
 	
 	//TODO
 	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
@@ -94,6 +96,8 @@ public class VoidSignalsNoActiveMellows {
 		hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow  = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		softMinBecauseMellowProtectorTrumpedHigh = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];
 		
+		softMaxBecauseSomeoneLeadKequiv = new int[Constants.NUM_PLAYERS][Constants.NUM_SUITS];;
+		
 		for(int i=0; i<hardMinCardPlayedBecausePlayedUnderCurWinner.length; i++) {
 			for(int j=0; j<hardMinCardPlayedBecausePlayedUnderCurWinner[0].length; j++) {
 				
@@ -109,7 +113,7 @@ public class VoidSignalsNoActiveMellows {
 				softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[i][j] = DONT_KNOW;
 				hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[i][j] = DONT_KNOW;
 				softMinBecauseMellowProtectorTrumpedHigh[i][j] = DONT_KNOW;
-				
+				softMaxBecauseSomeoneLeadKequiv[i][j] = DONT_KNOW;
 				
 				didNotFollowSuit[i][j] = false;
 			}
@@ -211,7 +215,13 @@ public class VoidSignalsNoActiveMellows {
 					playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
 				}
 				
-				
+				if(dataModel.getNumCardsInPlayOverCardSameSuit(card) == 1
+						&& CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE) {
+					
+					// Maybe this could be exploited, but whatever!
+					//Sadly, it didn't change the outcome of any test case.
+					softMaxBecauseSomeoneLeadKequiv[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = DataModel.getRankIndex(card);	
+				}
 				
 			} else if(throwerIndex > 0 ) {
 				
@@ -242,7 +252,7 @@ public class VoidSignalsNoActiveMellows {
 							//Later: maybe figure out if player wants to hide signal or not...
 							//This could be really deep.
 
-							hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = dataModel.getRankIndex(card);
+							hardMinCardPlayedBecausePlayedUnderCurWinner[playerIndex][CardStringFunctions.getIndexOfSuit(card)] = DataModel.getRankIndex(card);
 							
 						}// else if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0) {
 						//	System.out.println("Never mind " + card + "!");
@@ -686,9 +696,16 @@ public class VoidSignalsNoActiveMellows {
 
 		if(hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex]) {
-			System.out.println("TEST: hardMaxBecauseSomeonePlayedDirectlyUnderQequiv for " + dataModel.getPlayers()[playerIndex] 
-					+ " = " + DataModel.getCardString(hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex], suitIndex));
 			curMaxRank = hardMaxBecauseSomeonePlayedDirectlyUnderQequiv[playerIndex][suitIndex];
+
+		}
+		
+		if(softMaxBecauseSomeoneLeadKequiv[playerIndex][suitIndex] != DONT_KNOW
+				&& curMaxRank > softMaxBecauseSomeoneLeadKequiv[playerIndex][suitIndex]) {
+			System.out.println("TEST: softMaxBecauseSomeoneLeadKequiv for " + dataModel.getPlayers()[playerIndex] 
+					+ " = " + DataModel.getCardString(softMaxBecauseSomeoneLeadKequiv[playerIndex][suitIndex], suitIndex));
+			
+			curMaxRank = softMaxBecauseSomeoneLeadKequiv[playerIndex][suitIndex];
 
 		}
 		

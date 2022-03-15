@@ -32,8 +32,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		
 		testCaseParser.main(args);
@@ -55,7 +55,7 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
@@ -70,7 +70,7 @@ public class MonteCarloMain {
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 400;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 400;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
@@ -187,7 +187,7 @@ public class MonteCarloMain {
 			maxBidThatIsRealistic = (bid + 3);
 
 			//TODO: Might not need as many simulations for bids...
-			num_simulations /= 2;
+			//num_simulations /= 2;
 			
 			
 			//Always try to mellow because it's fun!
