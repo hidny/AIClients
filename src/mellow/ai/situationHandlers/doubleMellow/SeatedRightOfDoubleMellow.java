@@ -3,6 +3,8 @@ package mellow.ai.situationHandlers.doubleMellow;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
+import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
+import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
 
 public class SeatedRightOfDoubleMellow {
 	
@@ -17,11 +19,30 @@ public class SeatedRightOfDoubleMellow {
 		if(throwIndex == 0) {
 			return AIHandleLeadDoubleMellow(dataModel);
 		}
+		
+		//Edge case:
+		if(throwIndex == 1 
+				&& (DesperadoFunctions.needToBurnOpponentMellowAtAllCosts(dataModel)
+					|| DesperadoFunctions.wayBehindJustAttackOtherMellow(dataModel)
+					)) {
+
+			//TODO: maybe have custom code, but for now just take from elsewhere
+			//TODO: So far, this is UNTESTED, so it's probably wrong!
+			return SeatedRightOfOpponentMellow.AISecondThrow(dataModel);
+
+		}
+		
 		return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
 	}
 	
 	
 	public static String AIHandleLeadDoubleMellow(DataModel dataModel) {
+		
+
+		if(DesperadoFunctions.needToBurnOpponentMellowAtAllCosts(dataModel)) {
+			//TODO: maybe you should have your own customized function:
+			return SeatedRightOfOpponentMellow.AIHandleLead(dataModel);
+		}
 		
 		
 		double bestValue = -10000.0;

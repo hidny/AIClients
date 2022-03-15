@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers.doubleMellow;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
+import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -28,6 +29,14 @@ public class SeatedLeftOfDoubleMellow {
 	
 	public static String AIHandleLeadDoubleMellow(DataModel dataModel) {
 		
+		if(DesperadoFunctions.needToBurnOpponentMellowAtAllCosts(dataModel)) {
+			//TODO: maybe you should have your own customized function:
+			return SeatedLeftOfOpponentMellow.AIHandleLead(dataModel);
+
+		} else if(DesperadoFunctions.wayBehindJustAttackOtherMellow(dataModel)) {
+			return SeatedLeftOfOpponentMellow.AIHandleLead(dataModel);
+			
+		}
 		
 		double bestValue = -10000.0;
 		String bestCard = null;
@@ -223,4 +232,5 @@ public class SeatedLeftOfDoubleMellow {
 		
 		return ret;
 	}*/
+	
 }
