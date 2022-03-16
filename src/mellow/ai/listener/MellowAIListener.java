@@ -131,14 +131,14 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 			} else if(serverMessage.contains(START_POINTS_1) && serverMessage.contains(START_POINTS_2)) {
 				
 				//Update one teams score:
-				String player1 = serverMessage.split(" ")[2];
-				String player2 = serverMessage.split(" ")[4];
+				String player1 = serverMessage.split(" ")[2].toLowerCase();
+				String player2 = serverMessage.split(" ")[4].toLowerCase();
 				System.out.println("player 1:" + player1);
 				System.out.println("player 2:" + player2);
 				System.out.println("current player" + currentPlayerName);
 				System.out.println(currentPlayerInFirstTeam);
 				
-				boolean currentPlayerInList = (currentPlayerName.equals(player1) || currentPlayerName.equals(player2));
+				boolean currentPlayerInList = (currentPlayerName.toLowerCase().equals(player1) || currentPlayerName.toLowerCase().equals(player2));
 				
 				if(currentPlayerInList) {
 					System.out.println("In list");

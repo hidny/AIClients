@@ -167,7 +167,7 @@ public class BasicBidMellowWinProbCalc {
 	
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 4S 3S 5H 4H 2H 4C AD 9D 7D 6D 3D 2D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH QH JH TH 9H 3H 2H 9C 8C 7C 3C QD TD ")) {
 			System.out.println("Debug");
 		}
 		
@@ -193,6 +193,11 @@ public class BasicBidMellowWinProbCalc {
 		int numForgiveSpade = 0;
 		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < 3) {
 			numForgiveSpade += 3 - dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+			
+			if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 0) {
+				//Added a no-spade bonus:
+				numForgiveSpade += 2;
+			}
 		}
 		int numForgiveOffsuit = 0;
 		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {

@@ -208,7 +208,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 4S QH TH 6H 5H JC TC 7C 3C 2C 7D 3D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH QH JH TH 9H 3H 2H 9C 8C 7C 3C QD TD ")) {
 			System.out.println("Debug");
 		}
 		
@@ -540,6 +540,15 @@ public class BiddingSituation {
 			} else {
 				return 1 + "";
 			}
+			
+		} else if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.30
+				&& intBid == 0
+				&& (dataModel.getOpponentScore() > 750
+						&& dataModel.getOpponentScore() < 900
+						&& dataModel.getOpponentScore() - dataModel.getOurScore() > 100)
+				) {
+			//Play risky catchup:
+			return 0 + "";
 			
 		} else if(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.40
 				&& intBid == 0) {
