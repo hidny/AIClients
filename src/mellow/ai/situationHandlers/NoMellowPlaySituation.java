@@ -653,8 +653,8 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S 4H QD 9D 7D 4D")
-				&& suitIndex == Constants.DIAMOND) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S 3S JH TH 8H 5H 3H 8C 5C KD 9D ")
+				&& suitIndex == Constants.CLUB) {
 			System.out.println("Debug");
 		}
 
@@ -1131,6 +1131,16 @@ public class NoMellowPlaySituation {
 				curScore += 5.0;
 				
 			}
+
+			//Play the king if it's alone
+			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
+					&& numCardsOfSuitInHand == 1
+					&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
+				
+				curScore += 50.0;
+				
+			}
+			
 			//Don't play suit with King if you don't have the queen
 			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
 					&& numCardsOfSuitInHand > 1
@@ -1140,23 +1150,11 @@ public class NoMellowPlaySituation {
 				//Changed to -30, because doing this is better than feed RHS a suit RHS is void in.
 				curScore -= 30.0;
 				
-			}
-			
-			//Play the king if it's alone
-			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
-					&& numCardsOfSuitInHand == 1
-					&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
 				
-				curScore += 50.0;
-				
-			}
-			//Slightly prefer suits with queens in then...
-			//if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.QUEEN) {
-			//	curScore += 2.0;
-			//}
 			
-			//Consider playing suits that others have a lot of so you are less likely to be trumped
-			if(3.0 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) - numCardsOfSuitOtherPlayersHave  <= 1
+			//If you don't have a vulnerable king,
+			//consider playing suits that others have a lot of so you are less likely to be trumped
+			} else if(3.0 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) - numCardsOfSuitOtherPlayersHave  <= 1
 
 					//TODO: think about this in the case where you have no spade!
 		//Maybe it doesn't matter after all
