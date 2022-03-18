@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S 4H QD 9D 7D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS QS 8S QC 6C 3C QD ")) {
 			System.out.println("Debug");
 		}
 
@@ -653,8 +653,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S 3S JH TH 8H 5H 3H 8C 5C KD 9D ")
-				&& suitIndex == Constants.CLUB) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS QS 8S QC 6C 3C QD ")) {
 			System.out.println("Debug");
 		}
 
@@ -1132,15 +1131,23 @@ public class NoMellowPlaySituation {
 				
 			}
 
-			//Play the king if it's alone
-			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
-					&& numCardsOfSuitInHand == 1
-					&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false) {
+			//Play the Kequiv if it's alone:
+			if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				&& numCardsOfSuitInHand == 1
+				&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false
+				&& numCardsOfSuitOtherPlayersHave >= 6
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
 				
-				curScore += 50.0;
-				
+				//If it's all spades except for the Kequiv, it's no good:
+				&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 1
+						< dataModel.getNumCardsInCurrentPlayerHand()
+			) {
+				//Don't put this to +1000 because that interferes with other test cases.
+				curScore += 100.0;
 			}
-			
+				
 			//Don't play suit with King if you don't have the queen
 			if(dataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == dataModel.KING
 					&& numCardsOfSuitInHand > 1
