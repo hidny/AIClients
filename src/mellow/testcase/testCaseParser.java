@@ -67,6 +67,7 @@ public class testCaseParser {
 		if(TEST_FOLDERS.length == 1 
 				&& (TEST_FOLDERS[0].toLowerCase().startsWith("monte")
 				|| TEST_FOLDERS[0].toLowerCase().equals("tmp")
+				|| TEST_FOLDERS[0].toLowerCase().equals("tmprecentfails")
 				)
 			) {
 			decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);

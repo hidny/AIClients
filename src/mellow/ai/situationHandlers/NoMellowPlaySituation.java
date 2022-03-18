@@ -653,7 +653,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS QS 8S QC 6C 3C QD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 5S 3S 9H 5C QD ")) {
 			System.out.println("Debug");
 		}
 
@@ -831,7 +831,7 @@ public class NoMellowPlaySituation {
 		//Check if leading suitIndex helps partner trump:
 		if(
 				(       (dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, suitIndex)
-						|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
+						||dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit
 						                  (Constants.CURRENT_PARTNER_INDEX, suitIndex)
 						|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.CURRENT_PARTNER_INDEX
 						)
@@ -854,24 +854,30 @@ public class NoMellowPlaySituation {
 
 					curScore += 100;
 
-				} else {
+				} else if(numCardsOfSuitOtherPlayersHave == 1
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						) {
+
+					curScore += 200;
 					
-					if(numCardsOfSuitOtherPlayersHave == 1
-							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
-							&& numCardsOfSuitInHand > 1
-							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)	) {
-						
-						// RHS has a 50:50 chance of trumping, so
-						// don't play it if there's a better option.
-						//I could go lower than +20, but whatever...
-						
-						curScore += 20;
-						
-						
-					} else {
-						curScore += 70;
-					}
+				} else if(numCardsOfSuitOtherPlayersHave == 1
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+						&& numCardsOfSuitInHand > 1
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)	) {
+					
+					// RHS has a 50:50 chance of trumping, so
+					// don't play it if there's a better option.
+					//I could go lower than +20, but whatever...
+					
+					curScore += 20;
+					
+					
+				} else {
+					curScore += 70;
 				}
+				
 				
 				if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 					
