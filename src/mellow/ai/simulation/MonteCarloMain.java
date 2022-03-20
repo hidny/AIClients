@@ -33,9 +33,9 @@ public class MonteCarloMain {
 	public static void main(String args[]) {
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		testCaseParser.main(args);
 		
 	}
@@ -55,10 +55,12 @@ public class MonteCarloMain {
 	
 
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -185,6 +187,13 @@ public class MonteCarloMain {
 		if(dataModel.stillInBiddingPhase()) {
 			int bid = Integer.parseInt(new MellowBasicDecider(dataModel).getBidToMake());
 			maxBidThatIsRealistic = (bid + 3);
+			
+			//Near end-of-game bid stretch check:
+			if(dataModel.getOurScore() > 900
+					|| dataModel.getOpponentScore() > 900) {
+				maxBidThatIsRealistic = Math.min(Constants.NUM_STARTING_CARDS_IN_HAND, bid+7);
+			}
+			//End near end-of-game bid stretch check.
 
 			//TODO: Might not need as many simulations for bids...
 			//num_simulations /= 2;

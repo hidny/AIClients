@@ -133,7 +133,15 @@ public class BasicBidMellowWinProbCalc {
 			}
 			
 			//Maybe .8 is too high?
-			ret *= (1 - 0.8 * probLosingRank);
+			if(numOffsuits == 3) {
+				ret *= (1 - 0.8 * probLosingRank);
+			} else if(numOffsuits == 4) {
+				ret *= (1 - 0.7 * probLosingRank);
+			} else if(numOffsuits == 5) {
+				ret *= (1 - 0.6 * probLosingRank);
+			} else if (numOffsuits > 5) {
+				ret *= (1 - 0.4 * probLosingRank);
+			}
 	
 		}
 		
