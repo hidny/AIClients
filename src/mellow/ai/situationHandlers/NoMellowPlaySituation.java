@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS QS 8S QC 6C 3C QD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 5S 6C 7D 4D ")) {
 			System.out.println("Debug");
 		}
 
@@ -653,7 +653,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 5S 3S 9H 5C QD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 5S 6C 7D 4D ")) {
 			System.out.println("Debug");
 		}
 
@@ -1025,6 +1025,27 @@ public class NoMellowPlaySituation {
 				
 			
 			//END LHS void cases
+			
+			//RHS probably has to follow suit bonus:
+			if(numCardsOfSuitOtherPlayersHave > 0
+					&& numCardsOfSuitOtherPlayersHave < 4
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					&& 
+					dataModel.signalHandler.getMinCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					<
+					dataModel.signalHandler.getMinCardRankSignal(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+					&& 
+					dataModel.signalHandler.getMinCardRankSignal(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					<
+					dataModel.signalHandler.getMinCardRankSignal(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					) {
+				
+				//Works:
+				curScore += 10.0;
+			}
+			//END RHS probably has to follow suit bonus
 			
 			
 			if( (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit

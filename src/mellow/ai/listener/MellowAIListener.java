@@ -224,13 +224,15 @@ public class MellowAIListener implements GamePlayerInterface {//change to final
 					}
 					
 					if(endOfRoundIndex != 1 && endOfRoundIndex != 2) {
+						
+						gameAIAgent.resetStateForNewRound();
+						
 						if(currentPlayerInFirstTeam) {
 							gameAIAgent.setNewScores(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[tokens.length - 1]));
 						} else {
 							gameAIAgent.setNewScores(Integer.parseInt(tokens[tokens.length - 1]), Integer.parseInt(tokens[0]));
 						}
 						
-						gameAIAgent.resetStateForNewRound();
 					}
 				}
 			} else if(serverMessage.contains(WIN)) {
