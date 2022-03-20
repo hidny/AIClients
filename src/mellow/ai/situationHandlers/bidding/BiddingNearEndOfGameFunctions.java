@@ -8,7 +8,129 @@ public class BiddingNearEndOfGameFunctions {
 
 	
 
-	public static String getFinalWildDealerBid(DataModel dataModel, int origBid) {
+	public static double getOddsOfWinningWithFinalDealerBidHigherToCompete(DataModel dataModel, int origBid, int curHighBid) {
+		
+		//Made up a really crude formula:
+		
+		double ret = 0.95;
+		
+		for(int i=origBid; i<curHighBid; i++) {
+			if(i < 4) {
+				ret *= (0.5 - 0.1 * i);
+			} else {
+				ret *= 0.2;
+			}
+		}
+		
+		return ret;
+		
+	}
+		
+	public static String getHigherBidRequiredToWinInLastRound(DataModel dataModel) {
+		
+		int currentBid = putTotalBidTo14AsDealer(dataModel);
+		
+		int scoresProjectedWorstCaseHighBid[] = getProjectedScoresAssumingTheWorst(dataModel, currentBid);
+		int oppScoreHighBid = scoresProjectedWorstCaseHighBid[1];
+		int ourScoreHighBid = scoresProjectedWorstCaseHighBid[0];
+		
+		if(ourScoreHighBid <= oppScoreHighBid) {
+			
+			//If we need to burn opponent, we can't bid any lower:
+			return currentBid + "";
+			
+		} else {
+			
+			//Try to bid lower because we could afford it:
+			
+			//TODO 1: PUT INTO FUNCTION TRY TO LOWER BID SLIGHTLY
+			//TODO 2: MAKE SIMPLER TO READ VERSION THAT USES THE getProjectedScoresAssumingTheWorst FUNCTION
+			//Try to bid 1 lower so the total bid is 13:
+			int testLowerBidBy1 = currentBid - 1;
+			
+			if(testLowerBidBy1 == 0) {
+				return currentBid + "";
+			}
+			
+			if(oppScoreHighBid > ourScoreHighBid - 10) {
+				return currentBid + "";
+			} else {
+				currentBid = testLowerBidBy1;
+				
+				ourScoreHighBid = ourScoreHighBid -10;
+			}
+			
+			int finalBid = currentBid;
+			
+			//Try to decrease total bid under total of 13:
+			//Every time we decrease bid by one, assume opponents get the bonus point.
+			
+			for(int numDecreaseUnder13TotalBid = 1; currentBid - numDecreaseUnder13TotalBid > 0; numDecreaseUnder13TotalBid++) {
+				int tempOurScoreHighBid = ourScoreHighBid - 10 * numDecreaseUnder13TotalBid;
+				int tempOppScoreHighBid = oppScoreHighBid + 1 * numDecreaseUnder13TotalBid;
+				
+				if(tempOppScoreHighBid > tempOurScoreHighBid) {
+					break;
+				} else if(tempOppScoreHighBid >= tempOurScoreHighBid){
+					//Lower the bid by one but maybe you need the extra trick...
+					finalBid--;
+					break;
+				} else {
+					finalBid--;
+				}
+				
+				
+			}
+			
+			return finalBid + "";
+			
+
+			//END TODO 1: PUT INTO FUNCTION TRY TO LOWER BID SLIGHTLY
+		}
+		
+	}
+
+	public static double getOddsOfWinningWithFinalDealerBidMellow(DataModel dataModel) {
+		
+		int scoresProjectedWorstCaseMellowPass[] =
+				BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorst(dataModel, 0);
+		
+		int bonusPoints = BiddingNearEndOfGameFunctions.getNumberOfPointsAvailableWithBidAsDealer(dataModel, 0);
+		
+		int oppScore = scoresProjectedWorstCaseMellowPass[1] - bonusPoints;
+		int ourScore = scoresProjectedWorstCaseMellowPass[0] + bonusPoints;
+		
+		
+		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 0 ) {
+			return 0.0;
+			
+		} else if(oppScore > ourScore
+				&& oppScore >= Constants.GOAL_SCORE) {
+			
+			return 0.0;
+		
+		} else if(oppScore > ourScore
+				&& oppScore >= Constants.GOAL_SCORE
+				&& ourScore > oppScore - 2 * bonusPoints) {
+			return 0.5 * BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel);
+			
+		} else if(oppScore > ourScore
+				&& oppScore >= Constants.GOAL_SCORE
+				&& ourScore == oppScore - 2 * bonusPoints) {
+			return 0.2 * BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel);
+			
+		} else {
+			if(opponentsDidntSayMellow(dataModel)) {
+				return BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel);
+			} else {
+				//I just made up this formula. I hope it works!
+				return 0.4 + (1 - 0.4) * BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel);
+			}
+		}
+	}
+	
+
+	public static String getFinalWildDealerBidOpponentsDidntSayMellow(DataModel dataModel, int origBid) {
 		//TODO: put in function increase bid
 		System.out.println("(MAKING WILD DEALER BID)");
 		

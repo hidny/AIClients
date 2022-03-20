@@ -208,7 +208,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH QH JH TH 9H 3H 2H 9C 8C 7C 3C QD TD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 6S KH QH TH 9H 3H QC TC 4C 8D 4D 3D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -344,13 +344,45 @@ public class BiddingSituation {
 			int oppScore = scoresProjectedWorstCase[1] - bonusPoints;
 			int ourScore = scoresProjectedWorstCase[0] + bonusPoints;
 			
+			
 			if(oppScore > ourScore
-					&& oppScore >= Constants.GOAL_SCORE
-					&& BiddingNearEndOfGameFunctions.opponentsDidntSayMellow(dataModel)) {
+					&& oppScore >= Constants.GOAL_SCORE) {
 				
-				//TODO: If opponents said mellow, say mellow if it means your team may win
-				return BiddingNearEndOfGameFunctions.getFinalWildDealerBid(dataModel, intBid);
+				double oddsMellow = BiddingNearEndOfGameFunctions.getOddsOfWinningWithFinalDealerBidMellow(dataModel);
+				
+				System.out.println("odds mellow: " + oddsMellow);
+				
+				int getHighBidNeeded = Integer.parseInt(BiddingNearEndOfGameFunctions.getHigherBidRequiredToWinInLastRound(dataModel));
+
+				double oddsHighBid = BiddingNearEndOfGameFunctions.getOddsOfWinningWithFinalDealerBidHigherToCompete(dataModel, intBid, getHighBidNeeded);
+
+				System.out.println("odds HighBid: " + oddsHighBid);
+				
+				//TODO: if opponent said mellow, bid 1 and hope!
+				if(BiddingNearEndOfGameFunctions.opponentsDidntSayMellow(dataModel) == false
+						&& oddsMellow < 0.4
+						&& oddsHighBid < 0.4) {
+					return "1";
+				}
+				if(oddsMellow > oddsHighBid) {
+					return "0";
+					
+				} else if(getHighBidNeeded > 0){
+					return ""+ getHighBidNeeded;
+					
+				} else {
+					System.err.println("ERROR: oddsHighBid broke!");
+					return "0";
+				}
+			} else if(oppScore + 2 * bonusPoints > ourScore
+					&& oppScore >= Constants.GOAL_SCORE) {
+				System.err.println("(Weird near end of game edge case!)");
+				System.err.println("TODO: test!");
+				
+				return BiddingNearEndOfGameFunctions.getHigherBidRequiredToWinInLastRound(dataModel);
 			}
+				
+			
 		} else if(dataModel.getOpponentScore() > 800
 				&& dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
 			
