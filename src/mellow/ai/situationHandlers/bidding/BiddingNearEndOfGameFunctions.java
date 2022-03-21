@@ -129,6 +129,32 @@ public class BiddingNearEndOfGameFunctions {
 		}
 	}
 	
+	//TODO: this function could get more complicated...
+	public static boolean dontSayMellowBecauseYoureWinning(int scoresProjectedWorstCase[], double oddsOfWinningMellow) {
+		
+		System.out.println(oddsOfWinningMellow);
+		System.out.println("Projected scores: " + scoresProjectedWorstCase[0] + " vs " + scoresProjectedWorstCase[1]);
+		
+		int diff = scoresProjectedWorstCase[0] - scoresProjectedWorstCase[1];
+		
+		if(oddsOfWinningMellow > 0.95) {
+			//Check if we got the mellow in the bag:
+			return false;
+		}
+		
+		if(scoresProjectedWorstCase[0] > 900
+				&& diff > 80) {
+			return true;
+		} else if(scoresProjectedWorstCase[0] > 800
+				&& diff > 150) {
+			return true;
+		} else if(scoresProjectedWorstCase[0] > 700
+			&& diff > 300) {
+			return true;
+		}
+		
+		return false;
+	}
 
 	public static String getFinalWildDealerBidOpponentsDidntSayMellow(DataModel dataModel, int origBid) {
 		//TODO: put in function increase bid

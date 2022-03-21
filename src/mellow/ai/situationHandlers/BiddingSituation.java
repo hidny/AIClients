@@ -260,7 +260,7 @@ public class BiddingSituation {
 		
 		System.out.println("Final bid " + intBid);
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AC TC 8C 6C 4C 3C 2C QH 8H 5H 2H JD 4D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 3S 4H 2H JC 4C 3C 2C AD JD 6D 5D 4D ")) {
 			System.out.println("Debug");
 		}
 
@@ -347,6 +347,8 @@ public class BiddingSituation {
 			
 			if(oppScore > ourScore
 					&& oppScore >= Constants.GOAL_SCORE) {
+				
+				System.out.println("Scores are putting us in a desperate situation: " + dataModel.getOurScore() + " vs " + dataModel.getOpponentScore());
 				
 				double oddsMellow = BiddingNearEndOfGameFunctions.getOddsOfWinningWithFinalDealerBidMellow(dataModel);
 				
@@ -538,7 +540,12 @@ public class BiddingSituation {
 						
 						
 						return intBid + "";
+					
+					//TODO: if it's not close
+					} else if(BiddingNearEndOfGameFunctions.dontSayMellowBecauseYoureWinning(scoresProjectedWorstCase, BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel))) {
+						return intBid + "";
 					}
+
 				} else {
 					
 					//TODO: maybe don't assume worst later?
