@@ -70,16 +70,24 @@ public class BiddingSituation {
 			//Lowered to 3.75 from 4.0 and got 13 less failed cases. 
 			bid += dataModel.getNumberOfCardsOneSuit(0) - 3.75;
 			
+			double bidAdd = 0.0;
+		
 			if (dataModel.hasCard("JS")) {
-				bid +=  1.0;
+				bidAdd =  1.0;
 			} else if (dataModel.hasCard("TS")) {
-				bid += 0.8;
+				bidAdd = 0.8;
 				trumpResevoir = 0.201;
 			} else if(dataModel.getNumberOfCardsOneSuit(1) < 2 ||  dataModel.getNumberOfCardsOneSuit(2) < 2 ||  dataModel.getNumberOfCardsOneSuit(3) < 2) {
-				bid += 0.7;
+				bidAdd = 0.7;
 				trumpResevoir = 0.301;
 			} else {
 				trumpResevoir = 1.001;
+			}
+			
+			if(dataModel.getNumberOfCardsOneSuit(0) == 4) {
+				bid += bidAdd;
+			} else if(dataModel.getNumberOfCardsOneSuit(0) >= 5) {
+				bid += 0.5 * bidAdd;
 			}
 			
 		}
