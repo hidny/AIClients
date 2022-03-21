@@ -11,6 +11,10 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS TS 7S 6S 2S 9H 8H 2H JC 7C 7D 3D ")) {
+			System.out.println("Debug");
+		}
+		
 		double bid = 0.0;
 		
 		//#Add number of aces:
@@ -147,7 +151,7 @@ public class BiddingSituation {
 				} else if(AStrumpingBonus) {
 					bid += 0.60;
 				}
-			} else if(dataModel.getNumberOfCardsOneSuit(0) >= 4 && trumpResevoir > 0) {
+			} else if(dataModel.getNumberOfCardsOneSuit(0) >= 4 && trumpResevoir > 0 && dataModel.getNumberOfCardsOneSuit(0) <=5 ) {
 				if( (dataModel.getNumberOfCardsOneSuit(1) < 3 && dataModel.getNumberOfCardsOneSuit(2) < 3) ||
 						(dataModel.getNumberOfCardsOneSuit(1) < 3 && dataModel.getNumberOfCardsOneSuit(3) < 3) ||
 						(dataModel.getNumberOfCardsOneSuit(2) < 3 && dataModel.getNumberOfCardsOneSuit(3) < 3) ) {
