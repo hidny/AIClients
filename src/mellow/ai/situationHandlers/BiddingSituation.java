@@ -751,19 +751,76 @@ public class BiddingSituation {
 	
 	public static double highSpadeBidBonus(DataModel dataModel) {
 		
-		double ret = 0.0;
-		
-		int numSpade = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
-		
-		int conventionalNum = numSpade - 3;
 		
 		String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 		
-		if(highest.equals("JS")
+		//Assume player might say 2...
+		if(opponentSaidMellowOrMightSayMellow(dataModel, 2)) {
+			return 0.0;
+
+		} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+				dataModel.getCardCurrentPlayerGetIthHighestInSuit(3, Constants.SPADE)) <= 1) {
+			//Full bridge
+			
+			return 0.5;
+			
+		} else if(opponentProbHighSpader(dataModel)) {
+			return 0.0;
+			
+		} else if(highest.equals("JS")
 				|| highest.equals("TS")) {
 			return 0.5;
+		
+
 		}
 		
+		//TODO: bridge
+		
 		return 0.0;
+	}
+	
+	public static boolean opponentProbHighSpader(DataModel dataModel) {
+		
+		int dealerIndex = dataModel.getDealerIndexAtStartOfRound();
+		
+		for(int i=dealerIndex + 1; i<Constants.NUM_PLAYERS; i++) {
+			if(i == Constants.CURRENT_PARTNER_INDEX) {
+				continue;
+			}
+			if(dataModel.getBid(i) >= 5) {
+				return true;
+			}
+		}
+		
+		if(dealerIndex == Constants.LEFT_PLAYER_INDEX
+				&& dataModel.getBidTotalSoFar() <= 2) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static boolean opponentSaidMellowOrMightSayMellow(DataModel dataModel, int intBidEstimate) {
+		int dealerIndex = dataModel.getDealerIndexAtStartOfRound();
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S 7S 6S 4S 8H 5H JC 8C 4C 3C AD 6D")) {
+			System.out.println("Debug");
+		}
+		
+		for(int i=dealerIndex + 1; i<Constants.NUM_PLAYERS; i++) {
+			if(i == Constants.CURRENT_PARTNER_INDEX) {
+				continue;
+			}
+			if(dataModel.getBid(i) == 0) {
+				return true;
+			}
+		}
+		
+		if(dealerIndex == Constants.LEFT_PLAYER_INDEX
+				&& intBidEstimate + dataModel.getBidTotalSoFar() >= 10) {
+			return true;
+		}
+		
+		return false;
 	}
 }
