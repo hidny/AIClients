@@ -87,7 +87,10 @@ public class BiddingSituation {
 			if(dataModel.getNumberOfCardsOneSuit(0) == 4) {
 				bid += bidAdd;
 			} else if(dataModel.getNumberOfCardsOneSuit(0) >= 5) {
+				
+				//TODO: 0.5 * bidAdd should be part of highSpadeBidBonus
 				bid += 0.5 * bidAdd;
+				bid += highSpadeBidBonus(dataModel);
 			}
 			
 		}
@@ -746,4 +749,21 @@ public class BiddingSituation {
 	
 	//TODO: put below functions in their own class:
 	
+	public static double highSpadeBidBonus(DataModel dataModel) {
+		
+		double ret = 0.0;
+		
+		int numSpade = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
+		
+		int conventionalNum = numSpade - 3;
+		
+		String highest = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+		
+		if(highest.equals("JS")
+				|| highest.equals("TS")) {
+			return 0.5;
+		}
+		
+		return 0.0;
+	}
 }
