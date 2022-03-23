@@ -1814,12 +1814,10 @@ public class NoMellowPlaySituation {
 		                   && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))
 						&& //No K to protect:
 						 ! ((dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2 || dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3 )
-						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-						           && ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE))
+						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE))
 						 && //No Q to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3
-				                   && NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
-				                   && ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE))
+				                   && NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE))
 						) {		
 
 					
