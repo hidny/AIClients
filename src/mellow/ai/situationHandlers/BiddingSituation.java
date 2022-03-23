@@ -11,9 +11,6 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS TS 7S 6S 2S 9H 8H 2H JC 7C 7D 3D ")) {
-			System.out.println("Debug");
-		}
 		
 		double bid = 0.0;
 		

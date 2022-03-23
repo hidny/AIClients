@@ -1571,7 +1571,7 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 8S 7S 5H AC 9C 5C 3C AD KD QD 9D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 9S AH 7H 6H 5D 3D ")) {
 				System.out.println("Debug");
 			}
 			
@@ -1592,7 +1592,7 @@ public class NoMellowPlaySituation {
 
 				if(dataModel.isMasterCard(leaderCard)
 						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1) {
-						
+
 						
 					//Let partner trump for you:
 					if(
@@ -1685,8 +1685,8 @@ public class NoMellowPlaySituation {
 									   || 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 5
 									   )
 								//LHS is a real threat:
-								&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) < 8
-								   || dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex) > 1)
+								&& (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+									|| dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex) > 1)
 								&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 								
 									//There's probably a more inclusive way, but this works for the simple case:
@@ -1813,11 +1813,13 @@ public class NoMellowPlaySituation {
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1
 		                   && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))
 						&& //No K to protect:
-						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
-						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE))
+						 ! ((dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2 || dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3 )
+						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+						           && ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE))
 						 && //No Q to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3
-				                   && NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE))
+				                   && NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+				                   && ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE))
 						) {		
 
 					
