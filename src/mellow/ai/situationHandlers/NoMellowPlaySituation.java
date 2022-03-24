@@ -1714,12 +1714,35 @@ public class NoMellowPlaySituation {
 								   )
 								) {
 							
+							
+							if (dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex) > 1
+									//Check if LHS signalled lower than PARTNER:
+								&&      (! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+								&& dataModel.signalHandler.getMinCardRankSignal(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex) <=
+									 dataModel.signalHandler.getMinCardRankSignal(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+								)
+								 ) {
+								//TODO: trump anyways?
+							}
+							
+							//Desperation exception:
+							// I'm unsure about this:
+							if(dataModel.isMasterCard(leaderCard)
+								   && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) + dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
+								   - dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) - dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX)
+								   + 2 >= dataModel.getNumCardsInCurrentPlayerHand()
+                                   && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) > 3
+                                   && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+                                   && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+                                   ) {
+                               
+								cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+							 
 							//TODO: what if you could just trump just because you have AKS?
 							// or you have all but 1 spade... it gets complicated.
 							//I'll deal with it when a new test case comes up
-							
-							//TODO: clear other suit...
-							if(currentPlayerHasOffsuitToThrowOff(dataModel)) {
+							//clear other suit:
+							} else if(currentPlayerHasOffsuitToThrowOff(dataModel)) {
 								cardToPlay = getOffsuitCardCurrentPlayerCouldThrowToClearSuit(dataModel);
 							} else {
 								cardToPlay = getJunkiestOffSuitCardBasedOnMadeupValueSystem(dataModel);
