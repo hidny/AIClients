@@ -1571,7 +1571,7 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 9S AH 7H 6H 5D 3D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6C 5C JD 5D 4D 3D ")) {
 				System.out.println("Debug");
 			}
 			
@@ -2428,7 +2428,10 @@ public class NoMellowPlaySituation {
 			if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 0
 					&& numUnderLowest == 0 
 					&& (numOverHighest >= 1 || dataModel.getNumCardsInCurrentPlayerHand() <=2)
-					&& numberOfCardsInSuit == 1
+					&& (numberOfCardsInSuit == 1
+						||
+						dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(bestCardPlayerHas, curCard) == 0
+					)
 					/*&& !(partnerVoid
 							&& partnerTrumping)*/) {
 				
