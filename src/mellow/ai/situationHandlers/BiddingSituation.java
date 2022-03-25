@@ -186,12 +186,17 @@ public class BiddingSituation {
 				//bid -= 0.25;
 				//Didn't make it better :(
 				
-			} else if(dataModel.getOurScore() > 700
-					&& dataModel.getOurScore() - dataModel.getOpponentScore() > 100
-					&& dataModel.getOurScore() - dataModel.getOpponentScore() < 300) {
-				//bid -= 0.25;
-				//Didn't make it better :(
-				//Maybe if you don't have strong spade??? I don't know
+			}
+		}
+		
+		if(dataModel.getOurScore() > 700
+				&& dataModel.getOurScore() - dataModel.getOpponentScore() > 100
+				&& dataModel.getOurScore() - dataModel.getOpponentScore() < 300) {
+			double BID_LOWER = 0.33;
+			bid -= BID_LOWER;
+			if((int) Math.floor(bid) < (int) Math.floor(bid + BID_LOWER)) {
+				System.out.println("(TEST LOWER BID)");
+				System.out.println(dataModel.getOurScore() + " vs " + dataModel.getOpponentScore());
 			}
 		}
 		
@@ -223,6 +228,7 @@ public class BiddingSituation {
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 6S KH QH TH 9H 3H QC TC 4C 8D 4D 3D ")) {
 			System.out.println("Debug");
 		}
+		
 		
 		if (intBid < 0) {
 			intBid = 0;
