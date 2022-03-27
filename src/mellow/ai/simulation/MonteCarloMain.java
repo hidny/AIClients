@@ -32,8 +32,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		testCaseParser.main(args);
@@ -102,6 +102,7 @@ public class MonteCarloMain {
 
 	//No more debug print!
 	public static int MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT = 0;
+	
 	
 	
 	//For testing:
@@ -312,17 +313,21 @@ public class MonteCarloMain {
 				if( ! dataModel.stillInBiddingPhase()
 						&& (
 								//<= 8 is possible sometimes... Especially when I accidentally bid too low.
-						(dataModel.getBidTotal() <= 7
+						(dataModel.getBidTotal() <= 5
 						&& ! dataModel.someoneBidMellow())
 						|| dataModel.getBidTotal() >= 15
 						)
 					){
 					
-					if(i % 1000 == 0) {
+					if(i == 0) {
 						System.err.println("WARNING: Bids don't make sense! Monte will not be skipping any hands because of bids.");
 					}
 				} else {
 					
+					if(dataModel.getBidTotal() < 8
+							&& i==0) {
+						System.err.println("WARNING: Bids don't make sense! But Monte will skip bad bids anyways!");
+					}
 					//For now, don't skip if thorough.... I don't know!
 					if(skipSimulationsBasedOnBids) {
 						if(isThorough == false) {
@@ -440,8 +445,8 @@ public class MonteCarloMain {
 				
 					processSignals = false;
 					System.out.println("RETRY running simulation without signals:");
-					SimulationSetupInterface simulationSetup2 = new SimulationSetupWithMemBoost(dataModel, processSignals);
-					return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
+					SimulationSetupInterface simulationSetupNoSignals = new SimulationSetupWithMemBoost(dataModel, processSignals);
+					return runMonteCarloMethod(dataModel, simulationSetupNoSignals, num_simulations, skipSimulationsBasedOnBids, processSignals);
 					
 			}
 

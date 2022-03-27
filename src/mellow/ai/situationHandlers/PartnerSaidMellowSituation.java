@@ -795,6 +795,10 @@ public class PartnerSaidMellowSituation {
 		System.out.println("TESTING PROTECTOR 4th throw");
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S TS")) {
+			System.out.println("debug");
+		}
+		
 		String currentFightWinnerCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 		
 		if(currentFightWinnerCard == dataModel.getCardSecondThrow()) {
@@ -842,7 +846,8 @@ public class PartnerSaidMellowSituation {
 				}
 				
 				//else:
-				
+			} else if(dataModel.currentPlayerOnlyHasSpade()) {
+				return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 			} else {
 				
 				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS 8S 5S 9H 8H 5H 2H 6D ")) {
