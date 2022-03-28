@@ -170,7 +170,7 @@ public class SeatedLeftOfOpponentMellow {
 			//handle case where mellow is already safe:
 
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9S 2S KH 5H KC JC 9C 3C 2C 9D 8D")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 9S 3S 4H QD ")) {
 				System.out.println("Debug");
 			}
 

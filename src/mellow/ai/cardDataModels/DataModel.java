@@ -83,6 +83,16 @@ public class DataModel {
 
 	private boolean cardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 
+	public int getNextHighestRankedCardUsedByPlayerForSuit(int playerIndex, int suitIndex, int rankIndex) {
+		
+		for(int rankIter = rankIndex + 1; rankIter <= ACE; rankIter++) {
+			if(cardsUsedByPlayer[playerIndex][suitIndex][rankIter]) {
+				return rankIter;
+			}
+		}
+		return -1;
+		
+	}
 	//Map:
 	//  2  3  4 5 .. A
 	//S

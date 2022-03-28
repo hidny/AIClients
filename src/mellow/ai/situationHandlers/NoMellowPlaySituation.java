@@ -2146,7 +2146,18 @@ public class NoMellowPlaySituation {
 								&& 
 							dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(leadThrow, highestInHand) <= 2
 							    &&
-							! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)    
+							! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
+							
+							//Just play master if LHS probably has a higher spade:
+							&& ( ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+								|| dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(dataModel.getCardLeaderThrow()) >=
+										dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardLeaderThrow())
+								)
+							//Just play master if RHS is out of spade, but not LHS:
+							&& ! (dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+									&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
+									&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+								)
 								    ) {
 							
 							cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());

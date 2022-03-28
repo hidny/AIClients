@@ -154,15 +154,29 @@ public class PlayerSaidMellowSignals {
 	public void receiveUnexpectedCardFromMellowBidder(int playerIndex, int suitIndex, int rankIndex) {
 		//SIGNAL CANCELLATION:
 		
-		//TODO: later, start from the rank of the orig card that led us astray... (Not from the contradiction card)
 		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] == MELLOW_PLAYER_SIGNALED_NO) {
 			
 			if(rankIndex <= DataModel.RANK_SEVEN) {
-				for(int rankIndexI=rankIndex - 1 ; rankIndexI >= dataModel.RANK_TWO; rankIndexI--) {
+				
+				//Start from the rank of the orig card that led us astray... (Not from the contradiction card)
+				int rankToUse = dataModel.getNextHighestRankedCardUsedByPlayerForSuit(playerIndex, suitIndex, rankIndex);
+				
+				if(rankToUse == -1) {
+					System.err.println("WARNING: no card played over card in suit, but receiveUnexpectedCardFromMellowBidder still got triggered");
+					//System.exit(1);
+					rankToUse = rankIndex;
+				}
+				
+				for(int rankIndexI=rankToUse - 1 ; rankIndexI >= dataModel.RANK_TWO; rankIndexI--) {
+					
+					if(rankIndexI == rankIndex) {
+						//Not strictly needed, but it keeps the code readable:
+						continue;
+					}
+					
 					//TODO: if there's another state, we will need to make a complicate state transition table
 					//MELLOW IND -> LEAD_SUGGESTION ...
 					setCardMellowSignalUncertainIfSignalNO(playerIndex, suitIndex, rankIndexI);
-					System.out.println("Signal cancel: " + dataModel.getCardString(rankIndexI, suitIndex));
 				}
 			} else {
 				System.out.println("(WARNING: Mellow doing some high-level stuff here.)");
@@ -186,7 +200,7 @@ public class PlayerSaidMellowSignals {
 	public void setCardMellowSignalUncertainIfSignalNO(int playerIndex, int suitIndex, int rankIndex) {
 		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] == MELLOW_PLAYER_SIGNALED_NO) {
 			
-			System.out.println("MELLOW MIGHT NOW HAVE " + dataModel.getCardString(rankIndex, suitIndex) + ".");
+			System.out.println("MELLOW MIGHT NOW HAVE " + DataModel.getCardString(rankIndex, suitIndex) + ".");
 			dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] = DataModel.DONTKNOW;
 		}
 	}
