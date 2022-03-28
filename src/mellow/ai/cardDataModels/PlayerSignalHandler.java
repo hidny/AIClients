@@ -69,6 +69,9 @@ public class PlayerSignalHandler {
 		
 	}
 	
+	public void receiveUnexpectedCardFromMellowBidder(int playerIndex, int suitIndex, int rankIndex) {
+		this.playerSaidMellowSignals.receiveUnexpectedCardFromMellowBidder(playerIndex, suitIndex, rankIndex);
+	}
 	
 	//Player said mellow signals:
 	//TODO: I'm thinking of just passing this.playerSaidMellowSignals to the situation handlers and

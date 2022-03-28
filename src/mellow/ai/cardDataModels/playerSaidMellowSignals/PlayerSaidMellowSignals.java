@@ -7,7 +7,7 @@ import mellow.cardUtils.DebugFunctions;
 
 public class PlayerSaidMellowSignals {
 
-	static final int MELLOW_PLAYER_SIGNALED_NO = 3;
+	public static final int MELLOW_PLAYER_SIGNALED_NO = 3;
 	private DataModel dataModel;
 
 	public PlayerSaidMellowSignals(DataModel dataModel) {
@@ -33,7 +33,17 @@ public class PlayerSaidMellowSignals {
 			// and now it's the second player's turn
 			
 			//and the first card lead by a mellow player is usually weird... ignore leading
-			//TODO: don't ignore in future!
+			//Unless it's a spade...
+			
+			if(dataModel.getSuitOfLeaderThrow() == Constants.SPADE
+					&& dataModel.getNumStillActiveMellow() == 1) {
+				
+				for(int rankIndex=DataModel.getRankIndex(card) + 1 ; rankIndex <= dataModel.ACE; rankIndex++) {
+					//TODO: if there's another state, we will need to make a complicate state transition table
+					//MELLOW IND -> LEAD_SUGGESTION ...
+					setCardMellowSignalNoIfUncertain(playerIndex, Constants.SPADE, rankIndex);
+				}
+			}
 			
 		} else {
 			
@@ -55,7 +65,7 @@ public class PlayerSaidMellowSignals {
 					// TODO: There's an exception if it's 2nd or 3rd thrower and knows last player must play
 					// above, but whatever...
 					
-					for(int rankIndex=dataModel.getRankIndex(card) - 1 ; rankIndex >= dataModel.RANK_TWO; rankIndex--) {
+					for(int rankIndex=DataModel.getRankIndex(card) - 1 ; rankIndex >= dataModel.RANK_TWO; rankIndex--) {
 						//TODO: if there's another state, we will need to make a complicate state transition table
 						//MELLOW IND -> LEAD_SUGGESTION ...
 						setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
@@ -141,12 +151,31 @@ public class PlayerSaidMellowSignals {
 	
 	}
 	
+	public void receiveUnexpectedCardFromMellowBidder(int playerIndex, int suitIndex, int rankIndex) {
+		//SIGNAL CANCELLATION:
+		
+		//TODO: later, start from the rank of the orig card that led us astray... (Not from the contradiction card)
+		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] == MELLOW_PLAYER_SIGNALED_NO) {
+			
+			if(rankIndex <= DataModel.RANK_SEVEN) {
+				for(int rankIndexI=rankIndex - 1 ; rankIndexI >= dataModel.RANK_TWO; rankIndexI--) {
+					//TODO: if there's another state, we will need to make a complicate state transition table
+					//MELLOW IND -> LEAD_SUGGESTION ...
+					setCardMellowSignalUncertainIfSignalNO(playerIndex, suitIndex, rankIndexI);
+					System.out.println("Signal cancel: " + dataModel.getCardString(rankIndexI, suitIndex));
+				}
+			} else {
+				System.out.println("(WARNING: Mellow doing some high-level stuff here.)");
+			}
+		}
+		//END SIGNAL CANCELLATION
+	}
 	
 
 	//TODO: if mellow has card even though the player signal he/she doesn't: note that down!
 	public void setCardMellowSignalNoIfUncertain(int playerIndex, int suitIndex, int rankIndex) {
-		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != dataModel.CERTAINTY
-				&& dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != dataModel.IMPOSSIBLE) {
+		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != DataModel.CERTAINTY
+				&& dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] != DataModel.IMPOSSIBLE) {
 			
 			//System.out.println("MELLOW HAS NO " + dataModel.getCardString(rankIndex, suitIndex) + ".");
 			//System.out.println(playerIndex + ", " + suitIndex + ", " + rankIndex);
@@ -154,6 +183,13 @@ public class PlayerSaidMellowSignals {
 		}
 	}
 	
+	public void setCardMellowSignalUncertainIfSignalNO(int playerIndex, int suitIndex, int rankIndex) {
+		if(dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] == MELLOW_PLAYER_SIGNALED_NO) {
+			
+			System.out.println("MELLOW MIGHT NOW HAVE " + dataModel.getCardString(rankIndex, suitIndex) + ".");
+			dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rankIndex] = DataModel.DONTKNOW;
+		}
+	}
 	
 	
 	public String getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(int mellowPlayerIndex, int suitIndex) {

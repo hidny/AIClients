@@ -3,7 +3,7 @@ package mellow.ai.cardDataModels;
 import java.util.ArrayList;
 
 import mellow.Constants;
-
+import mellow.ai.cardDataModels.playerSaidMellowSignals.PlayerSaidMellowSignals;
 import mellow.cardUtils.*;
 
 //TODO: randomize suit choice with pseudo random # generator of adding up card indexes.... (plus a seed?)
@@ -375,6 +375,16 @@ public class DataModel {
 		return false;
 	}
 
+	public int getNumStillActiveMellow() {
+		int ret = 0;
+		for(int i=0; i<bids.length; i++) {
+			if(bids[i] == 0 && tricks[i] == 0) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+
 	public boolean saidMellow(int playerIndex) {
 		return bids[playerIndex] == 0;
 	}
@@ -485,6 +495,12 @@ public class DataModel {
 			System.exit(1);
 		}
 		//End sanity check
+		
+		//Handle unexpected card from mellow
+		if(cardsCurrentlyHeldByPlayer[indexPlayer][cardNum/Constants.NUM_RANKS][cardNum%Constants.NUM_RANKS] == PlayerSaidMellowSignals.MELLOW_PLAYER_SIGNALED_NO) {
+			this.signalHandler.receiveUnexpectedCardFromMellowBidder(indexPlayer, cardNum/Constants.NUM_RANKS, cardNum%Constants.NUM_RANKS);
+		}
+		//End handle unexpected card from mellow
 		
 		//Update tricks (if needed)
 		handleTrickIfPlayedCardIs4thThrow(indexPlayer, card);
