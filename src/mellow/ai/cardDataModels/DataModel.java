@@ -251,6 +251,8 @@ public class DataModel {
 		return (index  - playerIndex + Constants.NUM_PLAYERS) % Constants.NUM_PLAYERS;
 	}
 	
+	public static final int NOT_SIMULATION = 0;
+	
 	public int getSimulation_level() {
 		return simulation_level;
 	}

@@ -65,10 +65,14 @@ public class PlayerSaidMellowSignals {
 					// TODO: There's an exception if it's 2nd or 3rd thrower and knows last player must play
 					// above, but whatever...
 					
-					for(int rankIndex=DataModel.getRankIndex(card) - 1 ; rankIndex >= dataModel.RANK_TWO; rankIndex--) {
-						//TODO: if there's another state, we will need to make a complicate state transition table
-						//MELLOW IND -> LEAD_SUGGESTION ...
-						setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+					//Only set signals if mellow isn't 2nd thrower and it isn't spade:
+					if(throwNumber > 1 || suitLeadIndex != Constants.SPADE) {
+						
+						for(int rankIndex=DataModel.getRankIndex(card) - 1 ; rankIndex >= dataModel.RANK_TWO; rankIndex--) {
+							//TODO: if there's another state, we will need to make a complicate state transition table
+							//MELLOW IND -> LEAD_SUGGESTION ...
+							setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+						}
 					}
 					
 				} else {
@@ -162,8 +166,8 @@ public class PlayerSaidMellowSignals {
 				int rankToUse = dataModel.getNextHighestRankedCardUsedByPlayerForSuit(playerIndex, suitIndex, rankIndex);
 				
 				if(rankToUse == -1) {
-					System.err.println("WARNING: no card played over card in suit, but receiveUnexpectedCardFromMellowBidder still got triggered");
-					//System.exit(1);
+					System.out.println("WARNING: no card played over card in suit, but receiveUnexpectedCardFromMellowBidder still got triggered");
+					
 					rankToUse = rankIndex;
 				}
 				

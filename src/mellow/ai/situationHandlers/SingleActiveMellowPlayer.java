@@ -83,6 +83,11 @@ public class SingleActiveMellowPlayer {
 	}
 	
 	private static String AIMellowFollow(DataModel dataModel) {
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S 7C ")) {
+			System.out.println("Debug");
+		}
+		
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
 		String cardToPlay = "";
@@ -139,6 +144,15 @@ public class SingleActiveMellowPlayer {
 					}
 					//END special case where mellows plays over lead
 				
+				} else if(dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS == 1
+						&& CardStringFunctions.getIndexOfSuit(currentFightWinner) == Constants.SPADE
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
+					
+					//Go for it!
+					//Hope partner covers you:
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					
 				} else {
 					//Play slightly above winning card and hope you'll get covered
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(currentFightWinner);
@@ -154,6 +168,7 @@ public class SingleActiveMellowPlayer {
 			
 			
 		} else {
+			
 			//Can't follow suit:
 			
 			//TODO: throw off card that gets rid of the most risk... not necessarily the spade.
