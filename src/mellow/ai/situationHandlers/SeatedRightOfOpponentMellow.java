@@ -46,9 +46,6 @@ public class SeatedRightOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH AC KC JC 8C KD TD 8D")) {
-			System.out.println("Debug");
-		}
 		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
@@ -188,6 +185,9 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KH 6H QD 2D ")) {
+			System.out.println("Debug");
+		}
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();

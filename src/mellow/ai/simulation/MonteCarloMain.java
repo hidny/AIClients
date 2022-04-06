@@ -32,8 +32,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		testCaseParser.main(args);
@@ -56,12 +56,13 @@ public class MonteCarloMain {
 
 	//Deep dive into 1 test case slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000000;
-	
+
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
@@ -145,7 +146,8 @@ public class MonteCarloMain {
 		
 		boolean isThorough = false;
 		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
-				|| numWaysOtherPlayersCouldHaveCards <= 2 * num_simulations) {
+				|| (skipSimulationsBasedOnBids && numWaysOtherPlayersCouldHaveCards <= 10 * num_simulations)
+				|| ( numWaysOtherPlayersCouldHaveCards <= 3 * num_simulations)) {
 			isThorough = true;	
 		}
 		

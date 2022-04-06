@@ -536,8 +536,31 @@ public class SeatedLeftOfOpponentMellow {
 				curValue += -4 * (1.5) + 1.5 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
 			}
 			
+			//Try to avoid trowing master cards that protector could take advantage of:
+			if(dataModel.isMasterCard(curCard)
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(curSuitIndex) > 1
+					
+					) {
+				
+				if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) == 1
+						||
+						dataModel.signalHandler.getMaxCardRankSignal((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
+						> DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex))) {
+					//Don't like throwing masters
+						curValue -= 15.0;
+						
+						if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) >= 2) {
+							//Throw 2nd highest if it's under the master group of cards.
+							curCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex);
+						}
+				}
+			}
+			
 			//Lower rank cards are less fun to throw:
 			curValue += 0.9 * dataModel.getRankIndex(curCard);
+			
+			
 			
 			//2s and 3s don't really save a mellow:
 			if(dataModel.getRankIndex(curCard) <= DataModel.RANK_THREE) {
@@ -690,7 +713,8 @@ public class SeatedLeftOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6S 3S AD TD 3D ")) {
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S 5S 2S KH")) {
 			System.out.println("Debug");
 		}
 
@@ -842,7 +866,12 @@ public class SeatedLeftOfOpponentMellow {
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndex);
 				}
 			} else {
-				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				
+				if(! dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, Constants.SPADE)) {
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+				} else {
+					return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				}
 			}
 		}
 	}
