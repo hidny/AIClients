@@ -445,6 +445,7 @@ public class MonteCarloMain {
 				
 			} else if(simulationSetup.hasSignalsBakedIn()) {
 				
+				    skipSimulationsBasedOnBids = false;
 					processSignals = false;
 					System.out.println("RETRY running simulation without signals:");
 					SimulationSetupInterface simulationSetupNoSignals = new SimulationSetupWithMemBoost(dataModel, processSignals);

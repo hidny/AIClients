@@ -440,10 +440,6 @@ public class SeatedLeftOfOpponentMellow {
 		
 		double bestValue = 0.0;
 		String bestCard = null;
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JH KC JC TC 8C")) {
-			System.out.println("Debug");
-		}
 
 		
 		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
@@ -461,16 +457,12 @@ public class SeatedLeftOfOpponentMellow {
 				curCard = dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex);
 			}
 			
-			if(dataModel.isVoid(mellowPlayerIndex, curSuitIndex)) {
-				curValue -= 100.0;
 
-			} else if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex)) {
-				curValue -= 50.0;
-				
-			} else if(dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
-				curValue -= 48.0;
-
-			} else if(dataModel.isMasterCard(curCard)) {
+			//Dealing with master cards:
+			
+			
+			if(dataModel.isMasterCard(curCard)) {
+			
 				//TODO: Maybe don't do this if you really don't want tricks...
 				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) >= 4) {
 					curCard = dataModel.getCardCurrentPlayergetThirdLowestInSuit(curSuitIndex);
@@ -483,10 +475,53 @@ public class SeatedLeftOfOpponentMellow {
 					//Clear suit...
 					curValue -=30.0;
 					
+					if(dataModel.getNumTricksCurTeam() < dataModel.getSumBidsCurTeam()) {
+						//Don't throw master if you need the tricks...
+						curValue -=70.0;
+						//TODO: make an exception for when you're not making the tricks
+						// or there's no way to make lead
+						// or you know you're making the tricks...
+					}
+					
 				} else {
 					curValue -=20.0;
 				}
 				
+				//Try to avoid throwing master cards that protector could take advantage of:
+				if( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(curSuitIndex) > 1
+						
+						) {
+					
+					if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) == 1
+							||
+							dataModel.signalHandler.getMaxCardRankSignal((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
+							> DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex))) {
+						//Don't like throwing masters
+							curValue -= 15.0;
+							
+							if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) >= 2) {
+								//Throw 2nd highest if it's under the master group of cards.
+								curCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex);
+							}
+					}
+				}
+				
+			}
+			
+			
+			//End dealing with master cards
+			
+			
+			if(dataModel.isVoid(mellowPlayerIndex, curSuitIndex)) {
+				curValue -= 100.0;
+
+			} else if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(mellowPlayerIndex, curSuitIndex)) {
+				curValue -= 50.0;
+				
+			} else if(dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
+				curValue -= 48.0;
+
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuitIndex)
 					&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, curSuitIndex)) {
 				
@@ -534,27 +569,6 @@ public class SeatedLeftOfOpponentMellow {
 			//Shouldn't like to throw off a high-card
 			} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard) < 3) {
 				curValue += -4 * (1.5) + 1.5 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curCard);
-			}
-			
-			//Try to avoid trowing master cards that protector could take advantage of:
-			if(dataModel.isMasterCard(curCard)
-					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
-					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(curSuitIndex) > 1
-					
-					) {
-				
-				if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) == 1
-						||
-						dataModel.signalHandler.getMaxCardRankSignal((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
-						> DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex))) {
-					//Don't like throwing masters
-						curValue -= 15.0;
-						
-						if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) >= 2) {
-							//Throw 2nd highest if it's under the master group of cards.
-							curCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex);
-						}
-				}
 			}
 			
 			//Lower rank cards are less fun to throw:

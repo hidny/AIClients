@@ -351,12 +351,28 @@ public class DataModel {
 		return bids[indexPlayer];
 	}
 	
+	public int getSumBidsCurTeam() {
+		return bids[Constants.CURRENT_AGENT_INDEX] + bids[Constants.CURRENT_PARTNER_INDEX];
+	}
+
+	public int getSumBidsOtherTeam() {
+		return bids[Constants.LEFT_PLAYER_INDEX] + bids[Constants.RIGHT_PLAYER_INDEX];
+	}
+	
 	public int getTricks(String playerName) {
 		return tricks[convertPlayerNameToIndex(playerName)];
 	}
 	
 	public int getNumTricks(int indexPlayer) {
 		return tricks[indexPlayer];
+	}
+	
+	public int getNumTricksCurTeam() {
+		return tricks[Constants.CURRENT_AGENT_INDEX] + tricks[Constants.CURRENT_PARTNER_INDEX];
+	}
+
+	public int getNumTricksOtherTeam() {
+		return tricks[Constants.LEFT_PLAYER_INDEX] + tricks[Constants.RIGHT_PLAYER_INDEX];
 	}
 	
 	public boolean someoneBidMellow() {

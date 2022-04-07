@@ -16,7 +16,9 @@ public class SeatedRightOfOpponentMellow {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 3S AD JD 7D ")) {
+			System.out.println("Debug");
+		}
 		if(throwIndex == 0) {
 			//handle lead
 			return AIHandleLead(dataModel);
@@ -185,9 +187,6 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AH KH 6H QD 2D ")) {
-			System.out.println("Debug");
-		}
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
@@ -487,7 +486,7 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(dataModel.throwerMustFollowSuit()) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AC QD 5D")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 3S AD JD 7D ")) {
 				System.out.println("Debug");
 			}
 			//Handle being the third thrower and following suit...
@@ -816,7 +815,7 @@ public class SeatedRightOfOpponentMellow {
 					//DEC 18th:
 					//TODO: why not play lower trump just in case mellow in danger
 					
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					
 				}
 			}
