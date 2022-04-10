@@ -59,10 +59,10 @@ public class MonteCarloMain {
 
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
@@ -248,10 +248,15 @@ public class MonteCarloMain {
 				lastestPost = i;
 				
 				if(i > 0) {
-					System.err.println("Skipped " + numSkipped+ " out of " + (numSkipped + i));
-					System.err.println("That's a " + String.format("%.2f", (100.0*numSkipped) /(1.0*(numSkipped + i))) + "% skip rate.");
-					System.err.println();
-					
+					if(! isThorough) {
+						System.err.println("Skipped " + numSkipped+ " out of " + (numSkipped + i));
+						System.err.println("That's a " + String.format("%.2f", (100.0*numSkipped) /(1.0*(numSkipped + i))) + "% skip rate.");
+						System.err.println();
+					} else {
+						System.err.println("Skipped " + numSkipped+ " out of " + i);
+						System.err.println("That's a " + String.format("%.2f", (100.0*numSkipped) /(1.0*(i))) + "% skip rate.");
+						System.err.println();
+					}
 				}
 				
 				//sanityCheckPrintCardSuitFreq();
@@ -321,13 +326,13 @@ public class MonteCarloMain {
 						)
 					){
 					
-					if(i == 0) {
+					if(i == 0 && numSkipped < 100) {
 						System.err.println("WARNING: Bids don't make sense! Monte will not be skipping any hands because of bids.");
 					}
 				} else {
 					
 					if(dataModel.getBidTotal() < 8
-							&& i==0) {
+							&& i==0 && numSkipped < 100) {
 						System.err.println("WARNING: Bids don't make sense! But Monte will skip bad bids anyways!");
 					}
 					//For now, don't skip if thorough.... I don't know!
