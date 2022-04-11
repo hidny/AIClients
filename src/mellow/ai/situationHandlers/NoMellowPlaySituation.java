@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 5S 6C 7D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S QC TC TD ")) {
 			System.out.println("Debug");
 		}
 
@@ -281,11 +281,25 @@ public class NoMellowPlaySituation {
 		}
 					
 
-		//TODO: this is a rough rule of thumb...
-		//Want to play spade if partner is void, but not when opponents are void:
-		if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+		if(// Partner void:
+				dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+				//1 of opponents void:
+				&& (dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						|| dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+						|| numCardsOfSuitOtherPlayersHave == 1)
+				//No hope of brute-forcing a trick in spade:
+				&& numCardsOfSuitInHand <= dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit
+					(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))) {
+			
+			//Don't just waste your spade:
+			curScore -= 100.0;
+			
+			
+		} else if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			//Want to play spade if partner is void, but not when opponents are void:
 			curScore += 40.0;
 		}
+		
 		//Don't want to play spade when opponents are void: 
 		if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 				&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
@@ -298,16 +312,13 @@ public class NoMellowPlaySituation {
 		}
 		
 		if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-				&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-				&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-			//Maybe there's a case for draining your partner's spade when the opponents don't have spade...
-			// but I'd like to see it to believe it.
-			//It happened in the orig testcases... shoot.
-			curScore -=100.0;
+				 && dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				 && ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				 //Don't drain your partner's spade when the opponents don't have spade...
+				 //See: 0-1571 and 2-3379
+				curScore -=100.0;
 		}
-		
-		
-		
+
 		if(numCardsOfSuitOtherPlayersHave == 0) {
 			//TODO: this fixes testcase 220 of Michael2021, but
 			// maybe it's not always best
@@ -653,7 +664,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 9S 5S 6C 7D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S QC TC TD ")) {
 			System.out.println("Debug");
 		}
 
