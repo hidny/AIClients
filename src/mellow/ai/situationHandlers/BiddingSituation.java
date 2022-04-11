@@ -616,6 +616,7 @@ public class BiddingSituation {
 				&& dataModel.playerMadeABidInRound(Constants.RIGHT_PLAYER_INDEX)
 				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
 				&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.10
+				&& BasicBidMellowWinProbCalc.getProbNoBurnSpade(dataModel) > 0.20
 				&& intBid > 0) {
 			//Lower requirements for double mellow:
 			System.out.println("Double mellow with prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
@@ -634,6 +635,7 @@ public class BiddingSituation {
 				&& dataModel.playerMadeABidInRound(Constants.LEFT_PLAYER_INDEX)
 				&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0
 				&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.08
+				&& BasicBidMellowWinProbCalc.getProbNoBurnSpade(dataModel) > 0.20
 				&& intBid > 0) {
 			
 			System.out.println("Special Position double mellow with prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
