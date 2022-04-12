@@ -11,6 +11,9 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 7S 4S 2H 6C 3C 2C 7D 5D 4D 3D 2D")) {
+			System.out.println("Debug");
+		}
 		
 		double bid = 0.0;
 		
@@ -77,8 +80,17 @@ public class BiddingSituation {
 			} else if(dataModel.getNumberOfCardsOneSuit(1) < 2 ||  dataModel.getNumberOfCardsOneSuit(2) < 2 ||  dataModel.getNumberOfCardsOneSuit(3) < 2) {
 				bidAdd = 0.7;
 				trumpResevoir = 0.301;
+				
 			} else {
 				trumpResevoir = 1.001;
+			}
+			
+			if(! dataModel.hasCard("AS")
+					&& (dataModel.hasCard("KS")
+							|| dataModel.hasCard("QS"))
+					) {
+				//No resevoir if you're saving for KQS
+				trumpResevoir = 0.0;
 			}
 			
 			if(dataModel.getNumberOfCardsOneSuit(0) == 4) {
