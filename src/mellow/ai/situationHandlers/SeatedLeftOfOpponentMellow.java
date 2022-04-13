@@ -802,11 +802,12 @@ public class SeatedLeftOfOpponentMellow {
 		int lowestRankScore = Integer.MAX_VALUE;
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S 5S 2S KH")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS KC JC TC KD ")) {
 			System.out.println("Debug");
 		}
 
 		boolean wantToDrainSpade = false;
+		boolean haveSomethingDangerousToPlay = false;
 		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
@@ -842,6 +843,7 @@ public class SeatedLeftOfOpponentMellow {
 				//Also playing always lowest isn't smart. Sometimes playing 2nd or 3rd lowest is smarter
 				//(Save 2C for the end)
 				
+				haveSomethingDangerousToPlay  = true;
 				int curLowestRankSuitScore = DataModel.getRankIndex(tempLowest);
 
 				// pretend lowest spades have a higher rank to discourage use of spades:
@@ -903,6 +905,12 @@ public class SeatedLeftOfOpponentMellow {
 				}
 				
 				
+			} else if(suit == Constants.SPADE
+					&& haveSomethingDangerousToPlay == false
+					&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				
+				
+				
 			}
 		
 		
@@ -916,37 +924,50 @@ public class SeatedLeftOfOpponentMellow {
 
 			int bestValue = -1;
 			for(int suit=0; suit<Constants.NUM_SUITS; suit++) {
-				if(suit == Constants.SPADE) {
-					continue;
-				}
 				
+				int curValue = 0;
+
 				if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
 					continue;
 				}
-				
+
 				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit) == 0) {
 					continue;
 				}
 				
-				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(MELLOW_PLAYER_INDEX, suit)) {
-					continue;
-				}
-				
-				int curValue = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit);
-				
-				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suit)) {
-					curValue += 2;
-				}
-				
-				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(PROTECTOR_PLAYER_INDEX, suit)) {
-					curValue += 2;
+				if(suit == Constants.SPADE
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(PROTECTOR_PLAYER_INDEX, Constants.SPADE)) {
+					
+					System.out.println("Just drain spade?");
+					
+					curValue = 10;
+					
+				} else {
+					
+					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(MELLOW_PLAYER_INDEX, suit)) {
+						continue;
+					}
+					
+					curValue = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit);
+					
+					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suit)) {
+						curValue += 2;
+					}
+					
+					if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(PROTECTOR_PLAYER_INDEX, suit)) {
+						curValue += 2;
+					}
+
 				}
 				
 				if(curValue > bestValue) {
 					bestValue = curValue;
 					bestSuitIndex = suit;
 				}
-			}
+				
+			} //END LOOP
+			
+			
 			if(bestSuitIndex != -1) {
 				if(dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndex))) {
 					return dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndex);
