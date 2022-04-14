@@ -182,7 +182,7 @@ public class SeatedLeftOfOpponentMellow {
 						|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit
 									(MELLOW_PLAYER_INDEX, leadSuitIndex)) {
 					
-					//lazy approx:
+					//lazy approx for when mellow bidder doesn't have suit:
 					return getHighestPartOfGroup(dataModel, NoMellowPlaySituation.handleNormalThrow(dataModel));
 					
 				} else if(dataModel.cardAGreaterThanCardBGivenLeadCard
@@ -195,9 +195,21 @@ public class SeatedLeftOfOpponentMellow {
 						   && (dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() != Constants.CURRENT_PARTNER_INDEX
 								|| dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(curWinningCard, highestCardOfSuit) > 0)
 						   ){
+					
+						String highCard = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						String barelyOver = getHighestPartOfGroup(dataModel, dataModel.getCardInHandClosestOverCurrentWinner());
+						//Don't automatically play master card if you're the last one to play:
+						if(throwIndex == 3
+								&& dataModel.isMasterCard(highCard)
+								&& dataModel.getNumberOfCardsOneSuit(leadSuitIndex) >= 4
+								&& ! barelyOver.equals(highCard)) {
 							
+							return barelyOver;
 							
-						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						} else {
+							return highCard;
+						}
+					
 						
 				} else {
 
