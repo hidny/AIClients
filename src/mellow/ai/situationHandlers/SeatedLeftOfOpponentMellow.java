@@ -3,6 +3,7 @@ package mellow.ai.situationHandlers;
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
+import mellow.ai.situationHandlers.bidding.BiddingNearEndOfGameFunctions;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -166,7 +167,7 @@ public class SeatedLeftOfOpponentMellow {
 			//handle case where mellow is already safe:
 
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 9S 3S 4H QD ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 7S 4S 2H 6C 3C 2C 7D 5D 4D 3D 2D")) {
 				System.out.println("Debug");
 			}
 
@@ -204,6 +205,7 @@ public class SeatedLeftOfOpponentMellow {
 								&& dataModel.getNumberOfCardsOneSuit(leadSuitIndex) >= 4
 								&& ! barelyOver.equals(highCard)) {
 							
+							//Fixes 3-2796 only
 							return barelyOver;
 							
 						} else {
@@ -232,6 +234,39 @@ public class SeatedLeftOfOpponentMellow {
 						//This might be null if all cards damage future mellow burning odds...
 						String minCardToPlayWithNoDamageToFutureMellowBurnOdds = getMinCardToPlayWithNoDamageToFutureMellowBurnOddsForSuit(dataModel, dataModel.getSuitOfLeaderThrow());
 						
+						int numOverMin = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+								dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuitIndex)
+							);
+						
+						int projectedScores[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorst(dataModel, dataModel.getBid(Constants.CURRENT_AGENT_INDEX));
+						
+						//Make an exception for spades:
+						// (Don't waste the KS just because!)
+						if(minCardToPlayWithNoDamageToFutureMellowBurnOdds != null
+								&& dataModel.cardAGreaterThanCardBGivenLeadCard(currentFightWinner, minCardToPlayWithNoDamageToFutureMellowBurnOdds)
+								
+								//Apparently, if the AS is played in the current round, it's still considered 'InPlay':
+								&& dataModel.getNumCardsInPlayOverCardSameSuit(minCardToPlayWithNoDamageToFutureMellowBurnOdds) == 1
+								&& ((numOverMin
+										>= 4
+										&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) < 5)
+									||
+									(numOverMin >= 2
+									&&
+									dataModel.getBid(PROTECTOR_PLAYER_INDEX) >= 5)
+								)
+								&&
+								dataModel.getNumCardsInCurrentPlayersHandUnderCardSameSuit(minCardToPlayWithNoDamageToFutureMellowBurnOdds)
+									>= 1
+								//Near end-of-game exception: (Make sure the opposing team won't win with the mellow:
+								&& (projectedScores[1] < Constants.GOAL_SCORE
+										|| projectedScores[0] >= projectedScores[1]
+									)
+								) {
+							//Make the minCard with no Damage not be a future master card if possible.
+							//Fixes D-6030 only
+							minCardToPlayWithNoDamageToFutureMellowBurnOdds = dataModel.getCardInHandClosestUnderSameSuit(minCardToPlayWithNoDamageToFutureMellowBurnOdds);
+						}
 						
 						
 						if(fourthThrowMinCardToWin != null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
