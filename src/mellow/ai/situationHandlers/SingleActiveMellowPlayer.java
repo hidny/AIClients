@@ -2,6 +2,7 @@ package mellow.ai.situationHandlers;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.situationHandlers.objects.CardAndValue;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
@@ -100,7 +101,35 @@ public class SingleActiveMellowPlayer {
 			
 			if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == leaderSuitIndex) {
 				
-				if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
+				int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
+				
+				//Just play high spade case:
+				if(throwIndex == 1
+						&& leaderSuitIndex == Constants.SPADE
+						&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 3
+						&& (
+							(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+							+ dataModel.getNumberOfCardsOneSuit(Constants.SPADE)
+							> 10
+							&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+							)
+							||
+							(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+							&&
+							dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 2)
+						)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						&& dataModel.cardAGreaterThanCardBGivenLeadCard(
+								DataModel.getCardString(
+										dataModel.signalHandler.getMaxCardRankSignal(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE),
+										Constants.SPADE),
+								dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)
+							)
+						) {
+					
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+				} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
 
 					
 					//Play just below winning card if possible
@@ -108,7 +137,6 @@ public class SingleActiveMellowPlayer {
 					
 					//TODO: check for the case where you'd rather play your 5 over the 4 even if you have a 2.
 					
-					int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 					
 					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 7H 7C 6C 3C QD 9D 6D ")) {
 						System.out.println("DEBUG");
@@ -122,7 +150,8 @@ public class SingleActiveMellowPlayer {
 						System.out.println("(DECISION TO GO OVER LEAD TIME)");
 					}*/
 					
-					//Special case where mellow plays over lead
+					//Special cases where mellow plays over lead
+					
 					if(throwIndex == 1
 							&& dataModel.getCardInHandClosestOverSameSuit(currentFightWinner) != null
 							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
@@ -130,19 +159,20 @@ public class SingleActiveMellowPlayer {
 								<= 1
 							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 4
 							&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
-							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(throwIndex, leaderSuitIndex)
-							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(throwIndex, Constants.SPADE)
+							&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
 							&& dataModel.getNumCardsInHandUnderCardSameSuit(currentFightWinner) <= 2
 							&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) >= 6
 							&& dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) <= 2
 							) {
 
+						//Case where attack leads 3 and mellow bidder plays 5 instead of 2:
 						
 						//TODO: maybe if Num Cards Hidden for lead suit is high enough, forgive partner's lack of spade...
 						cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, 
 								dataModel.getCardInHandClosestOverSameSuit(currentFightWinner));
 					}
-					//END special case where mellows plays over lead
+					//
+					//END special cases where mellows plays over lead
 				
 				} else if(dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS == 1
 						&& CardStringFunctions.getIndexOfSuit(currentFightWinner) == Constants.SPADE
