@@ -31,34 +31,6 @@ public class WinPercentageParser {
 					ConstantsWP.POS_GRID_DIM_LENGTH,
 					"Normal Grid");
 			
-			int curI = 0;
-			while(NormalRange.hasNextLine()) {
-				String line = NormalRange.nextLine();
-				
-				Scanner tmp = new Scanner(line);
-				
-				int curJ = 0;
-				while(tmp.hasNextDouble()) {
-					
-					normalTable[curI][curJ] = tmp.nextDouble();
-					System.out.print(normalTable[curI][curJ] + "\t");
-					curJ++;
-				}
-				System.out.println();
-				
-				if(curJ != normalTable[0].length) {
-					System.out.println("WARNING: lenth of j incorrect");
-				}
-				
-				curI++;
-				
-
-				tmp.close();
-			}
-			if(curI != normalTable.length) {
-				System.out.println("WARNING: length of i incorrect");
-			}
-			
 			System.out.println();
 			System.out.println();
 			System.out.println();
