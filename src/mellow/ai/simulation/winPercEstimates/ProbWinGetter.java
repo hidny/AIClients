@@ -53,22 +53,22 @@ public class ProbWinGetter {
 	private static HashMap<String, Double> cache = new HashMap<String, Double>();
 	
 	
-	public static double getPercentageWin(int scoreDealer, int scoreNotDealer) {
+	public static double getPercentageWin(int scoreDealerTeam, int scoreNotDealerTeam) {
 		
 		
 		double ret = -1.0;
-		String key = scoreDealer + "," + scoreNotDealer;
-		if(cache.containsKey(scoreDealer + "," + scoreNotDealer)) {
+		String key = scoreDealerTeam + "," + scoreNotDealerTeam;
+		if(cache.containsKey(scoreDealerTeam + "," + scoreNotDealerTeam)) {
 			return cache.get(key);
 			
 		//Edge case:
-		} else if(scoreDealer >= Constants.GOAL_SCORE
-				|| scoreNotDealer >= Constants.GOAL_SCORE) {
+		} else if(scoreDealerTeam >= Constants.GOAL_SCORE
+				|| scoreNotDealerTeam >= Constants.GOAL_SCORE) {
 			
-			if(scoreDealer > scoreNotDealer) {
+			if(scoreDealerTeam > scoreNotDealerTeam) {
 				ret = 1.0;
 
-			} else if(scoreDealer == scoreNotDealer) {
+			} else if(scoreDealerTeam == scoreNotDealerTeam) {
 				ret = 0.5;
 				
 			} else {
@@ -83,8 +83,8 @@ public class ProbWinGetter {
 			cache = new HashMap<String, Double>();
 		}
 		
-		int topLeftI = (scoreDealer - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT;
-		int topLeftJ = (scoreNotDealer - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT;
+		int topLeftI = (scoreDealerTeam - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT;
+		int topLeftJ = (scoreNotDealerTeam - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT;
 		
 		int scoreTopLeftI = (topLeftI - ConstantsWP.INDEX_0_POINT) * ConstantsWP.MULT;
 		int scoreTopLeftJ = (topLeftJ - ConstantsWP.INDEX_0_POINT) * ConstantsWP.MULT;
@@ -92,117 +92,19 @@ public class ProbWinGetter {
 		
 		int scoreTopLeftIPlus1 = scoreTopLeftI + ConstantsWP.MULT;
 		if(scoreTopLeftIPlus1 > Constants.GOAL_SCORE) {
-			scoreTopLeftIPlus1= Constants.GOAL_SCORE - 1;
+			scoreTopLeftIPlus1= ConstantsWP.MAX_SCORE_WITHOUT_WINNING;
 		}
 		
 		int scoreTopLeftJPlus1 = scoreTopLeftJ + ConstantsWP.MULT;
 		if(scoreTopLeftJPlus1 > Constants.GOAL_SCORE) {
-			scoreTopLeftJPlus1= Constants.GOAL_SCORE - 1;
+			scoreTopLeftJPlus1= ConstantsWP.MAX_SCORE_WITHOUT_WINNING;
 		}
 		
 		
-		//TODO: put Into Function and repeat for J
 
+		double finalWeightLHSI = getWeightInBetweenTwoElementOfTable(scoreDealerTeam, scoreTopLeftI, scoreTopLeftIPlus1);
 		
-		double finalWeightLHSI = 1.0;
-		
-		if(scoreDealer == scoreTopLeftI) {
-			finalWeightLHSI = 1.0;
-		} else if(scoreDealer == scoreTopLeftIPlus1) {
-			finalWeightLHSI = 0.0;
-			
-		} else {
-
-			double weightLHS = 1.0;
-			double weightRHS = 0.0;
-			
-			int left = scoreTopLeftI;
-			int right = scoreTopLeftIPlus1;
-			
-			while(left != right) {
-
-				int curScore = (left + right) / 2;
-				
-				if(curScore < scoreDealer) {
-					left = curScore;
-					weightLHS = (weightLHS + weightRHS) / 2;
-					finalWeightLHSI = weightLHS;
-					
-				} else if(curScore > scoreDealer){
-					right = curScore;
-					weightRHS = (weightLHS + weightRHS) / 2;
-					finalWeightLHSI = weightRHS;
-					
-				} else {
-					weightRHS = (weightLHS + weightRHS) / 2;
-					finalWeightLHSI = weightRHS;
-					break;
-					
-				}
-				
-			}
-			
-			if(left > right) {
-				System.out.println("oops!");
-			}
-			
-		}
-		//END TODO: put into function
-		
-
-		
-		//TODO: put Into Function! (Repeated for J)
-		double finalWeightLHSJ = 1.0;
-		
-		if(scoreNotDealer == scoreTopLeftJ) {
-			finalWeightLHSJ = 1.0;
-		} else if(scoreNotDealer == scoreTopLeftJPlus1) {
-			finalWeightLHSJ = 0.0;
-			
-		} else {
-
-			double weightLHS = 1.0;
-			double weightRHS = 0.0;
-			
-			int left = scoreTopLeftJ;
-			int right = scoreTopLeftJPlus1;
-			
-			while(true) {
-
-				int curScore = (left + right) / 2;
-				
-				if(curScore < scoreNotDealer) {
-					left = curScore;
-					weightLHS = (weightLHS + weightRHS) / 2;
-					finalWeightLHSJ = weightLHS;
-				
-				} else if(curScore > scoreNotDealer) {
-					right = curScore;
-					weightRHS = (weightLHS + weightRHS) / 2;
-					finalWeightLHSJ = weightRHS;
-					
-				} else {
-					weightRHS = (weightLHS + weightRHS) / 2;
-					finalWeightLHSJ = weightRHS;
-					break;
-				}
-				
-			}
-			
-			if(left > right) {
-				System.out.println("oops 2!");
-			}
-			
-		}
-		//END TODO: put into function
-		
-		if(scoreDealer == -510 && scoreNotDealer == -511) {
-			System.out.println("Debug 2");
-		}
-
-		if(scoreDealer == -511 && scoreNotDealer == -511) {
-			System.out.println("Debug 1");
-		}
+		double finalWeightLHSJ = getWeightInBetweenTwoElementOfTable(scoreNotDealerTeam, scoreTopLeftJ, scoreTopLeftJPlus1);
 		
 		ret = finalWeightLHSI       *      finalWeightLHSJ    * probWinRoughTable[topLeftI][topLeftJ]
 			+ finalWeightLHSI       *   (1 - finalWeightLHSJ) * probWinRoughTable[topLeftI][topLeftJ + 1]
@@ -214,5 +116,55 @@ public class ProbWinGetter {
 		return ret;
 	}
 	
-	//private double getPercentageWin(int topLeft, int topRight, int )
+	//PRE: scoreOnLeft < origTeamScore < highEndScore
+	//post: returns the the weight for the index on the left compared to the index on the right
+	// the left + right index will always add to 1 (I made it linear)
+	private static double getWeightInBetweenTwoElementOfTable(int origTeamScore, int lowEndScore, int highEndScore) {
+		
+		double finalWeight = 1.0;
+		
+		if(origTeamScore == lowEndScore) {
+			finalWeight = 1.0;
+		} else if(origTeamScore == highEndScore) {
+			finalWeight = 0.0;
+			
+		} else {
+
+			double weightLHS = 1.0;
+			double weightRHS = 0.0;
+			
+			int left = lowEndScore;
+			int right = highEndScore;
+			
+			while(true) {
+
+				int curScore = (left + right) / 2;
+				
+				if(curScore < origTeamScore) {
+					left = curScore;
+					weightLHS = (weightLHS + weightRHS) / 2;
+					finalWeight = weightLHS;
+				
+				} else if(curScore > origTeamScore) {
+					right = curScore;
+					weightRHS = (weightLHS + weightRHS) / 2;
+					finalWeight = weightRHS;
+					
+				} else {
+					weightRHS = (weightLHS + weightRHS) / 2;
+					finalWeight = weightRHS;
+					break;
+				}
+				
+			}
+			
+			if(left > right) {
+				System.out.println("oops left > right!");
+				System.exit(1);
+			}
+			
+		}
+		
+		return finalWeight;
+	}
 }

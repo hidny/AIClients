@@ -416,7 +416,7 @@ public class MonteCarloMain {
 				actionUtil[a] += decisionImpact * getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundPointDiffStats);
 				
 				//New util function that I want to transition to:
-				actionUtilWP[a] += HUNDRED_PERCENT * decisionImpact * getApproxWinPercForPointsAtEndOfRound(endOfRoundStats);
+				actionUtilWP[a] += decisionImpact * getApproxWinPercForPointsAtEndOfRound(endOfRoundStats);
 				
 				
 				/*System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
@@ -446,6 +446,9 @@ public class MonteCarloMain {
 
 		System.err.println();
 		System.err.println("Alternative measurement with approx win%:");
+		for(int j=0; j<actionUtilWP.length; j++) {
+			actionUtilWP[j] = HUNDRED_PERCENT * actionUtilWP[j];
+		}
 		testPrintAverageUtilityOfEachMove(actionString, actionUtilWP, sum_impact_to_avg, numSimulationsNotSkipped);
 		
 		int maxPointsUtil = getMaxIndex(actionUtil);

@@ -23,7 +23,11 @@ public class ConstantsWP {
 	public static final int POS_GRID_DIM_LENGTH = Constants.GOAL_SCORE/ConstantsWP.MULT + 1;
 	
 	public static final int INDEX_0_POINT = (0 - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT;
-	
+
+	// 999:
+	public static final int MAX_SCORE_WITHOUT_WINNING = Constants.GOAL_SCORE - 1;
+
 	//(Assumes that the edge number 999 is extra)
 	public static final int FULL_SIZE_WP_TABLE = (Constants.GOAL_SCORE - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT + 2;
+	
 }
