@@ -12,7 +12,7 @@ public class RunStandardGrid {
 		getStandardGrid();
 	}
 
-	public static void getStandardGrid() {
+	private static void getStandardGrid() {
 		
 		int NUM_ITERATIONS = 10000;
 		

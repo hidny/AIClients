@@ -47,7 +47,7 @@ public class ProbWinGetter {
 		
 	}
 
-	public static double probWinRoughTable[][] = WinPercentageParser.parseWinPerc();
+	private static double probWinRoughTable[][] = WinPercentageParser.parseWinPerc();
 	
 	
 	private static HashMap<String, Double> cache = new HashMap<String, Double>();

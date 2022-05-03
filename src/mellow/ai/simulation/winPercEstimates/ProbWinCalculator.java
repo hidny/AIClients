@@ -64,13 +64,13 @@ public class ProbWinCalculator {
 	}
 	
 	
-	public static String players[] = new String[]
+	private static String players[] = new String[]
 			{"player1", "player2", "player3", "player4"};
 	
 	//returns 1.0 if dealer team wins
 	//        -1.0 if opponents win
 	//        0.0 if draw
-	public static double playGameUntilEnd(int scoreDealer, int scoreOpponent) {
+	private static double playGameUntilEnd(int scoreDealer, int scoreOpponent) {
 		
 		
 		//System.err.println(scoreDealer + "  " + scoreOpponent);
@@ -292,11 +292,11 @@ public class ProbWinCalculator {
 	}
 	
 	//COPIED FROM DATAMODEL:
-	public static boolean cardAGreaterThanCardBGivenLeadCard(String cardA, String cardB, int leadSuit) {
+	private static boolean cardAGreaterThanCardBGivenLeadCard(String cardA, String cardB, int leadSuit) {
 		return getCardPower(cardA, leadSuit) > getCardPower(cardB, leadSuit);
 	}
 	
-	public static int getCardPower(String card, int leadSuit) {
+	private static int getCardPower(String card, int leadSuit) {
 
 		//Play trump/spade
 		if(CardStringFunctions.getIndexOfSuit(card) == Constants.SPADE) {
@@ -312,7 +312,7 @@ public class ProbWinCalculator {
 		}
 	}
 	
-	public static int getRankIndex(String card) {
+	private static int getRankIndex(String card) {
 		int x = 0;
 		
 		try {

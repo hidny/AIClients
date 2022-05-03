@@ -121,7 +121,7 @@ public class WinPercentageParser {
 		return fullTable;
 	}
 	
-	public static double[][] scanFileIntoTable(Scanner in, int numLines, int numCols, String debug) {
+	private static double[][] scanFileIntoTable(Scanner in, int numLines, int numCols, String debug) {
 		double ret[][] = new double[numLines][numCols];
 		
 		int curI = 0;
@@ -154,7 +154,7 @@ public class WinPercentageParser {
 		return ret;
 	}
 	
-	public static double[] scanLineRepEdgeOfTable(Scanner in, int numElements) {
+	private static double[] scanLineRepEdgeOfTable(Scanner in, int numElements) {
 
 		double egdeTable2[] = new double[numElements];
 		if(in.hasNextLine()) {
@@ -180,7 +180,7 @@ public class WinPercentageParser {
 		return egdeTable2;
 	}
 	
-	public static double[][] fixCornersOfTable(double fullTable[][]) {
+	private static double[][] fixCornersOfTable(double fullTable[][]) {
 		
 		//Fix the top left and top right corners that I didn't bother to touch
 		//(They are either all 0.0 or all 1.0)
@@ -201,7 +201,7 @@ public class WinPercentageParser {
 	//Hack to make sure that the table is increasing from up to down
 	// and decreasing from left to right.
 	// The trick is to do a bubble sort. It's pretty dishonorable, but it works.
-	public static double[][] cleanTable(double fullTable[][]) {
+	private static double[][] cleanTable(double fullTable[][]) {
 		
 		
 

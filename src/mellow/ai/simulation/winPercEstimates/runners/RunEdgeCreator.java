@@ -12,7 +12,7 @@ public class RunEdgeCreator {
 		get999Border();
 	}
 
-	public static void get999Border() {
+	private static void get999Border() {
 		
 		int NUM_ITERATIONS = 40000;
 		

@@ -12,7 +12,7 @@ public class RunNegGrid {
 	}
 
 
-	public static void getNegGrid() {
+	private static void getNegGrid() {
 		
 		System.out.println("Get Neg Grid:");
 		int NUM_ITERATIONS = 5000;
