@@ -17,6 +17,7 @@ import mellow.ai.simulation.simulationSetupImpl.SimSetupUtils;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetup;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithMemBoost;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithSignalsAndMemBoost;
+import mellow.ai.simulation.winPercEstimates.ProbWinGetter;
 import mellow.ai.situationHandlers.bidding.BasicBidMellowWinProbCalc;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
@@ -29,6 +30,7 @@ import mellow.testcase.testCaseParser;
 //https://stats.stackexchange.com/questions/285834/difference-between-random-forests-and-decision-tree
 
 public class MonteCarloMain {
+	
 	
 	public static void main(String args[]) {
 		
@@ -104,7 +106,10 @@ public class MonteCarloMain {
 	//No more debug print!
 	public static int MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT = 0;
 	
+	//Prob win getter is made into an object, so that memory management becomes easier...
+	public static ProbWinGetter probWinGetter = new ProbWinGetter();
 	
+	public static double HUNDRED_PERCENT = 100.0;
 	
 	//For testing:
 	//public static Scanner in = new Scanner(System.in);
@@ -126,7 +131,7 @@ public class MonteCarloMain {
 		//Better design and doesn't have the signal hack:
 		SimulationSetupWithSignalsAndMemBoost simulationSetup = new SimulationSetupWithSignalsAndMemBoost(dataModel);
 		
-		//TODO: replace it here!
+		//TODO: maybe incorporate the idea that players might be running out of a suit somehow?
 		
 		return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, true, testWithSignals);
 	}
@@ -220,6 +225,13 @@ public class MonteCarloMain {
 		actionUtil = new double[actionString.length];
 		for(int i=0; i<actionUtil.length; i++) {
 			actionUtil[i] = 0.0;
+		}
+		
+		//Adding an alternate util function that approximates the Win% at the end of the round:
+		double actionUtilWP[];
+		actionUtilWP = new double[actionString.length];
+		for(int i=0; i<actionUtilWP.length; i++) {
+			actionUtilWP[i] = 0.0;
 		}
 		
 		
@@ -378,10 +390,7 @@ public class MonteCarloMain {
 				//Tell the data model that it's in the next level of a simulation.
 				dataModelTmpForPlayer0.incrementSimulationLevel();
 				
-				//AHHH!!
-				//TODO: For now I'm assuming action is a throw (not a bid) (This should change)
 				if(dataModelTmpForPlayer0.stillInBiddingPhase()) {
-					
 					dataModelTmpForPlayer0.setBid(dataModel.getPlayers()[0], Integer.parseInt(actionString[a]));
 				} else {
 					dataModelTmpForPlayer0.updateDataModelWithPlayedCard(dataModel.getPlayers()[0], actionString[a]);
@@ -392,10 +401,13 @@ public class MonteCarloMain {
 				playOutSimulationTilEndOfRound(dataModelTmpForPlayer0, playersInSimulation);
 			
 				
-				//StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmp);
-				
-				//Make monte carlos sims more readable:
+				//Make monte carlos sims more readable (for the point diff util):
 				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmpForPlayer0);
+				
+
+				//Get monte carlo end of round stats for the win percentage util:
+				StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmpForPlayer0);
+				
 				
 				//System.err.println("Score at end with card " + actionString[a] + ": " + endOfRoundPointDiffStats.getAIScore());
 				
@@ -404,6 +416,9 @@ public class MonteCarloMain {
 					//TODO: this is just getting the point difference after the round and isn't the most useful measure of how well we're doing.
 					//A better strat would be an approx measure of the current player's winning chances... which is hard to calculate.
 				actionUtil[a] += decisionImpact * getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundPointDiffStats);
+				
+				//New util function that I want to transition to:
+				actionUtilWP[a] += HUNDRED_PERCENT * decisionImpact * getApproxWinPercForPointsAtEndOfRound(probWinGetter, endOfRoundStats);
 				
 				
 				/*System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
@@ -430,6 +445,19 @@ public class MonteCarloMain {
 		
 		
 		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, numSimulationsNotSkipped);
+
+		System.err.println();
+		System.err.println("Alternative measurement with approx win%:");
+		testPrintAverageUtilityOfEachMove(actionString, actionUtilWP, sum_impact_to_avg, numSimulationsNotSkipped);
+		
+		int maxPointsUtil = getMaxIndex(actionUtil);
+		
+		int maxWinPercUtil = getMaxIndex(actionUtilWP);
+		
+		if(maxPointsUtil != maxWinPercUtil && actionUtil[maxPointsUtil] > actionUtil[maxWinPercUtil]) {
+			System.err.println("WARNING: The two different utility calculations disagree with each other!");
+		}
+		
 
 		System.out.print("END OF SIMULATION  PLAY: ");
 
@@ -717,7 +745,7 @@ public class MonteCarloMain {
 	}
 	//Get stats at the end of the round:
 	//(i.e: Get scores and dealer index at the end of the round)
-	public static StatsBetweenRounds getStatsAfterSdimulatedRound(DataModel dataModelTmpForPlayer0) {
+	public static StatsBetweenRounds getStatsAfterSimulatedRound(DataModel dataModelTmpForPlayer0) {
 		int scoreUsAtStartOfRound = dataModelTmpForPlayer0.getOurScore();
 		int scoreThemAtStartOfRound = dataModelTmpForPlayer0.getOpponentScore();
 		
@@ -790,6 +818,20 @@ public class MonteCarloMain {
 		return endOfRoundStats.getAIScore() - endOfRoundStats.getOpponentScore();
 	}
 	
+	public static double getApproxWinPercForPointsAtEndOfRound(ProbWinGetter probWinUtil, StatsBetweenRounds endOfRoundStats) {
+		
+		if(endOfRoundStats.getDealerIndexAtStartOfRound() % 2 == 0) {
+			//return prob winning when our team is the dealer at the start of the next round:
+			return probWinUtil.getPercentageWin(endOfRoundStats.getAIScore(), endOfRoundStats.getOpponentScore());
+		
+		} else {
+			//return prob winning when other team is the dealer at the start of the next round: (It's reversed)
+			return 1.0 - probWinUtil.getPercentageWin(endOfRoundStats.getOpponentScore(), endOfRoundStats.getAIScore());
+		}
+		//return probWinUtil.getPercentageWin()
+		
+	}
+	
 	public static void testPrintUnknownCardDistribution(Scanner in, String distCards[][], int simulationNumber) {
 		System.out.println("Unknown card distribution for simulation #" + simulationNumber);
 		
@@ -808,7 +850,7 @@ public class MonteCarloMain {
 	public static void testPrintAverageUtilityOfEachMove(String actionString[], double actionUtil[], double sum_impact_to_avg, int numSimulations) {
 		System.out.println("Comparing utility of different cards to play:");
 		for(int a=0; a<actionString.length; a++) {
-			System.out.println("Average util (point diff) of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * sum_impact_to_avg) );
+			System.out.println("Average util of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * sum_impact_to_avg) );
 		}
 		System.out.println("Sum of impact of simulation: " + sum_impact_to_avg + " out of a possible " + numSimulations + " (" + String.format("%.2f", (100*sum_impact_to_avg)/(1.0*numSimulations)) + "%)");
 	}
@@ -820,10 +862,7 @@ public class MonteCarloMain {
 	
 	//This filters out card distributions that are in conflict with the signals.
 	// When there's lots of signals, this function filters out a lot of possible hand distributions.
-	//TODO: Make another version of monte carlo
-	// that doesn't need to skip 99% of hands it generates... (I'm working on it) 
-	//You just need to change the design to something less silly.
-		//See SimulationSetupWithSignalsAndMemBoost
+	
 	 public static boolean isCardDistRealistic2(DataModel dataModel, String distCards[][], SimulationPosibilitiesHandler simulationPosibilities, boolean debug) {
 		 
 		 for(int playerIndex=0; playerIndex<Constants.NUM_PLAYERS; playerIndex++) {
