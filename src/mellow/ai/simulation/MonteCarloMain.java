@@ -106,8 +106,6 @@ public class MonteCarloMain {
 	//No more debug print!
 	public static int MAX_NUM_SIMULATIONS_WHILE_DEBUG_PRINT = 0;
 	
-	//Prob win getter is made into an object, so that memory management becomes easier...
-	public static ProbWinGetter probWinGetter = new ProbWinGetter();
 	
 	public static double HUNDRED_PERCENT = 100.0;
 	
@@ -418,7 +416,7 @@ public class MonteCarloMain {
 				actionUtil[a] += decisionImpact * getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundPointDiffStats);
 				
 				//New util function that I want to transition to:
-				actionUtilWP[a] += HUNDRED_PERCENT * decisionImpact * getApproxWinPercForPointsAtEndOfRound(probWinGetter, endOfRoundStats);
+				actionUtilWP[a] += HUNDRED_PERCENT * decisionImpact * getApproxWinPercForPointsAtEndOfRound(endOfRoundStats);
 				
 				
 				/*System.out.println("Util (point diff) when the " + actionString[a] + ": " + getUtilOfStatsAtEndOfRoundSimulationBAD(endOfRoundStats));
@@ -818,17 +816,16 @@ public class MonteCarloMain {
 		return endOfRoundStats.getAIScore() - endOfRoundStats.getOpponentScore();
 	}
 	
-	public static double getApproxWinPercForPointsAtEndOfRound(ProbWinGetter probWinUtil, StatsBetweenRounds endOfRoundStats) {
+	public static double getApproxWinPercForPointsAtEndOfRound(StatsBetweenRounds endOfRoundStats) {
 		
 		if(endOfRoundStats.getDealerIndexAtStartOfRound() % 2 == 0) {
 			//return prob winning when our team is the dealer at the start of the next round:
-			return probWinUtil.getPercentageWin(endOfRoundStats.getAIScore(), endOfRoundStats.getOpponentScore());
+			return ProbWinGetter.getPercentageWin(endOfRoundStats.getAIScore(), endOfRoundStats.getOpponentScore());
 		
 		} else {
 			//return prob winning when other team is the dealer at the start of the next round: (It's reversed)
-			return 1.0 - probWinUtil.getPercentageWin(endOfRoundStats.getOpponentScore(), endOfRoundStats.getAIScore());
+			return 1.0 - ProbWinGetter.getPercentageWin(endOfRoundStats.getOpponentScore(), endOfRoundStats.getAIScore());
 		}
-		//return probWinUtil.getPercentageWin()
 		
 	}
 	

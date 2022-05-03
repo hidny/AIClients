@@ -3,8 +3,6 @@ package mellow.ai.simulation.winPercEstimates;
 import java.io.File;
 import java.util.Scanner;
 
-import mellow.Constants;
-
 public class WinPercentageParser {
 
 	public static void main(String[] args) {
@@ -12,15 +10,12 @@ public class WinPercentageParser {
 		parseWinPerc();
 	}
 
-	public static int POSITIVE_MULT = 64;
 	
-	//TODO: make helper methods
 	public static double[][] parseWinPerc() {
 		
 		System.out.println("Parsing raw files to create a win percentage table based on the scores between rounds:");
 		
-		int normalSize = Constants.GOAL_SCORE / 64 + 1;
-		double normalTable[][] = new double[normalSize][normalSize];
+		
 		
 		Scanner NormalRange = null;
 		Scanner NegRange = null;
@@ -30,9 +25,11 @@ public class WinPercentageParser {
 		
 		try {
 			NormalRange= new Scanner(new File(ConstantsWP.testCaseFileNormalRange));
-			NegRange= new Scanner(new File(ConstantsWP.testCaseFileNegRange));
-			EdgeRange = new Scanner(new File(ConstantsWP.testCaseFileEdgeRange));
 			
+			double normalTable[][] = scanFileIntoTable(NormalRange,
+					ConstantsWP.POS_GRID_DIM_LENGTH,
+					ConstantsWP.POS_GRID_DIM_LENGTH,
+					"Normal Grid");
 			
 			int curI = 0;
 			while(NormalRange.hasNextLine()) {
@@ -54,6 +51,9 @@ public class WinPercentageParser {
 				}
 				
 				curI++;
+				
+
+				tmp.close();
 			}
 			if(curI != normalTable.length) {
 				System.out.println("WARNING: length of i incorrect");
@@ -62,79 +62,24 @@ public class WinPercentageParser {
 			System.out.println();
 			System.out.println();
 			System.out.println();
+
+			NegRange= new Scanner(new File(ConstantsWP.testCaseFileNegRange));
+			double tableNeg[][] = scanFileIntoTable(NegRange,
+					ConstantsWP.NEG_GRID_DIM_LENGTH,
+					ConstantsWP.NEG_GRID_DIM_LENGTH,
+					"Neg Grid");
 			
-			//TODO: this is copy/paste code! Fix it!
-			double tableNeg[][] = new double[ConstantsWP.NEG_GRID_DIM_LENGTH][ConstantsWP.NEG_GRID_DIM_LENGTH];
+			//Scanner edge (cases where one team has 999 points)
+
+			EdgeRange = new Scanner(new File(ConstantsWP.testCaseFileEdgeRange));
 			
-			curI = 0;
-			while(NegRange.hasNextLine()) {
-				String line = NegRange.nextLine();
-				
-				Scanner tmp = new Scanner(line);
-				
-				int curJ = 0;
-				while(tmp.hasNextDouble()) {
-					
-					tableNeg[curI][curJ] = tmp.nextDouble();
-					System.out.println(tableNeg[curI][curJ]);
-					curJ++;
-				}
-				System.out.println();
-				
-				if(curJ != tableNeg[0].length) {
-					System.out.println("WARNING: lenth of j incorrect (neg)");
-				}
-				
-				curI++;
-			}
-			if(curI != tableNeg.length) {
-				System.out.println("WARNING: length of i incorrect (neg)");
-			}
+			double egdeTable1[] = scanLineRepEdgeOfTable(EdgeRange, ConstantsWP.POS_GRID_DIM_LENGTH);
 			
-			//END TODO: this is copy/paste code! Fix it!
 			
-			//Scanner edge (999 points)
+			double egdeTable2[] = scanLineRepEdgeOfTable(EdgeRange, ConstantsWP.POS_GRID_DIM_LENGTH);
 			
-			double egdeTable1[] = new double[normalSize];
-			
-			curI = 0;
-			if(EdgeRange.hasNextLine()) {
-				String line = EdgeRange.nextLine();
-				
-				Scanner tmp = new Scanner(line);
-				
-				int curJ = 0;
-				while(tmp.hasNextDouble()) {
-					
-					egdeTable1[curJ] = tmp.nextDouble();
-					System.out.println(egdeTable1[curJ]);
-					curJ++;
-				}
-				System.out.println();
-				System.out.println();
-				
-			}
-			
-			//TODO: copy/paste code
-			double egdeTable2[] = new double[normalSize];
-			curI = 0;
-			if(EdgeRange.hasNextLine()) {
-				String line = EdgeRange.nextLine();
-				
-				Scanner tmp = new Scanner(line);
-				
-				int curJ = 0;
-				while(tmp.hasNextDouble()) {
-					
-					egdeTable2[curJ] = tmp.nextDouble();
-					System.out.println(egdeTable2[curJ]);
-					curJ++;
-				}
-				System.out.println();
-				System.out.println();
-				
-			}
-			
+
+			//Get the corner value (when the scores are 999 vs 999)
 			double corner = -1.0;
 			if(EdgeRange.hasNextLine()) {
 				String line = EdgeRange.nextLine();
@@ -144,61 +89,42 @@ public class WinPercentageParser {
 				if(tmp.hasNextDouble()) {
 					corner = tmp.nextDouble();
 				}
+				tmp.close();
 			}
-
-			//END TODO: copy/paste code
-			
 			
 			//Create the big table:
 			
-			//Add 2 because:
-			// both ends are counted, and a bonus edgeis counted:
-			int size = (Constants.GOAL_SCORE - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT + 2;
-			fullTable = new double[size][size];
+			fullTable = new double[ConstantsWP.FULL_SIZE_WP_TABLE][ConstantsWP.FULL_SIZE_WP_TABLE];
 			
-			
+			//Fill in the neg table values:
 			for(int i=0; i<tableNeg.length; i++) {
 				for(int j=0; j<tableNeg[0].length; j++) {
-					
 					fullTable[i][j] = tableNeg[i][j];
-					
 				}
 			}
 
-			
-			
+			//Fill in the positive/normal table values:
 			for(int i=0; i<normalTable.length; i++) {
 				for(int j=0; j<normalTable[0].length; j++) {
-					
-					
 					fullTable[ConstantsWP.INDEX_0_POINT + i][ConstantsWP.INDEX_0_POINT + j] = normalTable[i][j];
 				}
 			}
 
+			//Fill in the edge (999 point values)
 			for(int i=0; i<egdeTable1.length; i++) {
-
 				fullTable[fullTable.length - 1][ConstantsWP.INDEX_0_POINT + i] = egdeTable1[i];
 			}
 			
 			for(int i=0; i<egdeTable2.length; i++) {
-
 				fullTable[ConstantsWP.INDEX_0_POINT + i][fullTable[0].length - 1] = egdeTable2[i];
 			}
-			
 			
 			fullTable[fullTable.length - 1][fullTable[0].length - 1] = corner;
 			
 			
-			//Fix the corners that I didn't bother to touch
-			for(int i=0; i<fullTable.length; i++) {
-				for(int j=0; j< fullTable[0].length; j++) {
-					if(fullTable[i][j] == 0.0
-							&& i > j) {
-						fullTable[i][j] = 1.0;
-					}
-				}
-			}
 			
+			fullTable = fixCornersOfTable(fullTable);
+			fullTable = cleanTable(fullTable);
 			
 			System.out.println("Print it:");
 			
@@ -220,13 +146,91 @@ public class WinPercentageParser {
 			EdgeRange.close();
 			
 		}
-		return cleanTable(fullTable);
+		return fullTable;
 	}
+	
+	public static double[][] scanFileIntoTable(Scanner in, int numLines, int numCols, String debug) {
+		double ret[][] = new double[numLines][numCols];
+		
+		int curI = 0;
+		while(in.hasNextLine()) {
+			String line = in.nextLine();
+			
+			Scanner tmp = new Scanner(line);
+			
+			int curJ = 0;
+			while(tmp.hasNextDouble()) {
+				
+				ret[curI][curJ] = tmp.nextDouble();
+				System.out.println(ret[curI][curJ]);
+				curJ++;
+			}
+			System.out.println();
+			
+			if(curJ != ret[0].length) {
+				System.out.println("WARNING: lenth of j incorrect ( " + debug + " )");
+			}
+			
+			curI++;
+
+			tmp.close();
+		}
+		if(curI != ret.length) {
+			System.out.println("WARNING: length of i incorrect ( " + debug + " )");
+		}
+		
+		return ret;
+	}
+	
+	public static double[] scanLineRepEdgeOfTable(Scanner in, int numElements) {
+
+		double egdeTable2[] = new double[numElements];
+		if(in.hasNextLine()) {
+			String line = in.nextLine();
+			
+			Scanner tmp = new Scanner(line);
+			
+			int curJ = 0;
+			while(tmp.hasNextDouble()) {
+				
+				egdeTable2[curJ] = tmp.nextDouble();
+				System.out.println(egdeTable2[curJ]);
+				curJ++;
+			}
+			System.out.println();
+			System.out.println();
+			
+			tmp.close();
+			
+		}
+		
+		
+		return egdeTable2;
+	}
+	
+	public static double[][] fixCornersOfTable(double fullTable[][]) {
+		
+		//Fix the top left and top right corners that I didn't bother to touch
+		//(They are either all 0.0 or all 1.0)
+		//I only modified the bottom left because top right defaults to 0.
+		for(int i=0; i<fullTable.length; i++) {
+			for(int j=0; j< fullTable[0].length; j++) {
+				if(fullTable[i][j] == 0.0
+						&& i > j) {
+					fullTable[i][j] = 1.0;
+				}
+			}
+		}
+		
+		return fullTable;
+	}
+	
 	
 	//Hack to make sure that the table is increasing from up to down
 	// and decreasing from left to right.
 	// The trick is to do a bubble sort. It's pretty dishonorable, but it works.
 	public static double[][] cleanTable(double fullTable[][]) {
+		
 		
 
 		boolean swapped = false;

@@ -16,8 +16,14 @@ public class ConstantsWP {
 	//Negative constants:
 	
 	// (int) (- Math.pow(2, 9))
+	public static final int NUM_TO_IGNORE = 0;
 	public static final int NEG_LOWER_LIMIT = -512;
-	public static final int NEG_GRID_DIM_LENGTH = Constants.GOAL_SCORE/ConstantsWP.MULT + 1;
+	public static final int NEG_GRID_DIM_LENGTH = ((Constants.GOAL_SCORE - NEG_LOWER_LIMIT)/ConstantsWP.MULT + 1) - NUM_TO_IGNORE;
+	
+	public static final int POS_GRID_DIM_LENGTH = Constants.GOAL_SCORE/ConstantsWP.MULT + 1;
 	
 	public static final int INDEX_0_POINT = (0 - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT;
+	
+	//(Assumes that the edge number 999 is extra)
+	public static final int FULL_SIZE_WP_TABLE = (Constants.GOAL_SCORE - ConstantsWP.NEG_LOWER_LIMIT) / ConstantsWP.MULT + 2;
 }

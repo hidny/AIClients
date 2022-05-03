@@ -142,11 +142,12 @@ public class ProbWinCalculator {
 			playerInSimulation[i].setCardsForNewRound(dist[i]);
 			dist[i] = CardStringFunctions.sort(dist[i]);
 			
-			String tmp = "";
+			/*String tmp = "";
 			for(int j=0; j<dist[i].length; j++) {
 				tmp += dist[i][j] + " ";
 			}
-			//System.err.println(players[i] + " has: " + tmp);
+			System.err.println(players[i] + " has: " + tmp);
+			*/
 		}
 		
 		

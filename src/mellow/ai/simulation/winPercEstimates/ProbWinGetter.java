@@ -20,10 +20,10 @@ public class ProbWinGetter {
 			for(int j=ConstantsWP.NEG_LOWER_LIMIT + 1; j<Constants.GOAL_SCORE + 100; j++) {
 				
 				//System.out.println("" + i + ", " + j + "");
-				double check = test.getPercentageWin(i, j);
+				double check = getPercentageWin(i, j);
 				
-				double checkLessForOpponent = test.getPercentageWin(i, j - 1);
-				double checkLessForDealer = test.getPercentageWin(i - 1, j);
+				double checkLessForOpponent = getPercentageWin(i, j - 1);
+				double checkLessForDealer = getPercentageWin(i - 1, j);
 				
 				if(check - SMALL_NUMBER > checkLessForOpponent) {
 					System.out.println("Error check left at (i,j) = (" + i + ", " + j + ")  (vs (i, j-1))");
@@ -49,14 +49,11 @@ public class ProbWinGetter {
 
 	public static double probWinRoughTable[][] = WinPercentageParser.parseWinPerc();
 	
-	public ProbWinGetter() {
-		
-	}
 	
-	private HashMap<String, Double> cache = new HashMap<String, Double>();
+	private static HashMap<String, Double> cache = new HashMap<String, Double>();
 	
 	
-	public double getPercentageWin(int scoreDealer, int scoreNotDealer) {
+	public static double getPercentageWin(int scoreDealer, int scoreNotDealer) {
 		
 		
 		double ret = -1.0;
