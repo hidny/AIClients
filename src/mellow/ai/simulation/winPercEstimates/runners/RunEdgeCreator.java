@@ -12,6 +12,7 @@ public class RunEdgeCreator {
 		get999Border();
 	}
 
+	//It takes less than 13 hours to run with MULT of 32 and NUM_IT at 40 K
 	private static void get999Border() {
 		
 		int NUM_ITERATIONS = 40000;

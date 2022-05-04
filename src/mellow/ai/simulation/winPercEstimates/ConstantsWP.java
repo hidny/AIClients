@@ -3,8 +3,16 @@ package mellow.ai.simulation.winPercEstimates;
 import mellow.Constants;
 
 public class ConstantsWP {
-
+	
+	//Resonable speed (About 1 day to run all of them)
 	public static final int MULT = 64;
+	
+	//Debug:
+	//public static final int MULT = 256;
+	
+	//Detailed but too slow (4 X slower than mult 64)
+	//public static final int MULT = 32;
+	
 	public static final int EGDE_NUMBER = Constants.GOAL_SCORE - 1;
 
 

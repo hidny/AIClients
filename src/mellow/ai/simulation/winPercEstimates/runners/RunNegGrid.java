@@ -16,6 +16,8 @@ public class RunNegGrid {
 		
 		System.out.println("Get Neg Grid:");
 		int NUM_ITERATIONS = 5000;
+		//Too slow:
+		//int NUM_ITERATIONS = 10000;
 		
 		double table[][] = new double[ConstantsWP.NEG_GRID_DIM_LENGTH][ConstantsWP.NEG_GRID_DIM_LENGTH];
 		for(int dealer = ConstantsWP.NEG_LOWER_LIMIT, i=0; i< table.length; dealer +=ConstantsWP.MULT, i++) {

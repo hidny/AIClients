@@ -12,9 +12,15 @@ public class RunStandardGrid {
 		getStandardGrid();
 	}
 
+	//This takes a long time...
+	// when MULt is 64 and NUM_IT is 10K, it might take 24 hours
+	// when MULT is 32 and NUM_IT is 20K, that will takes 8 days?
+	
 	private static void getStandardGrid() {
 		
-		int NUM_ITERATIONS = 10000;
+		//int NUM_ITERATIONS = 20000;
+		//Too slow?
+		int NUM_ITERATIONS = 20000;
 		
 		double table[][] = new double[Constants.GOAL_SCORE/ConstantsWP.MULT + 1][Constants.GOAL_SCORE/ConstantsWP.MULT + 1];
 		for(int dealer = 0; dealer< Constants.GOAL_SCORE; dealer +=ConstantsWP.MULT) {
