@@ -43,6 +43,7 @@ public class RunStandardGrid {
 
 		System.out.println("--------");
 		System.out.println("Results that are slightly more raw:");
+		System.out.println("Manually copy results into " + ConstantsWP.folderName + "\\" + ConstantsWP.testCaseFileNormalRange);
 		System.out.println();
 		System.out.println();
 		System.out.println();

@@ -44,6 +44,7 @@ public class RunNegGrid {
 
 		System.out.println("--------");
 		System.out.println("Results that are slightly more raw:");
+		System.out.println("Manually copy results into " + ConstantsWP.folderName + "\\" + ConstantsWP.testCaseFileNegRange);
 		System.out.println();
 		System.out.println();
 		System.out.println();

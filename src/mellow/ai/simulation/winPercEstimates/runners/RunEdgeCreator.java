@@ -29,6 +29,8 @@ public class RunEdgeCreator {
 
 		double double999 = ProbWinCalculator.getProbDealerWinningAndHalfDrawing(ConstantsWP.EGDE_NUMBER, ConstantsWP.EGDE_NUMBER, NUM_ITERATIONS);
 		
+		System.out.println("Manually copy numbers results (but not scores) into " + ConstantsWP.folderName + "\\" + ConstantsWP.testCaseFileEdgeRange);
+		
 		System.out.println("Results: ");
 		System.out.println("Dealer has " + ConstantsWP.EGDE_NUMBER + " points:");
 		
