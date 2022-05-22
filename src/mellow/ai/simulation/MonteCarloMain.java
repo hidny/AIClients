@@ -343,6 +343,7 @@ public class MonteCarloMain {
 					
 					if(dataModel.getBidTotal() < 8
 							&& i==0 && numSkipped < 100) {
+						
 						System.err.println("WARNING: Bids don't make sense! But Monte will skip bad bids anyways!");
 					}
 					//For now, don't skip if thorough.... I don't know!

@@ -5,7 +5,7 @@ import reversiai.Position;
 
 public class SimpleGetBestPosition {
 
-	//TODO: take away constant/use from postion class.
+	//TODO: take away constant/use from position class.
 	
 		public static void main(String[] args) {
 		// TODO Auto-generated method stub

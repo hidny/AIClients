@@ -11,7 +11,7 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 7S 4S 2H 6C 3C 2C 7D 5D 4D 3D 2D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S TH 9H 9C 7C 5C 2C KD QD TD 6D 3D")) {
 			System.out.println("Debug");
 		}
 		
@@ -396,7 +396,8 @@ public class BiddingSituation {
 						&& oddsHighBid < 0.4) {
 					return "1";
 				}
-				if(oddsMellow > oddsHighBid) {
+				if(oddsMellow > oddsHighBid
+						&& partnerDidntSayMellow(dataModel)) {
 					return "0";
 					
 				} else if(getHighBidNeeded > 0){
@@ -464,9 +465,14 @@ public class BiddingSituation {
 					int oppScoreHope2Less = oppScore - 20;
 					int ourScoreHope2Extra = ourScore + 2;
 					
-					
-					if(ourScoreHope2Extra > oppScoreHope2Less
-							&& ourScoreHope2Extra >= Constants.GOAL_SCORE) {
+					//Conditions for a desperation mellow:
+					if(
+							ourScoreHope2Extra > oppScoreHope2Less
+							&& ourScoreHope2Extra >= Constants.GOAL_SCORE
+							
+							//Check that this won't be the 3rd mellow bid:
+							&& dataModel.getNumPlayersPreviouslyBidMellow() < 2
+							) {
 						int stretchAmount = tempBid - intBid;
 						
 						if(stretchAmount >= 0) {
@@ -614,7 +620,8 @@ public class BiddingSituation {
 				&& intBid == 0
 				&& (dataModel.getOpponentScore() > 750
 						&& dataModel.getOpponentScore() < 900
-						&& dataModel.getOpponentScore() - dataModel.getOurScore() > 100)
+						&& dataModel.getOpponentScore() - dataModel.getOurScore() > 100
+				&& dataModel.getNumPlayersPreviouslyBidMellow() < 2)
 				) {
 			//Play risky catchup:
 			return 0 + "";
