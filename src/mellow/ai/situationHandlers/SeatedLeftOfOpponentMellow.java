@@ -33,9 +33,6 @@ public class SeatedLeftOfOpponentMellow {
 				dataModel.isPrevThrowWinningFight()) {
 			
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS TS 9S 2S KH 5H KC JC 9C 3C 2C 9D 8D ")) {
-				System.out.println("Debug");
-			}
 			
 			String curWinningCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 			
@@ -167,7 +164,8 @@ public class SeatedLeftOfOpponentMellow {
 			//handle case where mellow is already safe:
 
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS 7S 4S 2H 6C 3C 2C 7D 5D 4D 3D 2D")) {
+
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S 2S AH 9H 9D 7D ")) {
 				System.out.println("Debug");
 			}
 
@@ -355,7 +353,15 @@ public class SeatedLeftOfOpponentMellow {
 						//END TODO: PUT INTO FUNCTION -- 3242
 				}
 				
-			} else if(dataModel.currentAgentHasSuit(Constants.SPADE)) {
+			} else if(dataModel.currentAgentHasSuit(Constants.SPADE)
+					
+						//Basic check to see if we could let our partner take the trick because we need tricks:
+					&& ! (dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.CURRENT_PARTNER_INDEX
+							&& throwIndex == 3
+							&& dataModel.getSumBidsCurTeam() > dataModel.getNumTricksCurTeam()
+							//TODO: maybe check if there's something to lead?
+							)
+					) {
 				
 				String maxMellowSpade =dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
 				
