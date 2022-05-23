@@ -443,14 +443,14 @@ public class MonteCarloMain {
 		}
 		
 		
-		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, numSimulationsNotSkipped);
+		testPrintAverageUtilityOfEachMove(actionString, actionUtil, sum_impact_to_avg, numSimulationsNotSkipped, false);
 
 		System.err.println();
 		System.err.println("Alternative measurement with approx win%:");
 		for(int j=0; j<actionUtilWP.length; j++) {
 			actionUtilWP[j] = HUNDRED_PERCENT * actionUtilWP[j];
 		}
-		testPrintAverageUtilityOfEachMove(actionString, actionUtilWP, sum_impact_to_avg, numSimulationsNotSkipped);
+		testPrintAverageUtilityOfEachMove(actionString, actionUtilWP, sum_impact_to_avg, numSimulationsNotSkipped, true);
 		
 		int maxPointsUtil = getMaxIndex(actionUtil);
 		
@@ -848,10 +848,17 @@ public class MonteCarloMain {
 		in.next();
 	}
 	
-	public static void testPrintAverageUtilityOfEachMove(String actionString[], double actionUtil[], double sum_impact_to_avg, int numSimulations) {
+	public static void testPrintAverageUtilityOfEachMove(String actionString[], double actionUtil[], double sum_impact_to_avg, int numSimulations, boolean isPercentage) {
 		System.out.println("Comparing utility of different cards to play:");
 		for(int a=0; a<actionString.length; a++) {
-			System.out.println("Average util of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * sum_impact_to_avg) );
+			
+			System.out.print("Average util of playing the " + actionString[a] + ": " + actionUtil[a]/(1.0 * sum_impact_to_avg) );
+			
+			if(isPercentage) {
+				System.out.println(" %");
+			} else {
+				System.out.println();
+			}
 		}
 		System.out.println("Sum of impact of simulation: " + sum_impact_to_avg + " out of a possible " + numSimulations + " (" + String.format("%.2f", (100*sum_impact_to_avg)/(1.0*numSimulations)) + "%)");
 	}

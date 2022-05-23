@@ -124,6 +124,22 @@ public class SimulationPosibilitiesHandler {
 			 }*/
 			 //End Hack to manually remove some possibilities
 			 
+			 //Second hack to manually remove some possibilities:
+			 if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 4S KH QH 9H 5C 2C TD 7D 6D ")
+					 && playerIndex == 2) {
+				 
+				 for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+					 String tmpCard = DataModel.getCardString(rank, Constants.CLUB);
+					 
+					 if(playerPos[playerIndex].contains(tmpCard)) {
+						 playerPos[playerIndex].remove(tmpCard);
+						 System.out.println("Debug removed " + tmpCard + " from Michael's hand!");
+					 }
+				 }
+				 
+			 }
+			 //End Hack.
+			 
 		 }
 		 
 		 for(int i=0; i<Constants.NUM_PLAYERS; i++) {
