@@ -33,6 +33,40 @@ public class NonMellowBidHandIndicators {
 	//For convenience, let's say this calculation comes up at the beginning of the round...
 	
 	// I have extra function so I can compare rating before/after throwing off lowest card of suit...
+
+
+	public static boolean currentPlayerMightWinATrickIfAnotherOffsuitThrown(DataModel dataModel, int suitIndex) {
+		
+		if(NonMellowBidHandIndicators.getCouldMakeAFollowTrickRating(dataModel, suitIndex) > 0.0
+				||
+				(dataModel.currentAgentHasSuit(Constants.SPADE)
+				&& NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRating(dataModel, suitIndex) > 0.0)
+			) {
+			return true;
+		} else {
+			
+			//Try to take away card from offsuit and still a realistic chance to win a trick:
+			for(int otherOffsuit=0; otherOffsuit<Constants.NUM_SUITS; otherOffsuit++) {
+				
+				if(otherOffsuit == suitIndex
+						|| otherOffsuit == Constants.SPADE
+						|| ! dataModel.currentAgentHasSuit(otherOffsuit)) {
+					continue;
+					
+				}
+
+				//For now, I set it to greater than 1.0 because if it's only 1.0, partner needs to help us...
+				if(NonMellowBidHandIndicators.getCouldMakeAFollowTrickRatingMinusLowCard(dataModel, otherOffsuit) > 1.0) {
+					return true;
+				}
+				
+			}
+			
+		}
+		
+		return false;
+	}
+	
 	
 
 	public static double getCouldTrumpSuitAndWinRatingMinusLowSpade(DataModel dataModel, int suitIndex) {

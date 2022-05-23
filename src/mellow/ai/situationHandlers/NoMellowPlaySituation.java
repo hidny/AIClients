@@ -2054,7 +2054,7 @@ public class NoMellowPlaySituation {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS 7S 5S AC TC 3C JD TD 7D 3D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H JC ")) {
 			System.out.println("Debug");
 		}
 		
@@ -2389,8 +2389,9 @@ public class NoMellowPlaySituation {
 	//TODO: what if there's strategy around signalling?
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
-
-
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H JC ")) {
+			System.out.println("Debug");
+		}
 		
 		System.out.println("**In getJunkiestOffSuitCardBasedOnMadeupValueSystem");
 		
@@ -2418,7 +2419,7 @@ public class NoMellowPlaySituation {
 			System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowOffsuit(dataModel, suitIndex));
 			
 			System.out.println("Could-Trump-Suit-And-Win-Rating after throwing low spade card for suit of " + suitString + ": " + NonMellowBidHandIndicators.getCouldTrumpSuitAndWinRatingMinusLowSpade(dataModel, suitIndex));
-			
+			//System.out.println("------------------");
 			//END DEBUG
 
 			String curCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
@@ -2568,8 +2569,14 @@ public class NoMellowPlaySituation {
 			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 			
 			
-			
-			if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
+			if(! NonMellowBidHandIndicators.currentPlayerMightWinATrickIfAnotherOffsuitThrown(dataModel, suitIndex)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) == 0) {
+				//No bonus incentive to keep the suit because no one else has the suit
+				// and you probably won't lead anytime soon.
+				//In fact, try to throw it out...
+				currentValue += 10.0;
+				
+			} else if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
 					&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0 
 							//TODO: implement indicator functions to estimaste odds of making a trick...
 					  ||  dataModel.getNumTricks(Constants.CURRENT_AGENT_INDEX) < dataModel.getBid(Constants.CURRENT_AGENT_INDEX)
@@ -2988,4 +2995,6 @@ public class NoMellowPlaySituation {
 		
 		return ret;
 	}
+	
+	
 }
