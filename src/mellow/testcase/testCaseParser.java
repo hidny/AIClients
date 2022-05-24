@@ -63,13 +63,9 @@ public class testCaseParser {
 		//Option 3: Slow and thorougk Monte Carlo AI:
 		//MellowAIDeciderInterface decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
 
-		//Test monte carlo if we're using monte carlo folder:
-		if(TEST_FOLDERS.length == 1 
-				&& (TEST_FOLDERS[0].toLowerCase().startsWith("monte")
-				|| TEST_FOLDERS[0].toLowerCase().equals("tmp")
-				|| TEST_FOLDERS[0].toLowerCase().equals("tmprecentfails")
-				)
-			) {
+		//Test monte carlo if 1st arg has monte in it::
+		if(args.length > 0 && args[0].toLowerCase().contains("monte")
+				) {
 			decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI_THOROUGH_TEST);
 			//decider = MellowAIDeciderFactory.getAI(MellowAIDeciderFactory.MONTE_CARLO_METHOD_AI);
 		}

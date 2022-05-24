@@ -664,7 +664,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S QC TC TD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S KH TH KC JC TC KD QD 8D 6D ")) {
 			System.out.println("Debug");
 		}
 
@@ -1147,8 +1147,9 @@ public class NoMellowPlaySituation {
 				curScore -= 5.0;
 				
 				
-				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-				|| ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				if((! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				|| ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE))
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1
 						) {
 					//Prefer to lead suits that are less played... if opponents are trumping:
 					
@@ -1244,9 +1245,20 @@ public class NoMellowPlaySituation {
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
-			} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
-				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				
+			} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
+				
+				if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1
+						|| dataModel.getNumberOfCardsOneSuit(suitIndex) <= 2
+						//TODO: or can't win any trick in a realistic way...
+						) {
+					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+				} else {
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
+					
+				}
+			
+			
 			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
 				
 				if(numCardsOfSuitInHand > 1) {
