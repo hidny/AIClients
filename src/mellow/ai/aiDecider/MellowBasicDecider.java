@@ -232,7 +232,37 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 						
 						
 						//TODO: this should be a new situation...
-						return NoMellowPlaySituation.handleNormalThrow(dataModel);
+						String cardTmp = NoMellowPlaySituation.handleNormalThrow(dataModel);
+						String curCardToUse = cardTmp;
+						
+						//Hack to save low low cards that could burn mellow:
+						while(dataModel.getNumCardsInPlayOverCardSameSuit(cardTmp) > 5
+								&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(cardTmp) > 0
+								) {
+							
+							String biggerCard = dataModel.getCardInHandClosestOverSameSuit(cardTmp);
+							
+							if((
+									dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0
+									&& ! dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCardsSameSuitIgnoreLead(cardTmp, biggerCard, Constants.LEFT_PLAYER_INDEX))
+								||
+								(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+										&& ! dataModel.signalHandler.mellowSignalledNoCardBetweenTwoCardsSameSuitIgnoreLead(cardTmp, biggerCard, Constants.RIGHT_PLAYER_INDEX)
+									)
+								&&
+								dataModel.getNumCardsInPlayOverCardSameSuit(cardTmp) > 5) {
+								
+								curCardToUse = biggerCard;
+								
+							} else {
+								//Increasing it doesn't make a diff, but still consider increasing it.
+							}
+							cardTmp = biggerCard;
+							
+						}
+						
+						return curCardToUse;
+						
 						//END TODO: put in function
 						
 					} else {

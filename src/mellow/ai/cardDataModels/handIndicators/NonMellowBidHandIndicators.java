@@ -126,8 +126,8 @@ public class NonMellowBidHandIndicators {
 		if((numSpadesInHand == 1 && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))) {
 			//All good...
 		} else if(
-			   (numSpadesInHand == 2 && hasKEquiv(dataModel, Constants.SPADE))
-			|| (numSpadesInHand == 3 && hasQEquiv(dataModel, Constants.SPADE))) {
+			   (numSpadesInHand == 2 && hasKEquivNoAce(dataModel, Constants.SPADE))
+			|| (numSpadesInHand == 3 && hasQEquivNoAorK(dataModel, Constants.SPADE))) {
 			spadeVulnerability = 1.0;
 			
 		} else if(getCouldMakeAFollowTrickRating(dataModel, 0, lowestSpadeThrown) <= 5.0) {
@@ -259,7 +259,7 @@ public class NonMellowBidHandIndicators {
 			} else {
 				return 9.0 + otherCardFactor;
 			}
-		} else if(hasKEquiv(dataModel, suitIndex)) {
+		} else if(hasKEquivNoAce(dataModel, suitIndex)) {
 			
 
 
@@ -298,7 +298,7 @@ public class NonMellowBidHandIndicators {
 				
 			}
 			
-		} else if(hasQEquiv(dataModel, suitIndex)) {
+		} else if(hasQEquivNoAorK(dataModel, suitIndex)) {
 
 			//TODO: make this better than just a linear adjustment...
 			double otherCardFactor = 0.2 * (numCardsOfSuitInOtherHands - 2);
@@ -456,7 +456,47 @@ public class NonMellowBidHandIndicators {
 	}
 
 	
-	public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
+public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+			return false;
+		}
+		
+		int numOver = 0;
+		
+		for(int curRank = DataModel.ACE; curRank >= DataModel.RANK_TWO; curRank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				
+				if(numOver == 0) {
+					numOver++;
+				} else if(numOver == 1){
+					return true;
+				} else {
+					return false;
+				}
+				continue;
+	
+			} else if(dataModel.isCardPlayedInRound(
+					DataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+	
+			} else {
+				numOver++;
+				if(numOver > 1) {
+					return false;
+				}
+			}
+		}
+		
+		if(numOver == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean hasKEquivNoAce(DataModel dataModel, int suitIndex) {
 		
 		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
 			return false;
@@ -471,7 +511,7 @@ public class NonMellowBidHandIndicators {
 				continue;
 	
 			} else if(dataModel.isCardPlayedInRound(
-					dataModel.getCardString(curRank, suitIndex))
+					DataModel.getCardString(curRank, suitIndex))
 					) {
 				continue;
 	
@@ -490,8 +530,49 @@ public class NonMellowBidHandIndicators {
 		}
 	}
 
+	public static boolean hasQEquiv(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+			return false;
+		}
+		
+		
+		int numOver = 0;
+		
+		for(int curRank = dataModel.ACE; curRank >= DataModel.RANK_TWO; curRank--) {
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				
+				if(numOver < 2) {
+					numOver++;
+				} else if(numOver == 2){
+					return true;
+				} else {
+					return false;
+				}
+				continue;
+				
+			} else if(dataModel.isCardPlayedInRound(
+					DataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+	
+			} else {
+				numOver++;
+				if(numOver > 2) {
+					return false;
+				}
+			}
+		}
+	
+		if(numOver == 2) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	//TODO: put into data model??
-	 public static boolean hasQEquiv(DataModel dataModel, int suitIndex) {
+	 public static boolean hasQEquivNoAorK(DataModel dataModel, int suitIndex) {
 		
 		if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
 			return false;
@@ -595,6 +676,22 @@ public class NonMellowBidHandIndicators {
 		 
 	 }
 	 
+	 public static int getNumAorKorQEquiv(DataModel dataModel, int suitIndex) {
+		 int num = 0;
+		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+			num++;
+		}
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+				) {
+			num++;
+		}
+
+		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)) {
+			num++;
+		}
+		
+		return num;
+	 }
 	 
  public static String getCardThatWillEventuallyForceOutAllMasters(DataModel dataModel, int suitIndex) {
 		 

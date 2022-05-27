@@ -2,9 +2,11 @@ package mellow.ai.situationHandlers.doubleMellow;
 
 import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
+import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
 import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
+import mellow.cardUtils.DebugFunctions;
 
 public class SeatedRightOfDoubleMellow {
 	
@@ -20,6 +22,9 @@ public class SeatedRightOfDoubleMellow {
 			return AIHandleLeadDoubleMellow(dataModel);
 		}
 		
+
+		int leadSuitIndex = dataModel.getSuitOfLeaderThrow();
+		
 		//Edge case:
 		if(throwIndex == 1 
 				&& (DesperadoFunctions.needToBurnOpponentMellowAtAllCosts(dataModel)
@@ -30,6 +35,34 @@ public class SeatedRightOfDoubleMellow {
 			//TODO: So far, this is UNTESTED, so it's probably wrong!
 			return SeatedRightOfOpponentMellow.AISecondThrow(dataModel);
 
+			//Not what the test case asked for:
+		}
+		
+		
+		if(throwIndex == 1
+				&& ! dataModel.currentAgentHasSuit(leadSuitIndex)
+				&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+				&& dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(Constants.CURRENT_PARTNER_INDEX, leadSuitIndex)
+					<= 1
+				&& dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(Constants.CURRENT_PARTNER_INDEX, leadSuitIndex)
+					<= dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(Constants.LEFT_PLAYER_INDEX, leadSuitIndex)
+				&& ! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+					
+			
+			if(dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(Constants.CURRENT_PARTNER_INDEX, leadSuitIndex)
+					== dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(Constants.LEFT_PLAYER_INDEX, leadSuitIndex)) {
+				System.out.println("(Dubious trump case) (Maybe trump high when behind?)");
+			
+			} else if(NonMellowBidHandIndicators.getNumAorKorQEquiv(dataModel, Constants.SPADE) >= 2) {
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+			}
+			
+		}
+			
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS JS 7S QH JH 7H 6H TC 9C 8C ")) {
+			System.out.println("DEBUG 123");
 		}
 		
 		return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);

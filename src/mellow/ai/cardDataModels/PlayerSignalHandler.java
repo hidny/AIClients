@@ -117,6 +117,10 @@ public class PlayerSignalHandler {
 		return this.playerSaidMellowSignals.mellowPlayerMayBeInDangerInSuit(mellowPlayerIndex, suitIndex);
 	}
 
+	public boolean mellowSignalledNoCardBetweenTwoCardsSameSuitIgnoreLead(String smallerCard, String biggerCard, int mellowPlayerIndex) {
+		return this.playerSaidMellowSignals.mellowSignalledNoCardBetweenTwoCardsSameSuitIgnoreLead(smallerCard, biggerCard, mellowPlayerIndex);
+	}
+	
 	//END Player said mellow signals
 	
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {

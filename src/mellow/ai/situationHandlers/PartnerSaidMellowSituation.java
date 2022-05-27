@@ -110,7 +110,7 @@ public class PartnerSaidMellowSituation {
 		
 		String cardToPlay = "";
 		if(dataModel.currentPlayerHasMasterInSuit(bestSuitIndexToPlay)
-			|| (NonMellowBidHandIndicators.hasKEquiv(dataModel, bestSuitIndexToPlay)
+			|| (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, bestSuitIndexToPlay)
 					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestCardOfSuit) > 1) ) {
 			
 			if(CardStringFunctions.getIndexOfSuit(highestCardOfSuit) != Constants.SPADE) {
@@ -174,12 +174,12 @@ public class PartnerSaidMellowSituation {
 		}
 		
 		//Has Kequiv
-		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)) {
+		if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)) {
 			ret += 20.0;
 		}
 		
 		//Has Qequiv
-		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)) {
+		if(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)) {
 			ret += 20.0;
 		}
 		
@@ -378,7 +378,7 @@ public class PartnerSaidMellowSituation {
 		}
 		
 		//Kequiv:
-		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, currentSuitIndex)) {
+		if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, currentSuitIndex)) {
 			ret += 15.0;
 			
 
@@ -404,7 +404,7 @@ public class PartnerSaidMellowSituation {
 		
 
 		//Qequiv:
-		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, currentSuitIndex)) {
+		if(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, currentSuitIndex)) {
 			ret += 10.0;
 			
 			if(numCardsInHandOfSuit >= 2) {

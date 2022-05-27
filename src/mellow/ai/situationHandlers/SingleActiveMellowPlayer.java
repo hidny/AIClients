@@ -114,7 +114,7 @@ public class SingleActiveMellowPlayer {
 							&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
 							)
 							||
-							(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+							(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
 							&&
 							dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 2)
 						)
@@ -276,7 +276,7 @@ public class SingleActiveMellowPlayer {
 
 		int NO_SUIT_FOUND = -1;
 		int chosenSuit = NO_SUIT_FOUND;
-		double bestScore = Double.MIN_VALUE;
+		double bestScore = -1.0;
 		
 		for(int i=0; i<Constants.NUM_SUITS; i++) {
 			if(i == Constants.SPADE) {
@@ -322,7 +322,21 @@ public class SingleActiveMellowPlayer {
 		//TODO: clean it up and make it look less like trial and error...
 		public static double getWillingnessToThrowOffSuitAsMellowPlayer3(DataModel dataModel, int suit) {
 			
-			return getRiskRating3(dataModel, suit, 0) - 0.9 * getRiskRating3(dataModel, suit, 1);
+			double origNum= getRiskRating3(dataModel, suit, 0) - 0.9 * getRiskRating3(dataModel, suit, 1);
+			
+			double adjustedNum = origNum;
+			
+			//A not so important adjustment to get rid of safe Aces...
+			// Feel free to get rid of it if it doesn't work.
+			if(origNum == 0.0
+					&&
+					dataModel.getNumberOfCardsOneSuit(suit) >= 4) {
+				adjustedNum += 0.001 * dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(
+						dataModel.getCardCurrentPlayerGetHighestInSuit(suit)
+						);
+			}
+			
+			return adjustedNum;
 		}
 	
 		//TODO: clean it up and make it look less like trial and error...

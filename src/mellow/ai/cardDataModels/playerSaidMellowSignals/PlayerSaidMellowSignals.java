@@ -337,6 +337,32 @@ public boolean mellowSignalledNoCardOverCardSameSuit(String inputCard, int mello
 		return true;
 		
 	}
+	
+	public boolean mellowSignalledNoCardBetweenTwoCardsSameSuitIgnoreLead(String smallerCard, String biggerCard, int mellowPlayerIndex) {
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(biggerCard);
+		if(CardStringFunctions.getIndexOfSuit(biggerCard) != CardStringFunctions.getIndexOfSuit(smallerCard)) {
+			System.err.println("ERROR in mellowSignalledNoCardBetweenTwoCardsSameSuitIgnoreLead: cards aren't the same suit");
+			System.exit(1);
+			
+		}
+		
+		for(int j=DataModel.getRankIndex(smallerCard) + 1; j<DataModel.getRankIndex(biggerCard); j++) {
+				
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != dataModel.IMPOSSIBLE
+						&& dataModel.getCardsCurrentlyHeldByPlayers()[mellowPlayerIndex][suitIndex][j] != MELLOW_PLAYER_SIGNALED_NO) {
+					
+					//At this point, the mellow player signaled that they could have a card in between
+					//And you should feel nervous about playing over the currently winning card...
+					return false;
+			}
+			
+		}
+		
+		
+		return true;
+		
+	}
 
 	
 	public boolean mellowPlayerSignalNoCardsOfSuit(int mellowPlayerIndex, int suitIndex) {

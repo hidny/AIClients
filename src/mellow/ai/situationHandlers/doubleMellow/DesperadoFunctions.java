@@ -117,7 +117,6 @@ public class DesperadoFunctions {
 	// I don't think this condition ever gets called.
 	public static boolean wayBehindJustAttackOtherMellow(DataModel dataModel) {
 		
-		System.out.println("Way Behind test!");
 		
 		//Opponent projected score:
 		int projectedOpponentScore = getProjectedScoreNoBonus(dataModel, THEM);
@@ -126,6 +125,7 @@ public class DesperadoFunctions {
 		
 		if(projectedOpponentScore >= Constants.GOAL_SCORE
 				&& projectedScore < projectedOpponentScore - 10) {
+			System.out.println("You're way behind, so go for it! 1");
 			return true;
 
 		} else if(projectedScore <= projectedOpponentScore) {
@@ -137,7 +137,7 @@ public class DesperadoFunctions {
 			if( 0.8 * (1.0*dist) < (1.0 * dist2)
 					&& dist2 > 100) {
 				
-				System.out.println("You're way behind, so go for it!");
+				System.out.println("You're way behind, so go for it! 2");
 				return true;
 			}
 			

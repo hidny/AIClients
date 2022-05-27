@@ -387,7 +387,7 @@ public class NoMellowPlaySituation {
 
 		//Don't volunteer to play spade if you 1 less than master in spade
 		//and have few spades
-		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+		if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
 				&& !NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
 				&& 3 * (numCardsOfSuitInHand-1) < numCardsOfSuitOtherPlayersHave) {
 			curScore -= 20.0;
@@ -614,8 +614,8 @@ public class NoMellowPlaySituation {
 
 		//Play high anyways if you partner has lots of spade:
 		if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5
-				&& ! NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-				&& ! (NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+				&& ! NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
+				&& ! (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
 						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 3)
 				&& numCardsOfSuitInHand <= 3
 				&& numCardsOfSuitOtherPlayersHave >= 8
@@ -690,10 +690,10 @@ public class NoMellowPlaySituation {
 					dataModel.currentAgentHasSuit(Constants.SPADE)) {
 				
 				//If current play has Kequiv and nothing else, hope that another player will throw off Aequiv later:
-				if(   (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				if(   (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
 						&& numCardsOfSuitInHand == 1)
 					||
-					  (NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+					  (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
 						&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
 						&& numCardsOfSuitInHand >= 2
 					    && numCardsOfSuitOtherPlayersHave > 1
@@ -1171,7 +1171,7 @@ public class NoMellowPlaySituation {
 			}
 
 			//Play the Kequiv if it's alone:
-			if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+			if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
 				&& numCardsOfSuitInHand == 1
 				&& dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == false
 				&& numCardsOfSuitOtherPlayersHave >= 6
@@ -1229,8 +1229,8 @@ public class NoMellowPlaySituation {
 			if(numCardsOfSuitInHand + numCardsOfSuitOtherPlayersHave == Constants.NUM_RANKS) {
 				
 				if(dataModel.currentPlayerHasMasterInSuit(suitIndex) == false
-						&& NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex) == false
-						&& NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex) == false
+						&& NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex) == false
+						&& NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex) == false
 						&& dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) < dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) ){
 					
 					curScore -= 30.0;
@@ -1259,7 +1259,7 @@ public class NoMellowPlaySituation {
 				}
 			
 			
-			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
+			} else if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)) {
 				
 				if(numCardsOfSuitInHand > 1) {
 					cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
@@ -1267,7 +1267,7 @@ public class NoMellowPlaySituation {
 					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				}
 				
-			} else if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+			} else if(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex)) {
 				
 				if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
@@ -1343,8 +1343,8 @@ public class NoMellowPlaySituation {
 			
 			//Don't play Queen if opponents have less spade and you have lots of the suit:
 			if( !dataModel.currentPlayerHasMasterInSuit(suitIndex)
-				&&	! NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
-				&&	NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
+				&&	! NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
+				&&	NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex)
 				&& dataModel.getNumberOfCardsOneSuit(suitIndex) >= 3
 				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit
 						(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex),
@@ -1375,15 +1375,15 @@ public class NoMellowPlaySituation {
 				&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)
 				&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
 				&& dataModel.getNumberOfCardsOneSuit(suitIndex) >= 3
-				&& (NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
-				|| NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex))) {
+				&& (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex)
+				|| NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex))) {
 		
 				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 				
 				//System.out.println("TEST");
 				//TEST
 
-				if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)
+				if(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex)
 						&& dataModel.getNumberOfCardsOneSuit(suitIndex) == 3
 						&&  dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 6 ){
 
@@ -1491,8 +1491,8 @@ public class NoMellowPlaySituation {
 							}
 							
 							if(leaderSuitIndex == Constants.SPADE
-									&& (    NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-									    || (NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+									&& (    NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
+									    || (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
 									    		&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3)
 									    || dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 4)) {
 								
@@ -1547,7 +1547,7 @@ public class NoMellowPlaySituation {
 									return cardToConsider;
 								
 								} else if(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE).equals(cardToConsider)
-										&& (NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE) || NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE))) {
+										&& (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE) || NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))) {
 									
 
 									//TODO: maybe make sure partner didn't signal that they only have only the master trump
@@ -1633,7 +1633,7 @@ public class NoMellowPlaySituation {
 					                 dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 					              ||
 					              	(
-						              NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+						              NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
 						              && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
 						            )
 					              )
@@ -1685,10 +1685,10 @@ public class NoMellowPlaySituation {
 						(
 						//K to protect:
 								 (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2
-						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE))
+						           && NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE))
 						 || //No Q to protect:
 						  (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3
-				                   && NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE))
+				                   && NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))
 						  )
 						
 						//TODO: LHS out for blood function
@@ -1722,7 +1722,11 @@ public class NoMellowPlaySituation {
 								        currentPlayerHasOffsuitToThrowOff(dataModel)
 								        && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
 								        && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
-								        )
+								        
+								        //Egde-case: just trump if you trumped last round:
+								        //If there's still 5 of the suit out therre, don't be too worried:
+								        && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) < 5 
+								       )
 								    
 								   //OR: We need to keep spade...
 								   ||    (
@@ -1860,10 +1864,10 @@ public class NoMellowPlaySituation {
 		                   && dataModel.currentPlayerHasMasterInSuit(Constants.SPADE))
 						&& //No K to protect:
 						 ! ((dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2 || dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3 )
-						           && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE))
+						           && NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE))
 						 && //No Q to protect:
 						 ! (dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 3
-				                   && NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE))
+				                   && NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))
 						) {		
 
 					
@@ -1979,13 +1983,13 @@ public class NoMellowPlaySituation {
 					
 					if(  (numSpadesInHand >= 2
 							&&	! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
-							&&	 NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+							&&	 NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
 							&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
 							)
 						|| (numSpadesInHand == 3
 								&& ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
-								&& ! NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-								&& NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+								&& ! NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
+								&& NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
 								&& ! NonMellowBidHandIndicators.hasQJEquivAndNoAORKEquiv(dataModel, Constants.SPADE)
 							)
 						){
@@ -2023,13 +2027,13 @@ public class NoMellowPlaySituation {
 					)
 					|| (numSpadesInHand == 2
 						&&	!dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
-						&&	NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+						&&	NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
 						&& !NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
 						)
 					|| (numSpadesInHand == 3
 							&& !dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
-							&& !NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
-							&& NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)
+							&& !NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
+							&& NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
 							&& !NonMellowBidHandIndicators.hasQJEquivAndNoAORKEquiv(dataModel, Constants.SPADE)
 						)
 					) {
@@ -2038,7 +2042,7 @@ public class NoMellowPlaySituation {
 						
 						String highcard = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
-						if(numSpadesInHand == 1 && NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)) {
+						if(numSpadesInHand == 1 && NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)) {
 							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 						
 						} else if(dataModel.isMasterCard(dataModel.getCurrentFightWinningCardBeforeAIPlays())
@@ -2524,7 +2528,7 @@ public class NoMellowPlaySituation {
 					shouldSave = true;
 				}
 				
-			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+			} else if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
 					) {
 				
 				if(numberOfCardsInSuit == 2) {
@@ -2535,7 +2539,7 @@ public class NoMellowPlaySituation {
 					shouldSave = true;
 				}
 				
-			} else if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+			} else if(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex)) {
 
 				if(numberOfCardsInSuit == 3
 						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 4) {
@@ -2603,7 +2607,7 @@ public class NoMellowPlaySituation {
 				
 			} else if( (numberOfCardsInSuit == 2 || numberOfCardsInSuit == 3)
 					&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)
-					&&  NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+					&&  NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
 					&& numberOfCardsOthersHaveInSuit >= 2) {
 				
 				//Don't throw off option to play low and save your Kequiv card for later
@@ -2938,7 +2942,7 @@ public class NoMellowPlaySituation {
 				
 				
 				//Don't throw off Kequiv with a king...
-				} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				} else if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
 						&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex)) == DataModel.KING
 					) {
 					continue;
@@ -2948,11 +2952,11 @@ public class NoMellowPlaySituation {
 					
 					int curValue = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) - 3* dataModel.getNumberOfCardsOneSuit(suitIndex);
 					
-					if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)) {
+					if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)) {
 						curValue -= 4;
 					}
 					
-					if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+					if(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, suitIndex)) {
 						curValue -= 3;
 					}
 					

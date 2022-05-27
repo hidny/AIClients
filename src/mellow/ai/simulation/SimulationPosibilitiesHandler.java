@@ -140,6 +140,23 @@ public class SimulationPosibilitiesHandler {
 			 }
 			 //End Hack.
 			 
+			 if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS JS 7S QH JH 7H 6H TC 9C ")
+					 && playerIndex == 1) {
+				 
+				 for(int rank=0; rank<Constants.NUM_RANKS; rank++) {
+					 String tmpCard = DataModel.getCardString(rank, Constants.DIAMOND);
+					 
+					 if(DataModel.getRankIndex(tmpCard) == DataModel.ACE) {
+					 
+						 if(playerPos[playerIndex].contains(tmpCard)) {
+							 playerPos[playerIndex].remove(tmpCard);
+							 System.out.println("Debug removed " + tmpCard + " from Phil's hand!");
+						 }
+					 }
+				 }
+				 
+			 }
+			 
 		 }
 		 
 		 for(int i=0; i<Constants.NUM_PLAYERS; i++) {

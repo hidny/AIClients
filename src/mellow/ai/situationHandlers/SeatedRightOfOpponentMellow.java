@@ -293,8 +293,8 @@ public class SeatedRightOfOpponentMellow {
 					} else if(curCard.equals(highestCardInHand) &&
 							(
 							(dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5 && NonMellowBidHandIndicators.hasJEquiv(dataModel, leadSuit))
-							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 4 && NonMellowBidHandIndicators.hasQEquiv(dataModel, leadSuit))
-							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && NonMellowBidHandIndicators.hasKEquiv(dataModel, leadSuit))
+							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 4 && NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, leadSuit))
+							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && dataModel.currentPlayerHasMasterInSuit(leadSuit))
 							)
 						){
@@ -859,8 +859,24 @@ public class SeatedRightOfOpponentMellow {
 				
 				//TODO: don't always throw highest...
 				if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+					
+					if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.RIGHT_PLAYER_INDEX) {
 					//Play highest to win:
-					return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+					
+					} else if(dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) <= 2
+							|| dataModel.getSuitOfLeaderThrow() != Constants.SPADE){
+						
+						//Continue to play highest to win:
+						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+					
+					} else {
+						
+						//Trust that mellow won't burn spade and play low spade.
+						//Only do this if you have 3+ spades.
+						//Maybe this shouldn't be so simple? Oh well!
+						return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
+					}
 				
 				} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCardLeaderThrow())
 						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(

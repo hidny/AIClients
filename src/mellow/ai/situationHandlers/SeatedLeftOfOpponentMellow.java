@@ -339,7 +339,7 @@ public class SeatedLeftOfOpponentMellow {
 							//Consider not wasting a king:
 							if(! dataModel.currentPlayerHasMasterInSuit(leadSuitIndex)
 									&& dataModel.getNumberOfCardsOneSuit(leadSuitIndex) >= 4
-									&& NonMellowBidHandIndicators.hasKEquiv(dataModel, leadSuitIndex)) {
+									&& NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, leadSuitIndex)) {
 								return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(dataModel.getSuitOfLeaderThrow());
 							
 							} else {
@@ -649,7 +649,7 @@ public class SeatedLeftOfOpponentMellow {
 			} else if(dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(curCard, mellowPlayerIndex)) {
 				curValue -= 48.0;
 
-			} else if(NonMellowBidHandIndicators.hasKEquiv(dataModel, curSuitIndex)
+			} else if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, curSuitIndex)
 					&& ! NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, curSuitIndex)) {
 				
 				//Also save your king equiv...
@@ -659,7 +659,7 @@ public class SeatedLeftOfOpponentMellow {
 				}
 
 			} else if(
-					NonMellowBidHandIndicators.hasQEquiv(dataModel, curSuitIndex)
+					NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, curSuitIndex)
 					&& ! NonMellowBidHandIndicators.hasQJEquivAndNoAORKEquiv(dataModel, curSuitIndex)
 					) {
 				//Save your queen equiv so you could have some flexibility:
