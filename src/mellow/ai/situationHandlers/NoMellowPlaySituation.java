@@ -106,6 +106,21 @@ public class NoMellowPlaySituation {
 		//EX: if you have the KS and QS, play KS if you were originally intending the QS.
 		bestCardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, bestCardToPlay);
 		
+		if(dataModel.isMasterCard(bestCardToPlay)
+				&&
+			CardStringFunctions.getIndexOfSuit(bestCardToPlay) != Constants.SPADE
+				&&
+			dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+			    &&
+			! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE))
+			{
+
+			//Exception where we play low, so we could trick LHS:
+			bestCardToPlay =  PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit
+				(dataModel, bestCardToPlay);
+	
+		}
+		
 		return bestCardToPlay;
 	}
 	
@@ -1245,6 +1260,14 @@ public class NoMellowPlaySituation {
 			if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 				
 				cardToPlay = dataModel.getMasterInHandOfSuit(suitIndex);
+				
+				//Confusing your partner doesn't matter because your partner can't trump:
+				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						&&
+					! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+
+					curScore += 1.0;
+				}
 				
 			} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, suitIndex)) {
 				
