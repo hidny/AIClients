@@ -1289,7 +1289,7 @@ public class NoMellowPlaySituation {
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				}
 			} else if(dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))
-					&& NonMellowBidHandIndicators.hasJEquiv(dataModel, suitIndex)
+					&& NonMellowBidHandIndicators.hasJEquivNoAKQeq(dataModel, suitIndex)
 					&& numCardsOfSuitInHand >= 4) {
 				cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
 				
@@ -1592,7 +1592,7 @@ public class NoMellowPlaySituation {
 					} else {
 						//Lead suit is spade:
 						
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 7S TH JD TD ")) {
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 6S 3S JD ")) {
 							System.out.println("debug 1005");
 						}
 						
@@ -1638,6 +1638,16 @@ public class NoMellowPlaySituation {
 
 									//LHS prob has weak spade and might have a spade because we already checked for that.
 									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								
+								} else if( NonMellowBidHandIndicators.getNumAorKorQorJEquiv(dataModel, Constants.SPADE) >= 3) {
+									
+									if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)) {
+										cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+									} else {
+										cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+									}
+									
 								}
 								
 							} else {

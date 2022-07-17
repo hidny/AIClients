@@ -292,7 +292,7 @@ public class SeatedRightOfOpponentMellow {
 					//Don't play highest if it might become master:
 					} else if(curCard.equals(highestCardInHand) &&
 							(
-							(dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5 && NonMellowBidHandIndicators.hasJEquiv(dataModel, leadSuit))
+							(dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5 && NonMellowBidHandIndicators.hasJEquivNoAKQeq(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 4 && NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && dataModel.currentPlayerHasMasterInSuit(leadSuit))
