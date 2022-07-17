@@ -1592,7 +1592,7 @@ public class NoMellowPlaySituation {
 					} else {
 						//Lead suit is spade:
 						
-						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS JS 6S 3S JD ")) {
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 9S 6S 5H JC TC QD")) {
 							System.out.println("debug 1005");
 						}
 						
@@ -1648,11 +1648,40 @@ public class NoMellowPlaySituation {
 										cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
 									}
 									
+								//Just play high if 2 spades left and 2nd round of play...
+								} else if( dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2 
+										&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) 
+										<= dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+										&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 
+										dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+										 <= Constants.NUM_STARTING_CARDS_IN_HAND - 3
+										) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 								}
+								
 								
 							} else {
 								
 								cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+							}
+							
+							
+							
+							//Check if we could play barely over the lead:
+							if(dataModel.cardAGreaterThanCardBGivenLeadCard(leaderCard, cardToPlay)) {
+
+								String cardTmp = dataModel.getCardInHandClosestOverCurrentWinner();
+								
+								if(dataModel.getNumCardsInPlayOverCardSameSuit(cardTmp) > 3
+										&& dataModel.getNumCardsInPlayOverCardSameSuit(cardTmp) < 6) {
+									//Just play over, it won't hurt...
+									cardToPlay = cardTmp;
+								
+								} else if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 2
+										&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(leaderCard) == 1) {
+									//Not much use playing under if there's just 1 card under, and you have only 2 spade:
+									cardToPlay = cardTmp;
+								}
 							}
 						
 						} else {
