@@ -1486,6 +1486,8 @@ public class DataModel {
 		return ret;
 	}
 
+
+	
 	public int getNumCardsInCurrentPlayersHandOverCardSameSuit(String card) {
 
 		int rankStart = getRankIndex(card) + 1;

@@ -1451,7 +1451,7 @@ public class NoMellowPlaySituation {
 					
 				} else if(thirdVoid == false && fourthProbVoid == false){
 					
-					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 8S 2S JH 5H 2H QC 9C 5C KD 7D")) {
+					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 4H")) {
 						System.out.println("Debug");
 					}
 					
@@ -1592,6 +1592,10 @@ public class NoMellowPlaySituation {
 					} else {
 						//Lead suit is spade:
 						
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 7S TH JD TD ")) {
+							System.out.println("debug 1005");
+						}
+						
 						if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 							
 							
@@ -1600,8 +1604,39 @@ public class NoMellowPlaySituation {
 								//Play low 2nd by default when it comes to spade:
 								cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 								
-								if(SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay)
+								System.out.println(dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay,
+										dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex)));
+								
+								if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+									//Play low because lhs is weak
+									
+								} else if(SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay)
 										.equals(dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex))) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+									//TODO: between is bugged, and I had to put 2 here. Maybe fix it?
+								} else if(dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay,
+										dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex)) == 2) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+									
+								} else if(dataModel.getNumCardsInPlayOverCardSameSuit(leaderCard) - dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) <= 2
+										&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) >= 2) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+								} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+									
+									//Can't lie if partner signalled no spade:
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								
+								} else if(dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) > dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)) {
+
+									//Partner prob has weak spade:
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								
+								} else if(  dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) > dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
+
+									//LHS prob has weak spade and might have a spade because we already checked for that.
 									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 								}
 								
