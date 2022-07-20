@@ -1441,8 +1441,7 @@ public class NoMellowPlaySituation {
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
 
 				} else if(thirdVoid && fourthProbVoid == false) {
-					//Maybe play low? I don't know...
-					
+
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
 					
 					//Just play low to confuse LHS exception:
