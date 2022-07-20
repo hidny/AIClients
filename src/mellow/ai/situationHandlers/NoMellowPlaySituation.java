@@ -1442,7 +1442,18 @@ public class NoMellowPlaySituation {
 
 				} else if(thirdVoid && fourthProbVoid == false) {
 					//Maybe play low? I don't know...
+					
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
+					
+					//Just play low to confuse LHS exception:
+					if(		! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						    && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(leaderCard)
+							&& dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay, dataModel.getCardInHandClosestUnderSameSuit(leaderCard)) > 1
+							&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) == 1
+					) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+					}
 				
 				} else if(thirdVoid == false && fourthProbVoid) {
 					//TODO This doesn't really work if trump is spade... 

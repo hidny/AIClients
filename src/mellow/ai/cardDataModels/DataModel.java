@@ -1442,6 +1442,7 @@ public class DataModel {
 		return ret;
 	}
 
+	//This is not properly calculated, so be careful!
 	public int getNumCardsInPlayBetweenCardSameSuit(String cardLow, String cardHigh) {
 		if (CardStringFunctions.getIndexOfSuit(cardHigh) != CardStringFunctions.getIndexOfSuit(cardLow)) {
 			System.err.println(
