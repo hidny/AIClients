@@ -305,7 +305,45 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				
 				
 				System.out.println("MELLOW TEST (double mellow)");
-				return SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
+				String cardToPlay = SingleActiveMellowPlayer.handleThrowAsSingleActiveMellowBidder(dataModel);
+				
+				//(TODO: put in function)
+				//Exceptional case where we want to hide our masters:
+				int suitIndexCard = CardStringFunctions.getIndexOfSuit(cardToPlay);
+			
+				if(dataModel.isMasterCard(cardToPlay)
+						&& dataModel.getSuitOfLeaderThrow() != suitIndexCard
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndexCard) > 0
+						&& dataModel.getNumberOfCardsOneSuit(suitIndexCard) > 2
+						//TODO: copied from BiddingSituation
+						&& ( dataModel.getOpponentScore() > 850
+								|| 1.5 * (1000 - dataModel.getOpponentScore()) < (1000 - dataModel.getOurScore())
+								)
+						
+						//END TODO
+						) {
+					
+
+					
+					int bestRank = -1;
+					for(int suitI=0; suitI<Constants.NUM_SUITS; suitI++) {
+						if(suitI != Constants.SPADE
+								&& dataModel.currentAgentHasSuit(suitI)
+							&& ! dataModel.isMasterCard(dataModel.getCardCurrentPlayerGetHighestInSuit(suitI))) {
+							
+							String card =  dataModel.getCardCurrentPlayerGetHighestInSuit(suitI);
+							if(DataModel.getRankIndex(card) > bestRank) {
+								cardToPlay = card;
+								bestRank = DataModel.getRankIndex(card);
+							}
+							
+						}
+					}
+				}
+				//End Exceptional case where we want to hide our masters:
+				//(END TODO: put in function)
+				
+				return cardToPlay;
 
 			} else {
 				System.out.println("Both opponents said mellow");

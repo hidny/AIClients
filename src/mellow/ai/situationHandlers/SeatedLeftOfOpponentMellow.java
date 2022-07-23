@@ -575,6 +575,20 @@ public class SeatedLeftOfOpponentMellow {
 						//Don't like throwing masters
 							curValue -= 15.0;
 							
+						
+						boolean shouldJustThrowMasters =  dataModel.getNumTricksOtherTeam() >= dataModel.getSumBidsOtherTeam()
+						//TODO: copy pasted from Bidding Situation. (Make function with it)
+								&& ( dataModel.getOpponentScore() > 850
+										|| 1.5 * (1000 - dataModel.getOpponentScore()) < (1000 - dataModel.getOurScore())
+										);
+						//END TODO
+						
+						if((dataModel.getNumTricksCurTeam() < dataModel.getSumBidsCurTeam()
+								|| dataModel.getNumTricksOtherTeam() < dataModel.getSumBidsOtherTeam())
+							&&
+							! shouldJustThrowMasters
+								) {
+
 							if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) >= 2
 									&& dataModel.getNumberOfCardsOneSuit(curSuitIndex) <= 4) {
 								
@@ -590,6 +604,8 @@ public class SeatedLeftOfOpponentMellow {
 							} else if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) >= 5){
 								curCard = dataModel.getCardCurrentPlayerGetThirdHighestInSuit(curSuitIndex);
 							}
+
+						}
 					}
 				}
 				

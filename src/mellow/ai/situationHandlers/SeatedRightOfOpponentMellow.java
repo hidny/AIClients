@@ -187,6 +187,9 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6H AD 9D 6D ")) {
+			System.out.println("Debug");
+		}
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
