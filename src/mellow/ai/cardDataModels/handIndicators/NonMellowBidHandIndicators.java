@@ -708,6 +708,19 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 		 
 	 }
 	 
+
+	 public static int getNumAorKEquiv(DataModel dataModel, int suitIndex) {
+		 int num = 0;
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			num++;
+		}
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				) {
+			num++;
+		}
+		return num;
+	 }
+	 
 	 public static int getNumAorKorQEquiv(DataModel dataModel, int suitIndex) {
 		 int num = 0;
 		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
