@@ -2297,7 +2297,7 @@ public class NoMellowPlaySituation {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H JC ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 7S 2S 9H 8H QD TD 8D 5D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -2632,7 +2632,7 @@ public class NoMellowPlaySituation {
 	//TODO: what if there's strategy around signalling?
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H JC ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS QC 8D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -2811,13 +2811,32 @@ public class NoMellowPlaySituation {
 			
 			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 			
-			
-			if(! NonMellowBidHandIndicators.currentPlayerMightWinATrickIfAnotherOffsuitThrown(dataModel, suitIndex)
+			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >=
+						dataModel.getNumberOfCardsOneSuit(suitIndex)
+					&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				//Let partner deal with suit only you and partner have???
+				//This is just a guess to fix 1 test case.
+				
+				//System.out.println("(TEST 3RD CHANGE)");
+				
+			} else if(
+					! NonMellowBidHandIndicators.currentPlayerMightWinATrickIfAnotherOffsuitThrown(dataModel, suitIndex)
 					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) == 0) {
+				
+				if( 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) 
+						> dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					) {
+					//Try to sweep
+					currentValue -= 20.0;
+					System.out.println("(Try to sweep)");
+				} else {
 				//No bonus incentive to keep the suit because no one else has the suit
 				// and you probably won't lead anytime soon.
 				//In fact, try to throw it out...
-				currentValue += 10.0;
+					currentValue += 10.0;
+				}
 				
 			} else if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
 					&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0 
@@ -2885,8 +2904,8 @@ public class NoMellowPlaySituation {
 				
 				currentValue -= 0.8;
 			}
-			
-			
+
+
 			//boolean rhsVoid = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex);
 			boolean rhsTrumping = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex)
 					  && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE);
@@ -2898,6 +2917,7 @@ public class NoMellowPlaySituation {
 			boolean partnerSignalledVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex);
 			
 			boolean partnerSignalledOnlyMasterOrVoid = dataModel.signalHandler.partnerHasOnlyMasterOrIsVoidBasedOnSignals(suitIndex);
+			
 			
 			//TODO: maybe this is useful?
 			//boolean partnerSignalledMaster = dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex);
