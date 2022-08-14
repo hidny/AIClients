@@ -2325,6 +2325,16 @@ public class NoMellowPlaySituation {
 					if(dataModel.isPartnerWinningFight() && dataModel.leaderPlayedMaster()) {
 						//PLAY OFF because leaderPlayedMaster
 						cardToPlay = getJunkiestCardToFollowLead(dataModel);
+						
+						if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.currentAgentHasSuit(Constants.SPADE)){
+							//Just trump and let LHS trump over because your partner wants you to trump?
+							System.out.println("(PARNTER WANTS ME TO TRUMP??)");
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						}
+						
 					} else {
 						//TRUMP
 						

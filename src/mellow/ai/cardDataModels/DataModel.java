@@ -445,7 +445,7 @@ public class DataModel {
 	}
 
 	public boolean isCardPlayedInRound(String card) {
-		return this.cardsUsed[CardStringFunctions.getIndexOfSuit(card)][this.getRankIndex(card)];
+		return this.cardsUsed[CardStringFunctions.getIndexOfSuit(card)][DataModel.getRankIndex(card)];
 	}
 
 	// Resets everything except for the scores and the deal indexes.
