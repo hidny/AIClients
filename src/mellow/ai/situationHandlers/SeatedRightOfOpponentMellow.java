@@ -669,7 +669,7 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 9S 7S 6S AC 6C 4C KD 7D")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 6S 4S AC JC TC ")) {
 				System.out.println("Debug");
 			}
 			
@@ -740,20 +740,29 @@ public class SeatedRightOfOpponentMellow {
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
-					if(       (numCardsInOtherPeoplesHandsForSuit >= 3)
-							|| (numCardsInOtherPeoplesHandsForSuit >= 2 && dataModel.isVoid(PROTECTOR_PLAYER_INDEX, leadSuit))
-							|| (2 + dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE)
-							>= dataModel.getNumCardsInCurrentPlayerHand())
-							)
-					{
+
+					//You usually want to trump high unless a few conditions aren't met:
+					//At this point, we know current player has spade.
+					if(
+							dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() != Constants.CURRENT_PARTNER_INDEX
+							|| dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < 2
+							|| dataModel.getNumTricksCurTeam() >= dataModel.getSumBidsCurTeam()
+							|| dataModel.getNumCardsInCurrentPlayerHand() - dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < 2
+							
+						) {
 						
-						//TODO: maybe save your highest trump and play a middle trump under certain conditions?
-						
-						//Probably safe to trump high:
-						return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
-						
-						
-					} else {
+						if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
+							if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.RIGHT_PLAYER_INDEX
+									&& CardStringFunctions.getIndexOfSuit(dataModel.getCardSecondThrow()) == Constants.SPADE) {
+								return dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardSecondThrow());
+							
+							} else {
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+							}
+						} else {
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						}
+					} else if(dataModel.currentPlayerOnlyHasSpade() == false
 
 							
 						//Mellow could be able to trump under: don't trump?
@@ -762,15 +771,15 @@ public class SeatedRightOfOpponentMellow {
 						//TODO: maybe think about what player is throwing off a little bit more??
 
 						//(unless there's no choice but to trump)
-						if(dataModel.currentPlayerOnlyHasSpade() == false
+						
 								&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, Constants.SPADE)) {
 							//return dataModel.getHighestOffSuitCardAnySuitButSpade();
 							return SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 							
 						} else {
 							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							
 						}
-					}
 						
 						
 				} else {
