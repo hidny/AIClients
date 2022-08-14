@@ -445,7 +445,7 @@ public class DataModel {
 	}
 
 	public boolean isCardPlayedInRound(String card) {
-		return this.cardsUsed[CardStringFunctions.getIndexOfSuit(card)][this.getRankIndex(card)];
+		return this.cardsUsed[CardStringFunctions.getIndexOfSuit(card)][DataModel.getRankIndex(card)];
 	}
 
 	// Resets everything except for the scores and the deal indexes.
@@ -1442,6 +1442,7 @@ public class DataModel {
 		return ret;
 	}
 
+	//This is not properly calculated, so be careful!
 	public int getNumCardsInPlayBetweenCardSameSuit(String cardLow, String cardHigh) {
 		if (CardStringFunctions.getIndexOfSuit(cardHigh) != CardStringFunctions.getIndexOfSuit(cardLow)) {
 			System.err.println(
@@ -1486,6 +1487,8 @@ public class DataModel {
 		return ret;
 	}
 
+
+	
 	public int getNumCardsInCurrentPlayersHandOverCardSameSuit(String card) {
 
 		int rankStart = getRankIndex(card) + 1;

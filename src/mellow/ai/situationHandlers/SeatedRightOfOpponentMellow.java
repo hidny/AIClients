@@ -187,6 +187,9 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6H AD 9D 6D ")) {
+			System.out.println("Debug");
+		}
 		
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
@@ -292,7 +295,7 @@ public class SeatedRightOfOpponentMellow {
 					//Don't play highest if it might become master:
 					} else if(curCard.equals(highestCardInHand) &&
 							(
-							(dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5 && NonMellowBidHandIndicators.hasJEquiv(dataModel, leadSuit))
+							(dataModel.getNumberOfCardsOneSuit(leadSuit) >= 5 && NonMellowBidHandIndicators.hasJEquivNoAKQeq(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 4 && NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, leadSuit))
 							|| (dataModel.getNumberOfCardsOneSuit(leadSuit) >= 3 && dataModel.currentPlayerHasMasterInSuit(leadSuit))
@@ -855,6 +858,9 @@ public class SeatedRightOfOpponentMellow {
 			
 		} else {
 			
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 2S AH QH 6H 2H AC 8C 2C AD TD 7D 6D ")) {
+				System.out.println("Debug");
+			}
 			if(dataModel.throwerMustFollowSuit()) {
 				
 				//TODO: don't always throw highest...
@@ -864,11 +870,34 @@ public class SeatedRightOfOpponentMellow {
 					//Play highest to win:
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 					
-					} else if(dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) <= 2
-							|| dataModel.getSuitOfLeaderThrow() != Constants.SPADE){
+					} else if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE) {
 						
-						//Continue to play highest to win:
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						
+					} else if(dataModel.getSuitOfLeaderThrow() == Constants.SPADE
+							&& dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) <= 2
+							
+							){
+
+						String closestOverCard = dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
+						String highestCard = dataModel.getCardInHandClosestOverCurrentWinner();
+
+						if(dataModel.isMasterCard(highestCard)
+								&& NonMellowBidHandIndicators.getNumAorKEquiv(dataModel, Constants.SPADE) == 1) {
+							
+							//Preserve the master spade because it's bad when protector leads master spade:
+							if(closestOverCard.equals(highestCard)) {
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+							} else {
+								return dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+							}
+							
+						} else {
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							
+						}
+							
+						//Continue to play highest to win:
 					
 					} else {
 						

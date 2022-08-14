@@ -35,11 +35,18 @@ public class MonteCarloMain {
 	public static void main(String args[]) {
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTestsDone"};
 		
+		//testCaseParser.TEST_FOLDERS = new String[] {"newBidTestcases"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"newFollowFails", "newBonusChecks"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"newLeadFails"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"TestPython"};
+		
+		testCaseParser.TEST_FOLDERS = new String[] {"newBonusChecks"};
 		String args2[] = new String[1];
 		args2[0] = "monte";
 		testCaseParser.main(args2);
@@ -65,10 +72,10 @@ public class MonteCarloMain {
 
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
@@ -138,10 +145,14 @@ public class MonteCarloMain {
 		return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, true, testWithSignals);
 	}
 
-	public static String runMonteCarloMethod(DataModel dataModel, SimulationSetupInterface simulationSetup, int num_simulations, boolean skipSimulationsBasedOnBids, boolean processSignals) {
+	public static String runMonteCarloMethod(DataModel dataModel, SimulationSetupInterface simulationSetup, int num_simulations_orig, boolean skipSimulationsBasedOnBids, boolean processSignals) {
 		
 		System.out.println("RUN SIMULATION");
 		//in.nextLine();
+		
+		//The number of simulations done could be subject to change
+		// but we want to keep the orig #...
+		int num_simulations = num_simulations_orig;
 
 		if(processSignals == false
 				&& simulationSetup.hasSignalsBakedIn()) {
@@ -474,13 +485,13 @@ public class MonteCarloMain {
 			if(skipSimulationsBasedOnBids) {
 				skipSimulationsBasedOnBids = false;
 				System.err.println("RETRY without skipping any simulations because of bids:");
-				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
+				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations_orig, skipSimulationsBasedOnBids, processSignals);
 				
 			} else if(processSignals 
 					&& ! simulationSetup.hasSignalsBakedIn()) {
 				processSignals = false;
 				System.err.println("RETRY without processing any signals:");
-				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations, skipSimulationsBasedOnBids, processSignals);
+				return runMonteCarloMethod(dataModel, simulationSetup, num_simulations_orig, skipSimulationsBasedOnBids, processSignals);
 				
 			} else if(simulationSetup.hasSignalsBakedIn()) {
 				
@@ -488,7 +499,7 @@ public class MonteCarloMain {
 					processSignals = false;
 					System.out.println("RETRY running simulation without signals:");
 					SimulationSetupInterface simulationSetupNoSignals = new SimulationSetupWithMemBoost(dataModel, processSignals);
-					return runMonteCarloMethod(dataModel, simulationSetupNoSignals, num_simulations, skipSimulationsBasedOnBids, processSignals);
+					return runMonteCarloMethod(dataModel, simulationSetupNoSignals, num_simulations_orig, skipSimulationsBasedOnBids, processSignals);
 					
 			}
 

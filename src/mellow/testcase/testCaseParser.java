@@ -30,7 +30,13 @@ public class testCaseParser {
 	
 	//public static String TEST_FOLDERS[] = {"doubleMellowTests"};
 	//public static String TEST_FOLDERS[] = {"lastRoundWeirdness"};
-
+	
+	//public static String TEST_FOLDERS[] = {"Play2ndSpadeCases"};
+	//public static String TEST_FOLDERS[] = {"newBidTestcases"};
+	//public static String TEST_FOLDERS[] = {"newBonusChecks"};
+	//public static String TEST_FOLDERS[] = {"newLeadFails"};
+	//public static String TEST_FOLDERS[] = {"newFollowFails"};
+	
 	public static int numLeadingPass = 0;
 	public static int numLeading = 0;
 	
@@ -92,7 +98,7 @@ public class testCaseParser {
 		
 		System.out.println("Final report for " + decider + ":");
 		
-		if(numLeading > 0) {
+		if(numLeading + numSecond + numThird + numFourth > 0) {
 			System.out.println("Passes while leading: " + numLeadingPass + " out of " + numLeading);
 			System.out.println("That's a " + String.format("%.2f", ((100.0*numLeadingPass) /(1.0*numLeading))) + "% pass rate.");
 			System.out.println();

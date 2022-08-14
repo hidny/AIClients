@@ -1289,7 +1289,7 @@ public class NoMellowPlaySituation {
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
 				}
 			} else if(dataModel.hasCard(DataModel.getCardString(DataModel.JACK, suitIndex))
-					&& NonMellowBidHandIndicators.hasJEquiv(dataModel, suitIndex)
+					&& NonMellowBidHandIndicators.hasJEquivNoAKQeq(dataModel, suitIndex)
 					&& numCardsOfSuitInHand >= 4) {
 				cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(suitIndex);
 				
@@ -1441,8 +1441,18 @@ public class NoMellowPlaySituation {
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
 
 				} else if(thirdVoid && fourthProbVoid == false) {
-					//Maybe play low? I don't know...
+
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(dataModel.getCardLeaderThrow());
+					
+					//Just play low to confuse LHS exception:
+					if(		! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						    && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(leaderCard)
+							&& dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay, dataModel.getCardInHandClosestUnderSameSuit(leaderCard)) > 1
+							&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) == 1
+					) {
+						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+					}
 				
 				} else if(thirdVoid == false && fourthProbVoid) {
 					//TODO This doesn't really work if trump is spade... 
@@ -1451,137 +1461,354 @@ public class NoMellowPlaySituation {
 					
 				} else if(thirdVoid == false && fourthProbVoid == false){
 					
-					if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
+					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 4H")) {
+						System.out.println("Debug");
+					}
+					
+					if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE) {
 						
-						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+						//Logic for dealing with offsuit:
 						
-						//I'm still not ready to do Queen tricks :(
-						/*
-						if(leaderSuitIndex == Constants.SPADE
-								&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) >= 2
-								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
-										dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex)) == 1
-								//TODO: implement a "deserved" tricks counter.
-								&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) <= dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX)
-								&& dataModel.signalHandler.getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
-									> DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex))) {
-							//Play for tricks:
-							//Play Q equiv instead of master in the hopes of making an extra trick:
-							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
-						}*/
-						
-					} else {
-						
-						String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
-						
-						if((DataModel.getRankIndex(curPlayerTopCardInSuit) == DataModel.KING
-								&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2)
-							) {
+						if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
 							
-							//2nd throw: Play the King's wing-person card if it's higher than the lead card...
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 							
-							cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
-							
-							if(DataModel.getRankIndex(cardToPlay) == DataModel.QUEEN) {
-								//If you have the KQ, just play the K...
-								//Don't confuse your partner.
-								cardToPlay = curPlayerTopCardInSuit;
-								
-								//TODO: maybe play lower one (I don't know)
-							}
-							
+							//I'm still not ready to do Queen tricks :(
+							/*
 							if(leaderSuitIndex == Constants.SPADE
-									&& (    NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
-									    || (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
-									    		&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3)
-									    || dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 4)) {
-								
-								//Play low for and don't challenge if you want to preserve highish spade:
-								//There might be some complicated exceptions, but whatever.
-								return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
-
-							} else if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
-								
-								return cardToPlay;
-								
-							} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(curPlayerTopCardInSuit, leaderCard) >= 1) {
-								//If Jack lead, don't lead king.
-								return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
-								
-							} else {
-								//Play the King while the Ace is still out!
-								return curPlayerTopCardInSuit;
-							}
-						
-											
-						} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+									&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) >= 2
+									&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+											dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex)) == 1
+									//TODO: implement a "deserved" tricks counter.
+									&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) <= dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX)
+									&& dataModel.signalHandler.getMaxCardRankSignal(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
+										> DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex))) {
+								//Play for tricks:
+								//Play Q equiv instead of master in the hopes of making an extra trick:
+								cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+							}*/
 							
-							//Consider playing high second if there's no real chance of making the trick,
-							// but you want 3rd thrower to prove they can play higher than you:
-							if(leaderSuitIndex != Constants.SPADE
-								&& (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit) >= 2)
-								&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5
-								      ||  leaderSuitIndex == Constants.SPADE
-								      || 1 + dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit)
-								                  < dataModel.getNumberOfCardsOneSuit(leaderSuitIndex))
+						} else {
+							
+							String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+							
+							if((DataModel.getRankIndex(curPlayerTopCardInSuit) == DataModel.KING
+									&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2)
 								) {
 								
-								//Observation based on original test cases:
-								//This condition turns test cases from "AI matches expert alternative response! (PASS)"
-								// to "AI matches expert response! (PASS)"
-								//So basically, it plays more like me. But whether it's a good thing or not is
-								//still in the air.
+								//2nd throw: Play the King's wing-person card if it's higher than the lead card...
 								
-								//I also tend to NOT play like this when it comes to spades...
-								//but whether it's a good thing or not is
-								//still in the air.
+								cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
 								
-								return curPlayerTopCardInSuit;
-								
-							} else if(leaderSuitIndex == Constants.SPADE) {
-								String cardToConsider = dataModel.getCardInHandClosestOverCurrentWinner();
-								
-
-								//Save K/Q equiv and try to not throw it if you don't have both the K and the Q equiv:
-								if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
-									return cardToConsider;
-								
-								} else if(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE).equals(cardToConsider)
-										&& (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE) || NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))) {
+								if(DataModel.getRankIndex(cardToPlay) == DataModel.QUEEN) {
+									//If you have the KQ, just play the K...
+									//Don't confuse your partner.
+									cardToPlay = curPlayerTopCardInSuit;
 									
-
-									//TODO: maybe make sure partner didn't signal that they only have only the master trump
-									//because in that case, maybe play low??
-									//Actually I'm not sure, because partner signal only high might mean they are void too...
-
-									if((dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-										&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider) >= 1)) {
-										
+									//TODO: maybe play lower one (I don't know)
+								}
+								
+								if(leaderSuitIndex == Constants.SPADE
+										&& (    NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
+										    || (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
+										    		&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3)
+										    || dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 4)) {
+									
+									//Play low for and don't challenge if you want to preserve highish spade:
+									//There might be some complicated exceptions, but whatever.
+									return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+	
+								} else if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
+									
+									return cardToPlay;
+									
+								} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(curPlayerTopCardInSuit, leaderCard) >= 1) {
+									//If Jack lead, don't lead king.
+									return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+									
+								} else {
+									//Play the King while the Ace is still out!
+									return curPlayerTopCardInSuit;
+								}
+							
+												
+							} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+								
+								//Consider playing high second if there's no real chance of making the trick,
+								// but you want 3rd thrower to prove they can play higher than you:
+								if(leaderSuitIndex != Constants.SPADE
+									&& (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit) >= 2)
+									&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5
+									      ||  leaderSuitIndex == Constants.SPADE
+									      || 1 + dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit)
+									                  < dataModel.getNumberOfCardsOneSuit(leaderSuitIndex))
+									) {
+									
+									//Observation based on original test cases:
+									//This condition turns test cases from "AI matches expert alternative response! (PASS)"
+									// to "AI matches expert response! (PASS)"
+									//So basically, it plays more like me. But whether it's a good thing or not is
+									//still in the air.
+									
+									//I also tend to NOT play like this when it comes to spades...
+									//but whether it's a good thing or not is
+									//still in the air.
+									
+									return curPlayerTopCardInSuit;
+									
+								} else if(leaderSuitIndex == Constants.SPADE) {
+									String cardToConsider = dataModel.getCardInHandClosestOverCurrentWinner();
+									
+	
+									//Save K/Q equiv and try to not throw it if you don't have both the K and the Q equiv:
+									if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
 										return cardToConsider;
+									
+									} else if(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE).equals(cardToConsider)
+											&& (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE) || NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))) {
+										
+	
+										//TODO: maybe make sure partner didn't signal that they only have only the master trump
+										//because in that case, maybe play low??
+										//Actually I'm not sure, because partner signal only high might mean they are void too...
+	
+										if((dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+											&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider) >= 1)) {
+											
+											return cardToConsider;
+											
+										} else {
+											return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+										}
 										
 									} else {
-										return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+										return cardToConsider;
+										
 									}
 									
 								} else {
-									return cardToConsider;
 									
+									//Just play slightly over the person who lead:
+									return dataModel.getCardInHandClosestOverCurrentWinner();
 								}
+							
+							} else {
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+							}
+							
+							
+						}
+						
+					} else {
+						//Lead suit is spade:
+						
+						if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 9S 6S 5H JC TC QD")) {
+							System.out.println("debug 1005");
+						}
+						
+						if(dataModel.currentPlayerHasMasterInSuit(leaderSuitIndex)) {
+							
+							
+							if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) >= 3) {
+								
+								//Play low 2nd by default when it comes to spade:
+								cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+								
+								System.out.println(dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay,
+										dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex)));
+								
+								if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+									//Play low because lhs is weak
+									
+								} else if(SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay)
+										.equals(dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex))) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+									//TODO: between is bugged, and I had to put 2 here. Maybe fix it?
+								} else if(dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay,
+										dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex)) == 2) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+									
+								} else if(dataModel.getNumCardsInPlayOverCardSameSuit(leaderCard) - dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) <= 2
+										&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) >= 2) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+								} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+									
+									//Can't lie if partner signalled no spade:
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								
+								} else if(dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) > dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)) {
+
+									//Partner prob has weak spade:
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								
+								} else if(  dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) > dataModel.getBid(Constants.LEFT_PLAYER_INDEX)) {
+
+									//LHS prob has weak spade and might have a spade because we already checked for that.
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								
+								} else if( NonMellowBidHandIndicators.getNumAorKorQorJEquiv(dataModel, Constants.SPADE) >= 3) {
+									
+									if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)) {
+										cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+									
+									} else {
+										cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+									}
+									
+								//Just play high if 2 spades left and 2nd round of play...
+								} else if( dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 2 
+										&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) 
+										<= dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+										&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 
+										dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+										 <= Constants.NUM_STARTING_CARDS_IN_HAND - 3
+										) {
+									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+								}
+								
 								
 							} else {
 								
-								//Just play slightly over the person who lead:
-								return dataModel.getCardInHandClosestOverCurrentWinner();
+								cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+							}
+							
+							
+							
+							//Check if we could play barely over the lead:
+							if(dataModel.cardAGreaterThanCardBGivenLeadCard(leaderCard, cardToPlay)) {
+
+								String cardTmp = dataModel.getCardInHandClosestOverCurrentWinner();
+								
+								if(dataModel.getNumCardsInPlayOverCardSameSuit(cardTmp) > 3
+										&& dataModel.getNumCardsInPlayOverCardSameSuit(cardTmp) < 6) {
+									//Just play over, it won't hurt...
+									cardToPlay = cardTmp;
+								
+								} else if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 2
+										&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(leaderCard) == 1) {
+									//Not much use playing under if there's just 1 card under, and you have only 2 spade:
+									cardToPlay = cardTmp;
+								}
 							}
 						
 						} else {
-							return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+							
+							String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+							
+							if((DataModel.getRankIndex(curPlayerTopCardInSuit) == DataModel.KING
+									&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(leaderSuitIndex) >= 2)
+								) {
+								
+								//2nd throw: Play the King's wing-person card if it's higher than the lead card...
+								
+								cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leaderSuitIndex);
+								
+								if(DataModel.getRankIndex(cardToPlay) == DataModel.QUEEN) {
+									//If you have the KQ, just play the K...
+									//Don't confuse your partner.
+									cardToPlay = curPlayerTopCardInSuit;
+									
+									//TODO: maybe play lower one (I don't know)
+								}
+								
+								if(leaderSuitIndex == Constants.SPADE
+										&& (    NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
+										    || (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
+										    		&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3)
+										    || dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 4)) {
+									
+									//Play low for and don't challenge if you want to preserve highish spade:
+									//There might be some complicated exceptions, but whatever.
+									return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+	
+								} else if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
+									
+									return cardToPlay;
+									
+								} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(curPlayerTopCardInSuit, leaderCard) >= 1) {
+									//If Jack lead, don't lead king.
+									return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+									
+								} else {
+									//Play the King while the Ace is still out!
+									return curPlayerTopCardInSuit;
+								}
+							
+												
+							} else if(dataModel.throwerHasCardToBeatCurrentWinner()) {
+								
+								//Consider playing high second if there's no real chance of making the trick,
+								// but you want 3rd thrower to prove they can play higher than you:
+								if(leaderSuitIndex != Constants.SPADE
+									&& (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit) >= 2)
+									&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5
+									      ||  leaderSuitIndex == Constants.SPADE
+									      || 1 + dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit)
+									                  < dataModel.getNumberOfCardsOneSuit(leaderSuitIndex))
+									) {
+									
+									//Observation based on original test cases:
+									//This condition turns test cases from "AI matches expert alternative response! (PASS)"
+									// to "AI matches expert response! (PASS)"
+									//So basically, it plays more like me. But whether it's a good thing or not is
+									//still in the air.
+									
+									//I also tend to NOT play like this when it comes to spades...
+									//but whether it's a good thing or not is
+									//still in the air.
+									
+									return curPlayerTopCardInSuit;
+									
+								} else if(leaderSuitIndex == Constants.SPADE) {
+									String cardToConsider = dataModel.getCardInHandClosestOverCurrentWinner();
+									
+	
+									//Save K/Q equiv and try to not throw it if you don't have both the K and the Q equiv:
+									if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
+										return cardToConsider;
+									
+									} else if(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE).equals(cardToConsider)
+											&& (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE) || NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))) {
+										
+	
+										//TODO: maybe make sure partner didn't signal that they only have only the master trump
+										//because in that case, maybe play low??
+										//Actually I'm not sure, because partner signal only high might mean they are void too...
+	
+										if((dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+											&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider) >= 1)) {
+											
+											return cardToConsider;
+											
+										} else {
+											return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+										}
+										
+									} else {
+										return cardToConsider;
+										
+									}
+									
+								} else {
+									
+									//Just play slightly over the person who lead:
+									return dataModel.getCardInHandClosestOverCurrentWinner();
+								}
+							
+							} else {
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+							}
+							
+							
 						}
-						
 						
 					}
 					
 				} else {
+					// I covered (3rd void/not void) * (4th void/not void)
 					System.err.println("ERROR: this condition shouldn't happen in get ai 2nd throw");
 					System.exit(1);
 				}
@@ -2070,7 +2297,7 @@ public class NoMellowPlaySituation {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H JC ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 7S 2S 9H 8H QD TD 8D 5D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -2098,6 +2325,16 @@ public class NoMellowPlaySituation {
 					if(dataModel.isPartnerWinningFight() && dataModel.leaderPlayedMaster()) {
 						//PLAY OFF because leaderPlayedMaster
 						cardToPlay = getJunkiestCardToFollowLead(dataModel);
+						
+						if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+						&& dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, leaderSuitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.currentAgentHasSuit(Constants.SPADE)){
+							//Just trump and let LHS trump over because your partner wants you to trump?
+							System.out.println("(PARNTER WANTS ME TO TRUMP??)");
+							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						}
+						
 					} else {
 						//TRUMP
 						
@@ -2405,7 +2642,7 @@ public class NoMellowPlaySituation {
 	//TODO: what if there's strategy around signalling?
 	
 	public static String getJunkiestOffSuitCardBasedOnMadeupValueSystem(DataModel dataModel) {
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH TH 9H JC ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS QC 8D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -2584,13 +2821,32 @@ public class NoMellowPlaySituation {
 			
 			int numberOfCardsOthersHaveInSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 			
-			
-			if(! NonMellowBidHandIndicators.currentPlayerMightWinATrickIfAnotherOffsuitThrown(dataModel, suitIndex)
+			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+					&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) >=
+						dataModel.getNumberOfCardsOneSuit(suitIndex)
+					&& ! dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+				//Let partner deal with suit only you and partner have???
+				//This is just a guess to fix 1 test case.
+				
+				//System.out.println("(TEST 3RD CHANGE)");
+				
+			} else if(
+					! NonMellowBidHandIndicators.currentPlayerMightWinATrickIfAnotherOffsuitThrown(dataModel, suitIndex)
 					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) == 0) {
+				
+				if( 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) 
+						> dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					) {
+					//Try to sweep
+					currentValue -= 20.0;
+					System.out.println("(Try to sweep)");
+				} else {
 				//No bonus incentive to keep the suit because no one else has the suit
 				// and you probably won't lead anytime soon.
 				//In fact, try to throw it out...
-				currentValue += 10.0;
+					currentValue += 10.0;
+				}
 				
 			} else if(numberOfCardsInSuit == 1 &&  dataModel.currentPlayerHasMasterInSuit(suitIndex)
 					&& (dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 0 
@@ -2658,8 +2914,8 @@ public class NoMellowPlaySituation {
 				
 				currentValue -= 0.8;
 			}
-			
-			
+
+
 			//boolean rhsVoid = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex);
 			boolean rhsTrumping = dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex)
 					  && ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE);
@@ -2671,6 +2927,7 @@ public class NoMellowPlaySituation {
 			boolean partnerSignalledVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex);
 			
 			boolean partnerSignalledOnlyMasterOrVoid = dataModel.signalHandler.partnerHasOnlyMasterOrIsVoidBasedOnSignals(suitIndex);
+			
 			
 			//TODO: maybe this is useful?
 			//boolean partnerSignalledMaster = dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex);

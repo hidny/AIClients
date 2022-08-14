@@ -177,6 +177,59 @@ public class SimulationPosibilitiesHandler {
 			CardStringFunctions.printCards(sortedArray);
 		 }
 		 
+		 boolean noErrorsFound = true;
+		 
+		 for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+			 for(int rankIndex=DataModel.RANK_TWO; rankIndex<Constants.NUM_RANKS; rankIndex++) {
+				 String card = DataModel.getCardString(rankIndex, suitIndex);
+				 
+				 if(dataModel.isCardPlayedInRound(card)) {
+					 continue;
+				 }
+				 
+				 if(dataModel.hasCard(card)) {
+					 continue;
+				 }
+				 
+				 boolean found = false;
+				 for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+					 if(playerPos[i].contains(card)) {
+						 found = true;
+						 break;
+					 }
+				 }
+				 
+				 if(found == false) {
+					 System.err.println("WARNING: Monte has no idea who has the " + card);
+					 
+					 boolean fixed = false;
+					 for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+						 if(i == Constants.CURRENT_AGENT_INDEX) {
+							 continue;
+						 }
+						 
+						 if(! dataModel.isVoid(i, suitIndex)) {
+							 System.out.println("To resolve signal issues, Monte's giving " + dataModel.getPlayers()[i] + " the possibility of having the " + card);
+							 playerPos[i].add(card);
+							 fixed = true;
+						 }
+					 }
+					 
+					 if( ! fixed ) {
+						 System.out.println("ERROR: invalid test case! The datamodel is 100% sure that no one has the " + card);
+						 System.out.println("As of August 2022, I don't think this can happen in this implementation of dataModel. (The datamodel will crash first)");
+						 System.exit(1);
+					 }
+					 
+					 noErrorsFound = false;
+				 }
+			 }
+		 }
+		 
+		 if(! noErrorsFound) {
+			 System.out.println("WARNING: Don't take monte seriously for this test case!!!");
+		 }
+		 
 		 setupPossibilitySets();
 	 }
 	

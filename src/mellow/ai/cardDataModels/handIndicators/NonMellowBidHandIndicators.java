@@ -489,11 +489,8 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 			}
 		}
 		
-		if(numOver == 1) {
-			return true;
-		} else {
-			return false;
-		}
+		return false;
+		
 	}
 	
 	public static boolean hasKEquivNoAce(DataModel dataModel, int suitIndex) {
@@ -539,7 +536,7 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 		
 		int numOver = 0;
 		
-		for(int curRank = dataModel.ACE; curRank >= DataModel.RANK_TWO; curRank--) {
+		for(int curRank = DataModel.ACE; curRank >= DataModel.RANK_TWO; curRank--) {
 			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
 				
 				if(numOver < 2) {
@@ -564,11 +561,8 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 			}
 		}
 	
-		if(numOver == 2) {
-			return true;
-		} else {
-			return false;
-		}
+		return false;
+		
 	}
 
 	//TODO: put into data model??
@@ -582,7 +576,7 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 		
 		int numOver = 0;
 		
-		for(int curRank = dataModel.ACE; curRank > DataModel.getRankIndex(cardA); curRank--) {
+		for(int curRank = DataModel.ACE; curRank > DataModel.getRankIndex(cardA); curRank--) {
 			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
 				continue;
 	
@@ -605,9 +599,47 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 			return false;
 		}
 	}
+
 	 
+		public static boolean hasJEquiv(DataModel dataModel, int suitIndex) {
+			
+			if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
+				return false;
+			}
+			
+			
+			int numOver = 0;
+			
+			for(int curRank = dataModel.ACE; curRank >= DataModel.RANK_TWO; curRank--) {
+				if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+					
+					if(numOver < 3) {
+						numOver++;
+					} else if(numOver == 3){
+						return true;
+					} else {
+						return false;
+					}
+					continue;
+					
+				} else if(dataModel.isCardPlayedInRound(
+						DataModel.getCardString(curRank, suitIndex))
+						) {
+					continue;
+		
+				} else {
+					numOver++;
+					if(numOver > 3) {
+						return false;
+					}
+				}
+			}
+		
+			return false;
+		}
+
 	 
-	 public static boolean hasJEquiv(DataModel dataModel, int suitIndex) {
+	 public static boolean hasJEquivNoAKQeq(DataModel dataModel, int suitIndex) {
 			
 			if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {
 				return false;
@@ -676,17 +708,50 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 		 
 	 }
 	 
-	 public static int getNumAorKorQEquiv(DataModel dataModel, int suitIndex) {
+
+	 public static int getNumAorKEquiv(DataModel dataModel, int suitIndex) {
 		 int num = 0;
-		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
 			num++;
 		}
-		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, Constants.SPADE)
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				) {
+			num++;
+		}
+		return num;
+	 }
+	 
+	 public static int getNumAorKorQEquiv(DataModel dataModel, int suitIndex) {
+		 int num = 0;
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			num++;
+		}
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
 				) {
 			num++;
 		}
 
-		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, Constants.SPADE)) {
+		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+			num++;
+		}
+		
+		return num;
+	 }
+	 
+	 public static int getNumAorKorQorJEquiv(DataModel dataModel, int suitIndex) {
+		 int num = 0;
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)) {
+			num++;
+		}
+		if(NonMellowBidHandIndicators.hasKEquiv(dataModel, suitIndex)
+				) {
+			num++;
+		}
+
+		if(NonMellowBidHandIndicators.hasQEquiv(dataModel, suitIndex)) {
+			num++;
+		}
+		if(NonMellowBidHandIndicators.hasJEquiv(dataModel, suitIndex)) {
 			num++;
 		}
 		
