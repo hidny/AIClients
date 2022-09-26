@@ -592,8 +592,21 @@ public class PartnerSaidMellowSituation {
 
 					//If mellow player partner seems vulnerable based on signals: trump if possible
 					//TODO: make it more sophisticated in future
-					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					String cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					
+					//Exception: trust mellow player if LHS is void and lead is high:
+					if(dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leadSuit)
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(curStrongestCardPlayed) >=3
+							&& dataModel.signalHandler.getMinCardRankSignal(MELLOW_PLAYER_INDEX, leadSuit) < DataModel.getRankIndex(curStrongestCardPlayed)
+							&& 3 * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+							) {
+						//Take a chance and don't trump.
+						// Michael2022-3 testcase3840.txt
+						return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+						
+					}
+					
+					return cardToPlay;
 					
 				} else {
 					//no spade, so just throw off something:
