@@ -186,6 +186,22 @@ public class SingleActiveMellowPlayer {
 				} else {
 					//Play slightly above winning card and hope you'll get covered
 					cardToPlay = dataModel.getCardInHandClosestOverSameSuit(currentFightWinner);
+					
+					//Exception when partner is weak (For: 3-3810)
+					if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 1 
+							&& throwIndex == 1
+							&& ! dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, leaderSuitIndex)
+							&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+							&& (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, leaderSuitIndex)
+							|| NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, leaderSuitIndex)
+							)
+							&& dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex).equals(
+									SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,cardToPlay)
+								)
+						)
+							{
+						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+					}
 				}
 			} else if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == Constants.SPADE && leaderSuitIndex != Constants.SPADE) {
 				//Someone trumped, play high

@@ -9,6 +9,8 @@ import mellow.ai.aiDecider.MellowAIDeciderFactory;
 public class MichaelGenTestcases {
 	public static void main(String[] args) {
 		
+		//String autoArgs[] = {"mellow", "MichaelPlay", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "900", "900", "-1"};
+		
 		//Create testcases in Michael folder:
 		String autoArgs[] = {"mellow", "Michael2022-3", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "-1"};
 		
