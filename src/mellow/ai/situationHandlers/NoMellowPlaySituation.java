@@ -1417,11 +1417,6 @@ public class NoMellowPlaySituation {
 		
 		//TODO: pseudo code for not following suit
 	
-
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4S QC 6C 5C ")) {
-			System.out.println("Debug");
-		}
 		
 		//TODO: only deal with string (No index)
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
@@ -1461,10 +1456,6 @@ public class NoMellowPlaySituation {
 					
 				} else if(thirdVoid == false && fourthProbVoid == false){
 					
-					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS JS 4H")) {
-						System.out.println("Debug");
-					}
-					
 					if(dataModel.getSuitOfLeaderThrow() != Constants.SPADE) {
 						
 						//Logic for dealing with offsuit:
@@ -1490,6 +1481,7 @@ public class NoMellowPlaySituation {
 							
 						} else {
 							
+							//Logic for dealing with offsuit and not having master:
 							String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 							
 							if((DataModel.getRankIndex(curPlayerTopCardInSuit) == DataModel.KING
@@ -1508,17 +1500,7 @@ public class NoMellowPlaySituation {
 									//TODO: maybe play lower one (I don't know)
 								}
 								
-								if(leaderSuitIndex == Constants.SPADE
-										&& (    NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
-										    || (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE)
-										    		&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 3)
-										    || dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) >= 4)) {
-									
-									//Play low for and don't challenge if you want to preserve highish spade:
-									//There might be some complicated exceptions, but whatever.
-									return dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
-	
-								} else if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
+								if(dataModel.cardAGreaterThanCardBGivenLeadCard(cardToPlay, leaderCard)) {
 									
 									return cardToPlay;
 									
@@ -1536,8 +1518,7 @@ public class NoMellowPlaySituation {
 								
 								//Consider playing high second if there's no real chance of making the trick,
 								// but you want 3rd thrower to prove they can play higher than you:
-								if(leaderSuitIndex != Constants.SPADE
-									&& (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit) >= 2)
+								if( (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit) >= 2)
 									&& (dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) < 5
 									      ||  leaderSuitIndex == Constants.SPADE
 									      || 1 + dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(curPlayerTopCardInSuit)
@@ -1554,42 +1535,27 @@ public class NoMellowPlaySituation {
 									//but whether it's a good thing or not is
 									//still in the air.
 									
+									
 									return curPlayerTopCardInSuit;
 									
-								} else if(leaderSuitIndex == Constants.SPADE) {
-									String cardToConsider = dataModel.getCardInHandClosestOverCurrentWinner();
-									
-	
-									//Save K/Q equiv and try to not throw it if you don't have both the K and the Q equiv:
-									if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
-										return cardToConsider;
-									
-									} else if(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE).equals(cardToConsider)
-											&& (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE) || NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, Constants.SPADE))) {
-										
-	
-										//TODO: maybe make sure partner didn't signal that they only have only the master trump
-										//because in that case, maybe play low??
-										//Actually I'm not sure, because partner signal only high might mean they are void too...
-	
-										if((dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
-											&&	dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToConsider) >= 1)) {
-											
-											return cardToConsider;
-											
-										} else {
-											return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
-										}
-										
-									} else {
-										return cardToConsider;
-										
-									}
-									
 								} else {
-									
+
 									//Just play slightly over the person who lead:
-									return dataModel.getCardInHandClosestOverCurrentWinner();
+									cardToPlay = dataModel.getCardInHandClosestOverCurrentWinner();
+									
+
+									if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay) > 4
+											&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0) {
+										//Exception:
+										// Just play low if there's 6 cards higher than your card...
+										// And there's in between cards in other people's hands...
+										// This exception might only apply to spades though
+										
+										cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+									} 
+									
+									return cardToPlay;
+									
 								}
 							
 							} else {
@@ -1788,6 +1754,18 @@ public class NoMellowPlaySituation {
 										}
 										
 									} else {
+										
+										if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider) > 4
+												&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToConsider, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0) {
+											//Exception:
+											// Just play low if there's 6 cards higher than your card...
+											// And there's in between cards in other people's hands...
+											
+											System.out.println(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToConsider, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)));
+											cardToConsider = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+										} 
+										
+										
 										return cardToConsider;
 										
 									}
@@ -2296,10 +2274,6 @@ public class NoMellowPlaySituation {
 	public static String AIThirdThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
-		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 7S 2S 9H 8H QD TD 8D 5D ")) {
-			System.out.println("Debug");
-		}
 		
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
