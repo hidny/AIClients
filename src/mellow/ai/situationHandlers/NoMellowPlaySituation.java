@@ -1544,8 +1544,13 @@ public class NoMellowPlaySituation {
 									cardToPlay = dataModel.getCardInHandClosestOverCurrentWinner();
 									
 
-									if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay) > 4
-											&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0) {
+									if(
+											(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay) > 4
+											|| dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leaderSuitIndex) > 5)
+											&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0
+											&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+											&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
+											&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(dataModel.getCardLeaderThrow()) == 1) {
 										//Exception:
 										// Just play low if there's 6 cards higher than your card...
 										// And there's in between cards in other people's hands...
@@ -1756,7 +1761,9 @@ public class NoMellowPlaySituation {
 									} else {
 										
 										if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider) > 4
-												&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToConsider, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0) {
+												&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToConsider, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0
+												&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+												&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
 											//Exception:
 											// Just play low if there's 6 cards higher than your card...
 											// And there's in between cards in other people's hands...
