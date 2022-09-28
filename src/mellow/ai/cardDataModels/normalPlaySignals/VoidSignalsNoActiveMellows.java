@@ -324,7 +324,6 @@ public class VoidSignalsNoActiveMellows {
 				//hardMaxBecauseThirdDidntPlayAboveSecond
 				
 				// When 4th player fails to trump to make an easy trick, that means something:
-				//TODO: make another one for the 3rd player...
 				if(throwerIndex == 3
 						&& CardStringFunctions.getIndexOfSuit(card) != dataModel.getSuitOfLeaderThrow()
 						&& CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE) {
@@ -350,6 +349,33 @@ public class VoidSignalsNoActiveMellows {
 						
 					}
 
+			// When 3rd player fails to trump to make an easy trick and 4th doesn't have spade:
+			} else if(throwerIndex == 2
+					&& CardStringFunctions.getIndexOfSuit(card) != dataModel.getSuitOfLeaderThrow()
+					&& CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE
+					&& dataModel.isVoid((playerIndex + 1) % Constants.NUM_SUITS, Constants.SPADE)) {
+					
+				if( ! dataModel.getCardLeaderThrow().equals(curWinnerCard)) {
+					
+					if(CardStringFunctions.getIndexOfSuit(curWinnerCard) == dataModel.getSuitOfLeaderThrow() ) {
+						
+						if(CardStringFunctions.getIndexOfSuit(card) != Constants.SPADE) {
+							hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] = MAX_UNDER_RANK_2;
+						}
+					} else if(CardStringFunctions.getIndexOfSuit(curWinnerCard) == Constants.SPADE ) {
+						
+						hardMaxCardPlayedBecauseLackOfTrump[playerIndex][Constants.SPADE] = DataModel.getRankIndex(curWinnerCard);
+						
+					} else {
+						
+						System.err.println("ERROR: This signal case should not be possible for this game. 2");
+						System.exit(1);
+					}
+				
+					
+				}
+				
+				
 				//Hard max because 4th thrower didn't make a trick:
 			} else if(throwerIndex == 3
 						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
