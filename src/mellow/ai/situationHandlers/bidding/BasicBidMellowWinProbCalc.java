@@ -84,7 +84,7 @@ public class BasicBidMellowWinProbCalc {
 	}
 	
 	public static double getProbNoBurnOffsuit(DataModel dataModel, int suitIndex) {
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S JH TH 7H 6H 5H KC QC JC 9C 8C 5D 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 4S AH KH QH JH TH 5H 7C JD 9D 8D 2D ")) {
 			System.out.println("Debug");
 		}
 		double ret = 1.0;
@@ -106,12 +106,23 @@ public class BasicBidMellowWinProbCalc {
 		if(numOffsuits > 1) {
 			String card = dataModel.getCardCurrentPlayergetSecondLowestInSuit(suitIndex);
 			
-			double probLosingRank = rankProbs[DataModel.getRankIndex(card)];
+			double probLosingRank = -1.0;
+			if(DataModel.getRankIndex(card) + (numOffsuits - 2) >= DataModel.JACK) {
+				probLosingRank = rankProbs[DataModel.getRankIndex(card) + (numOffsuits - 2)];
+
+				if(numOffsuits >= 3) {
+					//Tamed it down, so that AI is more willing to say mellow
+					probLosingRank = 0.5 * probLosingRank + 0.5 * rankProbs[DataModel.getRankIndex(card)];
+				}
+			} else {
+				probLosingRank = rankProbs[DataModel.getRankIndex(card)];
+			}
+			
 			
 			if(DataModel.getRankIndex(card) <= DataModel.RANK_SIX) {
 				probLosingRank = 0.0;
 				
-			} else if(DataModel.getRankIndex(card) <= DataModel.RANK_NINE) {
+			} else if(DataModel.getRankIndex(card) <= DataModel.RANK_NINE && numOffsuits < 4) {
 				probLosingRank = rankProbs[DataModel.getRankIndex(card) - 1];
 			}
 			
