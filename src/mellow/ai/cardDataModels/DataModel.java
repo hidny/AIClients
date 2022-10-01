@@ -2026,6 +2026,23 @@ public class DataModel {
 
 		return false;
 	}
+	
+	public int currentPlayerGetNumMasterSpadeInHand() {
+
+		int ret = 0;
+
+		for (int i = Constants.NUM_RANKS - 1; i >= 0; i--) {
+			if (cardsUsed[Constants.SPADE][i] == true) {
+				continue;
+			} else if (cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][Constants.SPADE][i] == CERTAINTY) {
+				ret++;
+			} else {
+				break;
+			}
+		}
+
+		return ret;
+	}
 	// END of MASTER FUNCTIONS
 
 	public String getHighestOffSuitCardAnySuitButSpade() {

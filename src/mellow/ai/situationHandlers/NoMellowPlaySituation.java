@@ -2505,6 +2505,17 @@ public class NoMellowPlaySituation {
 						}
 					}
 					
+				} else if(dataModel.currentPlayerOnlyHasSpade()
+						&& CardStringFunctions.getIndexOfSuit(dataModel.getCardInHandClosestOverCurrentWinner()) == Constants.SPADE
+						&& dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays())
+						&& dataModel.getNumCardsInPlayBetweenCardSameSuit(
+								dataModel.getCardInHandClosestOverCurrentWinner(),
+								dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
+						== 0) {
+					//Might as well take it...
+					//TODO: there might be an exception if RHS still has strong spade.
+					//As of this writing (oct 2022), this never happens.
+					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			}
 

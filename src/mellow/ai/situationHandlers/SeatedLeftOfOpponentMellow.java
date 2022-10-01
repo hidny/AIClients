@@ -491,10 +491,6 @@ public class SeatedLeftOfOpponentMellow {
 		double bestValue = 0.0;
 		String bestCard = null;
 
-
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 3S AD QD JD 7D ")) {
-			System.out.println("Debug");
-		}
 		
 		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
 
@@ -520,6 +516,9 @@ public class SeatedLeftOfOpponentMellow {
 			
 			
 			if(dataModel.isMasterCard(curCard)) {
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 3S 9H KC")) {
+					System.out.println("Debug");
+				}
 			
 				//TODO: Maybe don't do this if you really don't want tricks...
 				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) >= 4) {
@@ -535,9 +534,14 @@ public class SeatedLeftOfOpponentMellow {
 					}
 				} else if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(curSuitIndex) == 1){
 					//Clear suit...
-					curValue -=30.0;
 					
-					if(dataModel.getNumTricksCurTeam() < dataModel.getSumBidsCurTeam()) {
+					if(dataModel.getNumTricksOtherTeam() < dataModel.getSumBidsOtherTeam() ) {
+						curValue -=30.0;
+					}
+					
+					if(dataModel.getNumTricksCurTeam() 
+							+ dataModel.currentPlayerGetNumMasterSpadeInHand()
+							< dataModel.getSumBidsCurTeam()) {
 						//Don't throw master if you need the tricks...
 						curValue -=70.0;
 						//TODO: make an exception for when you're not making the tricks
@@ -607,9 +611,18 @@ public class SeatedLeftOfOpponentMellow {
 
 						}
 					}
+
+				} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, curSuitIndex)
+						&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS, Constants.SPADE)
+						&& dataModel.getBid((mellowPlayerIndex + 2) % Constants.NUM_PLAYERS) >= 4
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) >= 2) {
+
+					//Don't waste a master on a suit the protector could easily trump:
+					curValue -= 30.0;
 				}
 				
 			}
+						
 			
 			
 			//End dealing with master cards
