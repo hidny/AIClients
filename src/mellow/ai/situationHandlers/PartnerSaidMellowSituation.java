@@ -711,6 +711,19 @@ public class PartnerSaidMellowSituation {
 						}
 						
 					} else {
+						
+						
+						
+						if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, leadSuit)
+								&& NonMellowBidHandIndicators.hasJEquiv(dataModel, leadSuit)
+								&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) > 8) {
+							//Exception:
+							//Just play high so you can tram the suit later..
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+						
+						}
+						
+						//Play high to protect, but hide how high you can go if possible:
 						return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
 					}
 				}
