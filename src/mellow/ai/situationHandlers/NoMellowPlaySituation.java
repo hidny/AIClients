@@ -1676,6 +1676,9 @@ public class NoMellowPlaySituation {
 						
 						} else {
 
+							if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 2S 8H 7H 6H 3H KC 7C 4C QD 5D 3D")) {
+								System.out.println("Debug");
+							}
 							//Reminder: Lead suit is spade
 							String curPlayerTopCardInSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 							
@@ -1749,20 +1752,38 @@ public class NoMellowPlaySituation {
 									
 								} else {
 									
+									if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 7S 9H 8H 7H TC AD TD 7D 3D")) {
+										System.out.println("Debug");
+									}
 									if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToConsider) > 4
 											&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToConsider, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)) > 0
 											&& ! dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 											&& ! dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-										//Exception:
+									
 										// Just play low if there's 6 cards higher than your card...
 										// And there's in between cards in other people's hands...
 										
 										System.out.println(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToConsider, dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex)));
 										cardToConsider = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
-									} 
 									
+									}
 									
-									return cardToConsider;
+									//Figure out if 2nd thrower should play over or under spade lead:
+									String lowest = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
+									String closestOver = dataModel.getCardInHandClosestOverCurrentWinner();
+									
+									if(closestOver.equals(lowest)) {
+										return lowest;
+									} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(closestOver, lowest) ==0 ) {
+										return closestOver;
+									} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(closestOver, lowest) ==1 
+											&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(closestOver) <= 3
+											&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(lowest) > 1) {
+										return closestOver;
+									} else {
+										return lowest;
+									}
+									
 									
 								}
 							
