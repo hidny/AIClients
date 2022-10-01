@@ -2467,6 +2467,20 @@ public class NoMellowPlaySituation {
 				} else if(CardStringFunctions.getIndexOfSuit(dataModel.getCardInHandClosestOverCurrentWinner()) != Constants.SPADE
 						|| dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardInHandClosestOverCurrentWinner()) >= 3){
 					
+					String currentWinnerCard = dataModel.getCurrentFightWinningCardBeforeAIPlays();
+					
+					if(dataModel.currentPlayerOnlyHasSpade()) {
+						if(CardStringFunctions.getIndexOfSuit(currentWinnerCard) != Constants.SPADE
+								|| ! dataModel.couldPlayCardInHandUnderCardInSameSuit(currentWinnerCard)) {
+							return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+						
+						} else {
+							//Just take from partner if you only have spade and you have 2 others that are higher.
+							return dataModel.getCardInHandClosestOverCurrentWinner();
+						}
+					}
+						
+					
 					//Check if taking the trick could setup current team for a good time:
 					//Only do this if you don't have to take with a high spade.
 					for(int offsuit = 1; offsuit <Constants.NUM_SUITS; offsuit++) {

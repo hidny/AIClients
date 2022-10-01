@@ -9,8 +9,6 @@ import mellow.ai.aiDecider.MellowAIDeciderFactory;
 public class MichaelGenTestcases {
 	public static void main(String[] args) {
 		
-		//String autoArgs[] = {"mellow", "MichaelPlay", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "900", "900", "-1"};
-		
 		//Create testcases in Michael folder:
 		String autoArgs[] = {"mellow", "Michael2022-3", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "-1"};
 		
@@ -23,6 +21,10 @@ public class MichaelGenTestcases {
 		//Rigged3 points reversed
 		//String autoArgs[] = {"mellow", "garbageTestData", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "0", "[AS 5H 3C 5S JC 2C AC 2D KS 4S AD 3D TS][4D 6D 6S 8C KH 3H 7D QD 9H 4H QH 8H AH][JH QS TH 7S QC 9C 6C TD 2S JD 5D 8D KD][TC JS KC 5C 7H 4C 8S 2H 9S 7C 6H 3S 9D]"};
 		//It matches!
+		
+		//Play with Richard
+		//String autoArgs[] = {"mellow", "MichaelPlay", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "900", "900", "-1"};
+		
 		
 		
 		//Part 2:

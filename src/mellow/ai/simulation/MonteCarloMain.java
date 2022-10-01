@@ -35,7 +35,7 @@ public class MonteCarloMain {
 	public static void main(String args[]) {
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTestsDone"};
@@ -43,7 +43,7 @@ public class MonteCarloMain {
 		//testCaseParser.TEST_FOLDERS = new String[] {"newBidTestcases"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"newFollowFails", "newBonusChecks"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"newLeadFails"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"TestPython"};
+		testCaseParser.TEST_FOLDERS = new String[] {"TestPython"};
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"newBonusChecks"};
 		String args2[] = new String[1];
