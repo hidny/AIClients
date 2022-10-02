@@ -11,7 +11,7 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 9S TH 9H 9C 7C 5C 2C KD QD TD 6D 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 6S 4S 3S QH JH 8H 3H KC QC 7C AD ")) {
 			System.out.println("Debug");
 		}
 		
@@ -237,7 +237,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 6S KH QH TH 9H 3H QC TC 4C 8D 4D 3D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 6S 4S 3S QH JH 8H 3H KC QC 7C AD ")) {
 			System.out.println("Debug");
 		}
 		
@@ -419,7 +419,7 @@ public class BiddingSituation {
 		} else if(dataModel.getOpponentScore() > 800
 				&& dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 5S 4S 3S AH QH 6H 3H QC 9C 5C AD 8D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 6S 4S 3S QH JH 8H 3H KC QC 7C AD ")) {
 				System.out.println("Debug");
 			}
 			if(intBid > 0) {
@@ -453,8 +453,17 @@ public class BiddingSituation {
 						);
 				
 				//BiddingNearEndOfGameFunctions.opponentsDidntSayMellow(dataModel)
-				
-				if(treatningToWinIfBidsSum13 || currentlyLosing) {
+
+				if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+						&& (tempBid >= intBid + 2 || currentlyLosing)) {
+
+					System.out.println("TEST");
+					//Consider bidding lower if RHS bid mellow, so you could try to burn mellow:
+					return Math.max(1, intBid -1) + "";
+					
+				} else if(treatningToWinIfBidsSum13 || currentlyLosing) {
+					
+					
 					// Consider saying mellow:
 					
 					int scoresProjectedWorstCaseNoMellow[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorstAndLHSDoesntGoMellow(dataModel, 0);
@@ -501,7 +510,9 @@ public class BiddingSituation {
 						}
 					}
 					
+					// Just play high if you can't try to burn RHS or can't do a desperation mellow:
 					return tempBid + "";
+					
 					
 				}
 			}

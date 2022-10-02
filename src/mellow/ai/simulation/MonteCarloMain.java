@@ -71,7 +71,7 @@ public class MonteCarloMain {
 
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
@@ -79,7 +79,7 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
@@ -356,9 +356,9 @@ public class MonteCarloMain {
 				} else {
 					
 					if(dataModel.getBidTotal() < 8
-							&& i==0 && numSkipped < 100) {
+							&& i < 10 && numSkipped < 100) {
 						
-						System.err.println("WARNING: Bids don't make sense! But Monte will skip bad bids anyways!");
+						System.err.println("WARNING: Bids don't make sense! But Monte will skip bad bids anyways! (iter, numberSkiped) = (" + i + ", " + numSkipped + ")");
 					}
 					//For now, don't skip if thorough.... I don't know!
 					if(skipSimulationsBasedOnBids) {
