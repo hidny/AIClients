@@ -752,7 +752,6 @@ public class SeatedRightOfOpponentMellow {
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
 					if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.CURRENT_PARTNER_INDEX
-							&& dataModel.isMasterCard(curStrongestCard)
 							&& gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
 							&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 1
 							< dataModel.getNumCardsInCurrentPlayerHand()
