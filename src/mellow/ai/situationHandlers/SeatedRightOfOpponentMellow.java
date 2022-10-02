@@ -489,7 +489,7 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(dataModel.throwerMustFollowSuit()) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 3S AD JD 7D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS TS 6S 5S KH TH 7H KC JC 5C 4C 3C")) {
 				System.out.println("Debug");
 			}
 			//Handle being the third thrower and following suit...
@@ -566,7 +566,10 @@ public class SeatedRightOfOpponentMellow {
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
-		
+
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS TS 6S 5S KH TH 7H KC JC 5C 4C 3C")) {
+					System.out.println("Debug");
+				}
 		//TODO: put in function!
 				//Just throw away the lowest card you won't need to help burn a mellow with.
 
@@ -638,6 +641,21 @@ public class SeatedRightOfOpponentMellow {
 						//I don't have enough test cases to know how to improve on this rule
 						if(numCardsInHand >= 4 ) {
 							cardToUse = dataModel.getCardCurrentPlayergetThirdLowestInSuit(leadSuit);
+						} else if(
+								(numCardsInHand == 3 
+								&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 7)
+							|| (numCardsInHand == 2
+									&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit) >= 8)
+							) {
+							
+							if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToUse, 
+									dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit))
+									> 0) {
+								cardToUse = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(leadSuit);
+							} else {
+								cardToUse = dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
+							}
+							
 						}
 						
 					//COPY PASTA
