@@ -482,6 +482,9 @@ public class SeatedRightOfOpponentMellow {
 	//I also copy/pasted AI second throw...
 	public static String AIThirdThrow(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS KC JC 5C 4C ")) {
+			System.out.println("Debug");
+		}
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		String leaderThrow = dataModel.getCardLeaderThrow();
 		
@@ -561,9 +564,6 @@ public class SeatedRightOfOpponentMellow {
 				}
 			} else {
 
-				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS TS 6S 5S KH TH 7H KC JC 5C 4C 3C")) {
-					System.out.println("Debug");
-				}
 		//TODO: put in function!
 				//Just throw away the lowest card you won't need to help burn a mellow with.
 
@@ -681,7 +681,7 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 6S 4S AC JC TC ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS KC JC 5C 4C ")) {
 				System.out.println("Debug");
 			}
 			
@@ -749,10 +749,20 @@ public class SeatedRightOfOpponentMellow {
 				if(dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 
 					
-					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
 						
-
+					if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.CURRENT_PARTNER_INDEX
+							&& dataModel.isMasterCard(curStrongestCard)
+							&& gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
+							&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 1
+							< dataModel.getNumCardsInCurrentPlayerHand()
+							) {
+						//Don't trump on partner master unless you really need to:
+						
+						return dataModel.getJunkiestCardToFollowLead();
+						
+					} else
+							
 					//You usually want to trump high unless a few conditions aren't met:
 					//At this point, we know current player has spade.
 					if(
