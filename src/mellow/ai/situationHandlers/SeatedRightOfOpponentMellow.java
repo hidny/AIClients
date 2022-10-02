@@ -489,7 +489,7 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(dataModel.throwerMustFollowSuit()) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS TS 6S 5S KH TH 7H KC JC 5C 4C 3C")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 6S KC JC 5C 4CC")) {
 				System.out.println("Debug");
 			}
 			//Handle being the third thrower and following suit...
@@ -508,40 +508,34 @@ public class SeatedRightOfOpponentMellow {
 			
 			} else if(CardStringFunctions.getIndexOfSuit(curStrongestCard) == dataModel.getSuitOfLeaderThrow()
 					&& dataModel.couldPlayCardInHandOverCardInSameSuit(curStrongestCard)) {
+
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 6S KC JC 5C 4CC")) {
+					System.out.println("Debug");
+				}
 				
-				if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
+				if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.CURRENT_PARTNER_INDEX
+						&& 
+						(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leadSuit)
+								||
+								gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
+						&& dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCard))
+					) {
+					
+					//Don't steal from partner if partner just ran out of the lead suit
+					// or you have nothing to lead.
+					//Play over partner to show that mellow is safe in suit otherwise...
+					
+					//Give the trick to partner:
+					return dataModel.getCardInHandClosestUnderSameSuit(curStrongestCard);
+				
+				} else if(dataModel.isVoid(MELLOW_PLAYER_INDEX, leadSuit) == false) {
 					String cardInHandClosestOver = dataModel.getCardInHandClosestOverSameSuit(curStrongestCard);
 					
 					if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(curStrongestCard, cardInHandClosestOver, MELLOW_PLAYER_INDEX)) {
 						
-
-						if(dataModel.getIndexOfCurrentlyWinningPlayerBeforeAIPlays() == Constants.CURRENT_PARTNER_INDEX
-								&& dataModel.couldPlayCardInHandUnderCardInSameSuit(curStrongestCard)
-								&& 
-								(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leadSuit)
-										||
-										gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
-								)
-						) {
-							
-							//Don't steal from partner if partner just ran out of the lead suit
-							// or you have nothing to lead.
-							//Play over partner to show that mellow is safe in suit otherwise...
-							
-							return dataModel.getCardInHandClosestUnderSameSuit(curStrongestCard);
-						}
-						
-						//TODO: We may not want to lead every single time we can...
-						//HANDLE this complication LATER!
-						
-						//Play high, but not master:
-						if(! dataModel.isMasterCard(SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,
-								cardInHandClosestOver))) {
+						//TODO: should I hide the fact that I'm holding a master card? I guess not...
 							return SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel,
 									cardInHandClosestOver);
-						} else {
-							return cardInHandClosestOver;
-						}
 						
 					} else {
 						
@@ -561,8 +555,8 @@ public class SeatedRightOfOpponentMellow {
 						}
 					}
 				} else {
-					//mellow is void in current suit, so play over protector if :
-
+					
+					//mellow is void in current suit, so play over protector:
 					return dataModel.getCardInHandClosestOverCurrentWinner();
 				}
 			} else {
