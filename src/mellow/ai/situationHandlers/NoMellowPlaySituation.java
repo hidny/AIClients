@@ -2318,7 +2318,15 @@ public class NoMellowPlaySituation {
 						&& dataModel.currentAgentHasSuit(Constants.SPADE)){
 							//Just trump and let LHS trump over because your partner wants you to trump?
 							System.out.println("(PARNTER WANTS ME TO TRUMP??)");
+							
 							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							
+							if(dataModel.getNumCardsInPlayOverCardSameSuit(cardToPlay) > 3
+									&& dataModel.getNumCardsInPlayUnderCardSameSuit(cardToPlay) <= 2
+									) {
+								//Just play junky card because you can't really influence anything:
+								cardToPlay = getJunkiestCardToFollowLead(dataModel);
+							}
 						}
 						
 					} else {

@@ -2027,14 +2027,14 @@ public class DataModel {
 		return false;
 	}
 	
-	public int currentPlayerGetNumMasterSpadeInHand() {
+	public int currentPlayerGetNumMasterOfSuitInHand(int suitIndex) {
 
 		int ret = 0;
 
 		for (int i = Constants.NUM_RANKS - 1; i >= 0; i--) {
-			if (cardsUsed[Constants.SPADE][i] == true) {
+			if (cardsUsed[suitIndex][i] == true) {
 				continue;
-			} else if (cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][Constants.SPADE][i] == CERTAINTY) {
+			} else if (cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][i] == CERTAINTY) {
 				ret++;
 			} else {
 				break;
@@ -2042,6 +2042,10 @@ public class DataModel {
 		}
 
 		return ret;
+	}
+	
+	public int currentPlayerGetNumMasterSpadeInHand() {
+		return currentPlayerGetNumMasterOfSuitInHand(Constants.SPADE);
 	}
 	// END of MASTER FUNCTIONS
 

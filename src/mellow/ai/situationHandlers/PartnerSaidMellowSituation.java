@@ -800,6 +800,15 @@ public class PartnerSaidMellowSituation {
 			//Just play low: bad logic, but whatever!
 			if(dataModel.currentAgentHasSuit(leadSuit)) {
 				
+				if(dataModel.throwerHasCardToBeatCurrentWinner()
+						&& mellowhasDangerousOffsuit(dataModel)
+						&& dataModel.currentPlayerGetNumMasterOfSuitInHand(leadSuit) >= 3) {
+					
+					//Just take it if you're afraid of what the attackers will lead
+					// and you have 3 master cards
+					return dataModel.getHighestCardOfSuitNotPlayed(leadSuit);
+				}
+				
 				//Say Mellow leads 5C and next plays 6C and you have AC KC QC 7C... maybe play AC?
 				return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
 				
@@ -1097,5 +1106,26 @@ public class PartnerSaidMellowSituation {
 	//Danger 4th
 	
 	
+	public static boolean mellowhasDangerousOffsuit(DataModel dataModel) {
+		
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			if(s == Constants.SPADE) {
+				continue;
+			}
+
+			if(dataModel.getNumberOfCardsOneSuit(s) == 0) {
+				continue;
+			}
+			
+			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
+			
+			if(DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(s))) {
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
 }
 

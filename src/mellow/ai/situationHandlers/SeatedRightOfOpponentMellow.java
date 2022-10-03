@@ -681,9 +681,6 @@ public class SeatedRightOfOpponentMellow {
 				&& leadSuit != Constants.SPADE
 				&& dataModel.currentAgentHasSuit(Constants.SPADE)) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS KC JC 5C 4C ")) {
-				System.out.println("Debug");
-			}
 			
 			if(CardStringFunctions.getIndexOfSuit(curStrongestCard) != leadSuit) {
 				
@@ -729,6 +726,7 @@ public class SeatedRightOfOpponentMellow {
 						
 						///END: couldPlayCardInHandOverCardInSameSuit
 					} else {
+					
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(indexSuitStrongestCard); 
 					}
 				}

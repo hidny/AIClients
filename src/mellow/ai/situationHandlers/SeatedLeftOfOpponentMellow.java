@@ -15,7 +15,10 @@ public class SeatedLeftOfOpponentMellow {
 	public static int PROTECTOR_PLAYER_INDEX = 1;
 	
 	public static String playMoveSeatedLeftOfOpponentMellow(DataModel dataModel) {
-		
+
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S QD")) {
+			System.out.println("Debug");
+		}
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		if(throwIndex == 0) {
@@ -165,7 +168,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S 2S AH 9H 9D 7D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S QD")) {
 				System.out.println("Debug");
 			}
 
@@ -363,6 +366,15 @@ public class SeatedLeftOfOpponentMellow {
 							)
 					) {
 				
+				if(SeatedRightOfOpponentMellow.gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
+						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 2 < dataModel.getNumCardsInCurrentPlayerHand()) {
+					
+					//TODO: maybe make sure protector is not motivated to lead a specific offsuit?
+					//Don't bother trumping if you've got nothing to lead...
+					
+					return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
+				}
+				
 				String maxMellowSpade =dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
 				
 				if( maxMellowSpade == null) {
@@ -388,7 +400,7 @@ public class SeatedLeftOfOpponentMellow {
 				}
 
 			} else {
-				
+
 				return throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, MELLOW_PLAYER_INDEX);
 			}
 		

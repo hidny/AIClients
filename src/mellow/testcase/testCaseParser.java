@@ -27,6 +27,7 @@ public class testCaseParser {
 	
 	//public static String TEST_FOLDERS[] = {"MonteCarloTests"};
 	//public static String TEST_FOLDERS[] = {"tmp"};
+	//public static String TEST_FOLDERS[] = {"tmpRecentFails"};
 	
 	//public static String TEST_FOLDERS[] = {"doubleMellowTests"};
 	//public static String TEST_FOLDERS[] = {"lastRoundWeirdness"};
