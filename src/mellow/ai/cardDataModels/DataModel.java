@@ -1443,7 +1443,7 @@ public class DataModel {
 	}
 
 	//This is not properly calculated, so be careful!
-	public int getNumCardsInPlayBetweenCardSameSuit(String cardLow, String cardHigh) {
+	public int getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(String cardLow, String cardHigh) {
 		if (CardStringFunctions.getIndexOfSuit(cardHigh) != CardStringFunctions.getIndexOfSuit(cardLow)) {
 			System.err.println(
 					"Error: in getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit. Using diff suit...");

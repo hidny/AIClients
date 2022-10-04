@@ -1119,7 +1119,8 @@ public class PartnerSaidMellowSituation {
 			
 			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
 			
-			if(DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(s))) {
+			if(maxMellowCard != null &&
+					DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(s))) {
 				return true;
 			}
 			

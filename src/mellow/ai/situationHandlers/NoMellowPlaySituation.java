@@ -1438,7 +1438,7 @@ public class NoMellowPlaySituation {
 					if(		! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 						    && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 							&& dataModel.couldPlayCardInHandUnderCardInSameSuit(leaderCard)
-							&& dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay, dataModel.getCardInHandClosestUnderSameSuit(leaderCard)) > 1
+							&& dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(cardToPlay, dataModel.getCardInHandClosestUnderSameSuit(leaderCard)) > 1
 							&& dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit(leaderCard) == 1
 					) {
 						cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
@@ -1594,7 +1594,7 @@ public class NoMellowPlaySituation {
 								//Play low 2nd by default when it comes to spade:
 								cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(leaderSuitIndex);
 								
-								System.out.println(dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay,
+								System.out.println(dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(cardToPlay,
 										dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex)));
 								
 								if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
@@ -1605,7 +1605,7 @@ public class NoMellowPlaySituation {
 									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 									
 									//TODO: between is bugged, and I had to put 2 here. Maybe fix it?
-								} else if(dataModel.getNumCardsInPlayBetweenCardSameSuit(cardToPlay,
+								} else if(dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(cardToPlay,
 										dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex)) == 2) {
 									cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
 									
@@ -2286,6 +2286,9 @@ public class NoMellowPlaySituation {
 	public static String AIThirdThrow(DataModel dataModel) {
 		String cardToPlay = null;
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TH 9H 6C 5C JD TD")) {
+			System.out.println("Debug");
+		}
 		
 		//CAN'T FOLLOW SUIT:
 		if(dataModel.currentAgentHasSuit(leaderSuitIndex) == false) {
@@ -2537,7 +2540,7 @@ public class NoMellowPlaySituation {
 				} else if(dataModel.currentPlayerOnlyHasSpade()
 						&& CardStringFunctions.getIndexOfSuit(dataModel.getCardInHandClosestOverCurrentWinner()) == Constants.SPADE
 						&& dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays())
-						&& dataModel.getNumCardsInPlayBetweenCardSameSuit(
+						&& dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(
 								dataModel.getCardInHandClosestOverCurrentWinner(),
 								dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
 						== 0) {

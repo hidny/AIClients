@@ -85,7 +85,7 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowFollow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 4S 7C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 7H 3H TD 9D 7D 2D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -290,6 +290,20 @@ public class SingleActiveMellowPlayer {
 	//Find the suit the mellow player wants to throw-off most:
 	public static String getBestOffSuitCardToThrowOffAsMellowPlayer(DataModel dataModel) {
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 7H 3H TD 9D 7D 2D ")) {
+			System.out.println("Debug");
+		}
+		
+		int otherMellowIndex = -1;
+		if(dataModel.getNumStillActiveMellow() > 1) {
+			for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+				
+				if(i != Constants.CURRENT_AGENT_INDEX && dataModel.getBid(i) == 0) {
+					otherMellowIndex = i;
+				}
+			}
+		}
+		
 		int NO_SUIT_FOUND = -1;
 		int chosenSuit = NO_SUIT_FOUND;
 		double bestScore = -1.0;
@@ -307,7 +321,23 @@ public class SingleActiveMellowPlayer {
 			
 			double tmpScore = getWillingnessToThrowOffSuitAsMellowPlayer3(dataModel, i);
 			
-			
+			if(dataModel.getNumStillActiveMellow() > 1) {
+				
+				//Double mellow case where some suits are given the benefit of the doubt:
+				if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(i)) > 3) {
+					int rankUnderMax = DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(i)) - 1;
+					String card = DataModel.getCardString(rankUnderMax, i);
+					if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(card, otherMellowIndex)) {
+						
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(i)) < 3) {
+							//Adding + 4.0 worked for all test cases, but maybe it was a fluke?
+							tmpScore += 4.0;
+						}
+					}
+					
+				}
+				//End double mellow case.
+			}
 			//System.out.println("Willingness: " + tmpScore);
 			
 			if(tmpScore > bestScore) {

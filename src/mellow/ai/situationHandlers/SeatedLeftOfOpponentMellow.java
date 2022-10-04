@@ -168,7 +168,7 @@ public class SeatedLeftOfOpponentMellow {
 
 			
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 8S QD")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 4S 2S AH 9D 7D")) {
 				System.out.println("Debug");
 			}
 
@@ -347,6 +347,20 @@ public class SeatedLeftOfOpponentMellow {
 							
 							} else {
 								
+								if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)
+										&& dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)
+										&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(dataModel.getCardInHandClosestOverCurrentWinner(),
+																						  dataModel.getCardInHandClosestUnderSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()))
+										== 0
+										&& PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow()))
+											.equals(
+											 PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardInHandClosestOverCurrentWinner())
+											)
+										) {
+											//Let partner take it if you have the card directly over and under:
+											//And highest card is the one over (or in the same group)
+											return dataModel.getCardInHandClosestUnderSameSuit(dataModel.getCardInHandClosestOverCurrentWinner());
+								}
 								//Just play the highest:
 								return dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow());
 							}
@@ -367,7 +381,22 @@ public class SeatedLeftOfOpponentMellow {
 					) {
 				
 				if(SeatedRightOfOpponentMellow.gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)
-						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 2 < dataModel.getNumCardsInCurrentPlayerHand()) {
+						&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 2 < dataModel.getNumCardsInCurrentPlayerHand()
+						//Check if protector needs tricks:
+						&& dataModel.getNumTricksOtherTeam() + dataModel.getNumCardsInCurrentPlayerHand() - dataModel.currentPlayerGetNumMasterSpadeInHand() -2 
+						>= dataModel.getSumBidsOtherTeam()
+						
+						//Check if we could attack protector:
+						&&
+						! (dataModel.getNumTricksOtherTeam() < dataModel.getSumBidsOtherTeam()
+								&& dataModel.getNumCardsInCurrentPlayerHand() - dataModel.currentPlayerGetNumMasterSpadeInHand() <= 3
+								&& (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()) > 2
+										|| (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()) >= 1
+										    && dataModel.isVoid(MELLOW_PLAYER_INDEX, dataModel.getSuitOfLeaderThrow())
+										    )
+									)	
+								)
+					) {
 					
 					//TODO: maybe make sure protector is not motivated to lead a specific offsuit?
 					//Don't bother trumping if you've got nothing to lead...
@@ -612,7 +641,7 @@ public class SeatedLeftOfOpponentMellow {
 								curCard = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex);
 								
 								if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) == 4
-										&& dataModel.getNumCardsInPlayBetweenCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex),
+										&& dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex),
 												curCard) == 0) {
 									curCard = dataModel.getCardCurrentPlayerGetThirdHighestInSuit(curSuitIndex);
 								}
@@ -660,7 +689,7 @@ public class SeatedLeftOfOpponentMellow {
 								
 								if(dataModel.getNumberOfCardsOneSuit(curSuitIndex) > 2) {
 									
-									if(dataModel.getNumCardsInPlayBetweenCardSameSuit(
+									if(dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(
 											dataModel.getCardCurrentPlayerGetHighestInSuit(curSuitIndex),
 											dataModel.getCardCurrentPlayerGetSecondHighestInSuit(curSuitIndex))
 									> 0 ) {

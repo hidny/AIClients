@@ -131,6 +131,9 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	@Override
 	public String getCardToPlay() {
 	
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 7H 3H TD 9D 7D 2D ")) {
+			System.out.println("debug");
+		}
 		String cardRecommended = getCardToPlay2();
 		
 		return getLegalCard(cardRecommended);

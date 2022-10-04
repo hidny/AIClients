@@ -456,7 +456,7 @@ public class VoidSignalsNoActiveMellows {
 						&& CardStringFunctions.getIndexOfSuit(card) == dataModel.getSuitOfLeaderThrow()
 						&& CardStringFunctions.getIndexOfSuit(curWinnerCard) ==  dataModel.getSuitOfLeaderThrow()
 						&& dataModel.cardAGreaterThanCardBGivenLeadCard(curWinnerCard, card)
-						&& dataModel.getNumCardsInPlayBetweenCardSameSuit(curWinnerCard, card) == 0
+						&& dataModel.getNumCardsInPlayBetweenCardSameSuitPossiblyWRONG(curWinnerCard, card) == 0
 						&& dataModel.getNumCardsInPlayOverCardSameSuit(curWinnerCard) <= 2
 						&& ! letPartnerWin(dataModel, throwerIndex, curWinnerCard)
 						) {
