@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S QC TC TD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 6H 5H 3H 2H JC 9C 8C ")) {
 			System.out.println("Debug");
 		}
 
@@ -343,7 +343,8 @@ public class NoMellowPlaySituation {
 		}
 		
 		//Don't lead small spade if you don't have much...
-		if(3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
+		if(dataModel.currentPlayerGetNumMasterSpadeInHand() < numCardsOfSuitInHand
+				&& 3 * numCardsOfSuitInHand < numCardsOfSuitOtherPlayersHave) {
 			curScore -= 20.0;
 			
 			if(numCardsOfSuitInHand == 1) {
@@ -664,7 +665,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S KH TH KC JC TC KD QD 8D 6D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 6H 5H 3H 2H JC 9C 8C ")) {
 			System.out.println("Debug");
 		}
 
@@ -730,8 +731,13 @@ public class NoMellowPlaySituation {
 				curScore += 15.0;
 			}*/
 
-		} else if(dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex)) {
+		} else if( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				&& dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)
+				|| dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex)
+			) {
 			
+			//System.out.println("COND 1");
 			//System.out.println("TEST " + suitIndex);
 			curScore += 9.5;
 			partnerSignalledHighCardOfSuit = true;
@@ -749,8 +755,14 @@ public class NoMellowPlaySituation {
 			}
 			
 			//Treat partner's possible master as your own...
-		} else if(dataModel.signalHandler.playerSignalledHighCardInSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+		} else if(
+				( ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				&& dataModel.signalHandler.playerSingalledMasterCardOrVoidAccordingToCurPlayer(Constants.CURRENT_PARTNER_INDEX, suitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)
+				)
+				|| dataModel.signalHandler.partnerHasMasterBasedOnSignals(suitIndex)
 				|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(suitIndex) == Constants.CURRENT_PARTNER_INDEX) {
+			//System.out.println("COND 2");
 			curScore += 9.0;
 			partnerSignalledHighCardOfSuit = true;
 			
