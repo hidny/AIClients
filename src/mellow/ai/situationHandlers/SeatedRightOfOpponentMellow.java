@@ -14,6 +14,9 @@ public class SeatedRightOfOpponentMellow {
 	
 	public static String playMoveSeatedRightOfOpponentMellow(DataModel dataModel) {
 		
+		
+		//TODO: check if it's worth trying to burn the protector...
+		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 3S AD JD 7D ")) {
@@ -48,6 +51,9 @@ public class SeatedRightOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6H 2H JD TD  ")) {
+			System.out.println("Debug");
+		}
 		
 		for(int suit=Constants.NUM_SUITS - 1; suit>=0; suit--) {
 			if(dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, suit) ) {
@@ -124,10 +130,44 @@ public class SeatedRightOfOpponentMellow {
 			
 			//New:
 			return getHighestCardYouCouldLeadWithoutSavingMellowInSuit(dataModel, bestSuitIndex);
+
+		} else if(dataModel.getNumTricksOtherTeam() < dataModel.getSumBidsOtherTeam()){
 			
+			if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+				//Drain protector spade:
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			} else {
+				//Try to attack protector when there's no attack for the mellow:
+				return NoMellowPlaySituation.handleNormalThrow(dataModel);
+			}
 		} else {
 		
-			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+			//Don't play a suit that we know mellow is void in:
+			int curCandidateSuit = -1;
+			int curMinRank = -1;
+			for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
+				
+				if(dataModel.currentAgentHasSuit(suitIndex)
+						&& ! dataModel.isVoid(MELLOW_PLAYER_INDEX, suitIndex)
+						&& (curCandidateSuit == -1 || DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex)) < curMinRank)) {
+					curCandidateSuit = suitIndex;
+					curMinRank = DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex));
+				}
+			}
+			
+			if(curCandidateSuit >= 0) {
+				return dataModel.getCardCurrentPlayerGetLowestInSuit(curCandidateSuit);
+			} else {
+				
+				if(! dataModel.isVoid(Constants.CURRENT_PLAYER_INDEX, Constants.SPADE)
+						&& dataModel.getNumCardsInPlayOverCardSameSuit(dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
+						> 0) {
+					return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+				} else {
+					return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
+				}
+				
+			}
 		}
 	}
 	
