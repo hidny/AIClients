@@ -118,7 +118,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 6H 5H 3H 2H JC 9C 8C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9H 8H 7H 5H 4H QC 7C 5C")) {
 			System.out.println("Debug");
 		}
 
@@ -645,7 +645,10 @@ public class NoMellowPlaySituation {
 					curScore -= 5 * dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 				
 				} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
-						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 5) {
+						&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 5
+						//Only try to drain if you have sufficient spade:
+						//TODO: maybe drain without that much spade if there's no hope to trump?
+						&& 3 * numCardsOfSuitInHand > numCardsOfSuitOtherPlayersHave) {
 					
 					curScore += 5 * dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 				}
@@ -665,7 +668,8 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 6H 5H 3H 2H JC 9C 8C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9H 8H 7H 5H 4H QC 7C 5C")
+				&& suitIndex == 1) {
 			System.out.println("Debug");
 		}
 
