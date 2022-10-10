@@ -347,10 +347,14 @@ public class SeatedLeftOfOpponentMellow {
 							
 							} else {
 								
-								if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)
+								if(     //Make sure we're allowed to play over winner card:
+										(dataModel.getSuitOfLeaderThrow() == CardStringFunctions.getIndexOfSuit(currentFightWinner)
+										|| dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, leadSuitIndex))
+
+										&& dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)
 										&& dataModel.couldPlayCardInHandOverCardInSameSuit(currentFightWinner)
 										&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(dataModel.getCardInHandClosestOverCurrentWinner(),
-																						  dataModel.getCardInHandClosestUnderSameSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()))
+																						  dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner))
 										== 0
 										&& PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow()))
 											.equals(

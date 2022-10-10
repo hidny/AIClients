@@ -1396,6 +1396,17 @@ public class DataModel {
 	}
 
 	public int getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(String cardLow, String cardHigh) {
+		
+		if(cardHigh == null) {
+			System.err.println(
+					"Error: cardHigh is null");
+			System.exit(1);
+		} else if(cardLow == null) {
+			System.err.println(
+					"Error: cardLow is null");
+			System.exit(1);
+			
+		}
 		if (CardStringFunctions.getIndexOfSuit(cardHigh) != CardStringFunctions.getIndexOfSuit(cardLow)) {
 			System.err.println(
 					"Error: in getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit. Using diff suit...");
@@ -1560,6 +1571,8 @@ public class DataModel {
 		int winnerSuitIndex = CardStringFunctions.getIndexOfSuit(currentWinnerCard);
 		int winnerRankIndex = getRankIndex(currentWinnerCard);
 
+		//System.err.println("TEST Current winner card: " + currentWinnerCard);
+		
 		// Check if offsuit can win
 		if (winnerSuitIndex != Constants.SPADE) {
 
@@ -1572,6 +1585,7 @@ public class DataModel {
 
 		// Check if spade can win
 		if (throwerCouldPlaySpade()) {
+			//System.out.println("TEST could play spade: " + currentWinnerCard);
 			int startRankIndex = RANK_TWO;
 
 			if (winnerSuitIndex == Constants.SPADE) {
