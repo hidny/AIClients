@@ -85,7 +85,7 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowFollow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 7H 3H TD 9D 7D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH JH 5H 4H KC JC 8C 5C KD 8D 5D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -201,6 +201,15 @@ public class SingleActiveMellowPlayer {
 						)
 							{
 						cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(leaderSuitIndex);
+					
+					//Exception: Play 2nd or 3rd highest to hide lower card if it's safe enough:
+						//Maybe this is only good to mix into play, but not to do in general? I don't know.
+					} else if(throwIndex == 1
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 1
+							&& ! SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay).equals(cardToPlay)
+							&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay) > 4
+							) {
+						cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay);
 					}
 				}
 			} else if(CardStringFunctions.getIndexOfSuit(currentFightWinner) == Constants.SPADE && leaderSuitIndex != Constants.SPADE) {
