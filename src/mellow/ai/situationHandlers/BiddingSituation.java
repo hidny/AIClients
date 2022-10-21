@@ -237,7 +237,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 6S 4S 3S QH JH 8H 3H KC QC 7C AD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 7H 2H TC 7C 6C 2C 8D 7D 4D 2D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -253,13 +253,18 @@ public class BiddingSituation {
 			return "1";
 		}
 		
+		boolean barelyAOneBid = false;
+		
 		//Don't bid mellow with KS
 		if(intBid == 0 && dataModel.hasCard("KS")) {
 			intBid = 1;
+			barelyAOneBid = true;
 		
 		// Just don't say mellow if 2 cards are over the 9S...
 		} else if(intBid == 0 && dataModel.getNumCardsInCurrentPlayersHandOverCardSameSuit("9S") >= 2) {
 			intBid = 1;
+			barelyAOneBid = true;
+			
 		} else if(intBid == 0 && ! partnerDidntSayMellow(dataModel)) {
 			intBid = 1;
 		}
@@ -290,7 +295,7 @@ public class BiddingSituation {
 		
 		System.out.println("Final bid " + intBid);
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 3S 4H 2H JC 4C 3C 2C AD JD 6D 5D 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 7H 2H TC 7C 6C 2C 8D 7D 4D 2D ")) {
 			System.out.println("Debug");
 		}
 
@@ -530,6 +535,14 @@ public class BiddingSituation {
 				}
 				
 				return intBid +"";
+			} else if(dataModel.getOpponentScore() > 930
+					&& dataModel.getOurScore() > 850
+					) {
+				//Just say mellow to be agro:
+				if(intBid == 1
+						&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.3) {
+					return "0";
+				}
 			}
 		}
 		//END NEAR end of game for opponent logic.
@@ -564,10 +577,10 @@ public class BiddingSituation {
 			
 		} else	if(
 				//Expected value seems good:
-				(	(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05)
+				(	(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05 - 0.25 * getCatchUpFactor(dataModel))
 					||
 					//This condition never happens :(... I'll leave it in just in case though.
-					(intBid == 0 && isMellowWarrentedIfYouDontHave1(dataModel, bid))
+					((intBid == 0 || barelyAOneBid) && isMellowWarrentedIfYouDontHave1(dataModel, bid))
 				)
 				//No double mellow:
 				&& ( ! dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
@@ -746,14 +759,14 @@ public class BiddingSituation {
 		
 		//TODO: maybe if you're the 3rd bidder, count on the 4th bidder saying mellow?
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 8H 7H 6H 2H JC TC 8C 3C QD JD TD 5D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 7H 2H TC 7C 6C 2C 8D 7D 4D 2D ")) {
 			System.out.println("Debug1");
 		}
 		//System.out.println("Prob mellow pass: " + probMellowPass);
 		int partnerBid = 3;
 		double oddsOfWinningOne = 0.85;
 		
-		double oddsOfPartnerMakingTricksAlone = 0.90;
+		double oddsOfPartnerMakingTricksAlone = 0.95;
 		
 		if(dataModel.isDealer() || dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX) {
 			partnerBid = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX);
@@ -761,7 +774,7 @@ public class BiddingSituation {
 			//Partner can't bid lower for you because partner already bid,
 			// so lower the chances of making the tricks:
 			oddsOfWinningOne = 0.66;
-			oddsOfPartnerMakingTricksAlone = 0.85;
+			oddsOfPartnerMakingTricksAlone = 0.90;
 		}
 		
 		if(bidDouble > 0.5) {
@@ -783,6 +796,26 @@ public class BiddingSituation {
 	}
 	
 	//TODO: put below functions in their own class:
+	
+	
+	public static double getCatchUpFactor(DataModel dataModel) {
+		int ourScore = dataModel.getOurScore();
+		int oppScore = dataModel.getOpponentScore();
+		
+		if(oppScore < ourScore) {
+			return 0.0;
+		}
+		
+		double factor = (1.0 * (Constants.GOAL_SCORE - ourScore)) /  (1.0 * (Constants.GOAL_SCORE - oppScore));
+		
+		if(factor > 1.5) {
+			return 1.0;
+		} else if(factor > 1.3) {
+			return 0.5;
+		} else {
+			return 0.0;
+		}
+	}
 	
 	public static double highSpadeBidBonus(DataModel dataModel) {
 		

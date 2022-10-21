@@ -354,9 +354,20 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 			}
 			
 		} else {
-			System.err.println("Really??? There's more than 2 mellow bids.");
-			System.err.println("I will need to debug the AIs so they know that 3 mellows in 1 round is insane");
-			System.err.println("Num active mellows: " + numActiveMellows);
+			
+			//If there's at least 3 mellows, print a warning. I only want to submit the message when the round starts.
+			if(dataModel.getCardsPlayedThisRound() == Constants.NUM_CARDS) {
+				
+				System.err.println("Really??? There's more than 2 mellow bids.");
+				System.err.println("I will need to debug the AIs so they know that 3 mellows in 1 round is insane");
+				System.err.println("Num active mellows: " + numActiveMellows);
+				for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+					if(dataModel.getBid(i) > 0) {
+						System.err.println("Player " + i + " didn't bid mellow (" + dataModel.getPlayers()[i] + ")");
+					}
+				}
+				System.err.println();
+			}
 			
 			
 			if(dataModel.getBid(Constants.CURRENT_AGENT_INDEX) == 0 && dataModel.burntMellow(Constants.CURRENT_AGENT_INDEX) == false) {
