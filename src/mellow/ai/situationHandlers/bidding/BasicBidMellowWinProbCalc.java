@@ -242,7 +242,10 @@ public class BasicBidMellowWinProbCalc {
 					
 					ret = adjustedWinProb;
 				}
-			} else if(! dataModel.hasCard("AS") && dataModel.hasCard("KS")) {
+			} else if(! dataModel.hasCard("AS") 
+					&& dataModel.hasCard("KS") 
+					&& ! dataModel.hasCard("QS") 
+					&& ! dataModel.hasCard("JS")) {
 				
 				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5) {
 					
