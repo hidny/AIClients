@@ -192,7 +192,7 @@ public class BasicBidMellowWinProbCalc {
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S TH 9H 8H 5H 4H 3H 2H 7C 3C QD 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
 			System.out.println("Debug");
 		}
 		

@@ -11,7 +11,7 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 3S 2S AH 9H 5H QC 9C KD TD 9D 8D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
 			System.out.println("Debug");
 		}
 		
@@ -295,7 +295,7 @@ public class BiddingSituation {
 		
 		System.out.println("Final bid " + intBid);
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 7H 2H TC 7C 6C 2C 8D 7D 4D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S AH 7H 6H 3H AC QC JC TC 4C 2C TD 2D ")) {
 			System.out.println("Debug");
 		}
 
@@ -577,7 +577,7 @@ public class BiddingSituation {
 			
 		} else	if(
 				//Expected value seems good:
-				(	(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05 - 0.25 * getCatchUpFactor(dataModel))
+				(	(BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.5 + intBid * 0.05 - 0.25 * getCatchUpFactor(dataModel) + 0.10 * tooAheadForMellowBidFactor(dataModel))
 					||
 					//This condition never happens :(... I'll leave it in just in case though.
 					((intBid == 0 || barelyAOneBid) && isMellowWarrentedIfYouDontHave1(dataModel, bid))
@@ -660,7 +660,8 @@ public class BiddingSituation {
 				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
 				&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.10
 				&& BasicBidMellowWinProbCalc.getProbNoBurnSpade(dataModel) > 0.20
-				&& intBid > 0) {
+				&& intBid > 0
+				&& tooAheadForMellowBidFactor(dataModel) < 1.0) {
 			//Lower requirements for double mellow:
 			System.out.println("Double mellow with prob: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
 			
@@ -690,6 +691,9 @@ public class BiddingSituation {
 			} else {
 				return 0 + "";
 			}
+		
+		} else if(intBid == 0 && tooAheadForMellowBidFactor(dataModel)>= 1.0) {
+			return 1 + "";
 			
 		} else {
 			
@@ -811,6 +815,25 @@ public class BiddingSituation {
 		if(factor > 1.5) {
 			return 1.0;
 		} else if(factor > 1.3) {
+			return 0.5;
+		} else {
+			return 0.0;
+		}
+	}
+	
+	public static double tooAheadForMellowBidFactor(DataModel dataModel) {
+		int ourScore = dataModel.getOurScore();
+		int oppScore = dataModel.getOpponentScore();
+		
+		if(oppScore > ourScore) {
+			return 0.0;
+		}
+		
+		double factor = (1.0 * (Constants.GOAL_SCORE - oppScore)) /  (1.0 * (Constants.GOAL_SCORE - ourScore));
+		
+		if(factor > 2.0) {
+			return 1.0;
+		} else if(factor > 1.5) {
 			return 0.5;
 		} else {
 			return 0.0;
