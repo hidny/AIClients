@@ -11,6 +11,8 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
+		//TODO: add this important debug message:
+		System.out.println("(Your score, their score) = (" + dataModel.getOurScore() + ", " + dataModel.getOpponentScore() + ")");
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
 			System.out.println("Debug");
 		}

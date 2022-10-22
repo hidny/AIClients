@@ -85,6 +85,7 @@ public class BasicBidMellowWinProbCalc {
 			ret /= 10.0;
 		}
 		
+		
 		return ret;
 	}
 	
@@ -202,9 +203,9 @@ public class BasicBidMellowWinProbCalc {
 		
 		//Consider your partner's weak hand:
 		if(getProbNoBurnSpade(dataModel) < 0.7
-				&& dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
-				&& dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) <= 2) {
+				&& dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)) {
 			
+			//If partner bid low, lower the chances of not burning spade:
 			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 2) {
 				ret *= 90.0/100.0;
 				
@@ -212,6 +213,44 @@ public class BasicBidMellowWinProbCalc {
 
 				ret *= 80.0/100.0;
 			}
+			
+			//If partner bid higher, lift up the chances of not burning spade:
+			//All this code didn't even change a single test case!
+			if(! dataModel.hasCard("AS") && ! dataModel.hasCard("KS")) {
+				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 4) {
+					
+					
+					double adjustedWinProb = 1 - (1 - ret) * (100.0 - 5.0)/100.0;
+					
+					ret = adjustedWinProb;
+					
+				} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 5) {
+	
+					double adjustedWinProb = 1 - (1 - ret) * (100.0 - 20.0)/100.0;
+					
+					ret = adjustedWinProb;
+					
+				} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) == 6) {
+	
+					double adjustedWinProb = 1 - (1 - ret) * (100.0 - 40.0)/100.0;
+					
+					ret = adjustedWinProb;
+				} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 7) {
+	
+					int tmp = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) - 7;
+					double adjustedWinProb = 1 - (1 - ret) * (100.0 - 45.0 - 5.0 * tmp)/100.0;
+					
+					ret = adjustedWinProb;
+				}
+			} else if(! dataModel.hasCard("AS") && dataModel.hasCard("KS")) {
+				
+				if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5) {
+					
+					double adjustedWinProb = 1 - (1 - ret) * (100.0 - 20.0)/100.0;
+					ret = adjustedWinProb;
+				}
+			}
+			//END If partner bid higher, lift up the chances of not burning spade:
 		}
 		//End consider your partner's weak hand...
 		
