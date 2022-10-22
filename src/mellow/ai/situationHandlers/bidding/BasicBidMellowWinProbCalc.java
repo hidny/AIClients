@@ -293,7 +293,7 @@ public class BasicBidMellowWinProbCalc {
 						
 						//There's only a small decrease in burn % from throwing off the danger card
 						// if you only have 2 of the suit:
-						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - 3.0 * (numForgiveSpade + numForgiveOffsuit - 1))/100.0;
+						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - 5.0 * (numForgiveSpade + numForgiveOffsuit - 1))/100.0;
 						ret *= adjustedWinProb;
 					} else {
 
