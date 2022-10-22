@@ -73,9 +73,14 @@ public class BasicBidMellowWinProbCalc {
 			
 		}
 		
-		if(numSpades == 4 
-				&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE)) > DataModel.RANK_TWO) {
-			ret /= 2.0;
+		// Saying saying with 4 spades or more is bad mmkay:
+		if(numSpades == 4) {
+			if(DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE)) == DataModel.RANK_TWO) {
+
+				ret /= 1.3;
+			} else {
+				ret /= 2.0;
+			}
 		} else if(numSpades > 4) {
 			ret /= 10.0;
 		}
@@ -187,7 +192,7 @@ public class BasicBidMellowWinProbCalc {
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S TH 9H 8H 5H 4H 3H 2H 7C 3C QD 4D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 3S 2S AH 9H 5H QC 9C KD TD 9D 8D 2D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -214,10 +219,6 @@ public class BasicBidMellowWinProbCalc {
 		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) < 3) {
 			numForgiveSpade += 3 - dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 			
-			if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 0) {
-				//Added a no-spade bonus:
-				numForgiveSpade += 2;
-			}
 		}
 		int numForgiveOffsuit = 0;
 		for(int suitIndex=0; suitIndex<Constants.NUM_SUITS; suitIndex++) {
@@ -234,7 +235,18 @@ public class BasicBidMellowWinProbCalc {
 			
 			if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) > 3) {
 				//System.out.println("(MORE SPADE FORGIVENESS)");
-				numForgiveSpade += Math.max(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) - 3, 0);
+				
+				int partnerCrazyHighBonus = dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) - 8;
+				
+				if(partnerCrazyHighBonus >= 0) {
+					numForgiveSpade += 3 + partnerCrazyHighBonus;
+					
+				} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >=7) {
+					numForgiveSpade += 2;
+					
+				} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 5) {
+					numForgiveSpade += 1;
+				}
 			}
 		} else if(Constants.CURRENT_PARTNER_INDEX ==dataModel.getDealerIndexAtStartOfRound()) {
 			if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 1) {
@@ -262,12 +274,25 @@ public class BasicBidMellowWinProbCalc {
 						
 						int numTimes = numForgiveSpade + numForgiveOffsuit - (dataModel.getNumberOfCardsOneSuit(suitIndex) - 3);
 						
-						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - 7.0 * (numTimes))/100.0;
+						double factorToUse = 20.0;
+						int rankLowest = DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex));
+						
+						//Don't dismiss suits where lowest is 9 or above:
+							//Rank nine might be a bit too simplified...
+						if(rankLowest < DataModel.RANK_NINE) {
+							factorToUse = 20.0;
+						} else {
+							factorToUse = 10.0;
+						}
+						
+						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - factorToUse * (numTimes))/100.0;
 						ret *= adjustedWinProb;
 					
 					} else if(dataModel.getNumberOfCardsOneSuit(suitIndex) >= 2
 							&& numForgiveSpade + numForgiveOffsuit > 0) {
 						
+						//There's only a small decrease in burn % from throwing off the danger card
+						// if you only have 2 of the suit:
 						double adjustedWinProb = 1 - (1 - tmpWinOffsuitProb) * (100.0 - 3.0 * (numForgiveSpade + numForgiveOffsuit - 1))/100.0;
 						ret *= adjustedWinProb;
 					} else {

@@ -11,7 +11,7 @@ public class BiddingSituation {
 	public static String getSimpleBidToMake(DataModel dataModel) {
 		//Converted python function from github to java here:
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 6S 4S 3S QH JH 8H 3H KC QC 7C AD ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 3S 2S AH 9H 5H QC 9C KD TD 9D 8D 2D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -237,7 +237,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 7H 2H TC 7C 6C 2C 8D 7D 4D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S QH JH 7H JC TC 7C 6C 3C 2C 4D 3D 2D ")) {
 			System.out.println("Debug");
 		}
 		
