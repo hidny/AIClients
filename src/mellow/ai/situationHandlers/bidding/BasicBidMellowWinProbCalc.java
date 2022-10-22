@@ -20,7 +20,7 @@ public class BasicBidMellowWinProbCalc {
 				0.131,  // 9
 				0.20,   // T
 				0.30,   // J
-				0.55,   // Q
+				0.45,   // Q
 				0.666,  // K
 				0.99   // A
 				};
@@ -89,7 +89,7 @@ public class BasicBidMellowWinProbCalc {
 	}
 	
 	public static double getProbNoBurnOffsuit(DataModel dataModel, int suitIndex) {
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S 4S AH KH QH JH TH 5H 7C JD 9D 8D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S TH 9H 8H 5H 4H 3H 2H 7C 3C QD 4D ") && suitIndex == 3) {
 			System.out.println("Debug");
 		}
 		double ret = 1.0;
@@ -192,7 +192,7 @@ public class BasicBidMellowWinProbCalc {
 	public static double getMellowSuccessProb2(DataModel dataModel) {
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 3S 2S AH 9H 5H QC 9C KD TD 9D 8D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S 6S TH 9H 8H 5H 4H 3H 2H 7C 3C QD 4D ")) {
 			System.out.println("Debug");
 		}
 		
