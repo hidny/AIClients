@@ -680,13 +680,13 @@ public class DataModel {
 						if (numCertain != 1) {
 							System.err.println(
 									"ERROR: the logic for figuring out who has what card is messed up! Num certain: "
-											+ numCertain);
+											+ numCertain + " (" + DataModel.getCardString(j, i) + ")");
 							System.exit(1);
 						}
 
 					} else if (numImpossible == 4) {
 						System.err.println("ERROR: there's a card that isn't accounted for! player: "
-								+ players[Constants.CURRENT_AGENT_INDEX]);
+								+ players[Constants.CURRENT_AGENT_INDEX] + " (" + DataModel.getCardString(j, i) + ")");
 						System.exit(1);
 					}
 				}

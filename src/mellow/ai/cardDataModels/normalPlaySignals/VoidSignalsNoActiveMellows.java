@@ -138,6 +138,9 @@ public class VoidSignalsNoActiveMellows {
 	
 	public void updateDataModelSignalsWithPlayedCard(String playerName, String card) {
 
+		if(card.equals("5D")) {
+			System.out.println("Debug");
+		}
 		int playerIndex = dataModel.convertPlayerNameToIndex(playerName);
 		int throwerIndex = dataModel.getCardsPlayedThisRound() % 4;
 		

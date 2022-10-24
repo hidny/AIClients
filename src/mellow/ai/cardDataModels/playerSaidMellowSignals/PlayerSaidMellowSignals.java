@@ -19,7 +19,10 @@ public class PlayerSaidMellowSignals {
 	//TODO: make dataModel need to go to MellowSignalHandler if it wants to know about mellow signals.
 	
 	public void handleSignalsFromActiveMellow(int playerIndex, String card) {
-		
+
+		if(card.equals("5D")) {
+			System.out.println("Debug");
+		}
 		//Not recording the signals the current player is sending out (yet)
 		if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
 			return;
@@ -68,10 +71,17 @@ public class PlayerSaidMellowSignals {
 					//Only set signals if mellow isn't 2nd thrower and it isn't spade:
 					if(throwNumber > 1 || suitLeadIndex != Constants.SPADE) {
 						
-						for(int rankIndex=DataModel.getRankIndex(card) - 1 ; rankIndex >= dataModel.RANK_TWO; rankIndex--) {
-							//TODO: if there's another state, we will need to make a complicate state transition table
-							//MELLOW IND -> LEAD_SUGGESTION ...
-							setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+						if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(card) == 1
+								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(card) >= 5) {
+							//Never mind:
+							//Maybe mellow is playing high on purpose!
+						} else {
+							
+							for(int rankIndex=DataModel.getRankIndex(card) - 1 ; rankIndex >= dataModel.RANK_TWO; rankIndex--) {
+								//TODO: if there's another state, we will need to make a complicate state transition table
+								//MELLOW IND -> LEAD_SUGGESTION ...
+								setCardMellowSignalNoIfUncertain(playerIndex, suitLeadIndex, rankIndex);
+							}
 						}
 					}
 					
