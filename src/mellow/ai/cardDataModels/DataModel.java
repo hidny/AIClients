@@ -177,8 +177,8 @@ public class DataModel {
 			playerDM.AIScore = AIScore;
 			playerDM.OpponentScore = OpponentScore;
 		} else {
-			playerDM.OpponentScore = OpponentScore;
-			playerDM.AIScore = AIScore;
+			playerDM.OpponentScore = AIScore;
+			playerDM.AIScore = OpponentScore;
 		}
 
 		for (int i = 0; i < Constants.NUM_PLAYERS; i++) {
