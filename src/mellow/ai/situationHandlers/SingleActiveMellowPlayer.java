@@ -4,6 +4,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.situationHandlers.objects.CardAndValue;
+import mellow.ai.situationHandlers.wildSituations.SecretlyBurnt;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -11,7 +12,7 @@ public class SingleActiveMellowPlayer {
 
 	public static String handleThrowAsSingleActiveMellowBidder(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4H 3H KC 9C 5C 2C 8D 6D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "2S JD 6D 2D ")) {
 			System.out.println("DEBUG");
 		}
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
@@ -29,6 +30,23 @@ public class SingleActiveMellowPlayer {
 			
 		//Handle the common mellow follow case:
 		} else {
+			
+			//exception when you know you're toast:
+			if((dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+					&& dataModel.cardAGreaterThanCardBGivenLeadCard(
+							dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE),
+							dataModel.getCurrentFightWinningCardBeforeAIPlays()))
+				||
+				dataModel.currentPlayerGetNumMasterSpadeInHand() > 1
+			  )
+				 {
+				//TODO
+				cardToPlay = SecretlyBurnt.handleBeingSecretlyBurnt(dataModel);
+				if(cardToPlay != null) {
+					return cardToPlay;
+				}
+			}
+			
 			cardToPlay = AIMellowFollow(dataModel);
 		}
 		

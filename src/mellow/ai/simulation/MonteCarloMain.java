@@ -76,14 +76,14 @@ public class MonteCarloMain {
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
