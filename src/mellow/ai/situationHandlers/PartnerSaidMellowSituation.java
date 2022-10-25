@@ -553,6 +553,9 @@ public class PartnerSaidMellowSituation {
 	public static String AISecondThrow(DataModel dataModel) {
 
 		System.out.println("TEST PROTECTOR 2nd throw");
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS 6S KH 4H QC 5C 4C 3C KD 4D 3D")) {
+			System.out.println("Debug");
+		}
 
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		
@@ -663,6 +666,33 @@ public class PartnerSaidMellowSituation {
 					
 				} else {
 					
+					//Play Lower to potentially mess with dealer's mellow:
+					if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0
+							&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) == 0
+							&& dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX
+							&& dataModel.signalHandler.mellowBidderPlayerMayBeInDangerInSuit(Constants.LEFT_PLAYER_INDEX, leadSuit)
+							&&
+							(! dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.KING, leadSuit))
+							||
+							(! dataModel.isCardPlayedInRound(dataModel.getCardString(DataModel.ACE, leadSuit))
+								&& leadSuit != Constants.SPADE
+								)
+							)
+							&&
+							dataModel.couldPlayCardInHandUnderCardInSameSuit(dataModel.getCardString(DataModel.KING, leadSuit))
+							) {
+							
+							String tmp = dataModel.getCardInHandClosestUnderSameSuit(dataModel.getCardString(DataModel.KING, leadSuit));
+							
+							if(! dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tmp, Constants.LEFT_PLAYER_INDEX)
+									&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(tmp) > 3
+									&& ! dataModel.signalHandler.mellowBidderSignalledNoCardUnderCardSameSuitExceptRank2(tmp, Constants.CURRENT_PARTNER_INDEX)) {
+								return tmp;
+							}
+					}
+					//END Play Lower to potentially mess with dealer's mellow:
+					
+					
 					if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(curStrongestCardPlayed, highestProtector, MELLOW_PLAYER_INDEX)) {
 						
 						//TODO still want to take trick sometimes... 
@@ -711,7 +741,7 @@ public class PartnerSaidMellowSituation {
 						}
 						
 					} else {
-						
+
 						
 						
 						if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, leadSuit)
