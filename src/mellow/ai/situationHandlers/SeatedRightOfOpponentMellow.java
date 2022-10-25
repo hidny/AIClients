@@ -51,7 +51,7 @@ public class SeatedRightOfOpponentMellow {
 		int bestSuitIndex = -1;
 		int lowestRankScore = Integer.MAX_VALUE;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6H 2H JD TD  ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AD 7D")) {
 			System.out.println("Debug");
 		}
 		
@@ -114,6 +114,10 @@ public class SeatedRightOfOpponentMellow {
 				int numOver = dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, suit));
 				curLowestRankSuitScore += (1.0 + numUnder) / (1.0 + numOver);
 				
+				if( ! willingToTryToBurnMellowInSuitBecauseOfTricks(dataModel, suit)) {
+					curLowestRankSuitScore += 10.0;
+				}
+				
 				
 				if(curLowestRankSuitScore < lowestRankScore) {
 					bestSuitIndex = suit;
@@ -128,6 +132,10 @@ public class SeatedRightOfOpponentMellow {
 		
 		if(bestSuitIndex != -1) {
 			
+			if( ! willingToTryToBurnMellowInSuitBecauseOfTricks(dataModel, bestSuitIndex)) {
+				//Just play master and try to make tricks...
+				return dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndex);
+			}
 			//New:
 			return getHighestCardYouCouldLeadWithoutSavingMellowInSuit(dataModel, bestSuitIndex);
 
@@ -168,6 +176,27 @@ public class SeatedRightOfOpponentMellow {
 				}
 				
 			}
+		}
+	}
+	
+	
+	public static boolean willingToTryToBurnMellowInSuitBecauseOfTricks(DataModel dataModel, int suitIndex) {
+		
+		if(dataModel.currentPlayerHasMasterInSuit(suitIndex)
+				&&
+			( (dataModel.getNumTricksCurTeam() < dataModel.getSumBidsCurTeam()
+					&& dataModel.getNumCardsInCurrentPlayerHand() >= dataModel.getSumBidsCurTeam() - dataModel.getNumTricksCurTeam()
+				&& dataModel.getNumCardsInCurrentPlayerHand() - 1 <= dataModel.getSumBidsCurTeam() - dataModel.getNumTricksCurTeam()
+			  )
+			|| 
+			   (dataModel.getNumTricksOtherTeam() < dataModel.getSumBidsOtherTeam())
+				&& dataModel.getNumCardsInCurrentPlayerHand() >= dataModel.getSumBidsCurTeam() - dataModel.getNumTricksCurTeam()
+				&& dataModel.getNumCardsInCurrentPlayerHand() <= dataModel.getSumBidsCurTeam() - dataModel.getNumTricksCurTeam()
+			)) {
+			
+			return false;
+		} else {
+			return true;
 		}
 	}
 	
