@@ -76,7 +76,7 @@ public class MonteCarloMain {
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;

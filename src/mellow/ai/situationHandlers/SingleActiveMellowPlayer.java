@@ -103,7 +103,7 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowFollow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KH JH 5H 4H KC JC 8C 5C KD 8D 5D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -135,7 +135,13 @@ public class SingleActiveMellowPlayer {
 							(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, Constants.SPADE)
 							&&
 							dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 2)
-						)
+							||
+							(
+							dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+							&& dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX) == 0
+							&& dataModel.getNumCardsInPlayOverCardSameSuit(currentFightWinner) >= 2
+							)
+						 )
 						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 						&& dataModel.cardAGreaterThanCardBGivenLeadCard(
 								DataModel.getCardString(
@@ -145,8 +151,22 @@ public class SingleActiveMellowPlayer {
 							)
 						) {
 					
+					
+							
 					cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				
+					if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
+							&& dataModel.getNumTricks(Constants.RIGHT_PLAYER_INDEX) == 0
+							&& dataModel.getNumCardsInPlayOverCardSameSuit(currentFightWinner) >= 2
+							&& DataModel.getRankIndex(currentFightWinner) < DataModel.RANK_SEVEN
+							&& dataModel.couldPlayCardInHandUnderCardInSameSuit("TS")
+							) {
+						//Hard-code to fix DOU-49...
+						//Will need to make it more general later.
+						cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, 
+								dataModel.getCardInHandClosestUnderSameSuit("TS"));
+					}
+					
 				} else if(dataModel.couldPlayCardInHandUnderCardInSameSuit(currentFightWinner)) {
 
 					
