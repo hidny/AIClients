@@ -13,7 +13,8 @@ public class BiddingSituation {
 		
 		//TODO: add this important debug message:
 		System.out.println("(Your score, their score) = (" + dataModel.getOurScore() + ", " + dataModel.getOpponentScore() + ")");
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS QH 8H 7H 5H 4H 7C 6C QD JD TD 7D 2D")) {
+		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D")) {
 			System.out.println("Debug");
 		}
 		
@@ -239,7 +240,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "7S QH JH 7H JC TC 7C 6C 3C 2C 4D 3D 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D")) {
 			System.out.println("Debug");
 		}
 		
@@ -297,7 +298,7 @@ public class BiddingSituation {
 		
 		System.out.println("Final bid " + intBid);
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S AH 7H 6H 3H AC QC JC TC 4C 2C TD 2D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D")) {
 			System.out.println("Debug");
 		}
 
@@ -661,7 +662,8 @@ public class BiddingSituation {
 				&& dataModel.playerMadeABidInRound(Constants.RIGHT_PLAYER_INDEX)
 				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0
 				&& BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) > 0.10
-				&& BasicBidMellowWinProbCalc.getProbNoBurnSpade(dataModel) > 0.20
+				//Changed to 0.3 to fix a debug case; (D-8033)
+				&& BasicBidMellowWinProbCalc.getProbNoBurnSpade(dataModel) > 0.30
 				&& intBid > 0
 				&& tooAheadForMellowBidFactor(dataModel) < 1.0) {
 			//Lower requirements for double mellow:
