@@ -434,10 +434,10 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				&& ourScore > theirScore + 
 						BiddingNearEndOfGameFunctions.getNumberOfPointsAvailableAsBonusIfEveryoneMakesIt(dataModel)) {
 			return true;
-		} else if(Constants.GOAL_SCORE - ourScore <= (Constants.GOAL_SCORE - theirScore) / 2
+		}/* else if(Constants.GOAL_SCORE - ourScore <= (Constants.GOAL_SCORE - theirScore) / 2
 				&& Constants.GOAL_SCORE - ourScore > 80) {
 			return true;
-		}
+		}*/
 		
 		
 		return false;

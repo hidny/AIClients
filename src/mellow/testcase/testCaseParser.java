@@ -17,7 +17,7 @@ public class testCaseParser {
 
 	//folders:
     
-	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2", "doubleMellowTests", "Michael2022-3"};
+	public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp", "Michael", "Michael2021", "Michael2021-2", "doubleMellowTests", "Michael2022-3"};
 //
 	//public static String TEST_FOLDERS[] = {"Michael"};
 	//public static String TEST_FOLDERS[] = {"Michael2021"};
@@ -25,7 +25,7 @@ public class testCaseParser {
 	//public static String TEST_FOLDERS[] = {"Michael2022-3"};
 	//public static String TEST_FOLDERS[] = {"MichaelDebugMadeUp"};
 	
-	public static String TEST_FOLDERS[] = {"MonteCarloTestsDone"};
+	//public static String TEST_FOLDERS[] = {"MonteCarloTestsDone"};
 	//public static String TEST_FOLDERS[] = {"tmp"};
 	//public static String TEST_FOLDERS[] = {"tmpRecentFails"};
 	//public static String TEST_FOLDERS[] = {"TestPython"};
