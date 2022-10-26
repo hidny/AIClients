@@ -392,6 +392,16 @@ public class BiddingNearEndOfGameFunctions {
 				- dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
 				- origBid);
 	}
+	
+public static int getNumberOfPointsAvailableAsBonusIfEveryoneMakesIt(DataModel dataModel) {
+		
+		return Math.max(0, 
+				Constants.NUM_STARTING_CARDS_IN_HAND
+				- dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+				- dataModel.getBid(Constants.CURRENT_PARTNER_INDEX)
+				- dataModel.getBid(Constants.RIGHT_PLAYER_INDEX)
+				- dataModel.getBid(Constants.CURRENT_AGENT_INDEX));
+	}
 
 	public static int[] getProjectedScoresAssumingTheWorst(DataModel dataModel, int origBid) {
 		return getProjectedScoresAssumingTheWorst(dataModel, origBid, true);

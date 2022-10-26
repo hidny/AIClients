@@ -76,14 +76,14 @@ public class MonteCarloMain {
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1000;
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
@@ -420,7 +420,13 @@ public class MonteCarloMain {
 
 				//Get monte carlo end of round stats for the win percentage util:
 				StatsBetweenRounds endOfRoundStats = getStatsAfterSimulatedRound(dataModelTmpForPlayer0);
+
 				
+				//Debug:
+				if(endOfRoundStats.getOpponentScore() < Constants.GOAL_SCORE) {
+					printOutcomeOfSimulation(dataModelTmpForPlayer0, actionString, a, endOfRoundPointDiffStats, endOfRoundStats);
+				}
+				//END DEBUG
 				
 				//System.err.println("Score at end with card " + actionString[a] + ": " + endOfRoundPointDiffStats.getAIScore());
 				
@@ -940,4 +946,15 @@ public class MonteCarloMain {
 			System.err.println();
 	 }
 	 //END Sanity check function to make sure everything is random
+	 
+	 
+	 public static void printOutcomeOfSimulation(DataModel dataModelTmpForPlayer0, String actionString[], int aIndex, StatsBetweenRounds endOfRoundPointDiffStats, StatsBetweenRounds endOfRoundStats) {
+		System.err.println("---------");
+		System.err.println("Results when player bid/played " + actionString[aIndex]);
+		System.err.println(endOfRoundStats.getAIScore() + " (" + endOfRoundPointDiffStats.getAIScore() + ")");
+		System.err.println(endOfRoundStats.getOpponentScore() + " (" + endOfRoundPointDiffStats.getOpponentScore() + ")");
+		dataModelTmpForPlayer0.printHandsAndBidInStartOfRound();
+		dataModelTmpForPlayer0.printCardsPlayedInRound();
+		System.err.println("---------");
+	 }
 }

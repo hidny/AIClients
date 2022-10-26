@@ -360,9 +360,14 @@ public class DataModel {
 					e.printStackTrace();
 				}
 				System.exit(1);
+				
 			}
 		}
 		return bids[indexPlayer];
+	}
+	public int getBidUnsafe(int indexPlayer) {
+		return bids[indexPlayer];
+		
 	}
 
 	public int getSumBidsCurTeam() {
@@ -2947,5 +2952,66 @@ public class DataModel {
 
 	public String toString() {
 		return DebugFunctions.DebugGetCurrentPlayerHand(this);
+	}
+	
+	public void printHandsAndBidInStartOfRound() {
+		
+		for(int i=0; i<cardsUsedByPlayer.length; i++) {
+			
+			int playerIndexToUse = (this.dealerIndexAtStartOfRound + 1 + i) % Constants.NUM_PLAYERS;
+			
+			for(int j=0; j<cardsUsedByPlayer[0].length; j++) {
+				for(int k=Constants.NUM_RANKS - 1; k>=0; k--) {
+					if(cardsUsedByPlayer[playerIndexToUse][j][k]) {
+						System.err.print(DataModel.getCardString(k, j) + "  ");
+					}
+				}
+			}
+			
+			System.err.print("(bid: " + this.getBid(playerIndexToUse) + ")  ");
+			System.err.print("(name: " + this.players[playerIndexToUse] + ")  ");
+			
+			System.err.println();
+			
+		}
+		System.err.println();
+		System.err.println();
+	}
+	
+
+	public void printCardsPlayedInRound() {
+		
+		System.err.println("Cards played in round:");
+		
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			
+			int playerIndexToUse = (this.dealerIndexAtStartOfRound + 1 + i) % Constants.NUM_PLAYERS;
+			
+			for(int j=0; j<Constants.NUM_CARDS; j++) {
+			
+				String curCard = cardStringsPlayed[j];
+				
+				boolean isLead = false;
+				if(j % Constants.NUM_PLAYERS == 0) {
+					isLead = true;
+				}
+				int suitIndex = CardStringFunctions.getIndexOfSuit(curCard);
+				int rankIndex = DataModel.getRankIndex(curCard);
+				
+				if(cardsUsedByPlayer[playerIndexToUse][suitIndex][rankIndex]) {
+					
+					if(isLead) {
+						System.err.print(curCard + "* ");
+					} else {
+						System.err.print(curCard + "  ");
+					}
+				}
+			}
+				
+			System.err.println();
+			
+		}
+		System.err.println();
+		System.err.println();
 	}
 }

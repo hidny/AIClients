@@ -11,6 +11,7 @@ import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
 import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
 import mellow.ai.situationHandlers.SingleActiveMellowPlayer;
+import mellow.ai.situationHandlers.bidding.BiddingNearEndOfGameFunctions;
 import mellow.ai.situationHandlers.doubleMellow.SeatedLeftOfDoubleMellow;
 import mellow.ai.situationHandlers.doubleMellow.SeatedRightOfDoubleMellow;
 import mellow.cardUtils.CardStringFunctions;
@@ -269,6 +270,14 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 						//END TODO: put in function
 						
 					} else {
+						
+						//Added this for when you're so ahead, you don't care about the
+						// opponent's mellow.
+						if(dontCareAboutMellow(dataModel)) {
+							//System.err.println("I Literally don't care --Hikaru");
+							return NoMellowPlaySituation.handleNormalThrow(dataModel);
+						}
+						
 						if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
 							
 							return SeatedLeftOfOpponentMellow.playMoveSeatedLeftOfOpponentMellow(dataModel);
@@ -412,6 +421,28 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return this.dataModel.createHardCopy();
 	}
 
+	public static boolean dontCareAboutMellow(DataModel dataModel) {
+		int ourScore = BiddingNearEndOfGameFunctions.getProjectedScoreForTeamGivenBids(dataModel, true,
+				dataModel.getBid(Constants.CURRENT_AGENT_INDEX),
+				dataModel.getBid(Constants.CURRENT_PARTNER_INDEX));
+		
+		int theirScore = BiddingNearEndOfGameFunctions.getProjectedScoreForTeamGivenBids(dataModel, false,
+				dataModel.getBid(Constants.LEFT_PLAYER_INDEX),
+				dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
+		
+		if(ourScore >= Constants.GOAL_SCORE
+				&& ourScore > theirScore + 
+						BiddingNearEndOfGameFunctions.getNumberOfPointsAvailableAsBonusIfEveryoneMakesIt(dataModel)) {
+			return true;
+		} else if(Constants.GOAL_SCORE - ourScore <= (Constants.GOAL_SCORE - theirScore) / 2
+				&& Constants.GOAL_SCORE - ourScore > 80) {
+			return true;
+		}
+		
+		
+		return false;
+	}
+	
 	public static boolean shouldTryToWinTricksInsteadOfAttackingMellow(DataModel dataModel) {
 		
 		if(getNumTricksWeCouldAffordToGiveAway(dataModel) == 0) {
