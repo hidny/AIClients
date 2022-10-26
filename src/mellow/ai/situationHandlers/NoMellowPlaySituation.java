@@ -28,7 +28,21 @@ public class NoMellowPlaySituation {
 				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				
 			}
-		}
+			//Just trump near the end of the round:
+		}/* else if(throwIndex > 0
+				&& ! dataModel.currentAgentHasSuit(dataModel.getLeaderIndex())
+				&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1
+				&& dataModel.getNumCardsInCurrentPlayerHand() - 1 <= dataModel.getNumberOfCardsOneSuit(Constants.SPADE)
+				&& (dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) > 0
+						|| dataModel.getNumTricks(Constants.CURRENT_PARTNER_INDEX) > 0
+						|| (! PartnerSaidMellowSituation.mellowhasDangerousOffsuit(dataModel)
+						&&  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+						)
+					)
+				&& dataModel.throwerHasCardToBeatCurrentWinner()) {
+			
+			return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+		}*/
 		//END TODO put in function
 		
 
@@ -1827,7 +1841,7 @@ public class NoMellowPlaySituation {
 			//No following suit:
 		} else {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6C 5C JD 5D 4D 3D ")) {
+			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 6S AH TH AC JC")) {
 				System.out.println("Debug");
 			}
 			
@@ -1951,6 +1965,7 @@ public class NoMellowPlaySituation {
 								
 								&& (
 								    //We could realistically clear another suit for trumping without helping opponents too much:
+									//AND LHS might not trump:
 								        (
 								        currentPlayerHasOffsuitToThrowOff(dataModel)
 								        && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
@@ -1971,6 +1986,14 @@ public class NoMellowPlaySituation {
 								   ||    (  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex)
 									     && !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 									     )
+								   
+								   //OR: Let LHS take it because losing a spade is like losing a trick:
+								   ||    (//Has lots of spade:
+										   dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 2
+										   && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) * 3 - dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 3
+										   //Don't mess with RHS
+										   && shouldNotTrumpBeforeLHSBecauseLHSWillMessYouUp(dataModel, leaderSuitIndex)
+										 )
 								   )
 								) {
 							
@@ -2196,7 +2219,10 @@ public class NoMellowPlaySituation {
 				}
 				
 				
-				
+
+				if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 8S 6S AH TH AC JC")) {
+					System.out.println("Debug");
+				}
 				//At this point, we might have decided to trump,
 				// but we might reconsider given LHS is also trumping...
 
@@ -2257,6 +2283,8 @@ public class NoMellowPlaySituation {
 					if((3 * numSpadesInHand >
 					dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 					      && numSpadesInHand > 1
+					      //Check about fighting:
+					      && shouldNotTrumpBeforeLHSBecauseLHSWillMessYouUp(dataModel, leaderSuitIndex)
 					)
 					|| (numSpadesInHand == 2
 						&&	!dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
@@ -2281,9 +2309,20 @@ public class NoMellowPlaySituation {
 						} else if(dataModel.isMasterCard(dataModel.getCurrentFightWinningCardBeforeAIPlays())
 								&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highcard) >= 1) {
 							
-							//TODO: maybe handle signals for min spade LHS has...
-								//&& ! dataModel.signalHandler.NOTIMPLEMENTED
-							cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							if( ! shouldNotTrumpBeforeLHSBecauseLHSWillMessYouUp(dataModel, leaderSuitIndex)
+									&& NonMellowBidHandIndicators.getNumAorKorQorJEquiv(dataModel, Constants.SPADE) > 1) {
+								
+								//Note: For the testcase I fixed this works too: (3-3377)
+								//NonMellowBidHandIndicators.getNumAorKorQorJEquiv(dataModel, Constants.SPADE) > 2
+								
+								//Play second highest if both spades are high and try to challenge LHS:
+								cardToPlay = dataModel.getCardCurrentPlayerGetSecondHighestInSuit(Constants.SPADE);
+							} else {
+
+								//TODO: maybe handle signals for min spade LHS has...
+									//&& ! dataModel.signalHandler.NOTIMPLEMENTED
+								cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+							}
 							
 						} else {
 							cardToPlay = getJunkiestCardToFollowLead(dataModel);
@@ -3305,6 +3344,32 @@ public class NoMellowPlaySituation {
 		
 		
 		return ret;
+	}
+	
+	
+	public static boolean shouldNotTrumpBeforeLHSBecauseLHSWillMessYouUp(DataModel dataModel, int leaderSuitIndex) {
+		return (   dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+			       && ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+			       && ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+			       && dataModel.signalHandler.getMaxRankSpadeSignalled(Constants.LEFT_PLAYER_INDEX) >
+				   		DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+				   
+				   //Don't fight LHS:
+				   && (
+						   (
+								   dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE) < 2
+								   && dataModel.getBid(Constants.LEFT_PLAYER_INDEX) <= 4
+								   && dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+						   )
+						   ||
+						   (
+								   dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE) < 3
+								   && dataModel.getBid(Constants.LEFT_PLAYER_INDEX) <= 5
+								   && dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) < dataModel.getBid(Constants.LEFT_PLAYER_INDEX)
+						   )
+						    
+					)
+			     );
 	}
 	
 	

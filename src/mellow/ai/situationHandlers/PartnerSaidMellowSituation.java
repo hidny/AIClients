@@ -40,6 +40,57 @@ public class PartnerSaidMellowSituation {
 				return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 				
 			}
+
+		//Just trump near the end of the round:
+			//(This has an incredibly limited scope, but it's a start)
+			//(Ex: 4 th logic + or is LHS void in spade logic or kqj equiv)
+			} else if(throwIndex > 0
+				&& ! dataModel.currentAgentHasSuit(dataModel.getLeaderIndex())
+				&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 1
+				&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) + 1 >= dataModel.getNumCardsInCurrentPlayerHand()
+				//Safe spades:
+				&& (    //Trump with master and then play masters:
+						(dataModel.getNumCardsInCurrentPlayerHand() - 1 
+						  <= dataModel.currentPlayerGetNumMasterSpadeInHand()
+						)
+						||
+						//Trump with kquiv and then play off, or let opponent lead while you have master spade.
+						(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
+							&&
+							dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(
+									dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE))
+							<= 1
+						)
+						||
+						//Trump with low spade as 4th thrower and then lead master S
+						(
+							dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
+							&& throwIndex == 3
+							&& dataModel.getNumCardsInCurrentPlayerHand() - 2 <= dataModel.currentPlayerGetNumMasterSpadeInHand()
+						)
+						||
+						//Trump with low spade and then lead master S because LHS won't take it from you
+						(
+							dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 1
+							&& dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+							&& dataModel.getNumCardsInCurrentPlayerHand() - 2 <= dataModel.currentPlayerGetNumMasterSpadeInHand()
+						)
+					)
+				//End safe spades
+				//Safe mellow:
+				&& (! PartnerSaidMellowSituation.mellowhasDangerousOffsuit(dataModel)
+						&&  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+				)
+				&& dataModel.throwerHasCardToBeatCurrentWinner()) {
+			
+			if( CardStringFunctions.getIndexOfSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()) != Constants.SPADE) {
+				return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+			
+			} else if(CardStringFunctions.getIndexOfSuit(dataModel.getCurrentFightWinningCardBeforeAIPlays()) == Constants.SPADE) {
+				//Not as sure about this:
+				return dataModel.getCardInHandClosestOverCurrentWinner();
+			}
+			
 		}
 		//END TODO put in function
 		
