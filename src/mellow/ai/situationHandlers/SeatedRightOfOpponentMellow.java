@@ -256,7 +256,7 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS QS JS TS AH QD 4D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 8S 2S QH KC JC 8C 4C")) {
 			System.out.println("Debug");
 		}
 		

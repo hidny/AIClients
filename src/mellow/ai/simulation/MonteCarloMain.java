@@ -35,10 +35,10 @@ public class MonteCarloMain {
 	public static void main(String args[]) {
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTestsDone"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTestsDone"};
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"newBidTestcases"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"newFollowFails", "newBonusChecks"};
@@ -69,14 +69,14 @@ public class MonteCarloMain {
 	//Deep dive into 1 test case slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000000;
 
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;

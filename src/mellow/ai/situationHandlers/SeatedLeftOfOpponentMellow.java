@@ -536,6 +536,9 @@ public class SeatedLeftOfOpponentMellow {
 		double bestValue = 0.0;
 		String bestCard = null;
 
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 8S 2S QH KC JC 8C 4C ")) {
+			System.out.println("Debug");
+		}
 		
 		for(int curSuitIndex=0; curSuitIndex<Constants.NUM_SUITS; curSuitIndex++) {
 

@@ -37,7 +37,7 @@ public class testCaseParser {
 	//public static String TEST_FOLDERS[] = {"Play2ndSpadeCases"};
 	//public static String TEST_FOLDERS[] = {"newBidTestcases"};
 	//public static String TEST_FOLDERS[] = {"newBonusChecks"};
-	//public static String TEST_FOLDERS[] = {"newLeadFails2"};
+	//public static String TEST_FOLDERS[] = {"newLeadFails", "newLeadFails2"};
 	//public static String TEST_FOLDERS[] = {"newFollowFails"};
 	
 	public static int numLeadingPass = 0;

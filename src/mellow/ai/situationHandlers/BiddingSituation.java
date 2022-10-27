@@ -14,7 +14,7 @@ public class BiddingSituation {
 		//TODO: add this important debug message:
 		System.out.println("(Your score, their score) = (" + dataModel.getOurScore() + ", " + dataModel.getOpponentScore() + ")");
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 4S TH 7H 2H 7C 4C 3C TD 8D 6D 5D 2D")) {
 			System.out.println("Debug");
 		}
 		
@@ -240,7 +240,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 4S TH 7H 2H 7C 4C 3C TD 8D 6D 5D 2D")) {
 			System.out.println("Debug");
 		}
 		
@@ -322,20 +322,37 @@ public class BiddingSituation {
 				
 				//return temp2 + "";
 			} else {
-				int temp2 = BiddingNearEndOfGameFunctions.getPossiblyLowerBidBecauseItsNearEndOfGameAssumeWorst(dataModel, 2, scoresProjectedWorstCase);
+				int TEMP_NON_MELLOW_BID = 1;
 				
-				if(temp2 == 1 
-						&& dataModel.getOpponentScore() < 800
-						&& (        BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.80
-								|| 
-							       (BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.60
-									&& dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
-								    && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4)
+				int scoresProjectedWorstCaseNonMellowBid[] = BiddingNearEndOfGameFunctions.getProjectedScoresAssumingTheWorst(dataModel, TEMP_NON_MELLOW_BID);
+				
+				
+				if(  		(
+								(
+								dataModel.getOpponentScore() < 800
+								&& (        BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.80
+										|| 
+									       (BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel) < 0.60
+											&& dataModel.playerMadeABidInRound(Constants.CURRENT_PARTNER_INDEX)
+										    && dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4)
+									)
+								)
+							||
+							//We could just win by saying 1 or 2 and ignoring what the opponent does:
+								(
+								(dataModel.isDealer() || dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX)
+								&&
+								scoresProjectedWorstCaseNonMellowBid[0] >= Constants.GOAL_SCORE
+								&&
+								scoresProjectedWorstCaseNonMellowBid[0] > scoresProjectedWorstCaseNonMellowBid[1]
+								&&
+								couldDreamOfMakingATrick(dataModel, bid)
+								)
 							)
 						
 					) {
 					System.out.println("JAN 9th: " + BasicBidMellowWinProbCalc.getMellowSuccessProb2(dataModel));
-					return temp2 + "";
+					return TEMP_NON_MELLOW_BID + "";
 				}
 				
 			}
@@ -918,4 +935,28 @@ public class BiddingSituation {
 		
 		return false;
 	}
+	
+	public static boolean couldDreamOfMakingATrick(DataModel dataModel, double bidDouble) {
+		return bidDouble > -0.1
+		||
+		dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 3
+		||
+		dataModel.hasCard("AD")
+		||
+		dataModel.hasCard("AH")
+		||
+		dataModel.hasCard("AC")
+		||
+		(
+			(dataModel.hasCard("KD")
+			||
+			dataModel.hasCard("KH")
+			||
+			dataModel.hasCard("KC")
+			) 
+			&& 
+			dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > 0
+		);
+	}
+	
 }
