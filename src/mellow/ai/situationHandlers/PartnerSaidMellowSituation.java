@@ -126,6 +126,9 @@ public class PartnerSaidMellowSituation {
 
 	public static String AIHandleLead(DataModel dataModel) {
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 6S KH TH 7H 6H 2H 8C 5C 3D")) {
+			System.out.println("Debug");
+		}
 		
 		System.out.println("AILEADPROTECT)");
 		int bestSuitIndexToPlay = -1;
@@ -154,17 +157,42 @@ public class PartnerSaidMellowSituation {
 		}
 		
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S TH 9H 8H 6H 2H TC 7D 6D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S QC TC 8C 7C 5C KD")) {
 			System.out.println("Debug");
 		}
 		String highestCardOfSuit = dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndexToPlay);
 		
 		String cardToPlay = "";
 		if(dataModel.currentPlayerHasMasterInSuit(bestSuitIndexToPlay)
-			|| (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, bestSuitIndexToPlay)
-					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestCardOfSuit) > 1) ) {
+			||
+			(! dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay)
+			   &&
+				( (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, bestSuitIndexToPlay)
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestCardOfSuit) > 1)
+				|| 
+				     (
+						bestSuitIndexToPlay == Constants.SPADE
+						&& NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, bestSuitIndexToPlay)
+						&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(highestCardOfSuit) > 1
+						&& 
+						//If there's 2 spades over top spade in hand and mellow is in danger, just play the higher one:
+						//Assume mellow doesn't have KS though.
+						//This doesn't fix anything.
+						(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(bestSuitIndexToPlay, Constants.SPADE)
+								== null
+							||
+							DataModel.getRankIndex(dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(bestSuitIndexToPlay, Constants.SPADE))
+						    <= DataModel.getRankIndex(highestCardOfSuit)
+						    ||
+						    dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(DataModel.getCardString(DataModel.KING, bestSuitIndexToPlay), cardToPlay)
+						    <= 1
+						)
+				    )
+				)
+			)
+		) {
 			
-			if(CardStringFunctions.getIndexOfSuit(highestCardOfSuit) != Constants.SPADE) {
+			//if(CardStringFunctions.getIndexOfSuit(highestCardOfSuit) != Constants.SPADE) {
 				
 				//Try to confuse opponents by not playing your master card when you don't have to:
 				cardToPlay = 
@@ -174,14 +202,21 @@ public class PartnerSaidMellowSituation {
 					&& dataModel.getNumberOfCardsOneSuit(bestSuitIndexToPlay) > 1
 					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay,
 							dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay)) == 0
+					
 					) {
 					//But, don't make it obvious that mellow has none of suit.
 					cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay);
 				}
 			
-			} else {
-				cardToPlay = highestCardOfSuit;
+			//Just play highest master spade though:
+			if(CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE
+				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(cardToPlay) == 0) {
+				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 			}
+				
+			//} else {
+			//	cardToPlay = highestCardOfSuit;
+			//}
 		} else {
 			//cardToPlay = highestCardOfSuit;
 			
@@ -248,6 +283,14 @@ public class PartnerSaidMellowSituation {
 		
 		int numCardsInHandOfSuit = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
 		
+		//Want to play spade if you have plenty of them:
+		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 5) {
+			ret += 100.0;
+			
+		} else if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 4
+				&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) < 7) {
+			ret += 100.0;
+		}
 		/*
 		//Check for a good backup card: (2nd highest card)
 		if(numCardsInHandOfSuit >= 2) {
@@ -484,6 +527,11 @@ public class PartnerSaidMellowSituation {
 		//prefer leading when others have plenty of the suit...
 		ret += 4.0 * numOthersWithCard;
 		
+		if(dataModel.getNumberOfCardsOneSuit(currentSuitIndex) == 1
+				&& numOthersWithCard > 11) {
+			//Don't be eager to lead last of suit...
+			ret -=50.0;
+		}
 		
 		
 		//RHS could trump.
