@@ -78,7 +78,7 @@ public class PartnerSaidMellowSituation {
 					)
 				//End safe spades
 				//Safe mellow:
-				&& (! PartnerSaidMellowSituation.mellowhasDangerousOffsuit(dataModel)
+				&& (! PartnerSaidMellowSituation.mellowhasDangerousOffsuitProtectorCantTrump(dataModel)
 						&&  dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
 				)
 				&& dataModel.throwerHasCardToBeatCurrentWinner()) {
@@ -126,7 +126,7 @@ public class PartnerSaidMellowSituation {
 
 	public static String AIHandleLead(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 6S KH TH 7H 6H 2H 8C 5C 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 7H JC TC 4C 3D")) {
 			System.out.println("Debug");
 		}
 		
@@ -192,21 +192,19 @@ public class PartnerSaidMellowSituation {
 			)
 		) {
 			
-			//if(CardStringFunctions.getIndexOfSuit(highestCardOfSuit) != Constants.SPADE) {
+			//Try to confuse opponents by not playing your master card when you don't have to:
+			cardToPlay = 
+					getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
+			
+			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 0
+				&& dataModel.getNumberOfCardsOneSuit(bestSuitIndexToPlay) > 1
+				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay,
+						dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay)) == 0
 				
-				//Try to confuse opponents by not playing your master card when you don't have to:
-				cardToPlay = 
-						getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
-				
-				if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 0
-					&& dataModel.getNumberOfCardsOneSuit(bestSuitIndexToPlay) > 1
-					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay,
-							dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay)) == 0
-					
-					) {
-					//But, don't make it obvious that mellow has none of suit.
-					cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay);
-				}
+				) {
+				//But, don't make it obvious that mellow has none of suit.
+				cardToPlay = dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay);
+			}
 			
 			//Just play highest master spade though:
 			if(CardStringFunctions.getIndexOfSuit(cardToPlay) == Constants.SPADE
@@ -214,11 +212,8 @@ public class PartnerSaidMellowSituation {
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
 			}
 				
-			//} else {
-			//	cardToPlay = highestCardOfSuit;
-			//}
+			
 		} else {
-			//cardToPlay = highestCardOfSuit;
 			
 			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay)) {
 				
@@ -274,6 +269,7 @@ public class PartnerSaidMellowSituation {
 		ret = 15.0;
 		
 		//Factors:
+		
 
 		//Master
 		if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
@@ -328,6 +324,28 @@ public class PartnerSaidMellowSituation {
 			
 			
 		}*/
+		
+		//Don't waste last spade if you don't have to:
+		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) == 1) {
+			//TODO: just check for dangerous offsuit that you can't protect
+			// dangerous = mellow could have something above 8C for example.
+			if(mellowhasSafeOffsuitProtectorCanLead(dataModel)) {
+				if(getNumDangerousOffsuitForMellow(dataModel) > 1) {
+					ret -= 80.0;
+				
+				} else if(mellowHasDangerousSuitProtectorNeedsToTrump(dataModel)
+						&& getNumDangerousOffsuitForMellow(dataModel) == 1) {
+					ret -= 50.0;
+					
+				} else if(getNumDangerousOffsuitForMellow(dataModel) == 1) {
+					ret -= 50.0;
+					
+				}
+			} else if(mellowHasDangerousSuitProtectorNeedsToTrump(dataModel)
+					&& protectHasKequivOffsuitAndItsProbablySafe(dataModel)) {
+				ret -= 80.0;
+			}
+		}
 		
 		String cardMellowMax = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
 		
@@ -951,7 +969,7 @@ public class PartnerSaidMellowSituation {
 			if(dataModel.currentAgentHasSuit(leadSuit)) {
 				
 				if(dataModel.throwerHasCardToBeatCurrentWinner()
-						&& mellowhasDangerousOffsuit(dataModel)
+						&& mellowhasDangerousOffsuitProtectorCantTrump(dataModel)
 						&& dataModel.currentPlayerGetNumMasterOfSuitInHand(leadSuit) >= 3) {
 					
 					//Just take it if you're afraid of what the attackers will lead
@@ -1256,7 +1274,7 @@ public class PartnerSaidMellowSituation {
 	//Danger 4th
 	
 	
-	public static boolean mellowhasDangerousOffsuit(DataModel dataModel) {
+	public static boolean mellowhasDangerousOffsuitProtectorCantTrump(DataModel dataModel) {
 		
 		for(int s=0; s<Constants.NUM_SUITS; s++) {
 			if(s == Constants.SPADE) {
@@ -1276,6 +1294,99 @@ public class PartnerSaidMellowSituation {
 			
 		}
 		
+		return false;
+	}
+	
+	public static boolean mellowhasSafeOffsuitProtectorCanLead(DataModel dataModel) {
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			if(s == Constants.SPADE) {
+				continue;
+			}
+
+			if(dataModel.getNumberOfCardsOneSuit(s) == 0) {
+				continue;
+			}
+			
+			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
+			
+			if(maxMellowCard == null ||
+					DataModel.getRankIndex(maxMellowCard) < DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(s))) {
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
+	
+	public static boolean protectHasKequivOffsuitAndItsProbablySafe(DataModel dataModel) {
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			if(s == Constants.SPADE) {
+				continue;
+			}
+
+			if(dataModel.getNumberOfCardsOneSuit(s) == 0) {
+				continue;
+			}
+			
+			if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, s)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(s) > 3
+					//TODO: maybe check if mellow played really low?
+					) {
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
+
+	public static int getNumDangerousOffsuitForMellow(DataModel dataModel) {
+		
+		int num = 0;
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			if(s == Constants.SPADE) {
+				continue;
+			}
+
+			
+			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
+			
+			if(maxMellowCard != null &&
+					(    (!dataModel.currentAgentHasSuit(s)
+							&& dataModel.getNumCardsInCurrentPlayersHandUnderCardSameSuit(maxMellowCard) >= 1
+							)
+					 || (dataModel.currentAgentHasSuit(s)
+							 &&
+							 DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(s))
+							 )
+					 )) {
+				num++;
+			}
+			
+		}
+		
+		return num;
+	}
+	
+	public static boolean mellowHasDangerousSuitProtectorNeedsToTrump(DataModel dataModel) {
+		
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			if(s == Constants.SPADE || dataModel.getNumberOfCardsOneSuit(s) > 0) {
+				continue;
+			}
+
+			
+			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, s);
+			
+			if(maxMellowCard != null &&
+					dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(maxMellowCard) < 4
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(maxMellowCard) >= 2
+				) {
+				return true;
+			}
+			
+		}
 		return false;
 	}
 }
