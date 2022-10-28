@@ -221,7 +221,28 @@ public class PartnerSaidMellowSituation {
 			//cardToPlay = highestCardOfSuit;
 			
 			if(dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay)) {
-				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndexToPlay);
+				
+				int numCards = dataModel.getNumCardsOfSuitInCurrentPlayerHand(bestSuitIndexToPlay);
+				
+				//Don't just play the lowest card even though partner mellow is safe:
+				if(dataModel.currentPlayerHasMasterInSuit(bestSuitIndexToPlay)
+						||
+						NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, bestSuitIndexToPlay)
+					) {
+					cardToPlay = 
+							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+									dataModel,
+									dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndexToPlay));
+					
+				} else if(numCards > 3) {
+					cardToPlay = 
+							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+									dataModel,
+									dataModel.getCardCurrentPlayerGetThirdHighestInSuit(bestSuitIndexToPlay));
+				} else {
+					cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(bestSuitIndexToPlay);
+				}
+				
 			} else {
 				
 				String maxRankCardMellow = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay);
