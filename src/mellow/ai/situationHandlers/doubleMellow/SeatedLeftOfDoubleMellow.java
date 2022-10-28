@@ -13,7 +13,7 @@ public class SeatedLeftOfDoubleMellow {
 	
 	public static String playMoveSeatedLeftOfDoubleMellow(DataModel dataModel) {
 		
-		System.out.println("Left of double mellow");
+		System.out.println("(LEFT OF DOUBLE MELLOW)");
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
@@ -58,6 +58,58 @@ public class SeatedLeftOfDoubleMellow {
 				continue;
 			}
 			
+			String maxRankOpponentMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(OPPONENT_MELLOW_INDEX, suit);
+			String maxRankPartnerCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(Constants.CURRENT_PARTNER_INDEX, suit);
+			
+			if(suit == Constants.CLUB && DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KC 8C 2C AD TD 9D ")) {
+				System.out.println("Debug");
+			}
+			
+			//Protect while attacking if you can get away with it:
+			if(maxRankOpponentMellowCard != null
+					&& (
+					maxRankPartnerCard == null
+					||
+					DataModel.getRankIndex(maxRankOpponentMellowCard)
+					> DataModel.getRankIndex(maxRankPartnerCard)
+					)
+					) {
+				if(maxRankPartnerCard != null
+					&& dataModel.getNumCardsInCurrentPlayersHandUnderCardSameSuit(maxRankOpponentMellowCard)
+					> dataModel.getNumCardsInCurrentPlayersHandUnderCardSameSuit(maxRankPartnerCard)) {
+					curCard = dataModel.getCardInHandClosestOverSameSuit(maxRankPartnerCard);
+					curValue += 100.0;
+				}
+			}
+			//End protect while attacking
+			
+			
+			//Enjoy leading spade if opponent mellow is vulnerable even if partner mellow is vulnerable...
+			if(suit == Constants.SPADE
+					&& maxRankPartnerCard != null
+					&& maxRankOpponentMellowCard != null) {
+
+				String highestSpade = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+				
+				if(DataModel.getRankIndex(maxRankOpponentMellowCard)
+					> DataModel.getRankIndex(highestSpade)) {
+					
+					if(dataModel.getOurScore() + 100 < dataModel.getOpponentScore()) {
+						curCard = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
+					} else {
+						curCard = highestSpade;
+					}
+					
+					if(dataModel.getDealerIndexAtStartOfRound() == OPPONENT_MELLOW_INDEX) {
+						//If opponent is dealer, their mellow would be more dangerous, so give more points:
+						curValue += 100.0;
+					} else {
+						curValue += 50.0;
+					}
+				}
+			}
+			
+			/*
 			if(dataModel.signalHandler.mellowBidderSignalledNoCardOverCardSameSuit(tempLowest, Constants.CURRENT_PARTNER_INDEX)) {
 				
 				curValue += dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suit);
@@ -69,7 +121,7 @@ public class SeatedLeftOfDoubleMellow {
 				
 				curCard = tempLowest;
 				
-			}
+			}*/
 			
 		
 			if(curCard != null  && curValue > bestValue) {

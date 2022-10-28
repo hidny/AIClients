@@ -362,7 +362,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
 			
-		} else {
+		} else if(numActiveMellows >= 3){
 			
 			//If there's at least 3 mellows, print a warning. I only want to submit the message when the round starts.
 			if(dataModel.getCardsPlayedThisRound() == Constants.NUM_CARDS) {
@@ -397,6 +397,10 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 			}
 
+		} else {
+			System.out.println("WARNING: This else case should not happen!");
+			System.exit(1);
+			return dataModel.getLowOffSuitCardToPlayElseLowestSpade();
 		}
 		
 	}

@@ -13,8 +13,8 @@ public class SeatedRightOfDoubleMellow {
 	public static int OPPONENT_MELLOW_INDEX = Constants.LEFT_PLAYER_INDEX;
 	
 	public static String playMoveSeatedRightOfDoubleMellow(DataModel dataModel) {
-		
-		System.out.println("Right of double mellow");
+
+		System.out.println("(RIGHT OF DOUBLE MELLOW)");
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
