@@ -256,7 +256,7 @@ public class SeatedRightOfOpponentMellow {
 
 	public static String AISecondThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 8S 2S QH KC JC 8C 4C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS 9S TD 5D 2D ")) {
 			System.out.println("Debug");
 		}
 		
@@ -529,6 +529,19 @@ public class SeatedRightOfOpponentMellow {
 						//Fix a single test case:
 						return dataModel.getJunkiestCardToFollowLead();
 					} else {
+						
+						//Exception where you want to take the lead from partner:
+						if(dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+							&& dataModel.getSumBidsCurTeam() <= dataModel.getNumTricksCurTeam() + dataModel.currentPlayerGetNumMasterSpadeInHand()
+							&& dataModel.getSumBidsOtherTeam() <= dataModel.getNumTricksOtherTeam()
+							&& ! gotNothingThreatningMellowToLead(dataModel, MELLOW_PLAYER_INDEX)) {
+							
+							//Created because of 3-4778
+							//I hope that this doesn't make it worse...
+							return dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+						
+						}
+						
 						return dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 					}
 				}

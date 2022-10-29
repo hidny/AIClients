@@ -758,6 +758,32 @@ public static boolean hasKEquiv(DataModel dataModel, int suitIndex) {
 		return num;
 	 }
 	 
+	 
+	 public static int getNumCardsInHandForTop5OfSuit(DataModel dataModel, int suitIndex) {
+		int numInPlayFound = 0;
+		int num = 0;
+		
+		for(int curRank = dataModel.ACE; curRank>=dataModel.RANK_TWO && numInPlayFound < 5; curRank--) {
+			if(dataModel.isCardPlayedInRound(
+					DataModel.getCardString(curRank, suitIndex))
+					) {
+				continue;
+				
+			}
+
+			numInPlayFound++;
+			
+			if(dataModel.getCardsCurrentlyHeldByPlayers()[Constants.CURRENT_AGENT_INDEX][suitIndex][curRank] == DataModel.CERTAINTY) {
+				
+				num++;
+	
+			}
+		}
+	
+		return num;
+		 
+	 }
+	 
  public static String getCardThatWillEventuallyForceOutAllMasters(DataModel dataModel, int suitIndex) {
 		 
 		 if(dataModel.getNumberOfCardsOneSuit(suitIndex) < 1) {

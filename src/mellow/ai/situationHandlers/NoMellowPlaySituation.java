@@ -243,6 +243,12 @@ public class NoMellowPlaySituation {
 			
 			curScore += 8.0;
 			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+		
+		} else if(NonMellowBidHandIndicators.getNumCardsInHandForTop5OfSuit(dataModel, Constants.SPADE) 
+			            >=3) {
+			curScore += 8.0;
+			cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup
+					(dataModel, dataModel.getCardCurrentPlayerGetThirdHighestInSuit(Constants.SPADE));
 			
 		} else {
 			curScore += 5.0;
