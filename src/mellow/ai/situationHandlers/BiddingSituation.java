@@ -4,6 +4,7 @@ import mellow.Constants;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.situationHandlers.bidding.BasicBidMellowWinProbCalc;
 import mellow.ai.situationHandlers.bidding.BiddingNearEndOfGameFunctions;
+import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
 public class BiddingSituation {
@@ -136,6 +137,38 @@ public class BiddingSituation {
 				bid = bid + 0.27;
 			} else if(dataModel.hasCard("K" + off) && dataModel.hasCard("A" + off)) {
 				bid = bid + 0.26;
+			}
+		}
+		
+		//offsuit queen adjust:
+		for(int i=0; i<Constants.OFFSUITS.length; i++) {
+			String off = Constants.OFFSUITS[i];
+			int indexSuit = Constants.OFFSUITS_SUIT_INDEXES[i];
+			
+			if(!dataModel.hasCard("A" + off)
+					&& ! dataModel.hasCard("K" + off)
+					&& dataModel.hasCard("Q" + off) && dataModel.getNumberOfCardsOneSuit(Constants.SPADE) >= 3) {
+				
+				if(dataModel.getNumberOfCardsOneSuit(indexSuit) == 3
+						&& dataModel.getCardCurrentPlayerGetSecondHighestInSuit(indexSuit)
+						.equals(
+								DataModel.getCardString(DataModel.JACK, indexSuit))
+				) {
+					bid += 0.30;
+					
+				} else if(dataModel.getNumberOfCardsOneSuit(indexSuit) == 3) {
+					if(DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetSecondHighestInSuit(indexSuit))
+							>= DataModel.RANK_NINE) {
+
+						bid += 0.25;
+					} else {
+						bid += 0.15;
+					}
+					
+				} else if(dataModel.getNumberOfCardsOneSuit(indexSuit) == 4
+						&& dataModel.getCardCurrentPlayerGetSecondHighestInSuit(indexSuit).equals(DataModel.getCardString(DataModel.JACK, indexSuit))) {
+					bid += 0.25;
+				}
 			}
 		}
 		

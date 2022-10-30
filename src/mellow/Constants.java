@@ -19,6 +19,7 @@ public class Constants {
 	public static final int GOAL_SCORE = 1000;
 	
 	public static final String OFFSUITS[] = {"H", "C", "D"};
+	public static final int OFFSUITS_SUIT_INDEXES[] = {1, 2, 3};
 
 	//Current player index is 0
 	//Left guy index is 1
