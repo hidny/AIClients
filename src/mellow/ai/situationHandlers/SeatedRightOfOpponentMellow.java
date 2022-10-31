@@ -390,7 +390,7 @@ public class SeatedRightOfOpponentMellow {
 					} else {
 						//Feel free to play 3rd highest card because that shouldn't affect your
 						//ability to make tricks:
-						return PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+						return PartnerSaidMellowSituation.getLowestCardOfGroup(dataModel,
 								dataModel.getCardCurrentPlayerGetThirdHighestInSuit(leadSuit)
 								);
 					}

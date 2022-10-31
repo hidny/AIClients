@@ -194,7 +194,7 @@ public class PartnerSaidMellowSituation {
 			
 			//Try to confuse opponents by not playing your master card when you don't have to:
 			cardToPlay = 
-					getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, highestCardOfSuit);
+					getLowestCardOfGroup(dataModel, highestCardOfSuit);
 			
 			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 0
 				&& dataModel.getNumberOfCardsOneSuit(bestSuitIndexToPlay) > 1
@@ -225,13 +225,13 @@ public class PartnerSaidMellowSituation {
 						NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, bestSuitIndexToPlay)
 					) {
 					cardToPlay = 
-							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+							getLowestCardOfGroup(
 									dataModel,
 									dataModel.getCardCurrentPlayerGetHighestInSuit(bestSuitIndexToPlay));
 					
 				} else if(numCards > 3) {
 					cardToPlay = 
-							getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+							getLowestCardOfGroup(
 									dataModel,
 									dataModel.getCardCurrentPlayerGetThirdHighestInSuit(bestSuitIndexToPlay));
 				} else {
@@ -872,7 +872,7 @@ public class PartnerSaidMellowSituation {
 						} else {
 
 							if(dataModel.currentPlayerHasMasterInSuit(leadSuit)) {
-								return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+								return getLowestCardOfGroup(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
 							} else {
 								return dataModel.getCardInHandClosestOverCurrentWinner();
 							}
@@ -892,7 +892,7 @@ public class PartnerSaidMellowSituation {
 						}
 						
 						//Play high to protect, but hide how high you can go if possible:
-						return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+						return getLowestCardOfGroup(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
 					}
 				}
 			
@@ -938,7 +938,7 @@ public class PartnerSaidMellowSituation {
 					// Example: Say Mellow leads 5C and you have AC KC JC 7C... maybe play KC?
 					
 					if(leadSuit != Constants.SPADE) {
-						return getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+						return getLowestCardOfGroup(dataModel,
 								dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
 					} else {
 						return dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit);
@@ -1074,7 +1074,7 @@ public class PartnerSaidMellowSituation {
 
 	}
 	
-	public static String getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(DataModel dataModel, String cardStart) {
+	public static String getLowestCardOfGroup(DataModel dataModel, String cardStart) {
 		
 		String cardToConsider= cardStart;
 		

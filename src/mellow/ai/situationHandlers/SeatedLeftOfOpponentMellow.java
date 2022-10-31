@@ -356,9 +356,9 @@ public class SeatedLeftOfOpponentMellow {
 										&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(dataModel.getCardInHandClosestOverCurrentWinner(),
 																						  dataModel.getCardInHandClosestUnderSameSuit(currentFightWinner))
 										== 0
-										&& PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow()))
+										&& PartnerSaidMellowSituation.getLowestCardOfGroup(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(dataModel.getSuitOfLeaderThrow()))
 											.equals(
-											 PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel, dataModel.getCardInHandClosestOverCurrentWinner())
+											 PartnerSaidMellowSituation.getLowestCardOfGroup(dataModel, dataModel.getCardInHandClosestOverCurrentWinner())
 											)
 										) {
 											//Let partner take it if you have the card directly over and under:
@@ -495,7 +495,7 @@ public class SeatedLeftOfOpponentMellow {
 				String tmpCard = dataModel.getCardInHandClosestOverSameSuit(curCard);
 				
 				if(tmpCard != null) {
-					ret = PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(dataModel,
+					ret = PartnerSaidMellowSituation.getLowestCardOfGroup(dataModel,
 							tmpCard);
 				}
 				
@@ -503,7 +503,7 @@ public class SeatedLeftOfOpponentMellow {
 			
 			} else if(rank + numCardsAboveCurrentRankCovered > DataModel.getRankIndex(maxMellowCard)) {
 				
-					ret=PartnerSaidMellowSituation.getLowestCardOfGroupOfCardsOverAllSameNumCardsInOtherPlayersHandOfSuit(
+					ret=PartnerSaidMellowSituation.getLowestCardOfGroup(
 								dataModel,
 								curCard);
 				break;

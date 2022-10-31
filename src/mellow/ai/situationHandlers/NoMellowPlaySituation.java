@@ -120,6 +120,22 @@ public class NoMellowPlaySituation {
 		//EX: if you have the KS and QS, play KS if you were originally intending the QS.
 		bestCardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, bestCardToPlay);
 		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(bestCardToPlay);
+		
+		
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)
+		&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+		&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+		&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+		&& dataModel.signalHandler.playerAlwaysFollowedSuit(Constants.LEFT_PLAYER_INDEX, suitIndex)) {
+			
+			String tmp = PartnerSaidMellowSituation.getLowestCardOfGroup(dataModel, bestCardToPlay);
+			if(! tmp.equals(bestCardToPlay)) {
+				System.out.println("AHA");
+				
+			}
+		}
+		
 		return bestCardToPlay;
 	}
 	
@@ -132,7 +148,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9H 8H 7H 5H 4H QC 7C 5C")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S TH 9H 6H")) {
 			System.out.println("Debug");
 		}
 
@@ -315,7 +331,15 @@ public class NoMellowPlaySituation {
 			curScore -= 100.0;
 			
 			
-		} else if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+		} else if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+				&& (dataModel.currentPlayerGetNumMasterSpadeInHand() > 1
+				|| dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+				|| (dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+				   && dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				   && dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) > 1
+				   )
+				)
+			){
 			//Want to play spade if partner is void, but not when opponents are void:
 			curScore += 40.0;
 		}
@@ -437,25 +461,18 @@ public class NoMellowPlaySituation {
 				}
 			} else {
 				
-
-				curScore += 10.0;
+				if(dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 1
+						&& ! dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)) {
+					//Pass:
+				} else {
+					curScore += 10.0;
+				}
 				
 				if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
 					curScore += 1.0;
 				}
 				
-				//TODO: put in function
-				int numPlayersWithSpade = 0;
-				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
-					numPlayersWithSpade++;
-				}
-				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
-					numPlayersWithSpade++;
-				}
-				if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-					numPlayersWithSpade++;
-				}
-				//END TODO function
+				int numPlayersWithSpade = getNumOtherPlayersTrumpingSpade(dataModel);
 				
 				if(numPlayersWithSpade * dataModel.getNumberOfCardsOneSuit(Constants.SPADE) > dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)) {
 					curScore += 15.0;
@@ -483,11 +500,17 @@ public class NoMellowPlaySituation {
 		
 		
 		//Drain the spades... TODO: this is rough... and doesn't always work out...
-		if(dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
+		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) * getNumOtherPlayersTrumpingSpade(dataModel) > numCardsOfSuitOtherPlayersHave
 				&& (dataModel.currentPlayerHasMasterInSuit(1)
 					|| dataModel.currentPlayerHasMasterInSuit(2)
 					|| dataModel.currentPlayerHasMasterInSuit(3))
-				&& numCardsOfSuitOtherPlayersHave > 0) {
+				&& (numCardsOfSuitOtherPlayersHave > 1
+						|| (numCardsOfSuitOtherPlayersHave == 1
+						&& dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
+						)
+					)
+		) {
+			
 			curScore += 30.0;
 			
 			//Check if we have aggressive spade lead options:
@@ -688,7 +711,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9H 8H 7H 5H 4H QC 7C 5C")
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S TH 9H 6H")
 				&& suitIndex == 1) {
 			System.out.println("Debug");
 		}
@@ -1023,7 +1046,8 @@ public class NoMellowPlaySituation {
 
 				} else if(numCardsOfSuitInHand > 1
 						&& dataModel.signalHandler.playerAlwaysFollowedSuit
-						(Constants.RIGHT_PLAYER_INDEX, suitIndex)) {
+						(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
 					//Don't lead this suit if partner might think they can trump without getting trumped over.
 					curScore -= 70;
 				} 
@@ -3378,5 +3402,20 @@ public class NoMellowPlaySituation {
 			     );
 	}
 	
+	
+	public static int getNumOtherPlayersTrumpingSpade(DataModel dataModel) {
+		int numPlayersWithSpade = 0;
+		if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+			numPlayersWithSpade++;
+		}
+		if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)) {
+			numPlayersWithSpade++;
+		}
+		if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			numPlayersWithSpade++;
+		}
+		
+		return numPlayersWithSpade;
+	}
 	
 }
