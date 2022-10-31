@@ -10,7 +10,7 @@ public class MichaelGenTestcases {
 	public static void main(String[] args) {
 		
 		//Create testcases in Michael folder:
-		String autoArgs[] = {"mellow", "Michael2022-3", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "-1"};
+		//String autoArgs[] = {"mellow", "Michael2022-3", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "0", "0", "-1"};
 		
 		//Rigged
 		//String autoArgs[] = {"mellow", "garbageTestData", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "908", "967", "0", "[AS 5H 3C 5S JC 2C AC 2D KS 4S AD 3D TS][4D 6D 6S 8C KH 3H 7D QD 9H 4H QH 8H AH][JH QS TH 7S QC 9C 6C TD 2S JD 5D 8D KD][TC JS KC 5C 7H 4C 8S 2H 9S 7C 6H 3S 9D]"};
@@ -26,6 +26,7 @@ public class MichaelGenTestcases {
 		//String autoArgs[] = {"mellow", "MichaelPlay", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "900", "900", "-1"};
 		
 		
+		String autoArgs[] = {"mellow", "Michael2022-3", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "850", "399", "3", "[AS TS 9S 8S 5S AH JH TH 9H 6H 4H 7C 4D][QS 7S 3S 2S 8H 2H KC 6C 4C JD TD 7D 5D][6S KH 3H JC TC 9C 8C 5C 2C AD KD 8D 6D][KS JS 4S QH 7H 5H AC QC 3C QD 9D 3D 2D]"};
 		
 		//Part 2:
 		//String autoArgs[] = {"mellow", "Michael2022-3", "mellowpy", "" + MellowAIDeciderFactory.USER_INPUT_TESTCASES, "fast", "908", "813", "1", "[][][QS JS KH 8H 4H TC 6C 4C 3C AD 7D 4D 3D][]"};

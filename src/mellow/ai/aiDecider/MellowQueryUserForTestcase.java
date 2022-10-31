@@ -209,7 +209,16 @@ public class MellowQueryUserForTestcase implements MellowAIDeciderInterface {
 			play = play.replace("|", "");
 			
 			System.out.println("Can you list alternative plays that aren't that bad?");
-			String alternative = in.nextLine();
+			String alternative = in.nextLine().toUpperCase();
+			System.out.println("Thank you");
+			
+			//Fat-finger avoidance strat:
+			alternative = alternative.replace("\\", "");
+			alternative = alternative.replace("}", "");
+			alternative = alternative.replace("{", "");
+			alternative = alternative.replace("]", "");
+			alternative = alternative.replace("[", "");
+			alternative = alternative.replace("|", "");
 			
 			//Make test case:
 			printTestCase(play, alternative);

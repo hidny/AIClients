@@ -34,8 +34,8 @@ public class MonteCarloMain {
 	
 	public static void main(String args[]) {
 		
-		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTestsDone"};
@@ -43,6 +43,7 @@ public class MonteCarloMain {
 		//testCaseParser.TEST_FOLDERS = new String[] {"newBidTestcases"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"newFollowFails", "newBonusChecks"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"newLeadFails"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"newLeadFails2"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"TestPython"};
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"newBonusChecks"};
@@ -71,12 +72,12 @@ public class MonteCarloMain {
 
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -163,7 +164,7 @@ public class MonteCarloMain {
 		
 		boolean isThorough = false;
 		if(numWaysOtherPlayersCouldHaveCards < LIMIT_THOROUGH_SEARCH
-				|| (skipSimulationsBasedOnBids && numWaysOtherPlayersCouldHaveCards <= 10 * num_simulations)
+				|| (skipSimulationsBasedOnBids && numWaysOtherPlayersCouldHaveCards <= 20 * num_simulations)
 				|| ( numWaysOtherPlayersCouldHaveCards <= 3 * num_simulations)) {
 			isThorough = true;	
 		}
