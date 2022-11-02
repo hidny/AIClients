@@ -367,9 +367,7 @@ public class NoMellowPlaySituation {
 			//TODO: this fixes testcase 220 of Michael2021, but
 			// maybe it's not always best
 			// I do think it's better than leading the offsuit masters though
-			if(dataModel.currentPlayerHasMasterInSuit(1)
-					|| dataModel.currentPlayerHasMasterInSuit(2)
-					|| dataModel.currentPlayerHasMasterInSuit(3)) {
+			if(hasAnOffsuitMaster(dataModel)) {
 				curScore += 70.0;
 				
 				//if( numCardsOfSuitInHand == 1 && dataModel.getNumCardsInCurrentPlayerHand() >= 4) {
@@ -500,15 +498,26 @@ public class NoMellowPlaySituation {
 		
 		
 		//Drain the spades... TODO: this is rough... and doesn't always work out...
-		if(dataModel.getNumberOfCardsOneSuit(Constants.SPADE) * getNumOtherPlayersTrumpingSpade(dataModel) > numCardsOfSuitOtherPlayersHave
-				&& (dataModel.currentPlayerHasMasterInSuit(1)
-					|| dataModel.currentPlayerHasMasterInSuit(2)
-					|| dataModel.currentPlayerHasMasterInSuit(3))
+		if((dataModel.getNumCardsCurrentUserStartedWithInSuit(Constants.SPADE) >= 5
+			&& dataModel.getNumberOfCardsOneSuit(Constants.SPADE) * getNumOtherPlayersTrumpingSpade(dataModel) > numCardsOfSuitOtherPlayersHave
+				
+				&& (hasAnOffsuitMaster(dataModel)
+					|| hasAnOffsuitKingEqCouldMakeTrick(dataModel)
+					|| hasAnOffsuitQueenEqCouldMakeTrick(dataModel)
+					|| hasAnOffsuitKingQueenEqCouldMakeTrick(dataModel)
+					|| dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)
+				)
 				&& (numCardsOfSuitOtherPlayersHave > 1
 						|| (numCardsOfSuitOtherPlayersHave == 1
 						&& dataModel.currentPlayerHasMasterInSuit(Constants.SPADE)
 						)
 					)
+			) ||
+			(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE) 
+					&& (dataModel.currentPlayerGetNumMasterOfSuitInHand(Constants.SPADE) >= 2
+					    || NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)
+					    )
+			)
 		) {
 			
 			curScore += 30.0;
@@ -3418,4 +3427,50 @@ public class NoMellowPlaySituation {
 		return numPlayersWithSpade;
 	}
 	
+	public static boolean hasAnOffsuitMaster(DataModel dataModel) {
+		return (dataModel.currentPlayerHasMasterInSuit(1)
+				|| dataModel.currentPlayerHasMasterInSuit(2)
+				|| dataModel.currentPlayerHasMasterInSuit(3));
+			
+	}
+
+	public static boolean hasAnOffsuitKingEqCouldMakeTrick(DataModel dataModel) {
+		return (NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, 1)
+				&& dataModel.getNumberOfCardsOneSuit(1) > 2
+				)
+			||
+			(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, 2)
+					&& dataModel.getNumberOfCardsOneSuit(2) > 2
+					)
+			||
+			(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, 3)
+					&& dataModel.getNumberOfCardsOneSuit(3) > 2
+					);
+	}
+
+	public static boolean hasAnOffsuitQueenEqCouldMakeTrick(DataModel dataModel) {
+		return (NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, 1)
+				&& dataModel.getNumberOfCardsOneSuit(1) > 3
+				)
+			||
+			(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, 2)
+					&& dataModel.getNumberOfCardsOneSuit(2) > 3
+					)
+			||
+			(NonMellowBidHandIndicators.hasQEquivNoAorK(dataModel, 3)
+					&& dataModel.getNumberOfCardsOneSuit(3) > 3
+					);
+	}
+
+	public static boolean hasAnOffsuitKingQueenEqCouldMakeTrick(DataModel dataModel) {
+		return (NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, 1)
+				
+			||
+			NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, 2)
+					
+			||
+			NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, 3)
+					
+		);
+	}
 }
