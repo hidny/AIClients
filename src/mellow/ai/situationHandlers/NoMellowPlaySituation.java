@@ -520,7 +520,16 @@ public class NoMellowPlaySituation {
 			)
 		) {
 			
-			curScore += 30.0;
+			if(partnerIsTrumpingSuitWeCouldLead(dataModel)) {
+				//Don't trump if partner is really trumping suit you could lead
+				//This is a bit rough, but whatever...
+					//For example, why not just add to the value of leading the offsuit?
+					//Whatever!
+				
+			} else {
+			
+				curScore += 30.0;
+			}
 			
 			//Check if we have aggressive spade lead options:
 			if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
@@ -1364,6 +1373,20 @@ public class NoMellowPlaySituation {
 				
 			} else {
 				cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(suitIndex);
+			}
+			
+			//Nov 2022:
+			//Monte keeps telling me to play low when Keq and 2+ cards
+			//when AI has lots of spade...
+			//I don't get it, but fine! Maybe I shouldn't blindly follow monte, but whatever.
+			if(NonMellowBidHandIndicators.hasKEquivNoAce(dataModel, suitIndex)
+					&& 2.5 * dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 
+					dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
+					&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 1
+					&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) >= 3
+				) {
+				curScore += 30.0;
+				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 			}
 			
 			
@@ -3472,5 +3495,26 @@ public class NoMellowPlaySituation {
 			NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, 3)
 					
 		);
+	}
+	
+	public static boolean partnerIsTrumpingSuitWeCouldLead(DataModel dataModel) {
+		
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+			return false;
+		}
+		
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			if(s==Constants.SPADE || dataModel.currentAgentHasSuit(s) == false) {
+				continue;
+			}
+			
+			if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, s)
+					&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, s)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(s) >= 1) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
