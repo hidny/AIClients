@@ -148,7 +148,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S TH 9H 6H")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS TS QD TD 6D")) {
 			System.out.println("Debug");
 		}
 
@@ -253,16 +253,31 @@ public class NoMellowPlaySituation {
 						== dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay)) {
 					curScore += 30.0;
 				}
-					
+			
 			}
+			
+			if(numCardsOfSuitInHand >= numCardsOfSuitOtherPlayersHave
+					&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
+					&& !dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)) {
+				//Made to fix: 3-4981
+				curScore += 20.0;
+				
+			}
+			
 		} else if(NonMellowBidHandIndicators.hasKQEquivAndNoAEquiv(dataModel, Constants.SPADE)) {
 			
 			curScore += 8.0;
 			cardToPlay = dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE);
+			
+			//if(NonMellowBidHandIndicators.getNumCardsInHandForTop5OfSuit(dataModel, Constants.SPADE) >= 3) {
+			//		curScore += 51.0;
+			//}
 		
 		} else if(NonMellowBidHandIndicators.getNumCardsInHandForTop5OfSuit(dataModel, Constants.SPADE) 
 			            >=3) {
-			curScore += 8.0;
+			
+			//Change from 8 to 20 to make a test pass (Nov 2022)
+			curScore += 20.0;
 			cardToPlay = SeatedLeftOfOpponentMellow.getHighestPartOfGroup
 					(dataModel, dataModel.getCardCurrentPlayerGetThirdHighestInSuit(Constants.SPADE));
 			
@@ -271,6 +286,7 @@ public class NoMellowPlaySituation {
 			cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(Constants.SPADE);
 			
 		}
+		
 		
 		//If trumping over RHS opponent, don't volunteer to lead spade:
 		if(! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
@@ -729,7 +745,7 @@ public class NoMellowPlaySituation {
 		dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex);
 		
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S TH 9H 6H")
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS 8S 7S 3S 2S JH TH 9H 5H 7C 8D")
 				&& suitIndex == 1) {
 			System.out.println("Debug");
 		}
@@ -1384,6 +1400,7 @@ public class NoMellowPlaySituation {
 					dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE)
 					&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) > 1
 					&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex) >= 3
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(Constants.SPADE) < 5
 				) {
 				curScore += 30.0;
 				cardToPlay = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
