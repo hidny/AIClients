@@ -705,7 +705,13 @@ public class VoidSignalsNoActiveMellows {
 
 		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex]) {
-			curMaxRank = softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex];
+			
+			//If the protector plays higher later, ignore this signal (This is rough, but it's better than nothing...)
+			// This aspect of the game is a complicated game-theory nightmare.
+			if(dataModel.getNextHighestRankedCardUsedByPlayerForSuit(playerIndex, suitIndex, softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex])
+				== -1) {
+					curMaxRank = softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex];
+			}
 
 		}
 
@@ -815,8 +821,13 @@ public class VoidSignalsNoActiveMellows {
 
 		if(softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex] != DONT_KNOW
 				&& curMaxRank > softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex]) {
-			curMaxRank = softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex];
-
+			
+			//If the protector plays higher later, ignore this signal (This is rough, but it's better than nothing...)
+			if(dataModel.getNextHighestRankedCardUsedByPlayerForSuit(playerIndex, suitIndex, softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex])
+					== -1) {
+				//Cancel signal if Protector played higher card later...
+				curMaxRank = softMaxBecauseMellowProtectorPlayedLowAtSecondThrow[playerIndex][suitIndex];
+			}
 		}
 
 		if(hardMaxBecauseMellowProtectorPlayedLowAtThirdThrow[playerIndex][suitIndex] != DONT_KNOW
