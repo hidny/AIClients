@@ -186,6 +186,7 @@ public class PartnerSaidMellowSituation {
 						    ||
 						    dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(DataModel.getCardString(DataModel.KING, bestSuitIndexToPlay), cardToPlay)
 						    <= 1
+						    
 						)
 				    )
 				)
@@ -215,6 +216,7 @@ public class PartnerSaidMellowSituation {
 					&&  (bestSuitIndexToPlay != Constants.SPADE
 							|| dataModel.getNumCardsInPlayOverCardSameSuit(highest) == 1
 							|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, bestSuitIndexToPlay)
+							|| highestCardOfSuit.equals("QS")
 						)
 							) {
 				
@@ -500,7 +502,9 @@ public class PartnerSaidMellowSituation {
 	
 		//Factors:
 		//TODO
-		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "6S 5C 8D 3D")) {
+			System.out.println("Debug");
+		}
 		
 		
 		boolean protectorHaslotsOfSpade = 
@@ -604,30 +608,84 @@ public class PartnerSaidMellowSituation {
 		
 		//RHS could trump.
 		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, currentSuitIndex)
-				&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
 			) {
 			
-			ret -= 60;
+			ret -= 20;
 			
 		}
 		
 		boolean LHSCouldTrump = false;
 		//LHS could trump. (Only really matters if mellow player can't play off)
-		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, currentSuitIndex)
-				&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, Constants.SPADE)
+		if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, currentSuitIndex)
+				&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, Constants.SPADE)
 			) {
 			
 			LHSCouldTrump = true;
 		}
+		
 		
 		//Is mellow player void in suit?
 		if(dataModel.isVoid(MELLOW_PLAYER_INDEX, currentSuitIndex)
 				|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(MELLOW_PLAYER_INDEX, currentSuitIndex)) {
 				ret += 50.0;
 				
-		} else if(LHSCouldTrump
-				&& numOthersWithCard > 3) {
-			ret -= 30.0;
+		} else {
+			
+			//TODO//Check if mellow safe in spade...
+			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, Constants.SPADE);
+			
+			boolean mellowIsInDangerInSpade = false;
+			boolean halfTheImpact = false;
+			if(maxMellowCard != null 
+					&& (dataModel.isVoid(Constants.CURRENT_AGENT_INDEX, Constants.SPADE)
+							|| (DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE))
+								&& 	dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) > 1
+								&& DataModel.getRankIndex(dataModel.getCardCurrentPlayerGetHighestInSuit(Constants.SPADE)) < DataModel.QUEEN
+							)
+						)
+					
+				) {
+				mellowIsInDangerInSpade = true;
+			} else if(maxMellowCard != null 
+					&& dataModel.getNumCardsOfSuitInCurrentPlayerHand(Constants.SPADE) == 1
+					&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(maxMellowCard) > 1) {
+
+				//Idea is that just having AS alone isn't safe, but I oversimplified it...
+				mellowIsInDangerInSpade = true;
+				halfTheImpact = true;
+			}
+			
+			double impact = 0.0;
+			
+			if(mellowIsInDangerInSpade) {
+				if(LHSCouldTrump
+					&& numOthersWithCard > 3) {
+					impact = 30.0;
+					
+				} else if(LHSCouldTrump
+						&& numOthersWithCard >= 2
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, currentSuitIndex)) {
+					impact = 40.0;
+				
+				} else if(LHSCouldTrump
+						&& numOthersWithCard>= 1
+						&& dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.RIGHT_PLAYER_INDEX, currentSuitIndex)) {
+					
+					impact = 40.0;
+				
+				} else if(LHSCouldTrump
+						&& numOthersWithCard== 1) {
+					impact = 20.0;
+				
+				}
+			}
+			
+			if(halfTheImpact) {
+				impact /= 2.0;
+			}
+			
+			ret -= impact;
 		}
 		
 		
@@ -943,6 +1001,7 @@ public class PartnerSaidMellowSituation {
 								&&  (leadSuit != Constants.SPADE
 										|| dataModel.getNumCardsInPlayOverCardSameSuit(highest) == 1
 										|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leadSuit)
+										|| highest.equals("QS")
 									)
 										) {
 							
