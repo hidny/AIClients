@@ -431,11 +431,13 @@ public class SeatedRightOfOpponentMellow {
 					
 					int numCardsInOtherPeoplesHandsForSuit = dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(leadSuit);
 					//System.out.println("DEBUG numCardsInOtherPeoplesHandsForSuit: " + numCardsInOtherPeoplesHandsForSuit);
-						
+					
+					//Made this more accepting, so 3-4890 could pass.
 					if(      
-							(numCardsInOtherPeoplesHandsForSuit >= 4
+							(numCardsInOtherPeoplesHandsForSuit >= 2
 							&& dataModel.signalHandler.getNumCardsMellowSignalledPossibleInSuit(MELLOW_PLAYER_INDEX, leadSuit) > 1)
-							|| (numCardsInOtherPeoplesHandsForSuit >= 3 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit))
+							//This might be too lenient, but ok:
+							|| (numCardsInOtherPeoplesHandsForSuit >= 2 && dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, leadSuit))
 							)
 					{
 						
