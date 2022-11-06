@@ -97,6 +97,41 @@ public class DataModel {
 	// H
 	// D
 	// C
+	
+	public boolean playerPlayedHigherRankCardAfterPlayingLow(int playerIndex, String cardC) {
+		
+		int rank = DataModel.getRankIndex(cardC);
+		int suitIndex = CardStringFunctions.getIndexOfSuit(cardC);
+		
+		return playerPlayedHigherRankCardAfterPlayingLow(playerIndex, rank, suitIndex);
+	}
+
+	public boolean playerPlayedHigherRankCardAfterPlayingLow(int playerIndex, int rankIndex, int suitIndex) {
+
+		String origCard = DataModel.getCardString(rankIndex, suitIndex);
+		
+		if(! cardsUsed[suitIndex][rankIndex]) {
+			System.err.println("ERROR: card not used for protectorPlayedHigherRankCardAfterPlayingCardC ( origCard = " + origCard + " )");
+			System.exit(1);
+		}
+		
+		//Search backwards from the cards played:
+		for(int i=cardsPlayedThisRound - 1; i>=0; i--) {
+			if(cardStringsPlayed[i].equals(origCard)) {
+				break;
+			} else if(DataModel.getRankIndex(cardStringsPlayed[i]) > rankIndex
+					&& CardStringFunctions.getIndexOfSuit(cardStringsPlayed[i]) == suitIndex
+					&& cardsUsedByPlayer[playerIndex][suitIndex][DataModel.getRankIndex(cardStringsPlayed[i])]) {
+
+				return true;
+			} else if(i == 0) {
+				System.err.println("ERROR: Could not find orig card even though it was used.");
+				System.exit(1);
+			}
+		}
+		
+		return false;
+	}
 
 	private String players[] = new String[Constants.NUM_PLAYERS];
 
