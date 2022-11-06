@@ -126,7 +126,7 @@ public class PartnerSaidMellowSituation {
 
 	public static String AIHandleLead(DataModel dataModel) {
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 7H JC TC 4C 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS JS JH 6H 3H QC JC 6C TD 7D")) {
 			System.out.println("Debug");
 		}
 		
@@ -196,7 +196,36 @@ public class PartnerSaidMellowSituation {
 			cardToPlay = 
 					getLowestCardOfGroup(dataModel, highestCardOfSuit);
 			
-			if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 0
+			//TODO: almost copy/paste code
+			String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, bestSuitIndexToPlay);
+			
+			boolean mellowIsInDangerInSuit = false;
+			if(maxMellowCard != null 
+					&& DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(cardToPlay)
+				) {
+				mellowIsInDangerInSuit = true;
+			}
+			
+			//But don't play high to protect if mellow is vulnerable.
+			// You want to act cool at that point.
+			String highest = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay);
+			if(! cardToPlay.equals(highest)
+					&& mellowIsInDangerInSuit
+					//Play high if mellow signalled master spade, because if she has it, it's over anyways:
+					&&  (bestSuitIndexToPlay != Constants.SPADE
+							|| dataModel.getNumCardsInPlayOverCardSameSuit(highest) == 1
+							|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, bestSuitIndexToPlay)
+						)
+							) {
+				
+				//TODO: maybe play 2nd highest in spade edge case?
+				//Try to confuse opponents by playing highest of group to hide the fact that the
+				// mellow is vulnerable:
+				// This changed 0 test cases, but the 2nd throw version of this did change some test cases.
+				cardToPlay = highest;
+
+			//END TODO: almost copy/paste code	
+			} else if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandUnderCardSameSuit(cardToPlay) == 0
 				&& dataModel.getNumberOfCardsOneSuit(bestSuitIndexToPlay) > 1
 				&& dataModel.getNumCardsInPlayNotInCurrentPlayersHandBetweenCardSameSuit(cardToPlay,
 						dataModel.getCardCurrentPlayergetSecondLowestInSuit(bestSuitIndexToPlay)) == 0
@@ -691,7 +720,7 @@ public class PartnerSaidMellowSituation {
 	public static String AISecondThrow(DataModel dataModel) {
 
 		System.out.println("TEST PROTECTOR 2nd throw");
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS QS 6S KH 4H QC 5C 4C 3C KD 4D 3D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 2S JH TH 9H 8H 4H TC 5C")) {
 			System.out.println("Debug");
 		}
 
@@ -804,7 +833,7 @@ public class PartnerSaidMellowSituation {
 					
 				} else {
 					
-					//Play Lower to potentially mess with dealer's mellow:
+					//Play Lower to potentially mess with dealer's mellow: (Double mellow case)
 					if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0
 							&& dataModel.getNumTricks(Constants.LEFT_PLAYER_INDEX) == 0
 							&& dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX
@@ -892,7 +921,38 @@ public class PartnerSaidMellowSituation {
 						}
 						
 						//Play high to protect, but hide how high you can go if possible:
-						return getLowestCardOfGroup(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+						String cardToPlay = getLowestCardOfGroup(dataModel, dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuit));
+						
+						String maxMellowCard = dataModel.signalHandler.getMaxRankCardMellowPlayerCouldHaveBasedOnSignals(MELLOW_PLAYER_INDEX, leadSuit);
+						
+						//TODO: almost copy/paste code
+						boolean mellowIsInDangerInSuit = false;
+						if(maxMellowCard != null 
+								&& DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(cardToPlay)
+								&& DataModel.getRankIndex(maxMellowCard) > DataModel.getRankIndex(dataModel.getCardLeaderThrow())
+							) {
+							mellowIsInDangerInSuit = true;
+						}
+						
+						//But don't play high to protect if mellow is vulnerable.
+						// You want to act cool at that point.
+						String highest = SeatedLeftOfOpponentMellow.getHighestPartOfGroup(dataModel, cardToPlay);
+						if(! cardToPlay.equals(highest)
+								&& mellowIsInDangerInSuit
+								//Play high if mellow signalled master spade, because if she has it, it's over anyways:
+								&&  (leadSuit != Constants.SPADE
+										|| dataModel.getNumCardsInPlayOverCardSameSuit(highest) == 1
+										|| dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leadSuit)
+									)
+										) {
+							
+							//Try to confuse opponents by playing highest of group to hide the fact that the
+							// mellow is vulnerable:
+							cardToPlay = highest;
+							
+						}
+						//END TODO: almost copy/paste code
+						return cardToPlay;
 					}
 				}
 			
