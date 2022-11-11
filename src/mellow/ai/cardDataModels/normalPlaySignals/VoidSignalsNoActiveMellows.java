@@ -194,6 +194,16 @@ public class VoidSignalsNoActiveMellows {
 						){
 					System.out.println("DEBUG: WEIRD CASE! Why would the player do a king sacrifice??");
 				}
+			} else if(playerIndexKingSacrificeForSuit[suitIndex] >= 0
+					&& DataModel.getRankIndex(card) == DataModel.QUEEN) {
+				
+				if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndexKingSacrificeForSuit[suitIndex], suitIndex) == 1) {
+				
+					//At this point, we're pretty sure that the player who lead K before ace is void:
+					// because now we know they didn't have the KQ before doing that stunt.
+					//TODO: player is void...
+					System.out.println("TODO Ksac was prob alone: " + dataModel.getPlayers()[playerIndexKingSacrificeForSuit[suitIndex]] + " is void");
+				}
 			}
 			
 			
@@ -210,6 +220,11 @@ public class VoidSignalsNoActiveMellows {
 						) {
 					System.out.println("KING SACRIFICE!");
 					playerIndexKingSacrificeForSuit[suitIndex] = playerIndex;
+					
+					//TODO: if you have queen, then it's probably alone
+					if(dataModel.hasCard(DataModel.getCardString(dataModel.QUEEN, suitIndex))) {
+						System.out.println("TODO: King Sac player is probably void in suit");
+					}
 					
 				} else if(dataModel.getRankIndex(card) == dataModel.ACE
 						&& playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {

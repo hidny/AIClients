@@ -81,6 +81,19 @@ public class DataModel {
 
 	private boolean cardsUsedByPlayer[][][] = new boolean[Constants.NUM_PLAYERS][Constants.NUM_SUITS][Constants.NUM_RANKS];
 
+	//TODO: maybe get rid in future because this shouldn't be called outside datamodel?
+	public int getWhoPlayedCard(int suitIndex, int rankIndex) {
+		int ret = -1;
+		
+		for(int i=0; i<Constants.NUM_PLAYERS; i++) {
+			if(cardsUsedByPlayer[i][suitIndex][rankIndex]) {
+				return i;
+			}
+		}
+		
+		return ret;
+	}
+	//END TODO
 	public int getNextHighestRankedCardUsedByPlayerForSuit(int playerIndex, int suitIndex, int rankIndex) {
 
 		for (int rankIter = rankIndex + 1; rankIter <= ACE; rankIter++) {

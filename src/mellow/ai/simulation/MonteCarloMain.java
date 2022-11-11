@@ -13,6 +13,7 @@ import mellow.ai.aiDecider.MellowBasicDecider;
 import mellow.ai.cardDataModels.DataModel;
 import mellow.ai.cardDataModels.StatsBetweenRounds;
 import mellow.ai.cardDataModels.normalPlaySignals.VoidSignalsNoActiveMellows;
+import mellow.ai.simulation.actionJudgerTODO.QuickActionJudger;
 import mellow.ai.simulation.simulationSetupImpl.SimSetupUtils;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetup;
 import mellow.ai.simulation.simulationSetupImpl.SimulationSetupWithMemBoost;
@@ -35,9 +36,9 @@ public class MonteCarloMain {
 	public static void main(String args[]) {
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTests"};
-		testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
+		//testCaseParser.TEST_FOLDERS = new String[] {"tmp"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloSignals"};
-		//testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
+		testCaseParser.TEST_FOLDERS = new String[] {"tmpRecentFails"};
 		//testCaseParser.TEST_FOLDERS = new String[] {"MonteCarloTestsDone"};
 		
 		//testCaseParser.TEST_FOLDERS = new String[] {"newBidTestcases"};
@@ -72,7 +73,7 @@ public class MonteCarloMain {
 
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 120000;
 	//Overnight slow
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
@@ -88,6 +89,7 @@ public class MonteCarloMain {
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 400;
 	
@@ -414,6 +416,12 @@ public class MonteCarloMain {
 
 				playOutSimulationTilEndOfRound(dataModelTmpForPlayer0, playersInSimulation);
 			
+				
+				//TODO:
+				//The cards played leading up to the test case should
+				// give some basic info:
+				//TODO: this is supposed to be run once per test case, not once per simulation!
+				QuickActionJudger quickActionJudger = new QuickActionJudger(dataModel);
 				
 				//Make monte carlos sims more readable (for the point diff util):
 				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmpForPlayer0);
