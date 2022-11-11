@@ -197,12 +197,24 @@ public class VoidSignalsNoActiveMellows {
 			} else if(playerIndexKingSacrificeForSuit[suitIndex] >= 0
 					&& DataModel.getRankIndex(card) == DataModel.QUEEN) {
 				
-				if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndexKingSacrificeForSuit[suitIndex], suitIndex) == 1) {
+				if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndexKingSacrificeForSuit[suitIndex], suitIndex) == 1
+						//If you are the player that played the Queen, you already knew what was happening, so don't waste time:
+						&& playerIndex != Constants.CURRENT_AGENT_INDEX
+						//If the player is already known to be void, don't waste time:
+						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(playerIndexKingSacrificeForSuit[suitIndex], suitIndex)) {
 				
 					//At this point, we're pretty sure that the player who lead K before ace is void:
 					// because now we know they didn't have the KQ before doing that stunt.
 					//TODO: player is void...
-					System.out.println("TODO Ksac was prob alone: " + dataModel.getPlayers()[playerIndexKingSacrificeForSuit[suitIndex]] + " is void");
+					
+					if(playerIndexKingSacrificeForSuit[suitIndex] != Constants.CURRENT_AGENT_INDEX) {
+						
+						System.out.println("Queen played by someone other than Ksac player. " + dataModel.getPlayers()[playerIndexKingSacrificeForSuit[suitIndex]] + " is probably void in " + CardStringFunctions.getSuitString(suitIndex));
+					} else {
+						//Maybe add logic for signals you're sending out???
+						// A: Only if it's needed in a test case...
+					}
+					
 				}
 			}
 			
@@ -218,13 +230,28 @@ public class VoidSignalsNoActiveMellows {
 				if(dataModel.getRankIndex(card) == dataModel.KING
 						&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
 						) {
-					System.out.println("KING SACRIFICE!");
-					playerIndexKingSacrificeForSuit[suitIndex] = playerIndex;
 					
-					//TODO: if you have queen, then it's probably alone
-					if(dataModel.hasCard(DataModel.getCardString(dataModel.QUEEN, suitIndex))) {
-						System.out.println("TODO: King Sac player is probably void in suit");
+					if( suitIndex == Constants.SPADE
+							|| ! playerStrongSignaledNoCardsOfSuit((playerIndex + 1) % Constants.NUM_PLAYERS, suitIndex)
+							|| (playerIndex + 1) % Constants.NUM_PLAYERS == Constants.CURRENT_PLAYER_INDEX) {
+						System.out.println("KING SACRIFICE!");
+						
+						playerIndexKingSacrificeForSuit[suitIndex] = playerIndex;
+						
+						//TODO: if you have queen, then it's probably alone
+						if(playerIndex != Constants.CURRENT_AGENT_INDEX
+								&& dataModel.hasCard(DataModel.getCardString(dataModel.QUEEN, suitIndex))) {
+							System.out.println("King Sac player doesn't have Queen so they're probably void in " + CardStringFunctions.getSuitString(suitIndex));
+						}
+						
+						//TODO: what if it's obvious that current player has none of suit?
+						// I didn't prepare for that possibility, but hopefully I'll do it one day...
+						// I'll do it when a relevant test case comes up!
+						
+					} else {
+						System.out.println("KING SACRIFICE?? or just trying to confuse " + dataModel.getPlayers()[(playerIndex + 1)%Constants.NUM_PLAYERS] + "?");
 					}
+					
 					
 				} else if(dataModel.getRankIndex(card) == dataModel.ACE
 						&& playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
