@@ -145,6 +145,33 @@ public class DataModel {
 		
 		return false;
 	}
+	
+	public boolean currentPlayerPlayedOffSuitEarlier(int suitIndex) {
+		
+		for(int i=0; i<this.cardsPlayedThisRound; i+=4) {
+			
+			int leadSuit = CardStringFunctions.getIndexOfSuit(this.cardStringsPlayed[i]);
+			
+			if(suitIndex != leadSuit) {
+				continue;
+			}
+			
+			for(int j=i+1; j<i + Constants.NUM_PLAYERS; j++) {
+				if(CardStringFunctions.getIndexOfSuit(cardStringsPlayed[j])
+						!= leadSuit
+					&& this.cardsUsedByPlayer[Constants.CURRENT_AGENT_INDEX]
+									[CardStringFunctions.getIndexOfSuit(cardStringsPlayed[j])]
+									[DataModel.getRankIndex(cardStringsPlayed[j])]
+							) {
+					return true;
+				}
+			}
+			
+			
+		}
+		return false;
+	}
+
 
 	private String players[] = new String[Constants.NUM_PLAYERS];
 

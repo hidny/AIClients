@@ -63,7 +63,8 @@ public class VoidSignalsNoActiveMellows {
 	//TODO
 	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
 	
-	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];
+	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];	
+	public int playerIndexKingSacrificeForSuitVoid[] = new int[Constants.NUM_PLAYERS];
 	//public int playerIndexQueenForSuit[] = new int[Constants.NUM_PLAYERS];
 
 	//This is not much of a signal, but whatever...
@@ -71,6 +72,7 @@ public class VoidSignalsNoActiveMellows {
 	
 	public static int MAX_UNDER_RANK_2 = -2;
 	public static int NO_KING_SACRIFICE = -1;
+	public static int NO_KING_SAC_VOID = -1;
 	public static int DONT_KNOW = -1;
 	
 	public boolean curTeamSignalledHighOffsuit[];
@@ -122,6 +124,9 @@ public class VoidSignalsNoActiveMellows {
 		for(int i=0; i<playerIndexKingSacrificeForSuit.length; i++) {
 			playerIndexKingSacrificeForSuit[i] = NO_KING_SACRIFICE;
 		}
+		for(int i=0; i<playerIndexKingSacrificeForSuitVoid.length; i++) {
+			playerIndexKingSacrificeForSuitVoid[i] = NO_KING_SAC_VOID;
+		}
 		
 		curTeamSignalledHighOffsuit = new boolean[Constants.NUM_SUITS];
 		for(int i=0; i<curTeamSignalledHighOffsuit.length; i++) {
@@ -138,22 +143,11 @@ public class VoidSignalsNoActiveMellows {
 	
 	public void updateDataModelSignalsWithPlayedCard(String playerName, String card) {
 
-		if(card.equals("5D")) {
-			System.out.println("Debug");
-		}
 		int playerIndex = dataModel.convertPlayerNameToIndex(playerName);
 		int throwerIndex = dataModel.getCardsPlayedThisRound() % 4;
 		
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
-		//if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
-			//Don't feel like tracking own signals yet...
-		//	return;
-		//}
 		
-		//TODO: Maybe bring move following condition here instead of 50 lines below HERE.
-		//if(dataModel.someoneBidMellow() == false
-				//|| dataModel.stillActiveMellow() == false) {
-
 		//I'm going to start with the normal no mellow situation for now...
 		if(dataModel.someoneBidMellow() == false
 				|| dataModel.stillActiveMellow() == false) {
@@ -167,7 +161,9 @@ public class VoidSignalsNoActiveMellows {
 			}
 			
 			if(playerIndexKingSacrificeForSuit[suitIndex] == playerIndex) {
+				
 				playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
+				playerIndexKingSacrificeForSuitVoid[suitIndex] = NO_KING_SAC_VOID;
 	
 				//Strong queen signal:
 				//(EX: If player lead KDs and has a 5D later, it's pretty clear that player also has the QD)
@@ -200,14 +196,18 @@ public class VoidSignalsNoActiveMellows {
 				if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndexKingSacrificeForSuit[suitIndex], suitIndex) == 1
 						//If you are the player that played the Queen, you already knew what was happening, so don't waste time:
 						&& playerIndex != Constants.CURRENT_AGENT_INDEX
+						//Redundant check that the player who played Queen is not the one who played king:
+						&& playerIndex != playerIndexKingSacrificeForSuit[suitIndex]
 						//If the player is already known to be void, don't waste time:
 						&& ! dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(playerIndexKingSacrificeForSuit[suitIndex], suitIndex)) {
 				
 					//At this point, we're pretty sure that the player who lead K before ace is void:
 					// because now we know they didn't have the KQ before doing that stunt.
-					//TODO: player is void...
 					
 					if(playerIndexKingSacrificeForSuit[suitIndex] != Constants.CURRENT_AGENT_INDEX) {
+						
+
+						playerIndexKingSacrificeForSuitVoid[suitIndex] = playerIndex;
 						
 						System.out.println("Queen played by someone other than Ksac player. " + dataModel.getPlayers()[playerIndexKingSacrificeForSuit[suitIndex]] + " is probably void in " + CardStringFunctions.getSuitString(suitIndex));
 					} else {
@@ -227,29 +227,59 @@ public class VoidSignalsNoActiveMellows {
 				// Attempt to handle meaning of leading a king while the ace is still out:
 				// TODO: It didn't change a single test case... yet :(
 				
-				if(dataModel.getRankIndex(card) == dataModel.KING
+				if(DataModel.getRankIndex(card) == dataModel.KING
 						&& dataModel.isCardPlayedInRound("A" + card.substring(1)) == false
 						) {
 					
-					if( suitIndex == Constants.SPADE
-							|| ! playerStrongSignaledNoCardsOfSuit((playerIndex + 1) % Constants.NUM_PLAYERS, suitIndex)
-							|| (playerIndex + 1) % Constants.NUM_PLAYERS == Constants.CURRENT_PLAYER_INDEX) {
+					//Probably a king-sac, but in some conditions, it doesn't count:
+					//For convenience I went through the reasons it doesn't count first.
+					// Please see print statements for more details:
+					
+					if(suitIndex != Constants.SPADE
+							&& (playerIndex + 1) % Constants.NUM_PLAYERS != Constants.CURRENT_PLAYER_INDEX
+							//TODO: perspective taking isn't properly done here, but I don't want to bother: (Maybe a test case or two will change my mind)
+							&& playerStrongSignaledNoCardsOfSuit((playerIndex + 1) % Constants.NUM_PLAYERS, suitIndex)) {
+						System.out.println("King Sac player knows the player on left on them is void, so it's weird position");
+						
+					} else if(suitIndex != Constants.SPADE
+							&& playerIndex != Constants.CURRENT_AGENT_INDEX
+							&& dataModel.currentPlayerPlayedOffSuitEarlier(suitIndex)) {
+					
+						if(playerIndex == Constants.RIGHT_PLAYER_INDEX) {
+							    //I didn't prepare for this possibility, but hopefully I'll do it one day...
+								// I'll do it when a relevant test case comes up!
+								// i.e: If current player played off for suit, and LHS led K, then who knows!
+								// It's not really a k sac...
+							 
+							System.out.println("King Sac player is RHS and knows current player is void, so it's weird position");
+						
+						} else if(playerIndex == Constants.CURRENT_PARTNER_INDEX){
+							System.out.println("King Sac player is partner and knows current player is void, so it's weird position");
+							
+						} else if(playerIndex == Constants.LEFT_PLAYER_INDEX){
+							System.out.println("King Sac player is LHS and knows current player is void, so it's weird position. (But not scary)");
+							
+						}
+						// and LHS might be messing with us...
+						
+					} else  {
 						System.out.println("KING SACRIFICE!");
 						
 						playerIndexKingSacrificeForSuit[suitIndex] = playerIndex;
 						
-						//TODO: if you have queen, then it's probably alone
 						if(playerIndex != Constants.CURRENT_AGENT_INDEX
 								&& dataModel.hasCard(DataModel.getCardString(dataModel.QUEEN, suitIndex))) {
+
+
+							//If you have queen, then the player who led the king is probably alone:
+							playerIndexKingSacrificeForSuitVoid[suitIndex] = playerIndex;
 							System.out.println("King Sac player doesn't have Queen so they're probably void in " + CardStringFunctions.getSuitString(suitIndex));
 						}
 						
-						//TODO: what if it's obvious that current player has none of suit?
-						// I didn't prepare for that possibility, but hopefully I'll do it one day...
-						// I'll do it when a relevant test case comes up!
 						
-					} else {
-						System.out.println("KING SACRIFICE?? or just trying to confuse " + dataModel.getPlayers()[(playerIndex + 1)%Constants.NUM_PLAYERS] + "?");
+						// S___'s comment:
+						// "   bbbbn bnv bg  bv  b bv                              c   nbnnnb jh jh "
+						
 					}
 					
 					
@@ -258,6 +288,7 @@ public class VoidSignalsNoActiveMellows {
 
 					System.out.println("KING UNSACRIFICE!");
 					playerIndexKingSacrificeForSuit[suitIndex] = NO_KING_SACRIFICE;
+					playerIndexKingSacrificeForSuitVoid[suitIndex] = NO_KING_SACRIFICE;
 				}
 				
 				if(dataModel.getNumCardsInPlayOverCardSameSuit(card) == 1
@@ -682,6 +713,10 @@ public class VoidSignalsNoActiveMellows {
 	public int getPlayerIndexOfKingSacrificeForSuit(int indexSuit) {
 		return playerIndexKingSacrificeForSuit[indexSuit];
 	}
+
+	public int getPlayerIndexOfKingSacrificeVoidForSuit(int indexSuit) {
+		return playerIndexKingSacrificeForSuitVoid[indexSuit];
+	}
 	
 	//public int getPlayerIndexSignalledMasterQueen(int indexSuit) {
 	//	return playerIndexQueenForSuit[indexSuit];
@@ -695,6 +730,11 @@ public class VoidSignalsNoActiveMellows {
 		int curMinRank = getMinCardRankSignal(playerIndex, suitIndex);
 		int curMaxRank = getMaxCardRankSignal(playerIndex, suitIndex, false);
 		
+		//TODO:
+		//if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
+		//	return true;
+		//}
+		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
 				
@@ -705,8 +745,15 @@ public class VoidSignalsNoActiveMellows {
 				}
 				//END SANITY TEST
 				
-				
-				return false;
+
+				//TODO: I put this here just for testing purposes, move it up to before the loop later!
+				if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
+					System.out.println("(King SAC VOID SIGNAL WORKED)");
+					return true;
+				} else {
+					return false;
+				}
+				//return false;
 			}
 		}
 		
