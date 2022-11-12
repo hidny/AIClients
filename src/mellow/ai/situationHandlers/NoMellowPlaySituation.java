@@ -1521,6 +1521,9 @@ public class NoMellowPlaySituation {
 		//get suit to follow.
 
 		System.out.println("2nd throw");
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QS 9S 8S 7C QD 6D 3D")) {
+			System.out.println("Debug");
+		}
 		
 		
 		//TODO: only deal with string (No index)
@@ -1533,7 +1536,12 @@ public class NoMellowPlaySituation {
 			if(dataModel.couldPlayCardInHandOverCardInSameSuit(leaderCard)) {
 				
 				//I'm going to keep it to isVoid, so the AI won't be as suceptible to tricks:
-				boolean thirdVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex);
+				//Hopefully, this gets more sophisticated in the future.
+				boolean thirdVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
+						//Let's trust the king sac signal though:
+						|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeVoidForSuit(leaderSuitIndex) == Constants.LEFT_PLAYER_INDEX;
+				
+				//boolean thirdVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex);
 				boolean fourthProbVoid = dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, leaderSuitIndex);
 				
 				if(thirdVoid && fourthProbVoid) {	

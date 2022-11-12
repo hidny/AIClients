@@ -207,7 +207,7 @@ public class VoidSignalsNoActiveMellows {
 					if(playerIndexKingSacrificeForSuit[suitIndex] != Constants.CURRENT_AGENT_INDEX) {
 						
 
-						playerIndexKingSacrificeForSuitVoid[suitIndex] = playerIndex;
+						playerIndexKingSacrificeForSuitVoid[playerIndexKingSacrificeForSuit[suitIndex]] = playerIndex;
 						
 						System.out.println("Queen played by someone other than Ksac player. " + dataModel.getPlayers()[playerIndexKingSacrificeForSuit[suitIndex]] + " is probably void in " + CardStringFunctions.getSuitString(suitIndex));
 					} else {
@@ -724,16 +724,15 @@ public class VoidSignalsNoActiveMellows {
 	//}
 	
 	
-	//TODO: try using this later...
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {
 
 		int curMinRank = getMinCardRankSignal(playerIndex, suitIndex);
 		int curMaxRank = getMaxCardRankSignal(playerIndex, suitIndex, false);
 		
-		//TODO:
-		//if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
-		//	return true;
-		//}
+		if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
+			System.out.println("(King SAC VOID SIGNAL WORKED)");
+			return true;
+		}
 		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
@@ -747,13 +746,13 @@ public class VoidSignalsNoActiveMellows {
 				
 
 				//TODO: I put this here just for testing purposes, move it up to before the loop later!
-				if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
+				/*if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
 					System.out.println("(King SAC VOID SIGNAL WORKED)");
 					return true;
 				} else {
 					return false;
-				}
-				//return false;
+				}*/
+				return false;
 			}
 		}
 		

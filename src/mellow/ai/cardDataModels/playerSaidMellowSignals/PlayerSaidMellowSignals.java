@@ -20,9 +20,6 @@ public class PlayerSaidMellowSignals {
 	
 	public void handleSignalsFromActiveMellow(int playerIndex, String card) {
 
-		if(card.equals("5D")) {
-			System.out.println("Debug");
-		}
 		//Not recording the signals the current player is sending out (yet)
 		if(playerIndex == Constants.CURRENT_AGENT_INDEX) {
 			return;

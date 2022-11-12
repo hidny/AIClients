@@ -76,7 +76,7 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
@@ -89,7 +89,7 @@ public class MonteCarloMain {
 	
 	//Quick useless test: (Maybe test the Monte Carlo Main function)
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 400;
 	
@@ -421,7 +421,7 @@ public class MonteCarloMain {
 				//The cards played leading up to the test case should
 				// give some basic info:
 				//TODO: this is supposed to be run once per test case, not once per simulation!
-				QuickActionJudger quickActionJudger = new QuickActionJudger(dataModel);
+				//QuickActionJudger quickActionJudger = new QuickActionJudger(dataModel);
 				
 				//Make monte carlos sims more readable (for the point diff util):
 				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmpForPlayer0);
