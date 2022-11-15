@@ -424,6 +424,11 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 	public DataModel getCopyOfDataModel() {
 		return this.dataModel.createHardCopy();
 	}
+	
+	
+	public DataModel getDataModelDangerous() {
+		return this.dataModel;
+	}
 
 	public static boolean dontCareAboutMellow(DataModel dataModel) {
 		int ourScore = BiddingNearEndOfGameFunctions.getProjectedScoreForTeamGivenBids(dataModel, true,

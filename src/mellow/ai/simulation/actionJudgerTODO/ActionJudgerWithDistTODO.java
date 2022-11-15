@@ -13,6 +13,9 @@ public class ActionJudgerWithDistTODO {
 	//This will judge the plausibility of the actions with a given distribution of cards
 	//before the test case takes place.
 	
+	//Plan: I'll compare what AI would play with what was played and if different, that doesn't look good on dist...
+	// This is probably not that effective though... :(
+	
 	//I'll implement the player object even though that's overkill.
 	//I just need to copy/paste the dataModel after bids,
 	// and dist determined, and implement receiveCardPlayed

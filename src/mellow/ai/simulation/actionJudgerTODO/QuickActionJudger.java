@@ -18,7 +18,8 @@ public class QuickActionJudger {
 	//TODO: test with test cases 2-3 earlier than 3-4835, so there could actually be quick rules
 	// to test with.
 	
-	//TODO: Make MonteCarloMain Use this at line 420
+	
+	//TODO: Make MonteCarloMain Use this at line 420 (or earlier)
 	public QuickActionJudger(DataModel dataModel) {
 		
 		//No mellow case because that's too complicated:
@@ -36,6 +37,8 @@ public class QuickActionJudger {
 				}
 				
 				int playerIndex = dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(s);
+				
+				//TODO: put into function:
 				
 				if(playerIndex != VoidSignalsNoActiveMellows.NO_KING_SACRIFICE) {
 					
@@ -97,6 +100,7 @@ public class QuickActionJudger {
 						System.err.println(dataModel.getPlayers()[playerIndex] + " is void in " + CardStringFunctions.getSuitString(s));
 					}
 					
+					//END TODO: put into function
 					
 				}
 			}

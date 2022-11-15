@@ -1537,6 +1537,7 @@ public class NoMellowPlaySituation {
 				
 				//I'm going to keep it to isVoid, so the AI won't be as suceptible to tricks:
 				//Hopefully, this gets more sophisticated in the future.
+				// (If I replace third void with just strongSignalled, it sometimes does better and sometimes does worse)
 				boolean thirdVoid = dataModel.isVoid(Constants.LEFT_PLAYER_INDEX, leaderSuitIndex)
 						//Let's trust the king sac signal though:
 						|| dataModel.signalHandler.getPlayerIndexOfKingSacrificeVoidForSuit(leaderSuitIndex) == Constants.LEFT_PLAYER_INDEX;

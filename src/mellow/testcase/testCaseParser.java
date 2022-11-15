@@ -12,6 +12,7 @@ import mellow.Constants;
 import mellow.ai.aiDecider.MellowAIDeciderFactory;
 import mellow.ai.aiDecider.MellowAIDeciderInterface;
 import mellow.ai.aiDecider.MellowBasicDecider;
+import mellow.ai.simulation.actionJudgerTODO.QuickActionJudger;
 
 public class testCaseParser {
 
@@ -496,6 +497,10 @@ public class testCaseParser {
 				System.out.println("Fail: AI doesn't do what the expert does (FAIL)");
 				ret = TESTCASE_FAIL;
 			}
+			
+			//TEST TO DELETE
+			QuickActionJudger qaj = new QuickActionJudger(((MellowBasicDecider)decider).getDataModelDangerous());
+			//END TEST TO DELETE
 			
 			//Count type of test cases:
 			if(decider instanceof MellowBasicDecider) {
