@@ -76,12 +76,12 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 60000;
 	
 	//Do dishes and cook slow:
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
 	
 	//Think while it works slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 2000;
@@ -206,6 +206,10 @@ public class MonteCarloMain {
 		SimulationPosibilitiesHandler simulationPossibilities = new SimulationPosibilitiesHandler(dataModel);
 		System.out.println("END DEBUG getCardPossibilities:");
 		
+		//Filter out simulations where the actions don't mix well with what the distributions are:
+		//Needs work... So far, it deals with K leads.
+		QuickActionJudger quickActionJudger = new QuickActionJudger(dataModel);
+		
 		
 		String actionString[];
 		int maxBidThatIsRealistic = -1;
@@ -321,19 +325,8 @@ public class MonteCarloMain {
 					continue;
 				}
 
-			//SANITY TEST
-			//TODO: delete this once you are confident
-			} else if(simulationSetup.hasSignalsBakedIn()) {
-				boolean realistic = isCardDistRealistic2(dataModel, distCards, simulationPossibilities, numSkipped < 50);
-				
-				if( ! realistic) {
-					System.err.println("ERROR: card distribution not realistic according to signals even though the signals are baked-in!");
-					System.exit(1);
-				}
 			}
-			//END SANITY TEST
 			
-			//END check distribution of cards against signals.
 			
 
 			//For better results, check how realistic the distribution of cards is compared to what the original bid was and try
@@ -341,7 +334,11 @@ public class MonteCarloMain {
 			double decisionImpact = getRelativeImpactOfSimulatedDistCards(dataModel, distCards);
 			//double decisionImpact = 1.0;
 			
-			if(decisionImpact < 0.1) {
+			boolean verbose = i < 10 && numSkipped < 100;
+			
+			if(decisionImpact < 0.1
+					|| ! quickActionJudger.actionFilterAcceptsDistribution(dataModel, distCards, verbose)
+				) {
 				
 				//Make sure bids are made by players that know what they are doing:
 				if( ! dataModel.stillInBiddingPhase()
@@ -359,7 +356,7 @@ public class MonteCarloMain {
 				} else {
 					
 					if(dataModel.getBidTotal() < 8
-							&& i < 10 && numSkipped < 100) {
+							&& verbose) {
 						
 						System.err.println("WARNING: Bids don't make sense! But Monte will skip bad bids anyways! (iter, numberSkiped) = (" + i + ", " + numSkipped + ")");
 					}
@@ -375,6 +372,7 @@ public class MonteCarloMain {
 				}
 			}
 
+			
 			
 			sum_impact_to_avg +=  decisionImpact;
 			
@@ -413,6 +411,8 @@ public class MonteCarloMain {
 				}
 				
 				playersInSimulation = setupAIsForSimulation(dataModelTmpForPlayer0, distCards);
+
+				
 
 				playOutSimulationTilEndOfRound(dataModelTmpForPlayer0, playersInSimulation);
 			

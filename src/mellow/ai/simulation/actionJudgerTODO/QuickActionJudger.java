@@ -18,9 +18,13 @@ public class QuickActionJudger {
 	//TODO: test with test cases 2-3 earlier than 3-4835, so there could actually be quick rules
 	// to test with.
 	
+	public int queenOrVoidBecauseOfKLead[] = new int[Constants.NUM_SUITS];
 	
 	//TODO: Make MonteCarloMain Use this at line 420 (or earlier)
 	public QuickActionJudger(DataModel dataModel) {
+		
+		initVars();
+		
 		
 		//No mellow case because that's too complicated:
 		if(dataModel.someoneBidMellow() == false
@@ -66,38 +70,35 @@ public class QuickActionJudger {
 					if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndex, s) == 1
 							&& queenUnknown) {
 
-						System.err.println("---");
-						System.err.println("NOTE: Because of the king lead:");
+						System.out.println("---");
+						System.out.println("NOTE: Because of the king lead:");
 						//Player is void or has queen.
-						System.err.println(dataModel.getPlayers()[playerIndex] + " is void in " + CardStringFunctions.getSuitString(s) + " or has " + DataModel.getCardString(DataModel.QUEEN, s));
+						System.out.println(dataModel.getPlayers()[playerIndex] + " is void in " + CardStringFunctions.getSuitString(s) + " or has " + DataModel.getCardString(DataModel.QUEEN, s));
 						
-						//TODO: record this and use this as a pre-filter (hopefully, it won't filter too much)
+						queenOrVoidBecauseOfKLead[s] = playerIndex;
+						
+						//The quickActionJudger records this and use this as a pre-filter (hopefully, it won't filter too much)
+						// Maybe I should add this logic in the signal handler...
+						// I'll only do it if the needs arises.
+						
 						
 					} else if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndex, s) > 1
 							&& queenUnknown) {
 						
 						//This won't happen because as soon as king leader plays 2nd low card,
 						// signal handler knows what it means and removes dataModel.signalHandler.getPlayerIndexOfKingSacrificeForSuit(s)
-						// So This is safe to delete!
 						
-						/*
-						System.err.println("---");
 						
-						System.err.println("TEST: Because of the king lead and the fact that mult cards of suit played:");
-						System.err.println("(TEST: this should be known to mellow signals)");
-						//Player is void
-						System.err.println(dataModel.getPlayers()[playerIndex] + " has " + DataModel.getCardString(DataModel.QUEEN, s) );
-						*/
 					} else if(dataModel.getNumberOfCardsPlayerPlayedInSuit(playerIndex, s) == 1
 							&& ! queenUnknown
 							&& playerWhoPlayedQ != playerIndex
 							) {
 
 						//TODO: signal handler should know phil is void in diamonds...
-						System.err.println("---");
-						System.err.println("NOTE: Because of the king lead and the fact that queen is in-hand or played by someone other than the King leader:");
+						System.out.println("---");
+						System.out.println("NOTE: Because of the king lead and the fact that queen is in-hand or played by someone other than the King leader:");
 						//Player is void or has queen.
-						System.err.println(dataModel.getPlayers()[playerIndex] + " is void in " + CardStringFunctions.getSuitString(s));
+						System.out.println(dataModel.getPlayers()[playerIndex] + " is void in " + CardStringFunctions.getSuitString(s));
 					}
 					
 					//END TODO: put into function
@@ -106,5 +107,51 @@ public class QuickActionJudger {
 			}
 		}
 		
+	}
+	
+	private static final int NO_SIGNAL = -1;
+	
+	public void initVars() {
+		for(int i=0; i<Constants.NUM_SUITS; i++) {
+			queenOrVoidBecauseOfKLead[i] = NO_SIGNAL;
+		}
+	}
+	
+	public boolean actionFilterAcceptsDistribution(DataModel dataModel, String distCards[][], boolean verbose) {
+		
+		for(int s=0; s<Constants.NUM_SUITS; s++) {
+			
+			//Check queen or void:
+			if(s != Constants.SPADE
+					&& queenOrVoidBecauseOfKLead[s] > Constants.CURRENT_AGENT_INDEX) {
+				
+				int playerIndex = queenOrVoidBecauseOfKLead[s];
+				
+				String theQueen = DataModel.getCardString(DataModel.QUEEN, s);
+				boolean voidSoFar = true;
+				boolean hasTheQueen = false;
+				
+				for(int j=0; j<distCards[playerIndex].length; j++) {
+					if(distCards[playerIndex][j].equals(theQueen)) {
+						hasTheQueen = true;
+						break;
+					} else if(CardStringFunctions.getIndexOfSuit(distCards[playerIndex][j]) == s) {
+						voidSoFar = false;
+					}
+				}
+				
+				if(hasTheQueen || voidSoFar) {
+					//all good!
+				} else {
+					if(verbose) {
+						System.err.println("Quick action Judgers says no because Klead player (" + dataModel.getPlayers()[playerIndex] + ") was not void and didn't have the queen (" + theQueen + ")");
+					}
+					return false;
+				}
+			}
+		}
+		
+		//Default to being good:
+		return true;
 	}
 }
