@@ -8,15 +8,10 @@ import mellow.cardUtils.DebugFunctions;
 
 public class QuickActionJudger {
 
-	//This will just have rules about what kind of cards the players should have
-	// ex: QD or void diamond.
+	//This will just have rules about what kind of cards the players should have and apply those rules
+	// after a distribution of cards is given.
+	// ex: player has QD or is void diamond.
 	
-	//TODO: build a constructor that's given a start dataModel and the actions,
-	// and outputs an object with rules to follow (and an effective filter)
-	
-	//TODO: Make this a filter for monteCarloMain if there's some quick rules to use.
-	//TODO: test with test cases 2-3 earlier than 3-4835, so there could actually be quick rules
-	// to test with.
 	
 	public int queenOrVoidBecauseOfKLead[] = new int[Constants.NUM_SUITS];
 	
@@ -94,17 +89,18 @@ public class QuickActionJudger {
 							&& playerWhoPlayedQ != playerIndex
 							) {
 
-						//TODO: signal handler should know phil is void in diamonds...
+						//Signal handler should know phil is void in diamonds...
+						//I think I tested this?
 						System.out.println("---");
 						System.out.println("NOTE: Because of the king lead and the fact that queen is in-hand or played by someone other than the King leader:");
 						//Player is void or has queen.
 						System.out.println(dataModel.getPlayers()[playerIndex] + " is void in " + CardStringFunctions.getSuitString(s));
 					}
 					
-					//END TODO: put into function
 					
 				}
 			}
+			//END TODO: put into function
 		}
 		
 	}
@@ -145,13 +141,37 @@ public class QuickActionJudger {
 				} else {
 					if(verbose) {
 						System.err.println("Quick action Judgers says no because Klead player (" + dataModel.getPlayers()[playerIndex] + ") was not void and didn't have the queen (" + theQueen + ")");
+
+						//testPrintDistCards(dataModel, distCards);
 					}
 					return false;
+				}
+				
+				if(verbose) {
+					System.err.println("Quick action Judgers says yes because Klead player (" + dataModel.getPlayers()[playerIndex] + ") was void or had the queen (" + theQueen + ")");
+					testPrintDistCards(dataModel, distCards);
 				}
 			}
 		}
 		
+		
 		//Default to being good:
 		return true;
+	}
+	
+	
+	public static void testPrintDistCards(DataModel dataModel, String distCards[][]) {
+	
+		System.err.println("Dist cards:");
+		for(int i=0; i<distCards.length; i++) {
+			System.err.print(dataModel.getPlayers()[i] + ": ");
+			for(int j=0; j<distCards[i].length; j++) {
+				System.err.print(distCards[i][j] + " ");
+			}
+			System.err.println();
+		}
+
+		System.err.println("End dist cards");
+		System.err.println("---");
 	}
 }

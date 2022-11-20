@@ -63,7 +63,7 @@ public class VoidSignalsNoActiveMellows {
 	//TODO
 	//public int hardMaxBecauseSomeoneSparedAVulnerableKing[][];
 	
-	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];	
+	public int playerIndexKingSacrificeForSuit[] = new int[Constants.NUM_PLAYERS];
 	public int playerIndexKingSacrificeForSuitVoid[] = new int[Constants.NUM_PLAYERS];
 	//public int playerIndexQueenForSuit[] = new int[Constants.NUM_PLAYERS];
 
@@ -239,7 +239,7 @@ public class VoidSignalsNoActiveMellows {
 							&& (playerIndex + 1) % Constants.NUM_PLAYERS != Constants.CURRENT_PLAYER_INDEX
 							//TODO: perspective taking isn't properly done here, but I don't want to bother: (Maybe a test case or two will change my mind)
 							&& playerStrongSignaledNoCardsOfSuit((playerIndex + 1) % Constants.NUM_PLAYERS, suitIndex)) {
-						System.out.println("King Sac player knows the player on left on them is void, so it's weird position");
+						System.out.println("King Sac player knows the player on left of them is void, so it's weird position");
 						
 					} else if(suitIndex != Constants.SPADE
 							&& playerIndex != Constants.CURRENT_AGENT_INDEX
