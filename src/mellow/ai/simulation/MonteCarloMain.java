@@ -415,14 +415,7 @@ public class MonteCarloMain {
 				
 
 				playOutSimulationTilEndOfRound(dataModelTmpForPlayer0, playersInSimulation);
-			
-				
-				//TODO:
-				//The cards played leading up to the test case should
-				// give some basic info:
-				//TODO: this is supposed to be run once per test case, not once per simulation!
-				//QuickActionJudger quickActionJudger = new QuickActionJudger(dataModel);
-				
+
 				//Make monte carlos sims more readable (for the point diff util):
 				StatsBetweenRounds endOfRoundPointDiffStats = getPointDiffEndOfRound(dataModelTmpForPlayer0);
 				

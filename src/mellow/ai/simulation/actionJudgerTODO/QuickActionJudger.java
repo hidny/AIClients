@@ -15,7 +15,7 @@ public class QuickActionJudger {
 	
 	public int queenOrVoidBecauseOfKLead[] = new int[Constants.NUM_SUITS];
 	
-	//TODO: Make MonteCarloMain Use this at line 420 (or earlier)
+	
 	public QuickActionJudger(DataModel dataModel) {
 		
 		initVars();

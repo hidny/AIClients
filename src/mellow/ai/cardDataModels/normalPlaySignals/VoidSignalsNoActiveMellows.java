@@ -726,32 +726,17 @@ public class VoidSignalsNoActiveMellows {
 	
 	public boolean playerStrongSignaledNoCardsOfSuit(int playerIndex, int suitIndex) {
 
-		int curMinRank = getMinCardRankSignal(playerIndex, suitIndex);
-		int curMaxRank = getMaxCardRankSignal(playerIndex, suitIndex, false);
-		
 		if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
 			System.out.println("(King SAC VOID SIGNAL WORKED)");
 			return true;
 		}
+
+		int curMinRank = getMinCardRankSignal(playerIndex, suitIndex);
+		int curMaxRank = getMaxCardRankSignal(playerIndex, suitIndex, false);
 		
 		for(int rank=curMinRank; rank <= curMaxRank; rank++) {
 			if(this.dataModel.getCardsCurrentlyHeldByPlayers()[playerIndex][suitIndex][rank] != dataModel.IMPOSSIBLE) {
 				
-				//SANITY TEST (TO DELETE)
-				if(this.dataModel.isVoid(playerIndex, suitIndex)) {
-					System.out.println("AHH! Wrong signal!");
-					System.exit(1);
-				}
-				//END SANITY TEST
-				
-
-				//TODO: I put this here just for testing purposes, move it up to before the loop later!
-				/*if(this.getPlayerIndexOfKingSacrificeVoidForSuit(suitIndex) == playerIndex) {
-					System.out.println("(King SAC VOID SIGNAL WORKED)");
-					return true;
-				} else {
-					return false;
-				}*/
 				return false;
 			}
 		}
