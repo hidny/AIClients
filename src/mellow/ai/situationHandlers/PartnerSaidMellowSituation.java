@@ -1117,7 +1117,7 @@ public class PartnerSaidMellowSituation {
 		System.out.println("TESTING PROTECTOR 4th throw");
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "8S TS")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TH 6H KC 8C 5C 9D")) {
 			System.out.println("debug");
 		}
 		
@@ -1158,6 +1158,20 @@ public class PartnerSaidMellowSituation {
 								|| dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(lowestCard, curCard, leadSuit)
 								) {
 							
+							return curCard;
+						} else if(dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(lowestCard, curCard, Constants.CURRENT_PARTNER_INDEX)) {
+							
+							if(leadSuit == Constants.SPADE
+									&& dataModel.isMasterCard(curCard)) {
+								
+								//Exception:
+								//You may delay playing your master spade most of the time
+								// (I'm too lazy to figure out the exception to this exception)
+								return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);
+							}
+							//Just play high?
+							//Maybe you don't always want to take the lead, but I'll deal
+							//with that exception later.
 							return curCard;
 						} else {
 							return dataModel.getCardCurrentPlayerGetLowestInSuit(leadSuit);

@@ -46,6 +46,7 @@ public class SeatedLeftOfOpponentMellow {
 				//Mellow player winning and is trumping:
 				
 				if(dataModel.throwerMustFollowSuit()) {
+					
 					//Mellow player is trumping, but current player is not trumping:
 					return dataModel.getCardCurrentPlayerGetLowestInSuit(dataModel.getSuitOfLeaderThrow());
 					
@@ -216,6 +217,9 @@ public class SeatedLeftOfOpponentMellow {
 						
 				} else {
 
+					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "KS 8S 6S 3S QH JH 8H 7H KD JD TD 9D")) {
+						System.out.println("Debug");
+					}
 					//TODO: PUT INTO FUNCTION -- 3242
 						String currentFightWinner = dataModel.getCurrentFightWinningCardBeforeAIPlays();
 						
@@ -299,12 +303,16 @@ public class SeatedLeftOfOpponentMellow {
 
 						} else if(fourthThrowMinCardToWin == null && minCardToPlayWithNoDamageToFutureMellowBurnOdds != null) {
 							
-							String topCardInHand = getHighestPartOfGroup(dataModel, 
+							String topishCardInHand = getHighestPartOfGroup(dataModel, 
 									minCardToPlayWithNoDamageToFutureMellowBurnOdds);
 
 							//Think about not wasting soon to be master cards:
-							if(dataModel.isMasterCard(topCardInHand)
-									&& ! dataModel.cardAGreaterThanCardBGivenLeadCard(topCardInHand, currentFightWinner)) {
+							if( topishCardInHand.equals(dataModel.getCardCurrentPlayerGetHighestInSuit(leadSuitIndex))
+									&& (dataModel.isMasterCard(topishCardInHand)
+									|| (dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(topishCardInHand) == 1
+											&& dataModel.getNumberOfCardsOneSuit(leadSuitIndex) >= 3)
+									)
+									&& ! dataModel.cardAGreaterThanCardBGivenLeadCard(topishCardInHand, currentFightWinner)) {
 								
 								//Think about not throwing away master 1
 								if(3 * dataModel.getNumberOfCardsOneSuit(dataModel.getSuitOfLeaderThrow()) 
@@ -317,9 +325,9 @@ public class SeatedLeftOfOpponentMellow {
 									
 									if(dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(secondTopCardInHand)
 									        ==
-											  dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(topCardInHand)) {
+											  dataModel.getNumCardsInPlayNotInCurrentPlayersHandOverCardSameSuit(topishCardInHand)) {
 										
-										return topCardInHand;
+										return topishCardInHand;
 									
 									} else {
 										
@@ -327,12 +335,12 @@ public class SeatedLeftOfOpponentMellow {
 									}
 							
 								} else {
-									return topCardInHand;
+									return topishCardInHand;
 								}
 								
 							} else {
 							
-								return topCardInHand;
+								return topishCardInHand;
 							}
 							
 							

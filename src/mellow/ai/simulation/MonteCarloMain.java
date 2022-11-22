@@ -78,7 +78,7 @@ public class MonteCarloMain {
 	//Do dishes and cook slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 20000;
 	
-	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
+	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 10000;
 
 	//Watch TV slow:
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 5000;
@@ -91,7 +91,7 @@ public class MonteCarloMain {
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 100;
 	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 1;
 	
-	public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 400;
+	//public static int NUM_SIMULATIONS_THOROUGH_AND_SLOW = 400;
 	
 	//Test case stats as of oct 5th, 2019:
 	//Consistency between parallel runs:
