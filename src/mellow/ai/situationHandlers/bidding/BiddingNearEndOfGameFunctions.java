@@ -495,4 +495,5 @@ public static int getNumberOfPointsAvailableAsBonusIfEveryoneMakesIt(DataModel d
 		return curScore;
 	}
 	
+	
 }

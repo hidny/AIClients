@@ -14,6 +14,8 @@ import mellow.ai.situationHandlers.SingleActiveMellowPlayer;
 import mellow.ai.situationHandlers.bidding.BiddingNearEndOfGameFunctions;
 import mellow.ai.situationHandlers.doubleMellow.SeatedLeftOfDoubleMellow;
 import mellow.ai.situationHandlers.doubleMellow.SeatedRightOfDoubleMellow;
+import mellow.ai.situationHandlers.wildSituations.SeatedLeftOfMellowFinalRound;
+import mellow.ai.situationHandlers.wildSituations.SeatedRightOfMellowFinalRound;
 import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
@@ -273,9 +275,19 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 						
 						//Added this for when you're so ahead, you don't care about the
 						// opponent's mellow.
-						if(dontCareAboutMellow(dataModel)) {
+						if(dontCareAboutOpponentMellow(dataModel)) {
 							//System.err.println("I Literally don't care --Hikaru");
-							return NoMellowPlaySituation.handleNormalThrow(dataModel);
+							
+							if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
+								
+								return SeatedLeftOfMellowFinalRound.handleLeftOfMellowFinalRound(dataModel);
+							
+							} else {
+								
+								return SeatedRightOfMellowFinalRound.handleRightOfMellowFinalRound(dataModel);
+							}
+							
+							
 						}
 						
 						if(dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0) {
@@ -430,7 +442,7 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 		return this.dataModel;
 	}
 
-	public static boolean dontCareAboutMellow(DataModel dataModel) {
+	public static boolean dontCareAboutOpponentMellow(DataModel dataModel) {
 		int ourScore = BiddingNearEndOfGameFunctions.getProjectedScoreForTeamGivenBids(dataModel, true,
 				dataModel.getBid(Constants.CURRENT_AGENT_INDEX),
 				dataModel.getBid(Constants.CURRENT_PARTNER_INDEX));
@@ -440,8 +452,12 @@ public class MellowBasicDecider implements MellowAIDeciderInterface {
 				dataModel.getBid(Constants.RIGHT_PLAYER_INDEX));
 		
 		if(ourScore >= Constants.GOAL_SCORE
-				&& ourScore > theirScore + 
-						BiddingNearEndOfGameFunctions.getNumberOfPointsAvailableAsBonusIfEveryoneMakesIt(dataModel)) {
+				&& (ourScore > theirScore + 
+						BiddingNearEndOfGameFunctions.getNumberOfPointsAvailableAsBonusIfEveryoneMakesIt(dataModel)
+					|| 
+					dataModel.getSumBidsCurTeam() + dataModel.getSumBidsOtherTeam() > Constants.NUM_STARTING_CARDS_IN_HAND
+					)
+			) {
 			return true;
 		}/* else if(Constants.GOAL_SCORE - ourScore <= (Constants.GOAL_SCORE - theirScore) / 2
 				&& Constants.GOAL_SCORE - ourScore > 80) {

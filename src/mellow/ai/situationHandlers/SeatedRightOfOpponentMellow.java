@@ -19,7 +19,7 @@ public class SeatedRightOfOpponentMellow {
 		
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "9S 3S AD JD 7D ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 6S 3S JH 7H 6H KC QC 9C 3C")) {
 			System.out.println("Debug");
 		}
 		if(throwIndex == 0) {
