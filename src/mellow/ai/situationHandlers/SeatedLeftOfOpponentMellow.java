@@ -848,6 +848,29 @@ public class SeatedLeftOfOpponentMellow {
 		return bestCard;
 	}
 	
+
+	public static String throwOffHighCardLikelyToAccidentallySaveMellowAndTryToAvoidThrowingMasters2(DataModel dataModel, int mellowPlayerIndex) {
+		 
+		String tmpCard = SeatedLeftOfOpponentMellow.throwOffHighCardThatMightAccidentallySaveMellowAndTryToAvoidThrowingMasters(dataModel, mellowPlayerIndex);
+		
+		int suitIndex = CardStringFunctions.getIndexOfSuit(tmpCard);
+		
+		
+		if((dataModel.isMasterCard(tmpCard)
+				&& dataModel.getNumberOfCardsOneSuit(suitIndex) >= 3)
+				|| dataModel.signalHandler.mellowBidderPlayerSignalNoCardsOfSuit(mellowPlayerIndex, suitIndex)) {
+		
+			// This function is more open to the possibility of giving up:
+			return dataModel.getJunkiestCardToFollowLead();
+	
+		} else {
+	
+			return tmpCard;
+		}
+	}
+	
+	
+	
 	//TODO: make it more precise, and then actually use it...
 	//Oversimplified...
 	public static boolean wantTrick(DataModel dataModel) {

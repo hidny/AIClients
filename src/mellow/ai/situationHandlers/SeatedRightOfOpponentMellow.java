@@ -566,7 +566,7 @@ public class SeatedRightOfOpponentMellow {
 	//I also copy/pasted AI second throw...
 	public static String AIThirdThrow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS KC JC 5C 4C ")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS QH AD 7D 3D")) {
 			System.out.println("Debug");
 		}
 		int leadSuit = dataModel.getSuitOfLeaderThrow();
@@ -840,7 +840,8 @@ public class SeatedRightOfOpponentMellow {
 							) {
 						//Don't trump on partner master unless you really need to:
 						
-						return dataModel.getJunkiestCardToFollowLead();
+						return SeatedLeftOfOpponentMellow.throwOffHighCardLikelyToAccidentallySaveMellowAndTryToAvoidThrowingMasters2(dataModel, MELLOW_PLAYER_INDEX);
+					
 						
 					} else
 							
