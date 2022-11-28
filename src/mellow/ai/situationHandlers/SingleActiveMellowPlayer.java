@@ -12,9 +12,6 @@ public class SingleActiveMellowPlayer {
 
 	public static String handleThrowAsSingleActiveMellowBidder(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "2S JD 6D 2D ")) {
-			System.out.println("DEBUG");
-		}
 		int throwIndex = dataModel.getCardsPlayedThisRound() % Constants.NUM_PLAYERS;
 		//leader:
 		String cardToPlay = null;
@@ -60,9 +57,6 @@ public class SingleActiveMellowPlayer {
 	private static String AIMellowLead(DataModel dataModel) {
 		
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 6S 3S 3H 2H QC JC TC 9C 6C JD 6D 2D ")) {
-			System.out.println("Debug");
-		}
 		
 		String ret = "";
 		int numSpadesInHand = dataModel.getNumberOfCardsOneSuit(Constants.SPADE);
@@ -103,9 +97,6 @@ public class SingleActiveMellowPlayer {
 	
 	private static String AIMellowFollow(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS TS 5S 2S KH QH 3H KC 7C 6C 5C 4C 9D ")) {
-			System.out.println("Debug");
-		}
 		
 		int leaderSuitIndex = dataModel.getSuitOfLeaderThrow();
 		
@@ -176,9 +167,6 @@ public class SingleActiveMellowPlayer {
 					//TODO: check for the case where you'd rather play your 5 over the 4 even if you have a 2.
 					
 					
-					if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "3S 7H 7C 6C 3C QD 9D 6D ")) {
-						System.out.println("DEBUG");
-					}
 					
 					/*if(throwIndex == 1
 							&& dataModel.getCardInHandClosestOverSameSuit(currentFightWinner) != null
@@ -337,9 +325,6 @@ public class SingleActiveMellowPlayer {
 	//Find the suit the mellow player wants to throw-off most:
 	public static String getBestOffSuitCardToThrowOffAsMellowPlayer(DataModel dataModel) {
 
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "QH 7H 3H TD 9D 7D 2D ")) {
-			System.out.println("Debug");
-		}
 		
 		int otherMellowIndex = -1;
 		if(dataModel.getNumStillActiveMellow() > 1) {
@@ -437,9 +422,6 @@ public class SingleActiveMellowPlayer {
 		
 		public static double getRiskRating3(DataModel dataModel, int suit, int numTopCardsToIgnore) {
 
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "4H 3H KC 9C 5C 2C 8D 6D ")) {
-				System.out.println("Debug");
-			}
 			int numOfSuitPlayerHas = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suit);
 			
 			numOfSuitPlayerHas -= numTopCardsToIgnore;
@@ -679,6 +661,7 @@ public class SingleActiveMellowPlayer {
 		
 		public static double getChancesOfBurningInSuit1stRound(DataModel dataModel, int suit, int numTopCardsToIgnore) {
 			
+
 			double oddsLosingFirstRound = 0.0;
 			String cardToConsider = "";
 			
@@ -700,20 +683,56 @@ public class SingleActiveMellowPlayer {
 			//I don't know man...
 			//All models are wrong, but some are useful...
 			
-			//This model makes a lot of bad assumptions like the 0.5
+			//This model makes a lot of bad assumptions like the 0.5,
+			// and I just made up the probability of 0.2...
 			// and the fact that cards are just as likely to be in partner's hands as opponents...
+			//TODO: make this more empirical later?
 			
-			double oddsPartnerHasNoSpade = 0.5;
-			if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
-				oddsPartnerHasNoSpade = 1.0;
+			double probPartnerHasNoSpade = 0.5;
+			
+			int numSpadePlayedForPartner = dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE);
+			if(dataModel.getLeaderIndex() == Constants.LEFT_PLAYER_INDEX
+					&& dataModel.getSuitOfLeaderThrow() == Constants.SPADE) {
+				//Partner will need to play a spade, so we might as well count it:
+				numSpadePlayedForPartner += 1;
 			}
+			
+			if(dataModel.isVoid(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				probPartnerHasNoSpade = 1.00;
+				
+			} else if(dataModel.signalHandler.playerStrongSignaledNoCardsOfSuit(Constants.CURRENT_PARTNER_INDEX, Constants.SPADE)) {
+				probPartnerHasNoSpade = 0.95;
+				
+				//Copy/paste code, but whatever:
+			} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 4
+					&& numSpadePlayedForPartner <= 3) {
+				probPartnerHasNoSpade = 0.2;
+			} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 3
+					&& numSpadePlayedForPartner <= 2) {
+				probPartnerHasNoSpade = 0.2;
+			} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 2
+					&& numSpadePlayedForPartner <= 1) {
+				probPartnerHasNoSpade = 0.2;
+			} else if(dataModel.getBid(Constants.CURRENT_PARTNER_INDEX) >= 1
+					&& numSpadePlayedForPartner <= 0) {
+				probPartnerHasNoSpade = 0.2;
+			}
+			
 			
 			if(numUnder == 0) {
 				oddsLosingFirstRound = 0.0;
 			} else if(numUnder == 1) {
 				
 				if(numOver == 0) {
-					oddsLosingFirstRound = 1.0 * oddsPartnerHasNoSpade;
+
+					if(numOfSuitPlayerHas > 1) {
+						for(int i=0; i<numOfSuitPlayerHas - 1; i++) {
+							probPartnerHasNoSpade = 1 - 0.5 * (1-probPartnerHasNoSpade);
+						}
+					}
+
+					oddsLosingFirstRound = 1.0 * probPartnerHasNoSpade;
+
 				} else {
 					//rough approx... but whatever
 					//The real number should be less, but this is low enough...
@@ -723,7 +742,7 @@ public class SingleActiveMellowPlayer {
 					
 					//Odds the opponent has all of 1 suit and partner can't trump...
 					double oddsNeedingToBeTrumped = 2 * Math.pow(1.0/3.0, numOver + numUnder);
-					oddsLosingFirstRound = oddsPartnerHasNoSpade * oddsNeedingToBeTrumped;
+					oddsLosingFirstRound = probPartnerHasNoSpade * oddsNeedingToBeTrumped;
 				}
 				
 			
@@ -742,7 +761,7 @@ public class SingleActiveMellowPlayer {
 				
 				double total = calc1 + calc2 + calc3;
 				
-				oddsLosingFirstRound = total * oddsPartnerHasNoSpade;
+				oddsLosingFirstRound = total * probPartnerHasNoSpade;
 			
 			} else if(numUnder >= 3) {
 	
@@ -765,7 +784,7 @@ public class SingleActiveMellowPlayer {
 	
 				double total = calc1 + calc2 + calc3 + calc4;
 				
-				oddsLosingFirstRound = total * oddsPartnerHasNoSpade;
+				oddsLosingFirstRound = total * probPartnerHasNoSpade;
 			
 				
 			}
@@ -824,9 +843,6 @@ public class SingleActiveMellowPlayer {
 		
 		public static CardAndValue GetValueofMellowBidLeadingOffsuit(DataModel dataModel, int suitIndex) {
 			
-			if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "JS 5S TD 8D 6D 4D 2D JC 8C 6C TH 4H 3H")) {
-				System.out.println("DEBUG");
-			}
 			String lowestCard = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 			int numCards = dataModel.getNumCardsOfSuitInCurrentPlayerHand(suitIndex);
 			
