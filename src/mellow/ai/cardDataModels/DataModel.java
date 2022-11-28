@@ -146,6 +146,10 @@ public class DataModel {
 		return false;
 	}
 	
+	public String getFirstCardPlayed() {
+		return cardStringsPlayed[0];
+	}
+	
 	public boolean currentPlayerPlayedOffSuitEarlier(int suitIndex) {
 		
 		for(int i=0; i<this.cardsPlayedThisRound; i+=4) {
@@ -2320,6 +2324,22 @@ public class DataModel {
 		}
 		return null;
 	}
+	
+	
+	public String getCardInPlayNotInHandClosestUnderSameSuit(String card) {
+
+		int suitIndex = CardStringFunctions.getIndexOfSuit(card);
+		int rankIndex = getRankIndex(card);
+
+		for (int j = rankIndex - 1; j >= 0; j--) {
+			if (cardsUsed[suitIndex][j] == false
+					&& cardsCurrentlyHeldByPlayer[Constants.CURRENT_AGENT_INDEX][suitIndex][j] == IMPOSSIBLE) {
+				return getCardString(j, suitIndex);
+			}
+		}
+		return null;
+	}
+	
 
 	public int getNumCardsInHandUnderCardSameSuit(String card) {
 		int suitIndex = CardStringFunctions.getIndexOfSuit(card);

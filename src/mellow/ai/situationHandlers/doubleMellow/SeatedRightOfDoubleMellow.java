@@ -6,6 +6,7 @@ import mellow.ai.cardDataModels.handIndicators.NonMellowBidHandIndicators;
 import mellow.ai.situationHandlers.PartnerSaidMellowSituation;
 import mellow.ai.situationHandlers.SeatedLeftOfOpponentMellow;
 import mellow.ai.situationHandlers.SeatedRightOfOpponentMellow;
+import mellow.cardUtils.CardStringFunctions;
 import mellow.cardUtils.DebugFunctions;
 
 public class SeatedRightOfDoubleMellow {
@@ -59,15 +60,85 @@ public class SeatedRightOfDoubleMellow {
 			}
 			
 		}
+		
+		
 			
 		
 		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "AS KS JS 7S QH JH 7H 6H TC 9C 8C ")) {
 			System.out.println("DEBUG 123");
 		}
 		
-		return PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
+		String tmpProtectCard = PartnerSaidMellowSituation.playMoveToProtectPartnerMellow(dataModel);
+		
+		if(throwIndex == 1
+				&& dataModel.currentAgentHasSuit(leadSuitIndex)
+				&& dataModel.cardAGreaterThanCardBGivenLeadCard(tmpProtectCard, dataModel.getCardLeaderThrow())
+				&& dataModel.getNumberOfCardsOneSuit(leadSuitIndex) > 1
+				) {
+			
+			String minToWin = dataModel.getCardInHandClosestOverCurrentWinner();
+			
+			//Consider the partner's signal on the first throw:
+			if(CardStringFunctions.getIndexOfSuit(tmpProtectCard) == Constants.SPADE
+								&& partnerSignalledMaxSpadeByLeadingSpade(dataModel)) {
+				
+				if(dataModel.getCardInPlayNotInHandClosestUnderSameSuit(maxSpadePartnerSignalledAtStartOfRound(dataModel))
+						!= null) {
+					String tmp = dataModel.getCardInHandClosestOverSameSuit(
+							dataModel.getCardInPlayNotInHandClosestUnderSameSuit(maxSpadePartnerSignalledAtStartOfRound(dataModel))
+							);
+					
+					if(dataModel.cardAGreaterThanCardBGivenLeadCard(tmp, minToWin)) {
+						minToWin = tmp;
+					}
+				}
+			}
+			
+			String minToWinAndOverPartnerSignal = minToWin;
+			
+			//TODO: maybe go just over partner signal for off-suits?
+			
+			
+			if(! minToWinAndOverPartnerSignal.equals(tmpProtectCard)
+					&& (dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(minToWinAndOverPartnerSignal, tmpProtectCard, Constants.CURRENT_PARTNER_INDEX)
+							||
+							(CardStringFunctions.getIndexOfSuit(tmpProtectCard) == Constants.SPADE
+								&& partnerSignalledMaxSpadeByLeadingSpade(dataModel)
+								&& dataModel.cardAGreaterThanCardBGivenLeadCard(
+										minToWinAndOverPartnerSignal,
+									maxSpadePartnerSignalledAtStartOfRound(dataModel))
+							)
+					)
+					&& !dataModel.signalHandler.mellowBidderSignalledNoCardBetweenTwoCards(minToWinAndOverPartnerSignal, tmpProtectCard, Constants.LEFT_PLAYER_INDEX)) {
+				
+				tmpProtectCard = minToWinAndOverPartnerSignal;
+			}
+			//TODO: Consider not winning the trick?
+				
+		}
+		
+		
+		return tmpProtectCard;
 	}
 	
+	public static String maxSpadePartnerSignalledAtStartOfRound(DataModel dataModel) {
+		
+		if(partnerSignalledMaxSpadeByLeadingSpade(dataModel)) {
+			return dataModel.getFirstCardPlayed();
+		} else {
+			return null;
+		}
+	}
+	
+	public static boolean partnerSignalledMaxSpadeByLeadingSpade(DataModel dataModel) {
+		
+		if(dataModel.getDealerIndexAtStartOfRound() == Constants.LEFT_PLAYER_INDEX
+				&& CardStringFunctions.getIndexOfSuit(dataModel.getFirstCardPlayed()) == Constants.SPADE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	public static String AIHandleLeadDoubleMellow(DataModel dataModel) {
 		
