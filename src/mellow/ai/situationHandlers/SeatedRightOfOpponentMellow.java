@@ -205,11 +205,18 @@ public class SeatedRightOfOpponentMellow {
 		
 	public static String getHighestCardYouCouldLeadWithoutSavingMellowInSuit(DataModel dataModel, int suitIndex) {
 		
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS QH AD 7D 5D 3D")) {
+			System.out.println("Debug");
+		}
 		String ret = dataModel.getCardCurrentPlayerGetLowestInSuit(suitIndex);
 		
 		//1st make sure that's it's the first time out:
 		
-		if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 6) {
+		if(dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 6
+				//Alternatively, just make sure the protector is probably not void:
+				|| (dataModel.getNumberOfCardsPlayerPlayedInSuit(Constants.RIGHT_PLAYER_INDEX, suitIndex) == 0
+					&& ! dataModel.isVoid(Constants.RIGHT_PLAYER_INDEX, suitIndex)
+					&& dataModel.getNumCardsHiddenInOtherPlayersHandsForSuit(suitIndex) > 5)) {
 			
 			int numCardsInSuit = dataModel.getNumberOfCardsOneSuit(suitIndex);
 			
