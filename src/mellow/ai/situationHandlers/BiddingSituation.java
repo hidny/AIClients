@@ -273,7 +273,7 @@ public class BiddingSituation {
 		}
 		*/
 		
-		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "5S 4S TH 7H 2H 7C 4C 3C TD 8D 6D 5D 2D")) {
+		if(DebugFunctions.currentPlayerHoldsHandDebug(dataModel, "TS 6S 3S 2S JH 7H 6H KC QC 9C 3C KD 8D")) {
 			System.out.println("Debug");
 		}
 		

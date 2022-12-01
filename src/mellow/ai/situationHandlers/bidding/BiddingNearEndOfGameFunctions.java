@@ -14,7 +14,43 @@ public class BiddingNearEndOfGameFunctions {
 		
 		double ret = 0.95;
 		
-		for(int i=origBid; i<curHighBid; i++) {
+		if((dataModel.isDealer() 
+				&& dataModel.getBid(Constants.LEFT_PLAYER_INDEX) == 0)
+				|| (dataModel.getDealerIndexAtStartOfRound() != Constants.RIGHT_PLAYER_INDEX 
+				&& dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) == 0)) {
+		
+			//Lets just say if opponent bid mellow last round, it's not bad.
+			
+			if(curHighBid > origBid) {
+				if(curHighBid > 13) {
+					return 0.0;
+				}
+				
+				for(int i=0; i<curHighBid - origBid; i++) {
+					if(i < 4) {
+						ret *= (0.8 - 0.1 * i);
+					} else {
+						ret *= 0.2;
+					}
+				}
+				
+				if(dataModel.getBid(Constants.LEFT_PLAYER_INDEX) >= 7
+					|| dataModel.getBid(Constants.RIGHT_PLAYER_INDEX) >=7) {
+					
+					//Don't believe opponents ridiculous bids?
+					ret = 1.0 - 0.4 * (1.0 - ret);
+				}
+				
+				return ret;
+				
+				
+				
+			} else {
+				return ret;
+			}
+		}
+		
+		for(int i=0; i<curHighBid - origBid; i++) {
 			if(i < 4) {
 				ret *= (0.5 - 0.1 * i);
 			} else {
